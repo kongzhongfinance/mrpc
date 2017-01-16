@@ -17,19 +17,15 @@ public class NettyClient {
 
     protected Bootstrap b;
     protected EventLoopGroup group;
-    private String host;
-    private int port;
 
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public NettyClient() {
         try {
             init();
         } catch (Exception e){
         }
     }
 
-    private void init() throws InterruptedException {
+    private void init() {
         group = new NioEventLoopGroup(4);
         b = new Bootstrap();
         b.group(group)
@@ -39,8 +35,7 @@ public class NettyClient {
         .handler(new RpcClientInitializer(RpcClient.rpcSerialize));
     }
 
-
-    public ChannelFuture connect() {
+    public ChannelFuture connect(String host, int port) {
         ChannelFuture connect = b.connect(host, port);
         connect.awaitUninterruptibly();
         return connect;

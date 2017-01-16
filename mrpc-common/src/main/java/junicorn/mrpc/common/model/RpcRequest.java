@@ -13,6 +13,7 @@ public class RpcRequest {
     private String methodName;
     private Class[] parameterTypes;
     private Object[] parameters;
+    private String requestIp;
 
     public RpcRequest() {
     }
@@ -102,11 +103,20 @@ public class RpcRequest {
         return result;
     }
 
+    public String getRequestIp() {
+        return requestIp;
+    }
+
+    public void setRequestIp(String requestIp) {
+        this.requestIp = requestIp;
+    }
+
     @Override
     public String toString() {
         return "[requestId='" + requestId + '\'' +
                 ", serviceName='" + serviceName + '\'' +
                 ", group='" + group + '\'' +
+                ", ip='" + requestIp + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", parameterTypes=" + Arrays.toString(parameterTypes) +
                 ", parameters=" + Arrays.toString(parameters) +

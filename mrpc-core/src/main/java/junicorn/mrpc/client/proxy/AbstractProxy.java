@@ -46,7 +46,7 @@ public abstract class AbstractProxy implements AsyncCallProxy {
 //                }
 //            };
 //            return RpcClient.submit(callable).get();
-        } catch (Exception e){
+        } catch (Throwable e){
             throw e.getCause();
         }
     }

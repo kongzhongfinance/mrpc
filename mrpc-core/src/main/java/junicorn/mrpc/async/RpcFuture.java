@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * RpcFuture for async RPC call
@@ -31,18 +30,25 @@ public class RpcFuture {
     }
 
     public Object get() throws Throwable {
-        while(retry > 0){
-            latch.await(5, TimeUnit.SECONDS);
-            if (null != response) {
-                if(null != response.getException()){
-                    throw response.getException();
-                }
-                return this.response.getResult();
+        latch.await();
+        if (null != response) {
+            if(null != response.getException()){
+                throw response.getException();
             }
-            retry--;
+            return this.response.getResult();
         }
-        long responseTime = System.currentTimeMillis() - startTime;
-        LOGGER.warn("Service response time is too slow. [{}] [{}.{}({})] . Response Time = {} ms", request.getRequestId(), request.getServiceName(), request.getMethodName(), Arrays.toString(request.getParameterTypes()), responseTime);
+//        while(retry > 0){
+//            latch.await(5, TimeUnit.SECONDS);
+//            if (null != response) {
+//                if(null != response.getException()){
+//                    throw response.getException();
+//                }
+//                return this.response.getResult();
+//            }
+//            retry--;
+//        }
+//        long responseTime = System.currentTimeMillis() - startTime;
+//        LOGGER.warn("Service response time is too slow. [{}] [{}.{}({})] . Response Time = {} ms", request.getRequestId(), request.getServiceName(), request.getMethodName(), Arrays.toString(request.getParameterTypes()), responseTime);
         return null;
     }
 

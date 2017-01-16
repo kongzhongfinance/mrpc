@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,11 +42,11 @@ public final class ConnManager {
         if(null != addressList){
             connections.clear();
             for(String address : addressList){
-                String addr = address.split(":")[0];
+                String host = address.split(":")[0];
                 int port = Integer.valueOf(address.split(":")[1]);
-                NettyClient nettyClient = new NettyClient(addr, port);
-                ChannelFuture channelFuture = nettyClient.connect();
-                Connection connection = new Connection();
+                NettyClient nettyClient = new NettyClient();
+                ChannelFuture channelFuture = nettyClient.connect(host, port);
+                Connection connection = new Connection(host, port);
                 connection.setFuture(channelFuture);
                 connection.setIsConnected(true);
                 connections.put(address, connection);

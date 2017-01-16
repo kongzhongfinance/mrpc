@@ -7,16 +7,16 @@
 
     <context:property-placeholder location="classpath:rpc.properties"/>
 
-    <bean id="serviceRegistry" class="junicorn.mrpc.registry.zookeeper.ZookeeperServiceRegistry">
+    <!--<bean id="serviceRegistry" class="junicorn.mrpc.registry.zookeeper.ZookeeperServiceRegistry">
         <constructor-arg name="zkAddr" value="${zookeeper.address}"/>
-    </bean>
+    </bean>-->
 
     <bean id="testInterceptor" class="junicorn.mrpc.demo.server.TestInterceptor"/>
     <bean id="testInterceptor2" class="junicorn.mrpc.demo.server.TestInterceptor2"/>
 
     <bean id="rpcServer" class="junicorn.mrpc.server.RpcServer">
         <constructor-arg name="serverAddress" value="${rpc.address}"/>
-        <constructor-arg name="serviceRegistry" ref="serviceRegistry"/>
+        <!--<constructor-arg name="serviceRegistry" ref="serviceRegistry"/>-->
         <property name="serialize" value="protostuff"/>
         <!--<property name="inteceptorList">-->
             <!--<list>-->

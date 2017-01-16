@@ -10,14 +10,14 @@
 
     <context:property-placeholder location="classpath:rpc.properties"/>
 
-    <bean id="serviceDiscovery" class="junicorn.mrpc.discover.zookeeper.ZookeeperServiceDiscovery">
+    <!--<bean id="serviceDiscovery" class="junicorn.mrpc.discover.zookeeper.ZookeeperServiceDiscovery">
         <constructor-arg name="zkAddr" value="${zookeeper.address}"/>
-    </bean>
+    </bean>-->
 
     <bean id="rpcClient" class="junicorn.mrpc.client.RpcClient">
         <constructor-arg name="serialize" value="protostuff"/>
-        <!--<constructor-arg name="serverAddr" value="127.0.0.1:5066"/>-->
-        <constructor-arg name="serviceDiscovery" ref="serviceDiscovery"/>
+        <constructor-arg name="serverAddr" value="127.0.0.1:5066"/>
+        <!--<constructor-arg name="serviceDiscovery" ref="serviceDiscovery"/>-->
     </bean>
 
     <mrpc:referer id="userService" interface="junicorn.mrpc.demo.api.UserService" />
