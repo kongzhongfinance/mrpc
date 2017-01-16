@@ -81,7 +81,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             }
             // update node list
             ConnManager.updateNodes(Sets.newTreeSet(dataList));
-            LOGGER.info("node data : {}", Sets.newTreeSet(dataList).toString());
         } catch (Exception e){
             LOGGER.error("", e);
         }

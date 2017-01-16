@@ -1,6 +1,7 @@
 package junicorn.mrpc.connection;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.netty.channel.ChannelFuture;
 import junicorn.mrpc.async.RpcFuture;
 import junicorn.mrpc.client.NettyClient;
@@ -39,6 +40,7 @@ public final class ConnManager {
      * @param addressList
      */
     public static void updateNodes(Set<String> addressList){
+        LOGGER.info("node data : {}", addressList);
         if(null != addressList){
             connections.clear();
             for(String address : addressList){

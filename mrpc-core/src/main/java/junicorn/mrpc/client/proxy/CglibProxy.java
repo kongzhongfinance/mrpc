@@ -1,6 +1,7 @@
 package junicorn.mrpc.client.proxy;
 
 import junicorn.mrpc.async.RpcFuture;
+import junicorn.mrpc.client.RpcClient;
 import junicorn.mrpc.loadbalance.Strategy;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -14,8 +15,8 @@ public class CglibProxy extends AbstractProxy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CglibProxy.class);
 
-    public CglibProxy(Strategy strategy){
-        super(strategy);
+    public CglibProxy(RpcClient rpcClient){
+        super(rpcClient);
     }
 
     @Override

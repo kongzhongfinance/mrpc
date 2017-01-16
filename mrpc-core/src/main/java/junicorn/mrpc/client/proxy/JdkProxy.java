@@ -1,6 +1,7 @@
 package junicorn.mrpc.client.proxy;
 
 import junicorn.mrpc.async.RpcFuture;
+import junicorn.mrpc.client.RpcClient;
 import junicorn.mrpc.loadbalance.Strategy;
 
 import java.lang.reflect.InvocationHandler;
@@ -12,8 +13,8 @@ import java.lang.reflect.Proxy;
  */
 public class JdkProxy extends AbstractProxy implements InvocationHandler {
 
-    public JdkProxy(Strategy strategy) {
-        super(strategy);
+    public JdkProxy(RpcClient rpcClient) {
+        super(rpcClient);
     }
 
     @Override

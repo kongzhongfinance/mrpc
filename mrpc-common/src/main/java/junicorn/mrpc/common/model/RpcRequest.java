@@ -13,7 +13,7 @@ public class RpcRequest {
     private String methodName;
     private Class[] parameterTypes;
     private Object[] parameters;
-    private String requestIp;
+    private String address;
 
     public RpcRequest() {
     }
@@ -88,7 +88,8 @@ public class RpcRequest {
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(parameterTypes, that.parameterTypes)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        return Arrays.equals(parameters, that.parameters);
+        if (!Arrays.equals(parameters, that.parameters)) return false;
+        return address != null ? address.equals(that.address) : that.address == null;
 
     }
 
@@ -100,15 +101,16 @@ public class RpcRequest {
         result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(parameterTypes);
         result = 31 * result + Arrays.hashCode(parameters);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
         return result;
     }
 
-    public String getRequestIp() {
-        return requestIp;
+    public String getAddress() {
+        return address;
     }
 
-    public void setRequestIp(String requestIp) {
-        this.requestIp = requestIp;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override
@@ -116,7 +118,7 @@ public class RpcRequest {
         return "[requestId='" + requestId + '\'' +
                 ", serviceName='" + serviceName + '\'' +
                 ", group='" + group + '\'' +
-                ", ip='" + requestIp + '\'' +
+                ", address='" + address + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", parameterTypes=" + Arrays.toString(parameterTypes) +
                 ", parameters=" + Arrays.toString(parameters) +

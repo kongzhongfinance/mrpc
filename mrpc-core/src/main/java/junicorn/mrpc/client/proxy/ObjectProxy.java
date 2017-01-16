@@ -1,6 +1,7 @@
 package junicorn.mrpc.client.proxy;
 
 import junicorn.mrpc.async.RpcFuture;
+import junicorn.mrpc.client.RpcClient;
 import junicorn.mrpc.loadbalance.Strategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,8 @@ public class ObjectProxy extends AbstractProxy implements InvocationHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectProxy.class);
 
-    public ObjectProxy(Strategy strategy) {
-        super(strategy);
+    public ObjectProxy(RpcClient rpcClient) {
+        super(rpcClient);
     }
 
     @Override

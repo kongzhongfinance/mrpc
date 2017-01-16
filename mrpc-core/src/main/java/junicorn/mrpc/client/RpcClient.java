@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class RpcClient {
 
-    private ServiceDiscovery serviceDiscovery;
+
 
     private static final ThreadPoolExecutor threadPoolExecutor = RpcThreadPool.getThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Integer.MAX_VALUE);
 
@@ -26,12 +26,17 @@ public class RpcClient {
      */
     private Strategy strategy = Strategy.POLL;
 
+    private String serverAddr;
+
+    private ServiceDiscovery serviceDiscovery;
+
     static RpcSerialize rpcSerialize;
 
-    private AbstractProxy proxy = new CglibProxy(strategy);
+    private AbstractProxy proxy = new CglibProxy(this);
 
     public RpcClient(String serialize, String serverAddr) {
         this.setSerialize(serialize);
+        this.serverAddr = serverAddr;
         ConnManager.updateNodes(Sets.newHashSet(serverAddr));
     }
 
@@ -81,9 +86,17 @@ public class RpcClient {
         return this;
     }
 
+    public Strategy getStrategy() {
+        return strategy;
+    }
+
     public RpcClient setStrategy(String strategy) {
         this.strategy = Strategy.valueOf(strategy.toUpperCase());
         return this;
+    }
+
+    public String getServerAddr() {
+        return serverAddr;
     }
 
     public void setSerialize(String serialize) {
