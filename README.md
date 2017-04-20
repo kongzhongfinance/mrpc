@@ -8,8 +8,43 @@
 - 集成Spring/SpringBoot
 - 支持TCP/HTTP通讯
 
-## 快速入门
+## HTTP协议快速入门
 
+### 创建服务端
+
+```java
+public interface UserService{
+    @GET
+    String sayHello(String name);
+}
+
+// 服务实现
+@MRpc(path="/users")
+public class UserServiceImpl implements UserService{
+    
+    @Override
+    public String sayHello(String name){
+        return "Hello " + name;
+    }
+    
+}
+```
+
+### 浏览器调用
+
+```bash
+http://127.0.0.1:5066/users/sayHello?name=hello
+```
+
+### 客户端调用
+
+```java
+RpcClient client = new RpcClient("127.0.0.1:5066");
+client.setTransfer("http");
+
+UserService userService = client.getProxyBean(UserService.class);
+System.out.println(userService.sayHello("mrpc"));
+```
 
 ## 包规划
 
