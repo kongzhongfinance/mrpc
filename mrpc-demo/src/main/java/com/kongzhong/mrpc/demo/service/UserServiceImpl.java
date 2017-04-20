@@ -8,7 +8,7 @@ import com.kongzhong.mrpc.demo.model.Person;
  *         2017/4/19
  */
 @RpcService
-public class CalcServiceImpl implements CalcService {
+public class UserServiceImpl implements UserService {
 
     @Override
     public int add(int a, int b) {

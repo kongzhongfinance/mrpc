@@ -13,13 +13,14 @@
 ### 创建服务端
 
 ```java
-public interface UserService{
+@Path("/users")
+public interface UserService {
     @GET
-    String sayHello(String name);
+    String hello(String name);
 }
 
 // 服务实现
-@MRpc(path="/users")
+@RpcService
 public class UserServiceImpl implements UserService{
     
     @Override
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService{
 ### 浏览器调用
 
 ```bash
-http://127.0.0.1:5066/users/sayHello?name=hello
+http://127.0.0.1:5066/users/hello?name=jack
 ```
 
 ### 客户端调用
@@ -43,7 +44,7 @@ RpcClient client = new RpcClient("127.0.0.1:5066");
 client.setTransfer("http");
 
 UserService userService = client.getProxyBean(UserService.class);
-System.out.println(userService.sayHello("mrpc"));
+System.out.println(userService.hello("mrpc"));
 ```
 
 ## 包规划
