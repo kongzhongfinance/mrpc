@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.transfer;
 
-import com.kongzhong.mrpc.common.JSONUtils;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.server.RpcServer;

@@ -11,7 +11,7 @@ public class ClientApplication {
     public static void main(String[] args) {
         RpcClient rpcClient = new RpcClient("127.0.0.1:5066");
 
-        CalcService calcService = rpcClient.execute(CalcService.class);
+        CalcService calcService = rpcClient.getProxyBean(CalcService.class);
         System.out.println(calcService);
         System.out.println(calcService.add(10, 20));
         rpcClient.stop();

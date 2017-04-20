@@ -18,4 +18,7 @@ public @interface MRpcService {
     String version() default "";
 
     String name() default "";
+
+    String path() default "/";
+
 }

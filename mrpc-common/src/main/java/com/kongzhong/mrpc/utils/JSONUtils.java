@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.common;
+package com.kongzhong.mrpc.utils;
 
 import com.alibaba.fastjson.JSON;
 

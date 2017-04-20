@@ -5,6 +5,9 @@ import com.kongzhong.mrpc.enums.TransferEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.transfer.http.HttpClientChannelInitializer;
+import com.kongzhong.mrpc.transfer.http.HttpServerChannelInitializer;
+import com.kongzhong.mrpc.transfer.tcp.TcpClientChannelInitializer;
 import com.kongzhong.mrpc.transfer.tcp.TcpServerChannelInitializer;
 import io.netty.channel.ChannelHandler;
 
@@ -26,7 +29,7 @@ public class TransferSelector {
         this.serialize = serialize;
     }
 
-    public ChannelHandler getChannelHandler(String transfer) {
+    public ChannelHandler getServerChannelHandler(String transfer) {
 
         TransferEnum transferEnum = TransferEnum.valueOf(transfer);
         if (null == transferEnum) {
@@ -38,7 +41,25 @@ public class TransferSelector {
         }
 
         if (transferEnum.equals(TransferEnum.HTTP)) {
-            return new TcpServerChannelInitializer(handlerMap, rpcSerialize(serialize));
+            return new HttpServerChannelInitializer(handlerMap, rpcSerialize(serialize));
+        }
+
+        throw new InitializeException("transfer type is null.");
+    }
+
+    public ChannelHandler getClientChannelHandler(String transfer) {
+
+        TransferEnum transferEnum = TransferEnum.valueOf(transfer);
+        if (null == transferEnum) {
+            throw new InitializeException("transfer type [" + transfer + "] error.");
+        }
+
+        if (transferEnum.equals(TransferEnum.TPC)) {
+            return new TcpClientChannelInitializer(rpcSerialize(serialize));
+        }
+
+        if (transferEnum.equals(TransferEnum.HTTP)) {
+            return new HttpClientChannelInitializer(rpcSerialize(serialize));
         }
 
         throw new InitializeException("transfer type is null.");

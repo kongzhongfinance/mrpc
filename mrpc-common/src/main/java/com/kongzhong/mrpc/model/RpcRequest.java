@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class RpcRequest {
 
     private String requestId;
-    private String serviceName;
+    private String className;
     private String methodName;
     private Class[] parameterTypes;
     private Object[] parameters;
@@ -16,9 +16,9 @@ public class RpcRequest {
     public RpcRequest() {
     }
 
-    public RpcRequest(String requestId, String serviceName, String methodName, Class[] parameterTypes, Object[] parameters) {
+    public RpcRequest(String requestId, String className, String methodName, Class[] parameterTypes, Object[] parameters) {
         this.requestId = requestId.toLowerCase();
-        this.serviceName = serviceName;
+        this.className = className;
         this.methodName = methodName;
         this.parameterTypes = parameterTypes;
         this.parameters = parameters;
@@ -32,12 +32,12 @@ public class RpcRequest {
         this.requestId = requestId;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getClassName() {
+        return className;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public String getMethodName() {
@@ -72,7 +72,7 @@ public class RpcRequest {
         RpcRequest that = (RpcRequest) o;
 
         if (requestId != null ? !requestId.equals(that.requestId) : that.requestId != null) return false;
-        if (serviceName != null ? !serviceName.equals(that.serviceName) : that.serviceName != null) return false;
+        if (className != null ? !className.equals(that.className) : that.className != null) return false;
         if (methodName != null ? !methodName.equals(that.methodName) : that.methodName != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(parameterTypes, that.parameterTypes)) return false;
@@ -85,7 +85,7 @@ public class RpcRequest {
     @Override
     public int hashCode() {
         int result = requestId != null ? requestId.hashCode() : 0;
-        result = 31 * result + (serviceName != null ? serviceName.hashCode() : 0);
+        result = 31 * result + (className != null ? className.hashCode() : 0);
         result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(parameterTypes);
         result = 31 * result + Arrays.hashCode(parameters);
@@ -94,12 +94,14 @@ public class RpcRequest {
 
     @Override
     public String toString() {
-        return "RpcRequest [" +
+        return "[" +
                 "requestId='" + requestId + '\'' +
-                ", serviceName='" + serviceName + '\'' +
+                ", className='" + className + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", parameterTypes=" + Arrays.toString(parameterTypes) +
                 ", parameters=" + Arrays.toString(parameters) +
                 ']';
     }
+
+
 }

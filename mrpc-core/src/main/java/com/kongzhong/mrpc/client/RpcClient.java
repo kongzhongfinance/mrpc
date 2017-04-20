@@ -1,29 +1,59 @@
 package com.kongzhong.mrpc.client;
 
 import com.google.common.reflect.Reflection;
+import com.kongzhong.mrpc.enums.SerializeEnum;
+import com.kongzhong.mrpc.enums.TransferEnum;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.transfer.TransferSelector;
 
+/**
+ * rpc客户端
+ */
 public class RpcClient {
 
     private RpcServerLoader loader = RpcServerLoader.me();
 
+    /**
+     * rpc服务地址
+     */
     private String serverAddr;
 
-    private RpcSerialize rpcSerialize;
+    /**
+     * 序列化类型，默认protostuff
+     */
+    private String serialize = SerializeEnum.PROTOSTUFF.name();
 
+    /**
+     * 传输协议，默认tcp协议
+     */
+    private String transfer = TransferEnum.TPC.name();
+
+    /**
+     * 服务发现
+     */
     private ServiceDiscovery serviceDiscovery;
 
-    public RpcClient() {
+    /**
+     * 传输选择
+     */
+    private TransferSelector transferSelector;
 
+    public RpcClient() {
     }
 
     public RpcClient(String serverAddr) {
         this.setServerAddr(serverAddr);
+        this.init();
     }
 
     public RpcClient(ServiceDiscovery serviceDiscovery) {
         this.setServiceDiscovery(serviceDiscovery);
+        this.init();
+    }
+
+    private void init() {
+        this.transferSelector = new TransferSelector(null, serialize);
     }
 
     public void stop() {
@@ -36,7 +66,7 @@ public class RpcClient {
      * @param <T>
      * @return
      */
-    public <T> T execute(Class<T> rpcInterface) {
+    public <T> T getProxyBean(Class<T> rpcInterface) {
         return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
     }
 
@@ -49,14 +79,6 @@ public class RpcClient {
         this.loader.load(serverAddr);
     }
 
-    public RpcSerialize getRpcSerialize() {
-        return rpcSerialize;
-    }
-
-    public void setRpcSerialize(RpcSerialize rpcSerialize) {
-        this.rpcSerialize = rpcSerialize;
-    }
-
     public ServiceDiscovery getServiceDiscovery() {
         return serviceDiscovery;
     }
@@ -64,5 +86,21 @@ public class RpcClient {
     public void setServiceDiscovery(ServiceDiscovery serviceDiscovery) {
         this.serviceDiscovery = serviceDiscovery;
         this.loader.load(serviceDiscovery);
+    }
+
+    public String getSerialize() {
+        return serialize;
+    }
+
+    public void setSerialize(String serialize) {
+        this.serialize = serialize;
+    }
+
+    public String getTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(String transfer) {
+        this.transfer = transfer;
     }
 }

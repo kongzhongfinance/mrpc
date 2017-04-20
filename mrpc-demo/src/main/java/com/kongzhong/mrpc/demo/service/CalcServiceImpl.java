@@ -13,4 +13,15 @@ public class CalcServiceImpl implements CalcService {
     public int add(int a, int b) {
         return a + b;
     }
+
+    @Override
+    public String hello(String name) {
+        return null;
+    }
+
+    @Override
+    public String hello(Integer age) {
+        return null;
+    }
+
 }

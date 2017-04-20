@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.server;
 
 import com.google.common.util.concurrent.*;
-import com.kongzhong.mrpc.common.StringUtil;
+import com.kongzhong.mrpc.utils.StringUtils;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.enums.SerializeEnum;
@@ -60,6 +60,9 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
      */
     private ServiceRegistry serviceRegistry;
 
+    /**
+     * 传输协议选择
+     */
     private TransferSelector transferSelector;
 
     private static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
@@ -71,7 +74,8 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
         this.serverAddress = serverAddress;
     }
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public RpcServer(String serverAddress, ServiceRegistry serviceRegistry) {
+        this.serverAddress = serverAddress;
         this.serviceRegistry = serviceRegistry;
     }
 
@@ -93,7 +97,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     String version = mRpcService.version();
                     String name = mRpcService.name();
 
-                    if (StringUtil.isNotEmpty(name)) {
+                    if (StringUtils.isNotEmpty(name)) {
                         serviceName = name;
                     } else {
                         if (NoInterface.class.getName().equals(serviceName)) {
@@ -106,7 +110,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                         }
                     }
 
-                    if (StringUtil.isNotEmpty(version)) {
+                    if (StringUtils.isNotEmpty(version)) {
                         serviceName += "_" + version;
                     }
 
@@ -136,7 +140,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-                    .childHandler(transferSelector.getChannelHandler(transfer))
+                    .childHandler(transferSelector.getServerChannelHandler(transfer))
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
@@ -148,6 +152,10 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                 int port = Integer.parseInt(ipAddr[1]);
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
+
+                if (serviceRegistry != null) {
+                    serviceRegistry.register(serverAddress);
+                }
 
                 //注册服务
                 for (String serviceName : handlerMap.keySet()) {

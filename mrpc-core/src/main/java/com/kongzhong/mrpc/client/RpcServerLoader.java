@@ -110,7 +110,8 @@ public class RpcServerLoader {
     }
 
     public void load(ServiceDiscovery serviceDiscovery) {
-
+        String serverAddr = serviceDiscovery.discover();
+        this.load(serverAddr);
     }
 
     public void setMessageSendHandler(RpcClientHandler clientHandler) {
