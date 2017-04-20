@@ -1,23 +1,24 @@
-package com.kongzhong.mrpc.transfer;
+package com.kongzhong.mrpc.transfer.tcp;
 
 import com.kongzhong.mrpc.codec.RpcEncoder;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.codec.RpcDecoder;
+import com.kongzhong.mrpc.transfer.RpcServerHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 import java.util.Map;
 
-public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class TcpServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private Map<String, Object> handlerMap;
 
     private RpcSerialize rpcSerialize;
 
-    public ServerChannelInitializer(Map<String, Object> handlerMap, RpcSerialize rpcSerialize) {
+    public TcpServerChannelInitializer(Map<String, Object> handlerMap, RpcSerialize rpcSerialize) {
         this.handlerMap = handlerMap;
         this.rpcSerialize = rpcSerialize;
     }

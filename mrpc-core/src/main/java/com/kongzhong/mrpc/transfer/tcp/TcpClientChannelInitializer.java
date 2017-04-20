@@ -1,10 +1,11 @@
-package com.kongzhong.mrpc.transfer;
+package com.kongzhong.mrpc.transfer.tcp;
 
 import com.kongzhong.mrpc.codec.RpcEncoder;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.codec.RpcDecoder;
+import com.kongzhong.mrpc.transfer.RpcClientHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -13,11 +14,11 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  * @author biezhi
  *         2017/4/19
  */
-public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class TcpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private RpcSerialize rpcSerialize;
 
-    public ClientChannelInitializer(RpcSerialize rpcSerialize) {
+    public TcpClientChannelInitializer(RpcSerialize rpcSerialize) {
         this.rpcSerialize = rpcSerialize;
     }
 
@@ -25,7 +26,6 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
     protected void initChannel(SocketChannel sc) throws Exception {
         sc.pipeline()
                 .addLast(new RpcEncoder(rpcSerialize, RpcRequest.class))
-//                .addLast(new LengthFieldBasedFrameDecoder(65536, 0, 4, 0, 0))
                 .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, RpcSerialize.MESSAGE_LENGTH, 0, 0))
                 .addLast(new RpcDecoder(rpcSerialize, RpcResponse.class))
                 .addLast(new RpcClientHandler());

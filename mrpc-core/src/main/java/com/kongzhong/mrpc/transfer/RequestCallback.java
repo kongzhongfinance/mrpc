@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.transfer;
 
 import com.kongzhong.mrpc.client.RpcServerLoader;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.transfer.tcp.TcpClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -38,7 +39,7 @@ public class RequestCallback implements Callable<Boolean> {
         b.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true);
-        b.handler(new ClientChannelInitializer(rpcSerialize));
+        b.handler(new TcpClientChannelInitializer(rpcSerialize));
 
         // 和服务端建立连接,然后异步获取运行结果
         ChannelFuture channelFuture = b.connect(serverAddress);

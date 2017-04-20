@@ -1,17 +1,18 @@
 package com.kongzhong.mrpc.server;
 
 import com.google.common.util.concurrent.*;
-import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.common.StringUtil;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.common.StringUtil;
+import com.kongzhong.mrpc.enums.SerializeEnum;
+import com.kongzhong.mrpc.enums.TransferEnum;
+import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
-import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.spring.annotation.MRpcService;
 import com.kongzhong.mrpc.spring.bean.NoInterface;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
-import com.kongzhong.mrpc.transfer.ServerChannelInitializer;
+import com.kongzhong.mrpc.transfer.TransferSelector;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -34,16 +35,36 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     public static final Logger log = LoggerFactory.getLogger(RpcServer.class);
 
+    /**
+     * 存储服务映射
+     */
     private Map<String, Object> handlerMap = new ConcurrentHashMap<>();
 
+    /**
+     * rpc服务地址
+     */
     private String serverAddress;
 
+    /**
+     * 序列化类型，默认protostuff
+     */
+    private String serialize = SerializeEnum.PROTOSTUFF.name();
+
+    /**
+     * 传输协议，默认tcp协议
+     */
+    private String transfer = TransferEnum.TPC.name();
+
+    /**
+     * 服务注册实例
+     */
     private ServiceRegistry serviceRegistry;
+
+    private TransferSelector transferSelector;
 
     private static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     public RpcServer() {
-
     }
 
     public RpcServer(String serverAddress) {
@@ -92,6 +113,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     handlerMap.put(serviceName, realBean);
                 }
             }
+            transferSelector = new TransferSelector(handlerMap, serialize);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -114,7 +136,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-                    .childHandler(new ServerChannelInitializer(handlerMap, new ProtostuffSerialize()))
+                    .childHandler(transferSelector.getChannelHandler(transfer))
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
@@ -158,6 +180,22 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
+    }
+
+    public String getSerialize() {
+        return serialize;
+    }
+
+    public void setSerialize(String serialize) {
+        this.serialize = serialize;
+    }
+
+    public String getTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(String transfer) {
+        this.transfer = transfer;
     }
 
     /**
