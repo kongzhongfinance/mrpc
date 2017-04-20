@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.spring.bean;
+package com.kongzhong.mrpc.model;
 
 /**
  * Created by biezhi on 2016/10/30.

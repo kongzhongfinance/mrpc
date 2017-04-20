@@ -1,12 +1,12 @@
 package com.kongzhong.mrpc.demo.service;
 
-import com.kongzhong.mrpc.spring.annotation.MRpcService;
+import com.kongzhong.mrpc.annotation.RpcService;
 
 /**
  * @author biezhi
  *         2017/4/19
  */
-@MRpcService
+@RpcService
 public class CalcServiceImpl implements CalcService {
 
     @Override

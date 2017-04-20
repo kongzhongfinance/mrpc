@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.spring.parser;
 
-import com.kongzhong.mrpc.spring.bean.ClientBean;
+import com.kongzhong.mrpc.model.ClientBean;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;

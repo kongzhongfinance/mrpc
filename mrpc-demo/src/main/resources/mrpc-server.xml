@@ -8,10 +8,8 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://junicorn.github.io/schema/mrpc http://junicorn.github.io/schema/mrpc.xsd">
 
-    <context:property-placeholder location="classpath:mrpc.properties"/>
-
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
-        <constructor-arg name="serverAddress" value="${mrpc.addr}"/>
+        <constructor-arg name="serverAddress" value="127.0.0.1:5066"/>
     </bean>
 
     <context:component-scan base-package="com.kongzhong.mrpc.demo.service"/>

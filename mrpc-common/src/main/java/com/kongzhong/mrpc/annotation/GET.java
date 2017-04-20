@@ -1,4 +1,6 @@
-package com.kongzhong.mrpc.spring.annotation;
+package com.kongzhong.mrpc.annotation;
+
+import com.kongzhong.mrpc.enums.MediaType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,5 +16,7 @@ import java.lang.annotation.Target;
 public @interface GET {
 
     String value();
+
+    MediaType contentType() default MediaType.JSON;
 
 }

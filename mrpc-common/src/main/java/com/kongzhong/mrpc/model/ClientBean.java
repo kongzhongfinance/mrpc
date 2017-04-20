@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.spring.bean;
+package com.kongzhong.mrpc.model;
 
 public class ClientBean {
 

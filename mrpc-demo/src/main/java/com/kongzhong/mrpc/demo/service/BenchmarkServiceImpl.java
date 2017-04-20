@@ -1,12 +1,12 @@
 
 package com.kongzhong.mrpc.demo.service;
 
-import com.kongzhong.mrpc.spring.annotation.MRpcService;
+import com.kongzhong.mrpc.annotation.RpcService;
 
 import java.util.List;
 import java.util.Map;
 
-@MRpcService(value = BenchmarkService.class)
+@RpcService(value = BenchmarkService.class)
 public class BenchmarkServiceImpl implements BenchmarkService {
 
     @Override

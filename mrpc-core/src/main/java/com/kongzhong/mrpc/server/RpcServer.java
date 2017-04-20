@@ -9,8 +9,8 @@ import com.kongzhong.mrpc.enums.TransferEnum;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
-import com.kongzhong.mrpc.spring.annotation.MRpcService;
-import com.kongzhong.mrpc.spring.bean.NoInterface;
+import com.kongzhong.mrpc.annotation.RpcService;
+import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.transfer.TransferSelector;
 import io.netty.bootstrap.ServerBootstrap;
@@ -87,15 +87,15 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(MRpcService.class);
+        Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         try {
             if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
                 for (Object serviceBean : serviceBeanMap.values()) {
                     Object realBean = AopTargetUtils.getTarget(serviceBean);
-                    MRpcService mRpcService = realBean.getClass().getAnnotation(MRpcService.class);
-                    String serviceName = mRpcService.value().getName();
-                    String version = mRpcService.version();
-                    String name = mRpcService.name();
+                    RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
+                    String serviceName = rpcService.value().getName();
+                    String version = rpcService.version();
+                    String name = rpcService.name();
 
                     if (StringUtils.isNotEmpty(name)) {
                         serviceName = name;
