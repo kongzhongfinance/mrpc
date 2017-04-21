@@ -1,8 +1,8 @@
-package com.kongzhong.mrpc.transfer;
+package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.RpcServerLoader;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transfer.tcp.TcpClientChannelInitializer;
+import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

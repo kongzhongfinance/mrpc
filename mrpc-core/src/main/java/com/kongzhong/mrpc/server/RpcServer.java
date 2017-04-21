@@ -12,7 +12,7 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
-import com.kongzhong.mrpc.transfer.TransferSelector;
+import com.kongzhong.mrpc.transport.TransferSelector;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

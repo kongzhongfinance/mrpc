@@ -1,14 +1,14 @@
-package com.kongzhong.mrpc.transfer;
+package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransferEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transfer.http.HttpClientChannelInitializer;
-import com.kongzhong.mrpc.transfer.http.HttpServerChannelInitializer;
-import com.kongzhong.mrpc.transfer.tcp.TcpClientChannelInitializer;
-import com.kongzhong.mrpc.transfer.tcp.TcpServerChannelInitializer;
+import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
+import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
+import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
+import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
 import io.netty.channel.ChannelHandler;
 
 import java.util.Map;

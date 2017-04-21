@@ -1,11 +1,11 @@
-package com.kongzhong.mrpc.transfer.http;
+package com.kongzhong.mrpc.transport.tcp;
 
-import com.kongzhong.mrpc.codec.RpcDecoder;
 import com.kongzhong.mrpc.codec.RpcEncoder;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transfer.RpcClientHandler;
+import com.kongzhong.mrpc.codec.RpcDecoder;
+import com.kongzhong.mrpc.transport.RpcClientHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -14,11 +14,11 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  * @author biezhi
  *         2017/4/19
  */
-public class HttpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class TcpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private RpcSerialize rpcSerialize;
 
-    public HttpClientChannelInitializer(RpcSerialize rpcSerialize) {
+    public TcpClientChannelInitializer(RpcSerialize rpcSerialize) {
         this.rpcSerialize = rpcSerialize;
     }
 

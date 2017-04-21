@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.transfer;
+package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;

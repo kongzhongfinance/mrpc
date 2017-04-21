@@ -10,7 +10,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ServerApplication {
 
     public static void main(String[] args) {
-        System.out.println("RPCServerApplication start...");
         ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-server.xml");
         ctx.registerShutdownHook();
         ctx.start();

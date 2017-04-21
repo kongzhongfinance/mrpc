@@ -4,8 +4,8 @@ import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
-import com.kongzhong.mrpc.transfer.RequestCallback;
-import com.kongzhong.mrpc.transfer.RpcClientHandler;
+import com.kongzhong.mrpc.transport.RequestCallback;
+import com.kongzhong.mrpc.transport.RpcClientHandler;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
@@ -41,6 +41,9 @@ public class RpcServerLoader {
      */
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
+    /**
+     * 客户端rpc处理器
+     */
     private RpcClientHandler clientHandler = null;
 
     /**
@@ -130,7 +133,7 @@ public class RpcServerLoader {
      * @return
      * @throws InterruptedException
      */
-    public RpcClientHandler getMessageSendHandler() throws InterruptedException {
+    public RpcClientHandler getRpcClientHandler() throws InterruptedException {
         try {
             lock.lock();
             //netty服务端链路没有建立完毕之前，先挂起等待
