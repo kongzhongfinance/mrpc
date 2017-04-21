@@ -52,7 +52,7 @@ public class RpcClient {
     }
 
     private void init() {
-        this.transferSelector = new TransferSelector(null, serialize);
+        this.transferSelector = new TransferSelector();
     }
 
     public void stop() {
@@ -75,6 +75,7 @@ public class RpcClient {
 
     public void setServerAddr(String serverAddr) {
         this.serverAddr = serverAddr;
+        this.loader.initSerialize(serialize);
         this.loader.load(serverAddr);
     }
 
@@ -84,6 +85,7 @@ public class RpcClient {
 
     public void setServiceDiscovery(ServiceDiscovery serviceDiscovery) {
         this.serviceDiscovery = serviceDiscovery;
+        this.loader.initSerialize(serialize);
         this.loader.load(serviceDiscovery);
     }
 

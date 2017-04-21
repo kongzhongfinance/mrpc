@@ -2,8 +2,11 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.enums.SerializeEnum;
+import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
+import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.RequestCallback;
 import com.kongzhong.mrpc.transport.RpcClientHandler;
 import io.netty.channel.EventLoopGroup;
@@ -53,7 +56,25 @@ public class RpcServerLoader {
     private Condition connectStatus = lock.newCondition();
     private Condition handlerStatus = lock.newCondition();
 
+    /**
+     * 序列化
+     */
+    private RpcSerialize rpcSerialize;
+
     private RpcServerLoader() {
+    }
+
+    public void initSerialize(String serialize) {
+        SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
+        if (null == serializeEnum) {
+            throw new InitializeException("serialize type [" + serialize + "] error.");
+        }
+
+        if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
+            rpcSerialize = new ProtostuffSerialize();
+            return;
+        }
+        throw new InitializeException("serialize type is null.");
     }
 
     private static final class RpcServerLoaderHolder {
@@ -80,7 +101,7 @@ public class RpcServerLoader {
 
             //与服务器建立连接
             ListenableFuture<Boolean> listenableFuture = TPE.submit(
-                    new RequestCallback(eventLoopGroup, remoteAddr, new ProtostuffSerialize()));
+                    new RequestCallback(eventLoopGroup, remoteAddr, rpcSerialize));
 
             // 给listenableFuture 添加回调函数,当MessageSendInitializeTask执行完毕之后调用
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
@@ -125,6 +146,14 @@ public class RpcServerLoader {
         } finally {
             lock.unlock();
         }
+    }
+
+    public RpcSerialize getRpcSerialize() {
+        return rpcSerialize;
+    }
+
+    public void setRpcSerialize(RpcSerialize rpcSerialize) {
+        this.rpcSerialize = rpcSerialize;
     }
 
     /**

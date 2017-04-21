@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport;
 
+import com.kongzhong.mrpc.client.RpcServerLoader;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransferEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
@@ -23,10 +24,24 @@ public class TransferSelector {
 
     private Map<String, Object> handlerMap;
     private String serialize;
+    private RpcSerialize rpcSerialize;
 
     public TransferSelector(Map<String, Object> handlerMap, String serialize) {
         this.handlerMap = handlerMap;
         this.serialize = serialize;
+
+        SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
+        if (null == serializeEnum) {
+            throw new InitializeException("serialize type [" + serialize + "] error.");
+        }
+
+        if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
+            rpcSerialize = new ProtostuffSerialize();
+        }
+
+    }
+
+    public TransferSelector() {
     }
 
     public ChannelHandler getServerChannelHandler(String transfer) {
@@ -36,12 +51,20 @@ public class TransferSelector {
             throw new InitializeException("transfer type [" + transfer + "] error.");
         }
 
+        if (null == rpcSerialize) {
+            rpcSerialize = RpcServerLoader.me().getRpcSerialize();
+        }
+
+        if (null == rpcSerialize) {
+            throw new InitializeException("rpc server serialize is null.");
+        }
+
         if (transferEnum.equals(TransferEnum.TPC)) {
-            return new TcpServerChannelInitializer(handlerMap, rpcSerialize(serialize));
+            return new TcpServerChannelInitializer(handlerMap, rpcSerialize);
         }
 
         if (transferEnum.equals(TransferEnum.HTTP)) {
-            return new HttpServerChannelInitializer(handlerMap, rpcSerialize(serialize));
+            return new HttpServerChannelInitializer(handlerMap, rpcSerialize);
         }
 
         throw new InitializeException("transfer type is null.");
@@ -54,27 +77,23 @@ public class TransferSelector {
             throw new InitializeException("transfer type [" + transfer + "] error.");
         }
 
+        RpcSerialize rpcSerialize = RpcServerLoader.me().getRpcSerialize();
+
+        RpcServerLoader.me().setRpcSerialize(rpcSerialize);
+
+        if (null == rpcSerialize) {
+            throw new InitializeException("rpc client serialize is null.");
+        }
+
         if (transferEnum.equals(TransferEnum.TPC)) {
-            return new TcpClientChannelInitializer(rpcSerialize(serialize));
+            return new TcpClientChannelInitializer(rpcSerialize);
         }
 
         if (transferEnum.equals(TransferEnum.HTTP)) {
-            return new HttpClientChannelInitializer(rpcSerialize(serialize));
+            return new HttpClientChannelInitializer(rpcSerialize);
         }
 
         throw new InitializeException("transfer type is null.");
     }
 
-    private RpcSerialize rpcSerialize(String serialize) {
-        SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
-        if (null == serializeEnum) {
-            throw new InitializeException("serialize type [" + serialize + "] error.");
-        }
-
-        if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
-            return new ProtostuffSerialize();
-        }
-
-        throw new InitializeException("serialize type is null.");
-    }
 }
