@@ -9,7 +9,7 @@
        http://junicorn.github.io/schema/mrpc http://junicorn.github.io/schema/mrpc.xsd">
 
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
-        <constructor-arg name="serverAddress" value="${mrpc.addr}"/>
+        <constructor-arg name="serverAddress" value="127.0.0.1:5070"/>
         <property name="transfer" value="http"/>
     </bean>
 

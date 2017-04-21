@@ -1,18 +1,23 @@
 package com.kongzhong.mrpc.server;
 
 import com.google.common.util.concurrent.*;
-import com.kongzhong.mrpc.utils.StringUtils;
+import com.kongzhong.mrpc.annotation.*;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransferEnum;
+import com.kongzhong.mrpc.exception.InitializeException;
+import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.model.ServiceMeta;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
-import com.kongzhong.mrpc.annotation.RpcService;
-import com.kongzhong.mrpc.model.NoInterface;
+import com.kongzhong.mrpc.router.ServiceRouter;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.transport.http.HttpResponse;
+import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -24,6 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.lang.reflect.Method;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -66,6 +72,8 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     private TransferSelector transferSelector;
 
     private static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+
+    public static ServiceRouter serviceRouter = new ServiceRouter();
 
     public RpcServer() {
     }
@@ -157,16 +165,21 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     serviceRegistry.register(serverAddress);
                 }
 
+                boolean isHttp = transfer.toUpperCase().equals(TransferEnum.HTTP.name());
+
                 //注册服务
                 for (String serviceName : handlerMap.keySet()) {
                     log.info("=> [{}] - [{}]", serviceName, serverAddress);
+                    if (isHttp) {
+                        registerServiceMeta(serviceName);
+                    }
                 }
 
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
                 future.channel().closeFuture().sync();
             } else {
-                log.info("MRPC Server start fail!\n");
+                log.warn("mrpc server start fail.");
             }
         } finally {
             worker.shutdownGracefully();
@@ -207,6 +220,72 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     }
 
     /**
+     * 注册服务元数据
+     *
+     * @param serviceName
+     */
+    private void registerServiceMeta(String serviceName) {
+        Object bean = handlerMap.get(serviceName);
+        Class<?> type = bean.getClass();
+
+        if (ReflectUtils.isImpl(type)) {
+            try {
+                Class<?> service = ReflectUtils.getInterface(type);
+                Path path = service.getAnnotation(Path.class);
+                if (null == path) {
+                    return;
+                }
+
+                String pathUrl = path.value();
+
+                Method[] methods = service.getMethods();
+                for (Method m : methods) {
+                    String[] methodMapping = getMethodUrl(m);
+                    if (null != methodMapping) {
+                        String url = ("/" + pathUrl + "/" + methodMapping[1]).replaceAll("[//]+", "/");
+                        ServiceMeta serviceMeta = new ServiceMeta(serviceName, m, methodMapping[0]);
+                        serviceRouter.add(url, serviceMeta);
+                        log.info("register service meta: {}\t{} => {}", methodMapping[0], url, m);
+                    }
+                }
+            } catch (Exception e) {
+                throw new InitializeException("register service meta error", e);
+            }
+        }
+    }
+
+    private String[] getMethodUrl(Method m) {
+        GET get = m.getAnnotation(GET.class);
+        POST post = m.getAnnotation(POST.class);
+        DELETE delete = m.getAnnotation(DELETE.class);
+        PUT put = m.getAnnotation(PUT.class);
+        if (null == get && null == post && null == delete && null == put) {
+            return null;
+        }
+
+        String[] result = new String[2];
+
+        if (null != get) {
+            result[0] = "GET";
+            result[1] = (StringUtils.isEmpty(get.value()) ? m.getName() : get.value());
+        }
+        if (null != post) {
+            result[0] = "POST";
+            result[1] = (StringUtils.isEmpty(post.value()) ? m.getName() : post.value());
+        }
+        if (null != delete) {
+            result[0] = "DELETE";
+            result[1] = (StringUtils.isEmpty(delete.value()) ? m.getName() : delete.value());
+        }
+        if (null != put) {
+            result[0] = "PUT";
+            result[1] = (StringUtils.isEmpty(put.value()) ? m.getName() : put.value());
+        }
+
+        return result;
+    }
+
+    /**
      * 提交任务,异步获取结果.
      *
      * @param task
@@ -242,5 +321,35 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             }
         }, TPE);
     }
+
+    public static void submit(Callable<Boolean> task, final ChannelHandlerContext ctx, final RpcRequest request, final HttpResponse response) {
+
+        //提交任务, 异步获取结果
+        ListenableFuture<Boolean> listenableFuture = TPE.submit(task);
+
+        //注册回调函数, 在task执行完之后 异步调用回调函数
+        Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
+                ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
+                    /**
+                     * 服务端回显 request已经处理完毕
+                     * @param channelFuture
+                     * @throws Exception
+                     */
+                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                        log.debug("request [{}] success.", request.getRequestId());
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                log.error("", t);
+            }
+        }, TPE);
+    }
+
 
 }

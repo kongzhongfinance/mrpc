@@ -1,14 +1,11 @@
 package com.kongzhong.mrpc.transport.http;
 
-import com.kongzhong.mrpc.codec.RpcDecoder;
-import com.kongzhong.mrpc.codec.RpcEncoder;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transport.RpcServerHandler;
+import com.kongzhong.mrpc.transport.HttpServerHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.http.*;
 
 import java.util.Map;
 
@@ -25,10 +22,17 @@ public class HttpServerChannelInitializer extends ChannelInitializer<SocketChann
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
+
+        HttpServerHandler httpServerHandler = new HttpServerHandler(handlerMap);
+
         socketChannel.pipeline()
-                .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, RpcSerialize.MESSAGE_LENGTH, 0, 0))
-                .addLast(new RpcDecoder(rpcSerialize, RpcRequest.class))
-                .addLast(new RpcEncoder(rpcSerialize, RpcResponse.class))
-                .addLast(new RpcServerHandler(handlerMap));
+                // inbound handler
+                .addLast(new HttpRequestDecoder())
+                .addLast(new HttpContentDecompressor())
+                // outbound handler
+                .addLast(new HttpResponseEncoder())
+                .addLast(new HttpContentCompressor())
+                .addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
+                .addLast(httpServerHandler);
     }
 }

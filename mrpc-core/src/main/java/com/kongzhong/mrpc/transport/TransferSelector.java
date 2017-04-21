@@ -30,7 +30,7 @@ public class TransferSelector {
         this.handlerMap = handlerMap;
         this.serialize = serialize;
 
-        SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
+        SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize.toUpperCase());
         if (null == serializeEnum) {
             throw new InitializeException("serialize type [" + serialize + "] error.");
         }
@@ -46,7 +46,7 @@ public class TransferSelector {
 
     public ChannelHandler getServerChannelHandler(String transfer) {
 
-        TransferEnum transferEnum = TransferEnum.valueOf(transfer);
+        TransferEnum transferEnum = TransferEnum.valueOf(transfer.toUpperCase());
         if (null == transferEnum) {
             throw new InitializeException("transfer type [" + transfer + "] error.");
         }
@@ -72,7 +72,7 @@ public class TransferSelector {
 
     public ChannelHandler getClientChannelHandler(String transfer) {
 
-        TransferEnum transferEnum = TransferEnum.valueOf(transfer);
+        TransferEnum transferEnum = TransferEnum.valueOf(transfer.toUpperCase());
         if (null == transferEnum) {
             throw new InitializeException("transfer type [" + transfer + "] error.");
         }
