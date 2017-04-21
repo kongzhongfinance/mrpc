@@ -117,7 +117,7 @@ public class RpcServerLoader {
         this.load(serverAddr);
     }
 
-    public void setMessageSendHandler(RpcClientHandler clientHandler) {
+    public void setRpcClientHandler(RpcClientHandler clientHandler) {
         try {
             lock.lock();
             this.clientHandler = clientHandler;

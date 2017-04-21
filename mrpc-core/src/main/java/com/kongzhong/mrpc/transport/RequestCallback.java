@@ -56,7 +56,7 @@ public class RequestCallback implements Callable<Boolean> {
                     log.debug("client connect success");
                     //和服务器连接成功后, 获取MessageSendHandler对象
                     RpcClientHandler handler = channelFuture.channel().pipeline().get(RpcClientHandler.class);
-                    RpcServerLoader.me().setMessageSendHandler(handler);
+                    RpcServerLoader.me().setRpcClientHandler(handler);
                 }
             }
         });
