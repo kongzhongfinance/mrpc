@@ -9,6 +9,7 @@ public class RpcRet {
     private int code;
     private String msg;
     private int time;
+    private Object data;
 
     public RpcRet(int code, String msg) {
         this.code = code;
@@ -21,6 +22,13 @@ public class RpcRet {
         this.code = code;
         this.msg = msg;
         this.time = time;
+    }
+
+    public RpcRet(int code, Object data) {
+        this.code = code;
+        long unixTime = System.currentTimeMillis() / 1000L;
+        this.time = (int) unixTime;
+        this.data = data;
     }
 
     public int getCode() {
@@ -69,8 +77,8 @@ public class RpcRet {
         return result;
     }
 
-    public static RpcRet ok(String msg) {
-        return new RpcRet(200, msg);
+    public static RpcRet ok(Object data) {
+        return new RpcRet(200, data);
     }
 
     public static RpcRet notFound(String msg) {
@@ -85,12 +93,11 @@ public class RpcRet {
         return new RpcRet(500, msg);
     }
 
-    @Override
-    public String toString() {
-        return "[" +
-                "code=" + code +
-                ", msg='" + msg + '\'' +
-                ", time=" + time +
-                ']';
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

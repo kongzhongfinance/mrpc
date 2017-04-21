@@ -12,14 +12,14 @@ public class HttpClientApplication {
 
     public static void main(String[] args) {
         RpcClient rpcClient = new RpcClient("127.0.0.1:5070");
-        rpcClient.setTransfer("http");
+        rpcClient.setTransport("http");
 
         UserService userService = rpcClient.getProxyBean(UserService.class);
         Person person = new Person();
         person.setName("王爵nice");
 
-        boolean result = userService.savePerson(person, 99);
-        System.out.println("result = " + result);
+        Person person1 = userService.savePerson("hihihi", 99);
+        System.out.println("result = " + person1);
 
         rpcClient.stop();
     }

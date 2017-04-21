@@ -2,11 +2,10 @@ package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.RpcServerLoader;
 import com.kongzhong.mrpc.enums.SerializeEnum;
-import com.kongzhong.mrpc.enums.TransferEnum;
+import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
@@ -42,13 +41,14 @@ public class TransferSelector {
     }
 
     public TransferSelector() {
+
     }
 
-    public ChannelHandler getServerChannelHandler(String transfer) {
+    public ChannelHandler getServerChannelHandler(String transport) {
 
-        TransferEnum transferEnum = TransferEnum.valueOf(transfer.toUpperCase());
-        if (null == transferEnum) {
-            throw new InitializeException("transfer type [" + transfer + "] error.");
+        TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
+        if (null == transportEnum) {
+            throw new InitializeException("transfer type [" + transport + "] error.");
         }
 
         if (null == rpcSerialize) {
@@ -59,11 +59,11 @@ public class TransferSelector {
             throw new InitializeException("rpc server serialize is null.");
         }
 
-        if (transferEnum.equals(TransferEnum.TPC)) {
+        if (transportEnum.equals(TransportEnum.TPC)) {
             return new TcpServerChannelInitializer(handlerMap, rpcSerialize);
         }
 
-        if (transferEnum.equals(TransferEnum.HTTP)) {
+        if (transportEnum.equals(TransportEnum.HTTP)) {
             return new HttpServerChannelInitializer(handlerMap, rpcSerialize);
         }
 
@@ -72,8 +72,8 @@ public class TransferSelector {
 
     public ChannelHandler getClientChannelHandler(String transfer) {
 
-        TransferEnum transferEnum = TransferEnum.valueOf(transfer.toUpperCase());
-        if (null == transferEnum) {
+        TransportEnum transportEnum = TransportEnum.valueOf(transfer.toUpperCase());
+        if (null == transportEnum) {
             throw new InitializeException("transfer type [" + transfer + "] error.");
         }
 
@@ -85,12 +85,12 @@ public class TransferSelector {
             throw new InitializeException("rpc client serialize is null.");
         }
 
-        if (transferEnum.equals(TransferEnum.TPC)) {
+        if (transportEnum.equals(TransportEnum.TPC)) {
             return new TcpClientChannelInitializer(rpcSerialize);
         }
 
-        if (transferEnum.equals(TransferEnum.HTTP)) {
-            return new HttpClientChannelInitializer(rpcSerialize);
+        if (transportEnum.equals(TransportEnum.HTTP)) {
+//            return new HttpClientChannelInitializer(rpcSerialize);
         }
 
         throw new InitializeException("transfer type is null.");

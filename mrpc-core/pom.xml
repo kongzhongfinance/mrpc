@@ -31,12 +31,6 @@
             <version>4.3.7.RELEASE</version>
         </dependency>
 
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.2.0</version>
-        </dependency>
-
         <!-- Protostuff -->
         <dependency>
             <groupId>com.dyuproject.protostuff</groupId>
@@ -52,14 +46,6 @@
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
             <version>${objenesis.version}</version>
-        </dependency>
-
-        <!--kryo序列化-->
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo</artifactId>
-            <version>3.0.3</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

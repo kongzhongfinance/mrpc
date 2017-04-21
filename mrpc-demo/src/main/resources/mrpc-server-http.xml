@@ -10,7 +10,7 @@
 
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
         <constructor-arg name="serverAddress" value="127.0.0.1:5070"/>
-        <property name="transfer" value="http"/>
+        <property name="transport" value="http"/>
     </bean>
 
     <context:component-scan base-package="com.kongzhong.mrpc.demo.service"/>

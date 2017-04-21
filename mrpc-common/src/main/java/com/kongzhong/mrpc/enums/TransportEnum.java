@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.enums;
  * @author biezhi
  *         2017/4/20
  */
-public enum TransferEnum {
+public enum TransportEnum {
 
     TPC, HTTP
 

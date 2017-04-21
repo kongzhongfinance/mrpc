@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.enums.SerializeEnum;
-import com.kongzhong.mrpc.enums.TransferEnum;
+import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.transport.TransferSelector;
 
@@ -26,7 +26,7 @@ public class RpcClient {
     /**
      * 传输协议，默认tcp协议
      */
-    private String transfer = TransferEnum.TPC.name();
+    private String transport = TransportEnum.TPC.name();
 
     /**
      * 服务发现
@@ -97,11 +97,12 @@ public class RpcClient {
         this.serialize = serialize;
     }
 
-    public String getTransfer() {
-        return transfer;
+    public String getTransport() {
+        return transport;
     }
 
-    public void setTransfer(String transfer) {
-        this.transfer = transfer;
+    public void setTransport(String transport) {
+        this.transport = transport;
     }
+
 }

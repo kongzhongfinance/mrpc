@@ -1,12 +1,12 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.kongzhong.mrpc.enums.MediaType;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.utils.JSONUtils;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +17,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class HttpResponseCallback implements Callable<Boolean> {
+public class HttpResponseCallback implements Callable<HttpResponse> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpResponseCallback.class);
 
@@ -33,24 +34,36 @@ public class HttpResponseCallback implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() throws Exception {
-        response.setRequestId(request.getRequestId());
-        response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
-
+    public HttpResponse call() throws Exception {
+        initResponse();
         try {
             Object result = handle(request);
             if (null != result) {
-                String jsonstr = JSONUtils.toJSONString(result);
-                response.replace(Unpooled.copiedBuffer(jsonstr, CharsetUtil.UTF_8));
+                String body = getBody(result);
+                response = new HttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
+                if (ReflectUtils.isBasic(result.getClass())) {
+                    response.headers().set(CONTENT_TYPE, MediaType.TEXT);
+                }
+                initResponse();
             }
-            return Boolean.TRUE;
+            return response;
         } catch (Throwable t) {
             response.setException(t);
             log.error("rpc server invoke error", t);
-            return Boolean.FALSE;
+            return null;
         }
     }
 
+    private void initResponse() {
+        response.setRequestId(request.getRequestId());
+    }
+
+    private String getBody(Object result) {
+        if (ReflectUtils.isBasic(result.getClass())) {
+            return result.toString();
+        }
+        return JSONUtils.toJSONString(result);
+    }
 
     private Object handle(RpcRequest request) throws Throwable {
         String className = request.getClassName();

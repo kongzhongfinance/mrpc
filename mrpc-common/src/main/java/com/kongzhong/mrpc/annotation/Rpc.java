@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.annotation;
 
 import com.kongzhong.mrpc.enums.SerializeEnum;
-import com.kongzhong.mrpc.enums.TransferEnum;
+import com.kongzhong.mrpc.enums.TransportEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,6 +22,6 @@ public @interface Rpc {
 
     SerializeEnum serialize() default SerializeEnum.PROTOSTUFF;
 
-    TransferEnum transefer() default TransferEnum.TPC;
+    TransportEnum transefer() default TransportEnum.TPC;
 
 }

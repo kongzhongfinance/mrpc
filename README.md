@@ -13,9 +13,7 @@
 ### 创建服务端
 
 ```java
-@Path("/users")
 public interface UserService {
-    @GET
     String hello(String name);
 }
 
@@ -29,12 +27,6 @@ public class UserServiceImpl implements UserService{
     }
     
 }
-```
-
-### 浏览器调用
-
-```bash
-http://127.0.0.1:5066/users/hello?name=jack
 ```
 
 ### 客户端调用
@@ -51,7 +43,7 @@ System.out.println(userService.hello("mrpc"));
 
 - codec: 编解码
 - serialize: 序列化
-- transfer: 传输层
+- transport: 传输层
 - spring: 整合spring
 - server: rpc服务端
 - client: rpc客户端

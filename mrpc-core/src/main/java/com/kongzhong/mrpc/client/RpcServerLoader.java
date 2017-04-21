@@ -37,12 +37,12 @@ public class RpcServerLoader {
      */
     private final static int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
-    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
-
     /**
      * 客户端 消息处理线程池
      */
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+
+    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
 
     /**
      * 客户端rpc处理器

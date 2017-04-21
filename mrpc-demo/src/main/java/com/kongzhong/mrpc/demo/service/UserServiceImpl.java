@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.model.RpcRet;
 
 /**
  * @author biezhi
@@ -17,14 +18,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String hello(String name) {
-        return null;
+        return "Hello, " + name;
     }
 
     @Override
-    public boolean savePerson(Person person, Integer age) {
-        System.out.println("person = " + person);
-        System.out.println("age = " + age);
-        return null != age && age > 18;
+    public Person savePerson(String fullName, Integer age) {
+        Person person = new Person();
+        person.setName(fullName);
+        return person;
     }
 
+    @Override
+    public RpcRet delete(Long id) {
+        return RpcRet.ok(id);
+    }
 }
