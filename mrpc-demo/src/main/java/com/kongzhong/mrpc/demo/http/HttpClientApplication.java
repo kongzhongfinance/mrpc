@@ -21,6 +21,8 @@ public class HttpClientApplication {
         Person person1 = userService.savePerson("hihihi", 99);
         System.out.println("save result = " + person1);
 
+        userService.testArray(new String[]{"a", "b", "c"});
+
         rpcClient.stop();
     }
 }

@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.demo.service;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.demo.model.Person;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -48,5 +49,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map toMap(Map<String, Integer> map) {
         return map;
+    }
+
+    @Override
+    public void testArray(String[] strs) {
+        System.out.println("接收到：" + Arrays.toString(strs));
     }
 }

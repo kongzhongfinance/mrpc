@@ -89,10 +89,12 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
 
             if (StringUtils.isNotEmpty(body)) {
                 RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
-                Object r = rpcResponse.getResult();
-                if (r instanceof JSONObject) {
-                    Class re = ReflectUtils.from(rpcResponse.getReturnType());
-                    rpcResponse.setResult(JSON.parseObject(((JSONObject) r).toJSONString(), re));
+                Object result = rpcResponse.getResult();
+                if (null != result && result instanceof JSONObject) {
+                    if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                        Class re = ReflectUtils.from(rpcResponse.getReturnType());
+                        rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                    }
                 }
                 log.debug("rpc http server response: {}", body);
                 RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());

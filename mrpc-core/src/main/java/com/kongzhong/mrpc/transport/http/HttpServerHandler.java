@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.enums.MediaType;
+import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcRet;
 import com.kongzhong.mrpc.server.RpcServer;
@@ -21,6 +22,7 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -72,12 +74,12 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         log.debug("body: \n{}", body);
 
-        JSONObject reqJSON = JSON.parseObject(body);
+        RequestBody requestBody = JSON.parseObject(body, RequestBody.class);
 
-        String serviceName = reqJSON.getString("service");
-        String methodName = reqJSON.getString("method");
-        String version = reqJSON.getString("version");
-        JSONObject argJSON = reqJSON.getJSONObject("parameters");
+        String serviceName = requestBody.getService();
+        String methodName = requestBody.getMethod();
+        String version = requestBody.getVersion();
+        Map<String, Object> argJSON = requestBody.getParameters();
 
         if (StringUtils.isEmpty(serviceName)) {
             this.sendError(ctx, RpcRet.notFound("[service] not is null."));
@@ -95,7 +97,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        RpcRequest rpcRequest = parseParams(ctx, reqJSON, argJSON, bean, methodName);
+        RpcRequest rpcRequest = parseParams(ctx, requestBody, bean);
 
         HttpResponse response = new HttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, MediaType.JSON.toString());
@@ -104,11 +106,75 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
-
-        response.headers().set("requestId", rpcRequest.getRequestId());
-
         HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, response, handlerMap);
         RpcServer.submit(responseCallback, ctx);
+    }
+
+    private RpcRequest parseParams(ChannelHandlerContext ctx, RequestBody requestBody, Object bean) throws NoSuchMethodException {
+
+        String serviceName = requestBody.getService();
+        String methodName = requestBody.getMethod();
+
+        Class<?> type = bean.getClass();
+        Method method = null;
+        JSONArray arrJSON = null;
+        List<String> parameterTypes = requestBody.getParameterTypes();
+        JSONObject argJSON = requestBody.getParameters();
+
+        if (null != parameterTypes) {
+            Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
+            int pos = 0;
+            for (Object parameterType : parameterTypes) {
+                parameterTypeArr[pos++] = ReflectUtils.from(parameterType.toString());
+            }
+            method = type.getMethod(methodName, parameterTypeArr);
+            arrJSON = requestBody.getParameterArray();
+        } else {
+            method = ReflectUtils.method(type, methodName);
+        }
+        if (null == method) {
+            this.sendError(ctx, RpcRet.notFound("method [" + methodName + "] not found."));
+            return null;
+        }
+        Object[] args = new Object[method.getParameterCount()];
+        List<String> paramNames = ReflectUtils.getParamNames(method);
+        if (null != paramNames) {
+            Class<?>[] types = method.getParameterTypes();
+            for (int i = 0, len = paramNames.size(); i < len; i++) {
+                String paramName = paramNames.get(i);
+                Class<?> paramType = types[i];
+
+                if (paramType.isArray()) {
+                    Class<?> arrayType = paramType.getComponentType();
+                    JSONArray array;
+                    if (null != arrJSON) {
+                        array = arrJSON.getJSONArray(i);
+                    } else {
+                        array = argJSON.getJSONArray(paramName);
+                    }
+                    if (null != array) {
+                        List list = array.toJavaList(arrayType);
+                        args[i] = listToArray(arrayType, list);
+                    } else {
+                        args[i] = null;
+                    }
+                } else {
+                    if (null != arrJSON) {
+                        args[i] = arrJSON.getObject(i, paramType);
+                    } else {
+                        args[i] = argJSON.getObject(paramName, paramType);
+                    }
+                }
+            }
+        }
+
+        String requestId = null != requestBody.getRequestId() ? requestBody.getRequestId() : StringUtils.getUUID();
+        return getRpcRequest(requestId, serviceName, method, args);
+    }
+
+    private <A> A[] listToArray(Class<A> type, List<A> list) {
+        A[] a = (A[]) Array.newInstance(type, list.size());
+        return (A[]) list.toArray(a);
     }
 
     private RpcRequest getRpcRequest(String requestId, String serviceName, Method method, Object[] paramters) {
@@ -120,60 +186,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         request.setReturnType(method.getReturnType());
         request.setParameters(paramters);
         return request;
-    }
-
-    private void execute() {
-
-    }
-
-    private RpcRequest parseParams(ChannelHandlerContext ctx, JSONObject reqJSON, JSONObject argJSON,
-                                   Object bean, String methodName) throws NoSuchMethodException {
-
-        String serviceName = reqJSON.getString("service");
-
-        JSONArray parameterTypes = reqJSON.getJSONArray("parameterTypes");
-        Class<?> type = bean.getClass();
-        Method method = null;
-        JSONArray arrJSON = null;
-        if (null != parameterTypes) {
-            Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
-            int pos = 0;
-            for (Object parameterType : parameterTypes) {
-                parameterTypeArr[pos++] = ReflectUtils.from(parameterType.toString());
-            }
-            method = type.getMethod(methodName, parameterTypeArr);
-            arrJSON = reqJSON.getJSONArray("parameterArray");
-        } else {
-            method = ReflectUtils.method(type, methodName);
-        }
-
-        if (null == method) {
-            this.sendError(ctx, RpcRet.notFound("method [" + methodName + "] not found."));
-            return null;
-        }
-
-        Object[] args = new Object[method.getParameterCount()];
-        List<String> paramNames = ReflectUtils.getParamNames(method);
-        if (null != paramNames) {
-
-            Class<?>[] types = method.getParameterTypes();
-
-            for (int i = 0, len = paramNames.size(); i < len; i++) {
-
-                String paramName = paramNames.get(i);
-                Class<?> paramType = types[i];
-
-                if (null != arrJSON) {
-                    args[i] = arrJSON.getObject(i, paramType);
-                } else {
-                    args[i] = argJSON.getObject(paramName, paramType);
-                }
-            }
-        }
-
-        String requestId = reqJSON.getOrDefault("requestId", StringUtils.getUUID()).toString();
-        return getRpcRequest(requestId, serviceName, method, args);
-
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.model;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.ToString;
@@ -13,13 +14,14 @@ import java.util.Map;
  */
 @Data
 @ToString
-public class RequestParam {
+public class RequestBody {
 
     private String service;
     private String method;
     private String requestId;
     private String version;
-    private Map<String, Object> parameters;
+    private JSONObject parameters;
     private List<String> parameterTypes;
+    private JSONArray parameterArray;
 
 }

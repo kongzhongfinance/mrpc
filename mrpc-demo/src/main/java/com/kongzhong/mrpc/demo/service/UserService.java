@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -25,4 +26,5 @@ public interface UserService {
 
     Map toMap(Map<String, Integer> map);
 
+    void testArray(String[] strs);
 }
