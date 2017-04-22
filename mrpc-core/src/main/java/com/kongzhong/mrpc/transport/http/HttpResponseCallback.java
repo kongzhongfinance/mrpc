@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.enums.MediaType;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.model.Response;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.utils.JSONUtils;

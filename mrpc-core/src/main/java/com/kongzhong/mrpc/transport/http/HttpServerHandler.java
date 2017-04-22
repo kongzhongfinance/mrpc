@@ -8,6 +8,7 @@ import com.kongzhong.mrpc.enums.MediaType;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcRet;
 import com.kongzhong.mrpc.server.RpcServer;
+import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -15,20 +16,16 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -37,18 +34,18 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @author biezhi
  *         2017/4/21
  */
-public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpServerHandler.class);
 
     private Map<String, Object> handlerMap;
 
     public HttpServerHandler(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
+        super(handlerMap);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
+    public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         String uri = httpRequest.uri();
         HttpMethod httpMethod = httpRequest.method();
         HttpHeaders headers = httpRequest.headers();

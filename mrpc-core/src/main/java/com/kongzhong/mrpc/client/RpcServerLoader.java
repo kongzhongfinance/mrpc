@@ -8,13 +8,10 @@ import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transport.RequestCallback;
-import com.kongzhong.mrpc.transport.RpcClientHandler;
+import com.kongzhong.mrpc.transport.tcp.RequestCallback;
 import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
 import com.kongzhong.mrpc.transport.http.HttpRequestCallback;
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +111,7 @@ public class RpcServerLoader {
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
 
             if (transportEnum.equals(TransportEnum.HTTP)) {
-                callable = new HttpRequestCallback(eventLoopGroup, remoteAddr);
+                callable = new HttpRequestCallback(eventLoopGroup, remoteAddr, null);
             }
             if (transportEnum.equals(TransportEnum.TCP)) {
                 callable = new RequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);

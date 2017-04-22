@@ -1,19 +1,12 @@
-package com.kongzhong.mrpc.transport;
+package com.kongzhong.mrpc.transport.tcp;
 
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
+import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.SocketAddress;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author biezhi

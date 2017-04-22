@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.client.RpcServerLoader;
+import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.transport.SimpleRequestCallback;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -17,16 +19,15 @@ import java.util.concurrent.Callable;
  * @author biezhi
  *         2017/4/19
  */
-public class HttpRequestCallback implements Callable<Boolean> {
+public class HttpRequestCallback extends SimpleRequestCallback<Boolean> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpRequestCallback.class);
 
     private EventLoopGroup eventLoopGroup = null;
     private InetSocketAddress serverAddress = null;
 
-    public HttpRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress) {
-        this.eventLoopGroup = eventLoopGroup;
-        this.serverAddress = serverAddress;
+    public HttpRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress, RpcSerialize rpcSerialize) {
+        super(eventLoopGroup, serverAddress, rpcSerialize);
     }
 
     @Override
