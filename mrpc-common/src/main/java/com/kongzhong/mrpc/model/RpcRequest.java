@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -11,6 +12,7 @@ import java.util.Arrays;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class RpcRequest {
 
@@ -21,12 +23,5 @@ public class RpcRequest {
     private Object[] parameters;
     private Class<?> returnType;
 
-    public RpcRequest(String requestId, String className, String methodName, Class[] parameterTypes, Object[] parameters) {
-        this.requestId = requestId.toLowerCase();
-        this.className = className;
-        this.methodName = methodName;
-        this.parameterTypes = parameterTypes;
-        this.parameters = parameters;
-    }
 
 }

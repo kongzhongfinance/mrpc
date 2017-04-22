@@ -3,8 +3,6 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -26,10 +24,7 @@ public class RpcFuture {
         try {
             lock.lock();
             finish.await(10, TimeUnit.SECONDS);
-            if (this.response != null) {
-                return this.response.getResult();
-            }
-            return null;
+            return response != null ? response.getResult() : null;
         } finally {
             lock.unlock();
         }

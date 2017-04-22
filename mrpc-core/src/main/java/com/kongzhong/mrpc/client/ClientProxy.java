@@ -18,8 +18,7 @@ public class ClientProxy<T> extends AbstractInvocationHandler {
     public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
         RpcRequest request = new RpcRequest(StringUtils.getUUID(),
                 method.getDeclaringClass().getName(), method.getName(),
-                method.getParameterTypes(), args);
-        request.setReturnType(method.getReturnType());
+                method.getParameterTypes(), args, method.getReturnType());
 
         SimpleClientHandler clientHandler = RpcServerLoader.me().getRpcClientHandler();
         RpcFuture rpcFuture = clientHandler.sendRequest(request);
