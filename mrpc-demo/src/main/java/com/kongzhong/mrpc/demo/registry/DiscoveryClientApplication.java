@@ -13,8 +13,9 @@ public class DiscoveryClientApplication {
 
         RpcClient rpcClient = new RpcClient(new ZookeeperServiceDiscovery("127.0.0.1:2181"));
         UserService userService = rpcClient.getProxyBean(UserService.class);
+        int index = 1;
         while (true) {
-            System.out.println(userService.add(10, 20));
+            System.out.println(userService.add(10, index++));
             Thread.sleep(3000);
         }
     }

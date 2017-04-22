@@ -5,7 +5,7 @@ package com.kongzhong.mrpc.registry;
  */
 public interface ServiceDiscovery {
 
-    String discover();
+    void discover();
 
     void stop();
 }

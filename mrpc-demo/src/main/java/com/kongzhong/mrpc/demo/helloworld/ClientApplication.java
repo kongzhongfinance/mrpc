@@ -14,6 +14,10 @@ public class ClientApplication {
         UserService userService = rpcClient.getProxyBean(UserService.class);
         System.out.println(userService);
         System.out.println(userService.add(10, 20));
+        System.out.println(userService.add(20, 20));
+        System.out.println(userService.add(30, 20));
+        System.out.println(userService.add(40, 20));
+        System.out.println(userService.add(50, 20));
         rpcClient.stop();
     }
 }

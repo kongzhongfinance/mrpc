@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.model.ServerConfig;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.model.NoInterface;
@@ -133,6 +134,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+
         ThreadFactory threadRpcFactory = new NamedThreadFactory("mrpc-server");
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -153,15 +155,18 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
 
-                ChannelFuture future = bootstrap.bind(host, port).sync();
+                ServerConfig.me().setHost(host);
+                ServerConfig.me().setPort(port);
 
-                if (serviceRegistry != null) {
-                    serviceRegistry.register(serverAddress);
-                }
+                ChannelFuture future = bootstrap.bind(host, port).sync();
 
                 //注册服务
                 for (String serviceName : handlerMap.keySet()) {
-                    log.info("=> [{}] - [{}]", serviceName, serverAddress);
+                    if (serviceRegistry != null) {
+                        serviceRegistry.register(serviceName);
+                    } else {
+                        log.info("=> [{}] - [{}]", serviceName, serverAddress);
+                    }
                 }
 
                 log.info("publish services finished!");

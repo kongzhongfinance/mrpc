@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.transport.tcp;
 
 import com.kongzhong.mrpc.codec.RpcEncoder;
+import com.kongzhong.mrpc.model.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
@@ -17,10 +18,9 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  */
 public class TcpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private RpcSerialize rpcSerialize;
+    private RpcSerialize rpcSerialize = ClientConfig.me().getRpcSerialize();
 
-    public TcpClientChannelInitializer(RpcSerialize rpcSerialize) {
-        this.rpcSerialize = rpcSerialize;
+    public TcpClientChannelInitializer() {
     }
 
     @Override

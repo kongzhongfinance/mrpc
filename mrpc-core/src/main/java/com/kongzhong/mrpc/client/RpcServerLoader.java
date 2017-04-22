@@ -46,9 +46,6 @@ public class RpcServerLoader {
 
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
 
-    /**
-     * 客户端rpc处理器
-     */
     private SimpleClientHandler clientHandler = null;
 
     /**
@@ -84,7 +81,6 @@ public class RpcServerLoader {
         if (null == transportEnum) {
             throw new InitializeException("transport type [" + transport + "] error.");
         }
-
     }
 
     private static final class RpcServerLoaderHolder {
@@ -113,7 +109,7 @@ public class RpcServerLoader {
                 callable = new SimpleRequestCallback(eventLoopGroup, remoteAddr);
             }
             if (transportEnum.equals(TransportEnum.TCP)) {
-                callable = new SimpleRequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);
+                callable = new SimpleRequestCallback(eventLoopGroup, remoteAddr);
             }
 
             //与服务器建立连接
@@ -147,11 +143,6 @@ public class RpcServerLoader {
             }, TPE);// end of Futures.addCallback()
 
         }
-    }
-
-    public void load(ServiceDiscovery serviceDiscovery) {
-        String serverAddr = serviceDiscovery.discover();
-        this.load(serverAddr);
     }
 
     public void setRpcClientHandler(SimpleClientHandler clientHandler) {

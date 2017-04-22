@@ -1,9 +1,15 @@
 package com.kongzhong.mrpc.client;
 
+import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.exception.InitializeException;
+import com.kongzhong.mrpc.ha.Connections;
+import com.kongzhong.mrpc.model.ClientConfig;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
+import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
+import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -47,7 +53,7 @@ public class RpcClient {
     }
 
     public void stop() {
-        loader.unLoad();
+        Connections.me().shutdown();
     }
 
     /***
@@ -58,11 +64,43 @@ public class RpcClient {
      */
     public <T> T getProxyBean(Class<T> rpcInterface) {
         if (!isLoad) {
-            this.loader.init(serialize, transport);
-            this.loader.load(serverAddr);
-            isLoad = true;
+            this.init();
         }
         return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
+    }
+
+    private void init() {
+        synchronized (Connections.class) {
+            Connections connections = Connections.me();
+            ClientConfig clientConfig = ClientConfig.me();
+
+            RpcSerialize rpcSerialize = null;
+            SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
+            if (null == serializeEnum) {
+                throw new InitializeException("serialize type [" + serialize + "] error.");
+            }
+
+            if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
+                clientConfig.setRpcSerialize(new ProtostuffSerialize());
+            }
+
+            TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
+            if (null == transportEnum) {
+                throw new InitializeException("transport type [" + transport + "] error.");
+            }
+            if (transportEnum.equals(TransportEnum.HTTP)) {
+                clientConfig.setHttp(true);
+            }
+            clientConfig.setTransport(transportEnum);
+
+            if (null == serviceDiscovery) {
+                connections.updateNodes(Sets.newHashSet(serverAddr));
+//                serverAddr = serviceDiscovery.discover();
+            } else {
+                serviceDiscovery.discover();
+            }
+            isLoad = true;
+        }
     }
 
 }

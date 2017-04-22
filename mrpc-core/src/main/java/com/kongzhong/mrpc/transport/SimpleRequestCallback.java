@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
-import com.kongzhong.mrpc.client.RpcServerLoader;
+import com.kongzhong.mrpc.ha.Connections;
+import com.kongzhong.mrpc.model.ClientConfig;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
@@ -33,16 +34,11 @@ public class SimpleRequestCallback implements Callable<Boolean> {
     protected RpcSerialize rpcSerialize;
     private boolean isHttp = false;
 
-    public SimpleRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress, RpcSerialize rpcSerialize) {
-        this.eventLoopGroup = eventLoopGroup;
-        this.serverAddress = serverAddress;
-        this.rpcSerialize = rpcSerialize;
-    }
-
     public SimpleRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress) {
         this.eventLoopGroup = eventLoopGroup;
         this.serverAddress = serverAddress;
-        this.isHttp = true;
+        this.rpcSerialize = ClientConfig.me().getRpcSerialize();
+        this.isHttp = ClientConfig.me().isHttp();
     }
 
     @Override
@@ -55,7 +51,7 @@ public class SimpleRequestCallback implements Callable<Boolean> {
         if (isHttp) {
             b.handler(new HttpClientChannelInitializer());
         } else {
-            b.handler(new TcpClientChannelInitializer(rpcSerialize));
+            b.handler(new TcpClientChannelInitializer());
         }
 
         // 和服务端建立连接,然后异步获取运行结果
@@ -73,7 +69,7 @@ public class SimpleRequestCallback implements Callable<Boolean> {
                     //和服务器连接成功后, 获取MessageSendHandler对象
                     Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
                     SimpleClientHandler handler = channelFuture.channel().pipeline().get(clientHandler);
-                    RpcServerLoader.me().setRpcClientHandler(handler);
+                    Connections.me().addRpcClientHandler(handler);
                 }
             }
         });

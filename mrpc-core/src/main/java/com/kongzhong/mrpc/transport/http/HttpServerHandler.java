@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -105,14 +105,19 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         RpcRequest rpcRequest = parseParams(ctx, requestBody, bean.getClass());
 
-        HttpResponse response = new HttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
-        response.headers().set(CONTENT_TYPE, MediaType.JSON.toString());
-        response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
+        HttpResponse httpResponse = new HttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
+        httpResponse.headers().set(HttpHeaders.Names.CONTENT_TYPE, MediaType.JSON.toString());
+        httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
+        httpResponse.headers().set(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        httpResponse.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
+        httpResponse.headers().set(HttpHeaders.Names.PRAGMA, "no-cache");
+        httpResponse.headers().set(HttpHeaders.Names.EXPIRES, "-1");
+
         if (HttpHeaders.isKeepAlive(httpRequest)) {
-            response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
-        HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, response, handlerMap);
+        HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, httpResponse, handlerMap);
         RpcServer.submit(responseCallback, ctx);
     }
 
@@ -132,18 +137,18 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         Method method = null;
         JSONArray arrJSON = null;
-        List<String> parameterTypes = requestBody.getParameterTypes();
+        JSONArray parameterTypes = requestBody.getParameterTypes();
         JSONObject argJSON = requestBody.getParameters();
 
         // 判断根据参数列表类型查找method对象
         if (null != parameterTypes) {
             Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
             int pos = 0;
-            for (String parameterType : parameterTypes) {
-                parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType);
+            for (Object parameterType : parameterTypes) {
+                parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType.toString());
             }
             method = type.getMethod(methodName, parameterTypeArr);
-            arrJSON = requestBody.getParameterArray();
+            arrJSON = JSON.parseArray(JSONUtils.toJSONString(requestBody.getParameterArray()));
         } else {
             method = ReflectUtils.method(type, methodName);
         }
@@ -164,7 +169,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
                 Class<?> paramType = types[i];
                 if (paramType.isArray()) {
                     Class<?> arrayType = paramType.getComponentType();
-                    JSONArray array = null != argJSON ? arrJSON.getJSONArray(i) : argJSON.getJSONArray(paramName);
+                    JSONArray array = null != arrJSON ? arrJSON.getJSONArray(i) : argJSON.getJSONArray(paramName);
                     if (null != array) {
                         List list = array.toJavaList(arrayType);
                         args[i] = listToArray(arrayType, list);

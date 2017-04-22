@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.RpcFuture;
+import com.kongzhong.mrpc.ha.Connections;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -43,17 +44,13 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         this.socketAddress = this.channel.remoteAddress();
         log.debug("channel actived");
     }
-/*
+
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
-        log.debug("rpc server response: {}", response);
-        String messageId = response.getRequestId();
-        RpcFuture rpcFuture = mapCallBack.get(messageId);
-        if (rpcFuture != null) {
-            mapCallBack.remove(messageId);
-            rpcFuture.done(response);
-        }
-    }*/
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        Connections.me().remove(this);
+        log.debug("channelInactive: [{}]", this.channel);
+    }
 
     /**
      * handler 中出现异常才会执行这个函数
@@ -75,17 +72,13 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
     }
 
-    /**
-     * 每次客户端发送一次RPC请求的 时候调用.
-     *
-     * @param request
-     * @return
-     */
-    public RpcFuture sendRequest(RpcRequest request) {
-        RpcFuture rpcFuture = new RpcFuture(request);
-        mapCallBack.put(request.getRequestId(), rpcFuture);
-        channel.writeAndFlush(request);
-        return rpcFuture;
+    public abstract RpcFuture sendRequest(RpcRequest request);
+
+    public Channel getChannel() {
+        return channel;
     }
 
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
 }

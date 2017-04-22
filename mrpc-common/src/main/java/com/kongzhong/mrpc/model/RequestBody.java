@@ -22,7 +22,7 @@ public class RequestBody {
     private String method;
     private String version;
     private JSONObject parameters;
-    private List<String> parameterTypes;
+    private JSONArray parameterTypes;
     private JSONArray parameterArray;
 
 }

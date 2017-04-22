@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcFuture;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,6 +39,7 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
      */
     @Override
     public RpcFuture sendRequest(RpcRequest rpcRequest) {
+
         RpcFuture rpcFuture = new RpcFuture(rpcRequest);
         mapCallBack.put(rpcRequest.getRequestId(), rpcFuture);
 
@@ -44,19 +47,18 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
         requestBody.setRequestId(rpcRequest.getRequestId());
         requestBody.setService(rpcRequest.getClassName());
         requestBody.setMethod(rpcRequest.getMethodName());
+        requestBody.setParameterArray(JSON.parseArray(JSONUtils.toJSONString(rpcRequest.getParameters())));
 
         Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
         Object[] args = rpcRequest.getParameters();
 
-        List<String> parameterTypesJSON = Lists.newArrayList();
         if (null != parameterTypes) {
+            JSONArray parameterTypesJSON = new JSONArray();
             for (Class<?> type : parameterTypes) {
                 parameterTypesJSON.add(type.getName());
             }
+            requestBody.setParameterTypes(parameterTypesJSON);
         }
-
-        requestBody.setParameterArray(JSON.parseArray(JSONUtils.toJSONString(rpcRequest.getParameters())));
-        requestBody.setParameterTypes(parameterTypesJSON);
 
         try {
             String sendBody = JSONUtils.toJSONString(requestBody);

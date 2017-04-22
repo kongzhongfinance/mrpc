@@ -6,7 +6,10 @@ import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.config.Constant;
+import com.kongzhong.mrpc.ha.Connections;
+import com.kongzhong.mrpc.model.ServerConfig;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
@@ -15,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Zookeeper服务发现
+ */
 public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperServiceDiscovery.class);
@@ -25,7 +31,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     public ZookeeperServiceDiscovery(String zkAddr) {
         zkClient = new ZkClient(zkAddr);
-        watchNode(zkClient);
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
             public void handleStateChanged(Watcher.Event.KeeperState keeperState) throws Exception {
@@ -38,7 +43,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             }
         });
 
-        zkClient.subscribeChildChanges(Constant.ZK_REGISTRY_PATH, new IZkChildListener() {
+        zkClient.subscribeChildChanges(Constant.ZK_ROOT, new IZkChildListener() {
             @Override
             public void handleChildChange(String s, List<String> list) throws Exception {
                 watchNode(zkClient);
@@ -46,31 +51,20 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         });
     }
 
-    public String discover() {
-        String data = null;
-        int size = dataList.size();
-        if (size > 0) {
-            if (size == 1) {
-                data = dataList.get(0);
-                LOGGER.debug("using only data: {}", data);
-            } else {
-                data = dataList.get(ThreadLocalRandom.current().nextInt(size));
-                LOGGER.debug("using random data: {}", data);
-            }
-        }
-        return data;
+    public void discover() {
+        watchNode(zkClient);
     }
 
     private void watchNode(final IZkClient zkClient) {
         try {
             dataList.clear();
-            List<String> addressList = zkClient.getChildren(Constant.ZK_REGISTRY_PATH);
+            List<String> addressList = zkClient.getChildren(Constant.ZK_ROOT);
             if (null == addressList || addressList.size() == 0) {
-                throw new RuntimeException(String.format("can not find any address node on path: %s", Constant.ZK_REGISTRY_PATH));
+                throw new RuntimeException(String.format("can not find any address node on path: %s", Constant.ZK_ROOT));
             }
 
             for (String node : addressList) {
-                String path = Constant.ZK_REGISTRY_PATH + "/" + node;
+                String path = Constant.ZK_ROOT + "/" + node;
                 byte[] bytes = zkClient.readData(path);
                 String address = new String(bytes);
                 if (!Strings.isNullOrEmpty(address)) {
@@ -78,8 +72,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 }
             }
             // update node list
-
-//            ConnManager.updateNodes(Sets.newTreeSet(dataList));
+            Connections.me().updateNodes(Sets.newTreeSet(dataList));
         } catch (Exception e) {
             LOGGER.error("", e);
         }
