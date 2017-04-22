@@ -4,6 +4,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.*;
 
+/**
+ * http客户端ChannelInitializer
+ */
 public class HttpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override

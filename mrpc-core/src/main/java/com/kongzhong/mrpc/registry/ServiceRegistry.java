@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.registry;
 
 /**
- * 服务注册
+ * 服务注册接口
  */
 public interface ServiceRegistry {
 

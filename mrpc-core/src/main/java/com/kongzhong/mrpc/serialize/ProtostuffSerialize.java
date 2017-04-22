@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Protostuff序列化实现
+ *
  * Created by biezhi on 2016/11/6.
  */
 public class ProtostuffSerialize implements RpcSerialize {

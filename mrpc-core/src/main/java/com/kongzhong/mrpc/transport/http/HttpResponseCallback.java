@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * Http响应回调处理
+ */
 public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpResponseCallback.class);

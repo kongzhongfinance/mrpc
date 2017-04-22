@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.registry;
 
 /**
- * 服务发现
+ * 服务发现接口
  */
 public interface ServiceDiscovery {
 

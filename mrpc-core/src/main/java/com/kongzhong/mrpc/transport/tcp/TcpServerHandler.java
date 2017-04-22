@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
+ * Tcp服务端处理器
+ *
  * @author biezhi
  *         2017/4/19
  */

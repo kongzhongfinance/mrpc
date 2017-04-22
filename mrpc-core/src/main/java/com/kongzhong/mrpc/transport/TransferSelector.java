@@ -27,6 +27,16 @@ public class TransferSelector {
     public TransferSelector(Map<String, Object> handlerMap, String serialize) {
         this.handlerMap = handlerMap;
         this.serialize = serialize;
+    }
+
+    /**
+     * 根据传输协议获取一个服务端处理handler
+     *
+     * @param transport
+     * @return
+     * @see TransportEnum
+     */
+    public ChannelHandler getServerChannelHandler(String transport) {
 
         SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize.toUpperCase());
         if (null == serializeEnum) {
@@ -36,14 +46,6 @@ public class TransferSelector {
         if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
             rpcSerialize = new ProtostuffSerialize();
         }
-
-    }
-
-    public TransferSelector() {
-
-    }
-
-    public ChannelHandler getServerChannelHandler(String transport) {
 
         TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
         if (null == transportEnum) {
@@ -63,7 +65,7 @@ public class TransferSelector {
         }
 
         if (transportEnum.equals(TransportEnum.HTTP)) {
-            return new HttpServerChannelInitializer(handlerMap, rpcSerialize);
+            return new HttpServerChannelInitializer(handlerMap);
         }
 
         throw new InitializeException("transfer type is null.");

@@ -3,7 +3,7 @@ package com.kongzhong.mrpc.transport.tcp;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
+import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * @author biezhi
  *         2017/4/19
  */
-public class TcpClientHandler extends SimpleRpcClientHandler<RpcResponse> {
+public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
 
     public static final Logger log = LoggerFactory.getLogger(TcpClientHandler.class);
 

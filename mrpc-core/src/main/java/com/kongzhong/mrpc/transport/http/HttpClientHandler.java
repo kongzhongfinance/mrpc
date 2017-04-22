@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
+import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  * @author biezhi
  *         2017/4/19
  */
-public class HttpClientHandler extends SimpleRpcClientHandler<Object> {
+public class HttpClientHandler extends SimpleClientHandler<Object> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpClientHandler.class);
 

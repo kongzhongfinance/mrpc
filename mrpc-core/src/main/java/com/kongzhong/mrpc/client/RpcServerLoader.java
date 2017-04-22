@@ -8,9 +8,8 @@ import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transport.tcp.TcpRequestCallback;
-import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
-import com.kongzhong.mrpc.transport.http.HttpRequestCallback;
+import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.SimpleRequestCallback;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ public class RpcServerLoader {
     /**
      * 客户端rpc处理器
      */
-    private SimpleRpcClientHandler clientHandler = null;
+    private SimpleClientHandler clientHandler = null;
 
     /**
      * 细粒度的可重入锁
@@ -111,10 +110,10 @@ public class RpcServerLoader {
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
 
             if (transportEnum.equals(TransportEnum.HTTP)) {
-                callable = new HttpRequestCallback(eventLoopGroup, remoteAddr);
+                callable = new SimpleRequestCallback(eventLoopGroup, remoteAddr);
             }
             if (transportEnum.equals(TransportEnum.TCP)) {
-                callable = new TcpRequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);
+                callable = new SimpleRequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);
             }
 
             //与服务器建立连接
@@ -155,7 +154,7 @@ public class RpcServerLoader {
         this.load(serverAddr);
     }
 
-    public void setRpcClientHandler(SimpleRpcClientHandler clientHandler) {
+    public void setRpcClientHandler(SimpleClientHandler clientHandler) {
         try {
             lock.lock();
             this.clientHandler = clientHandler;
@@ -179,7 +178,7 @@ public class RpcServerLoader {
      * @return
      * @throws InterruptedException
      */
-    public SimpleRpcClientHandler getRpcClientHandler() throws InterruptedException {
+    public SimpleClientHandler getRpcClientHandler() throws InterruptedException {
         try {
             lock.lock();
             //netty服务端链路没有建立完毕之前，先挂起等待

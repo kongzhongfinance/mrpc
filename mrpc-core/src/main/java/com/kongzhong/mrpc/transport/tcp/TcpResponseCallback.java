@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+/**
+ * Tcp响应回调处理
+ */
 public class TcpResponseCallback extends SimpleResponseCallback<Boolean> {
 
     public static final Logger log = LoggerFactory.getLogger(TcpResponseCallback.class);

@@ -4,11 +4,14 @@ import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
-import com.kongzhong.mrpc.transport.TransferSelector;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * rpc客户端
  */
+@Data
+@NoArgsConstructor
 public class RpcClient {
 
     private RpcServerLoader loader = RpcServerLoader.me();
@@ -33,15 +36,7 @@ public class RpcClient {
      */
     private ServiceDiscovery serviceDiscovery;
 
-    /**
-     * 传输选择
-     */
-    private TransferSelector transferSelector = new TransferSelector();
-
     private boolean isLoad;
-
-    public RpcClient() {
-    }
 
     public RpcClient(String serverAddr) {
         this.serverAddr = serverAddr;
@@ -68,38 +63,6 @@ public class RpcClient {
             isLoad = true;
         }
         return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
-    }
-
-    public String getServerAddr() {
-        return serverAddr;
-    }
-
-    public void setServerAddr(String serverAddr) {
-        this.serverAddr = serverAddr;
-    }
-
-    public ServiceDiscovery getServiceDiscovery() {
-        return serviceDiscovery;
-    }
-
-    public void setServiceDiscovery(ServiceDiscovery serviceDiscovery) {
-        this.serviceDiscovery = serviceDiscovery;
-    }
-
-    public String getSerialize() {
-        return serialize;
-    }
-
-    public void setSerialize(String serialize) {
-        this.serialize = serialize;
-    }
-
-    public String getTransport() {
-        return transport;
-    }
-
-    public void setTransport(String transport) {
-        this.transport = transport;
     }
 
 }

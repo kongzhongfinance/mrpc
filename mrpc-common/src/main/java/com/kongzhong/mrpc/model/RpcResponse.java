@@ -1,8 +1,15 @@
 package com.kongzhong.mrpc.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 /**
  * 响应
  */
+@Data
+@NoArgsConstructor
+@ToString
 public class RpcResponse {
 
     private String requestId;
@@ -10,49 +17,4 @@ public class RpcResponse {
     private Throwable exception;
     private String returnType;
 
-    public RpcResponse() {
-    }
-
-    public RpcResponse(String requestId) {
-        this.requestId = requestId;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
-
-    public Object getResult() {
-        return result;
-    }
-
-    public void setResult(Object result) {
-        this.result = result;
-    }
-
-    public Throwable getException() {
-        return exception;
-    }
-
-    public void setException(Throwable exception) {
-        this.exception = exception;
-    }
-
-    public String getReturnType() {
-        return returnType;
-    }
-
-    public void setReturnType(String returnType) {
-        this.returnType = returnType;
-    }
-
-    @Override
-    public String toString() {
-        return "[requestId=" + requestId +
-                ", result=" + result +
-                ", exp=" + exception + ']';
-    }
 }

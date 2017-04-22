@@ -11,6 +11,11 @@ import org.springframework.cglib.reflect.FastMethod;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+/**
+ * 抽象响应回调处理
+ *
+ * @param <T>
+ */
 public abstract class SimpleResponseCallback<T> implements Callable<T> {
 
     public static final Logger log = LoggerFactory.getLogger(SimpleResponseCallback.class);

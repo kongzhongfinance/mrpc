@@ -7,6 +7,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
 /**
+ * Http响应封装
+ *
  * @author biezhi
  *         2017/4/21
  */

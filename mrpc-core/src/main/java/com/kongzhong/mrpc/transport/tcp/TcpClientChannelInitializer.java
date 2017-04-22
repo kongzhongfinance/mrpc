@@ -10,6 +10,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 /**
+ * tcp客户端ChannelInitializer
+ *
  * @author biezhi
  *         2017/4/19
  */

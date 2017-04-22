@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -16,12 +15,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 抽象客户端请求处理器
+ *
  * @author biezhi
  *         2017/4/19
  */
-public abstract class SimpleRpcClientHandler<T> extends SimpleChannelInboundHandler<T> {
+public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler<T> {
 
-    public static final Logger log = LoggerFactory.getLogger(SimpleRpcClientHandler.class);
+    public static final Logger log = LoggerFactory.getLogger(SimpleClientHandler.class);
 
     protected Map<String, RpcFuture> mapCallBack = new ConcurrentHashMap<>();
 

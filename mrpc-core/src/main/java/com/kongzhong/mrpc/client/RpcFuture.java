@@ -3,6 +3,8 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;

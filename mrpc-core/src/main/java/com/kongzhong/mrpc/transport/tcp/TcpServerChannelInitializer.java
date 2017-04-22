@@ -11,6 +11,9 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 import java.util.Map;
 
+/**
+ * Tcp服务端ChannelInitializer
+ */
 public class TcpServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private Map<String, Object> handlerMap;

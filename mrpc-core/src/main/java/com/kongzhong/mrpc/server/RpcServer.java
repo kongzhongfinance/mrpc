@@ -18,6 +18,8 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -32,6 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
+@Data
+@NoArgsConstructor
 public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     public static final Logger log = LoggerFactory.getLogger(RpcServer.class);
@@ -67,9 +71,6 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     private TransferSelector transferSelector;
 
     private static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
-
-    public RpcServer() {
-    }
 
     public RpcServer(String serverAddress) {
         this.serverAddress = serverAddress;
@@ -173,38 +174,6 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
-    }
-
-    public String getServerAddress() {
-        return serverAddress;
-    }
-
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
-    }
-
-    public ServiceRegistry getServiceRegistry() {
-        return serviceRegistry;
-    }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
-
-    public String getSerialize() {
-        return serialize;
-    }
-
-    public void setSerialize(String serialize) {
-        this.serialize = serialize;
-    }
-
-    public String getTransport() {
-        return transport;
-    }
-
-    public void setTransport(String transport) {
-        this.transport = transport;
     }
 
     /**

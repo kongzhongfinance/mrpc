@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * http请求处理器
+ * 抽象服务端请求处理器
  *
  * @author biezhi
  *         2017/4/21
