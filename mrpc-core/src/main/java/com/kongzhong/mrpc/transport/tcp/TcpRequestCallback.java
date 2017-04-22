@@ -13,17 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.Callable;
 
 /**
  * @author biezhi
  *         2017/4/19
  */
-public class RequestCallback extends SimpleRequestCallback<Boolean> {
+public class TcpRequestCallback extends SimpleRequestCallback<Boolean> {
 
-    public static final Logger log = LoggerFactory.getLogger(RequestCallback.class);
+    public static final Logger log = LoggerFactory.getLogger(TcpRequestCallback.class);
 
-    public RequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress, RpcSerialize rpcSerialize) {
+    public TcpRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress, RpcSerialize rpcSerialize) {
         super(eventLoopGroup, serverAddress, rpcSerialize);
     }
 
@@ -49,7 +48,7 @@ public class RequestCallback extends SimpleRequestCallback<Boolean> {
                 if (channelFuture.isSuccess()) {
                     log.debug("client connect success");
                     //和服务器连接成功后, 获取MessageSendHandler对象
-                    RpcClientHandler handler = channelFuture.channel().pipeline().get(RpcClientHandler.class);
+                    TcpClientHandler handler = channelFuture.channel().pipeline().get(TcpClientHandler.class);
                     RpcServerLoader.me().setRpcClientHandler(handler);
                 }
             }

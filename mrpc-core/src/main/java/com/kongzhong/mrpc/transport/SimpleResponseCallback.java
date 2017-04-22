@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.transport.tcp;
+package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -11,36 +11,27 @@ import org.springframework.cglib.reflect.FastMethod;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class ResponseCallback implements Callable<Boolean> {
+public abstract class SimpleResponseCallback<T> implements Callable<T> {
 
-    public static final Logger log = LoggerFactory.getLogger(ResponseCallback.class);
+    public static final Logger log = LoggerFactory.getLogger(SimpleResponseCallback.class);
 
-    private Map<String, Object> handlerMap;
-    private RpcRequest request;
-    private RpcResponse response;
+    protected Map<String, Object> handlerMap;
+    protected RpcRequest request;
+    protected RpcResponse response;
 
-    public ResponseCallback(RpcRequest request, RpcResponse response, Map<String, Object> handlerMap) {
+    public SimpleResponseCallback(RpcRequest request, RpcResponse response, Map<String, Object> handlerMap) {
         this.request = request;
         this.response = response;
         this.handlerMap = handlerMap;
     }
 
-    @Override
-    public Boolean call() throws Exception {
-        response.setRequestId(request.getRequestId());
-        try {
-            Object result = handle(request);
-            response.setResult(result);
-            return Boolean.TRUE;
-        } catch (Throwable t) {
-            response.setException(t);
-            log.error("rpc server invoke error", t);
-            return Boolean.FALSE;
-        }
+    public SimpleResponseCallback() {
+
     }
 
+    public abstract T call() throws Exception;
 
-    private Object handle(RpcRequest request) throws Throwable {
+    protected Object handle(RpcRequest request) throws Throwable {
         String className = request.getClassName();
         Object serviceBean = handlerMap.get(className);
 
@@ -58,7 +49,6 @@ public class ResponseCallback implements Callable<Boolean> {
         FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
 
         return serviceFastMethod.invoke(serviceBean, parameters);
-
     }
 
 }

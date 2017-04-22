@@ -17,7 +17,7 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
 
     public static final Logger log = LoggerFactory.getLogger(SimpleServerHandler.class);
 
-    private Map<String, Object> handlerMap;
+    protected Map<String, Object> handlerMap;
 
     public SimpleServerHandler(Map<String, Object> handlerMap) {
         this.handlerMap = handlerMap;

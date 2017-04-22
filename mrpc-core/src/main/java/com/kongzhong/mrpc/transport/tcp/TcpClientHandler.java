@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
  * @author biezhi
  *         2017/4/19
  */
-public class RpcClientHandler extends SimpleRpcClientHandler<RpcResponse> {
+public class TcpClientHandler extends SimpleRpcClientHandler<RpcResponse> {
 
-    public static final Logger log = LoggerFactory.getLogger(RpcClientHandler.class);
+    public static final Logger log = LoggerFactory.getLogger(TcpClientHandler.class);
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.

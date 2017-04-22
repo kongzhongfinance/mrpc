@@ -7,7 +7,6 @@ import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
-import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
 import io.netty.channel.ChannelHandler;
 
@@ -65,32 +64,6 @@ public class TransferSelector {
 
         if (transportEnum.equals(TransportEnum.HTTP)) {
             return new HttpServerChannelInitializer(handlerMap, rpcSerialize);
-        }
-
-        throw new InitializeException("transfer type is null.");
-    }
-
-    public ChannelHandler getClientChannelHandler(String transfer) {
-
-        TransportEnum transportEnum = TransportEnum.valueOf(transfer.toUpperCase());
-        if (null == transportEnum) {
-            throw new InitializeException("transfer type [" + transfer + "] error.");
-        }
-
-        RpcSerialize rpcSerialize = RpcServerLoader.me().getRpcSerialize();
-
-        RpcServerLoader.me().setRpcSerialize(rpcSerialize);
-
-        if (null == rpcSerialize) {
-            throw new InitializeException("rpc client serialize is null.");
-        }
-
-        if (transportEnum.equals(TransportEnum.TCP)) {
-            return new TcpClientChannelInitializer(rpcSerialize);
-        }
-
-        if (transportEnum.equals(TransportEnum.HTTP)) {
-//            return new HttpClientChannelInitializer(rpcSerialize);
         }
 
         throw new InitializeException("transfer type is null.");

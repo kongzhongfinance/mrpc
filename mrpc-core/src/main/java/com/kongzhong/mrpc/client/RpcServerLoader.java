@@ -8,7 +8,7 @@ import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transport.tcp.RequestCallback;
+import com.kongzhong.mrpc.transport.tcp.TcpRequestCallback;
 import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
 import com.kongzhong.mrpc.transport.http.HttpRequestCallback;
 import io.netty.channel.EventLoopGroup;
@@ -111,10 +111,10 @@ public class RpcServerLoader {
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
 
             if (transportEnum.equals(TransportEnum.HTTP)) {
-                callable = new HttpRequestCallback(eventLoopGroup, remoteAddr, null);
+                callable = new HttpRequestCallback(eventLoopGroup, remoteAddr);
             }
             if (transportEnum.equals(TransportEnum.TCP)) {
-                callable = new RequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);
+                callable = new TcpRequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);
             }
 
             //与服务器建立连接

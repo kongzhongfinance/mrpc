@@ -14,13 +14,11 @@ import java.util.Map;
  * @author biezhi
  *         2017/4/19
  */
-public class RpcServerHandler extends SimpleServerHandler<RpcRequest> {
+public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
-    public static final Logger log = LoggerFactory.getLogger(RpcServerHandler.class);
+    public static final Logger log = LoggerFactory.getLogger(TcpServerHandler.class);
 
-    private Map<String, Object> handlerMap;
-
-    public RpcServerHandler(Map<String, Object> handlerMap) {
+    public TcpServerHandler(Map<String, Object> handlerMap) {
         super(handlerMap);
     }
 
@@ -29,10 +27,10 @@ public class RpcServerHandler extends SimpleServerHandler<RpcRequest> {
         log.debug("request: {}", request);
         RpcResponse response = new RpcResponse();
         // new 一个服务器消息处理线程
-        ResponseCallback responseCallback = new ResponseCallback(request, response, handlerMap);
+        TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, handlerMap);
         // 将服务端的处理任务提交给服务端的 消息处理线程池
         //不要阻塞nio线程，复杂的业务逻辑丢给专门的线程池
-        RpcServer.submit(responseCallback, ctx, request, response);
+        RpcServer.submit(tcpResponseCallback, ctx, request, response);
     }
 
     @Override

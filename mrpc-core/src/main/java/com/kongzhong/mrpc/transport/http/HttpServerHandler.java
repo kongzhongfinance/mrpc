@@ -38,8 +38,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpServerHandler.class);
 
-    private Map<String, Object> handlerMap;
-
     public HttpServerHandler(Map<String, Object> handlerMap) {
         super(handlerMap);
     }

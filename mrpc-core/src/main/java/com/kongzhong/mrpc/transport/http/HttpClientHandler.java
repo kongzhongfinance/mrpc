@@ -13,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,13 +76,8 @@ public class HttpClientHandler extends SimpleRpcClientHandler<Object> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("进来。。。");
         if (isDone) {
             return;
-        }
-        if (msg instanceof HttpResponse) {
-            HttpResponse response = (HttpResponse) msg;
-            System.out.println("content-Type:" + response.headers().get(HttpHeaders.Names.CONTENT_TYPE));
         }
         if (msg instanceof HttpContent) {
             isDone = true;
@@ -107,7 +101,6 @@ public class HttpClientHandler extends SimpleRpcClientHandler<Object> {
                     rpcFuture.done(rpcResponse);
                 }
             }
-//            buf.release();
         }
     }
 }

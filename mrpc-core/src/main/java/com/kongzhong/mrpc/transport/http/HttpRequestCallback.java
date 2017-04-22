@@ -23,11 +23,8 @@ public class HttpRequestCallback extends SimpleRequestCallback<Boolean> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpRequestCallback.class);
 
-    private EventLoopGroup eventLoopGroup = null;
-    private InetSocketAddress serverAddress = null;
-
-    public HttpRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress, RpcSerialize rpcSerialize) {
-        super(eventLoopGroup, serverAddress, rpcSerialize);
+    public HttpRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress) {
+        super(eventLoopGroup, serverAddress);
     }
 
     @Override

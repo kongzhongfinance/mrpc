@@ -26,6 +26,11 @@ public abstract class SimpleRequestCallback<T> implements Callable<T> {
         this.rpcSerialize = rpcSerialize;
     }
 
+    public SimpleRequestCallback(EventLoopGroup eventLoopGroup, InetSocketAddress serverAddress) {
+        this.eventLoopGroup = eventLoopGroup;
+        this.serverAddress = serverAddress;
+    }
+
     public abstract T call() throws Exception;
 
 }
