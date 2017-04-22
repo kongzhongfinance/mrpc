@@ -74,26 +74,6 @@ public class ReflectUtils {
     }
 
     /**
-     * 判断class是否是基本类型
-     *
-     * @param type
-     * @return
-     */
-    public static boolean isBasic(Class<?> type) {
-        if (type == int.class || type == Integer.class
-                || type == String.class || type == double.class
-                || type == Double.class || type == Float.class
-                || type == Float.class || type == Boolean.class
-                || type == Long.class || type == long.class
-                || type == Byte.class || type == byte.class
-                || type == Character.class || type == char.class
-                || type == boolean.class) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 获取Method的形参名称列表
      *
      * @param method 需要解析的方法
@@ -360,5 +340,33 @@ public class ReflectUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static final Map<String, Class<?>> primitiveTypes = Maps.newHashMap();
+
+    static {
+        primitiveTypes.put("int", int.class);
+        primitiveTypes.put("boolean", boolean.class);
+        primitiveTypes.put("char", char.class);
+        primitiveTypes.put("byte", byte.class);
+        primitiveTypes.put("short", short.class);
+        primitiveTypes.put("long", long.class);
+        primitiveTypes.put("float", float.class);
+        primitiveTypes.put("double", double.class);
+    }
+
+    public static Class<?> getBasicType(String primitive) {
+        return primitiveTypes.get(primitive);
+    }
+
+    public static boolean isBasic(String primitive) {
+        return primitiveTypes.containsKey(primitive);
+    }
+
+    public static Class<?> getClassType(String type) {
+        if (isBasic(type)) {
+            return getBasicType(type);
+        }
+        return from(type);
     }
 }

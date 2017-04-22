@@ -1,12 +1,14 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcFuture;
+import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * @author biezhi
@@ -37,30 +40,33 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
         RpcFuture rpcFuture = new RpcFuture(rpcRequest);
         mapCallBack.put(rpcRequest.getRequestId(), rpcFuture);
 
-        JSONObject reqJSON = new JSONObject();
-        reqJSON.put("service", rpcRequest.getClassName());
-        reqJSON.put("method", rpcRequest.getMethodName());
+        RequestBody requestBody = new RequestBody();
+        requestBody.setRequestId(rpcRequest.getRequestId());
+        requestBody.setService(rpcRequest.getClassName());
+        requestBody.setMethod(rpcRequest.getMethodName());
 
         Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
         Object[] args = rpcRequest.getParameters();
 
-        JSONArray parameterTypesJSON = new JSONArray();
+        List<String> parameterTypesJSON = Lists.newArrayList();
         if (null != parameterTypes) {
             for (Class<?> type : parameterTypes) {
                 parameterTypesJSON.add(type.getName());
             }
         }
 
-        reqJSON.put("parameterArray", rpcRequest.getParameters());
-        reqJSON.put("parameterTypes", parameterTypesJSON);
-        reqJSON.put("requestId", rpcRequest.getRequestId());
+        requestBody.setParameterArray(JSON.parseArray(JSONUtils.toJSONString(rpcRequest.getParameters())));
+        requestBody.setParameterTypes(parameterTypesJSON);
 
         try {
+            String sendBody = JSONUtils.toJSONString(requestBody);
+            log.debug("client request body: {}", sendBody);
+
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
             req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE); // or HttpHeaders.Values.CLOSE
             req.headers().set(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
             req.headers().add(HttpHeaders.Names.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
-            ByteBuf bbuf = Unpooled.copiedBuffer(reqJSON.toJSONString(), StandardCharsets.UTF_8);
+            ByteBuf bbuf = Unpooled.copiedBuffer(sendBody, StandardCharsets.UTF_8);
             req.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
             req.content().clear().writeBytes(bbuf);
 
@@ -72,15 +78,9 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
         return rpcFuture;
     }
 
-    private boolean isDone;
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (isDone) {
-            return;
-        }
         if (msg instanceof HttpContent) {
-            isDone = true;
             HttpContent content = (HttpContent) msg;
             ByteBuf buf = content.content();
             byte[] req = new byte[buf.readableBytes()];
@@ -92,7 +92,8 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
                 Object result = rpcResponse.getResult();
                 if (null != result && result instanceof JSONObject) {
                     if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                        Class re = ReflectUtils.from(rpcResponse.getReturnType());
+                        Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                        ;
                         rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
                     }
                 }

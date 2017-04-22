@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.util.List;
-import java.util.Map;
 
 /**
+ * Http请求Body对象
+ *
  * @author biezhi
  *         2017/4/22
  */
@@ -16,9 +17,9 @@ import java.util.Map;
 @ToString
 public class RequestBody {
 
+    private String requestId;
     private String service;
     private String method;
-    private String requestId;
     private String version;
     private JSONObject parameters;
     private List<String> parameterTypes;

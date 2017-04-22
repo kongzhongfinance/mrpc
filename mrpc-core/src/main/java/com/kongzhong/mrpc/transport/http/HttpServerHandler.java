@@ -72,9 +72,15 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        log.debug("body: \n{}", body);
+        log.debug("body: \n\n{}\n", body);
 
-        RequestBody requestBody = JSON.parseObject(body, RequestBody.class);
+        RequestBody requestBody = null;
+        try {
+            requestBody = JSON.parseObject(body, RequestBody.class);
+        } catch (Exception e) {
+            this.sendError(ctx, RpcRet.error("unable to identify the requested format."));
+            return;
+        }
 
         String serviceName = requestBody.getService();
         String methodName = requestBody.getMethod();
@@ -97,7 +103,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        RpcRequest rpcRequest = parseParams(ctx, requestBody, bean);
+        RpcRequest rpcRequest = parseParams(ctx, requestBody, bean.getClass());
 
         HttpResponse response = new HttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, MediaType.JSON.toString());
@@ -110,32 +116,45 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         RpcServer.submit(responseCallback, ctx);
     }
 
-    private RpcRequest parseParams(ChannelHandlerContext ctx, RequestBody requestBody, Object bean) throws NoSuchMethodException {
+    /**
+     * 解析请求参数
+     *
+     * @param ctx
+     * @param requestBody
+     * @param bean
+     * @return
+     * @throws NoSuchMethodException
+     */
+    private RpcRequest parseParams(ChannelHandlerContext ctx, RequestBody requestBody, Class<?> type) throws NoSuchMethodException {
 
         String serviceName = requestBody.getService();
         String methodName = requestBody.getMethod();
 
-        Class<?> type = bean.getClass();
         Method method = null;
         JSONArray arrJSON = null;
         List<String> parameterTypes = requestBody.getParameterTypes();
         JSONObject argJSON = requestBody.getParameters();
 
+        // 判断根据参数列表类型查找method对象
         if (null != parameterTypes) {
             Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
             int pos = 0;
-            for (Object parameterType : parameterTypes) {
-                parameterTypeArr[pos++] = ReflectUtils.from(parameterType.toString());
+            for (String parameterType : parameterTypes) {
+                parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType);
             }
             method = type.getMethod(methodName, parameterTypeArr);
             arrJSON = requestBody.getParameterArray();
         } else {
             method = ReflectUtils.method(type, methodName);
         }
+
+        // 找不到method
         if (null == method) {
             this.sendError(ctx, RpcRet.notFound("method [" + methodName + "] not found."));
             return null;
         }
+
+        // 解析参数到args中
         Object[] args = new Object[method.getParameterCount()];
         List<String> paramNames = ReflectUtils.getParamNames(method);
         if (null != paramNames) {
@@ -143,36 +162,28 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             for (int i = 0, len = paramNames.size(); i < len; i++) {
                 String paramName = paramNames.get(i);
                 Class<?> paramType = types[i];
-
                 if (paramType.isArray()) {
                     Class<?> arrayType = paramType.getComponentType();
-                    JSONArray array;
-                    if (null != arrJSON) {
-                        array = arrJSON.getJSONArray(i);
-                    } else {
-                        array = argJSON.getJSONArray(paramName);
-                    }
+                    JSONArray array = null != argJSON ? arrJSON.getJSONArray(i) : argJSON.getJSONArray(paramName);
                     if (null != array) {
                         List list = array.toJavaList(arrayType);
                         args[i] = listToArray(arrayType, list);
-                    } else {
-                        args[i] = null;
                     }
                 } else {
-                    if (null != arrJSON) {
-                        args[i] = arrJSON.getObject(i, paramType);
-                    } else {
-                        args[i] = argJSON.getObject(paramName, paramType);
-                    }
+                    args[i] = null != arrJSON ? arrJSON.getObject(i, paramType) : argJSON.getObject(paramName, paramType);
                 }
             }
         }
 
+        // 构造请求
         String requestId = null != requestBody.getRequestId() ? requestBody.getRequestId() : StringUtils.getUUID();
         return getRpcRequest(requestId, serviceName, method, args);
     }
 
     private <A> A[] listToArray(Class<A> type, List<A> list) {
+        if (null == type || null == list) {
+            return null;
+        }
         A[] a = (A[]) Array.newInstance(type, list.size());
         return (A[]) list.toArray(a);
     }
