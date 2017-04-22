@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.demo.model.Person;
-import com.kongzhong.mrpc.model.RpcRet;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author biezhi
@@ -15,5 +17,12 @@ public interface UserService {
 
     Person savePerson(String fullName, Integer age);
 
-    RpcRet delete(Long id);
+    Person save(Person person);
+
+    Long delete(Long id);
+
+    List<String> strList(List<String> strs);
+
+    Map toMap(Map<String, Integer> map);
+
 }

@@ -14,8 +14,6 @@ public class HttpResponse extends DefaultFullHttpResponse {
 
     private String requestId;
 
-    private Throwable exception;
-
     public HttpResponse(HttpVersion version, HttpResponseStatus status) {
         super(version, status);
     }
@@ -50,13 +48,5 @@ public class HttpResponse extends DefaultFullHttpResponse {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
-    }
-
-    public Throwable getException() {
-        return exception;
-    }
-
-    public void setException(Throwable exception) {
-        this.exception = exception;
     }
 }

@@ -354,4 +354,11 @@ public class ReflectUtils {
         }
     }
 
+    public static <T> T newInstance(Class<T> paramType) {
+        try {
+            return paramType.newInstance();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

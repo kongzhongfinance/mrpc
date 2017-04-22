@@ -8,6 +8,7 @@ public class RpcResponse {
     private String requestId;
     private Object result;
     private Throwable exception;
+    private String returnType;
 
     public RpcResponse() {
     }
@@ -38,6 +39,14 @@ public class RpcResponse {
 
     public void setException(Throwable exception) {
         this.exception = exception;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
     }
 
     @Override

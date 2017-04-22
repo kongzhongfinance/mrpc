@@ -12,6 +12,7 @@ public class RpcRequest {
     private String methodName;
     private Class[] parameterTypes;
     private Object[] parameters;
+    private Class<?> returnType;
 
     public RpcRequest() {
     }
@@ -90,6 +91,14 @@ public class RpcRequest {
         result = 31 * result + Arrays.hashCode(parameterTypes);
         result = 31 * result + Arrays.hashCode(parameters);
         return result;
+    }
+
+    public Class<?> getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(Class<?> returnType) {
+        this.returnType = returnType;
     }
 
     @Override

@@ -2,10 +2,12 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.reflect.AbstractInvocationHandler;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.transport.RpcClientHandler;
+import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 
 /**
  * 客户端代理
@@ -14,12 +16,14 @@ import java.lang.reflect.Method;
  */
 public class ClientProxy<T> extends AbstractInvocationHandler {
 
+    @Override
     public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
         RpcRequest request = new RpcRequest(StringUtils.getUUID(),
                 method.getDeclaringClass().getName(), method.getName(),
                 method.getParameterTypes(), args);
+        request.setReturnType(method.getReturnType());
 
-        RpcClientHandler clientHandler = RpcServerLoader.me().getRpcClientHandler();
+        SimpleRpcClientHandler clientHandler = RpcServerLoader.me().getRpcClientHandler();
         RpcFuture rpcFuture = clientHandler.sendRequest(request);
         return rpcFuture.get();
     }

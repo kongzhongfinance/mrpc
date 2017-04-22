@@ -2,7 +2,9 @@ package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.demo.model.Person;
-import com.kongzhong.mrpc.model.RpcRet;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author biezhi
@@ -29,7 +31,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RpcRet delete(Long id) {
-        return RpcRet.ok(id);
+    public Person save(Person person) {
+        return person;
+    }
+
+    @Override
+    public Long delete(Long id) {
+        return id;
+    }
+
+    @Override
+    public List<String> strList(List<String> strs) {
+        return strs;
+    }
+
+    @Override
+    public Map toMap(Map<String, Integer> map) {
+        return map;
     }
 }

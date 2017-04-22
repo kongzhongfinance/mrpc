@@ -59,7 +59,7 @@ public class TransferSelector {
             throw new InitializeException("rpc server serialize is null.");
         }
 
-        if (transportEnum.equals(TransportEnum.TPC)) {
+        if (transportEnum.equals(TransportEnum.TCP)) {
             return new TcpServerChannelInitializer(handlerMap, rpcSerialize);
         }
 
@@ -85,7 +85,7 @@ public class TransferSelector {
             throw new InitializeException("rpc client serialize is null.");
         }
 
-        if (transportEnum.equals(TransportEnum.TPC)) {
+        if (transportEnum.equals(TransportEnum.TCP)) {
             return new TcpClientChannelInitializer(rpcSerialize);
         }
 

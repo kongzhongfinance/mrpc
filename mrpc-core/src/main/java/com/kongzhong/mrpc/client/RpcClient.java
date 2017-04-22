@@ -26,7 +26,7 @@ public class RpcClient {
     /**
      * 传输协议，默认tcp协议
      */
-    private String transport = TransportEnum.TPC.name();
+    private String transport = TransportEnum.TCP.name();
 
     /**
      * 服务发现
@@ -36,23 +36,19 @@ public class RpcClient {
     /**
      * 传输选择
      */
-    private TransferSelector transferSelector;
+    private TransferSelector transferSelector = new TransferSelector();
+
+    private boolean isLoad;
 
     public RpcClient() {
     }
 
     public RpcClient(String serverAddr) {
-        this.setServerAddr(serverAddr);
-        this.init();
+        this.serverAddr = serverAddr;
     }
 
     public RpcClient(ServiceDiscovery serviceDiscovery) {
-        this.setServiceDiscovery(serviceDiscovery);
-        this.init();
-    }
-
-    private void init() {
-        this.transferSelector = new TransferSelector();
+        this.serviceDiscovery = serviceDiscovery;
     }
 
     public void stop() {
@@ -66,6 +62,11 @@ public class RpcClient {
      * @return
      */
     public <T> T getProxyBean(Class<T> rpcInterface) {
+        if (!isLoad) {
+            this.loader.init(serialize, transport);
+            this.loader.load(serverAddr);
+            isLoad = true;
+        }
         return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
     }
 
@@ -75,8 +76,6 @@ public class RpcClient {
 
     public void setServerAddr(String serverAddr) {
         this.serverAddr = serverAddr;
-        this.loader.initSerialize(serialize);
-        this.loader.load(serverAddr);
     }
 
     public ServiceDiscovery getServiceDiscovery() {
@@ -85,8 +84,6 @@ public class RpcClient {
 
     public void setServiceDiscovery(ServiceDiscovery serviceDiscovery) {
         this.serviceDiscovery = serviceDiscovery;
-        this.loader.initSerialize(serialize);
-        this.loader.load(serviceDiscovery);
     }
 
     public String getSerialize() {

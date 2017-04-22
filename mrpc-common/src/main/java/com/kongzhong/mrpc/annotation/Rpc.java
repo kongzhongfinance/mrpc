@@ -22,6 +22,6 @@ public @interface Rpc {
 
     SerializeEnum serialize() default SerializeEnum.PROTOSTUFF;
 
-    TransportEnum transefer() default TransportEnum.TPC;
+    TransportEnum transefer() default TransportEnum.TCP;
 
 }

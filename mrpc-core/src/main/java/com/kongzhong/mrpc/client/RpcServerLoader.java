@@ -3,18 +3,24 @@ package com.kongzhong.mrpc.client;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.enums.SerializeEnum;
+import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.RequestCallback;
 import com.kongzhong.mrpc.transport.RpcClientHandler;
+import com.kongzhong.mrpc.transport.SimpleRpcClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpRequestCallback;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -47,7 +53,7 @@ public class RpcServerLoader {
     /**
      * 客户端rpc处理器
      */
-    private RpcClientHandler clientHandler = null;
+    private SimpleRpcClientHandler clientHandler = null;
 
     /**
      * 细粒度的可重入锁
@@ -56,15 +62,19 @@ public class RpcServerLoader {
     private Condition connectStatus = lock.newCondition();
     private Condition handlerStatus = lock.newCondition();
 
+    private Callable<Boolean> callable;
+
     /**
      * 序列化
      */
     private RpcSerialize rpcSerialize;
 
+    private TransportEnum transportEnum;
+
     private RpcServerLoader() {
     }
 
-    public void initSerialize(String serialize) {
+    public void init(String serialize, String transport) {
         SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
         if (null == serializeEnum) {
             throw new InitializeException("serialize type [" + serialize + "] error.");
@@ -72,9 +82,13 @@ public class RpcServerLoader {
 
         if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
             rpcSerialize = new ProtostuffSerialize();
-            return;
         }
-        throw new InitializeException("serialize type is null.");
+
+        transportEnum = TransportEnum.valueOf(transport.toUpperCase());
+        if (null == transportEnum) {
+            throw new InitializeException("transport type [" + transport + "] error.");
+        }
+
     }
 
     private static final class RpcServerLoaderHolder {
@@ -99,9 +113,15 @@ public class RpcServerLoader {
             //获取socket的完整地址
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
 
+            if (transportEnum.equals(TransportEnum.HTTP)) {
+                callable = new HttpRequestCallback(eventLoopGroup, remoteAddr);
+            }
+            if (transportEnum.equals(TransportEnum.TCP)) {
+                callable = new RequestCallback(eventLoopGroup, remoteAddr, rpcSerialize);
+            }
+
             //与服务器建立连接
-            ListenableFuture<Boolean> listenableFuture = TPE.submit(
-                    new RequestCallback(eventLoopGroup, remoteAddr, rpcSerialize));
+            ListenableFuture<Boolean> listenableFuture = TPE.submit(callable);
 
             // 给listenableFuture 添加回调函数,当MessageSendInitializeTask执行完毕之后调用
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
@@ -138,7 +158,7 @@ public class RpcServerLoader {
         this.load(serverAddr);
     }
 
-    public void setRpcClientHandler(RpcClientHandler clientHandler) {
+    public void setRpcClientHandler(SimpleRpcClientHandler clientHandler) {
         try {
             lock.lock();
             this.clientHandler = clientHandler;
@@ -162,7 +182,7 @@ public class RpcServerLoader {
      * @return
      * @throws InterruptedException
      */
-    public RpcClientHandler getRpcClientHandler() throws InterruptedException {
+    public SimpleRpcClientHandler getRpcClientHandler() throws InterruptedException {
         try {
             lock.lock();
             //netty服务端链路没有建立完毕之前，先挂起等待
@@ -174,7 +194,6 @@ public class RpcServerLoader {
             lock.unlock();
         }
     }
-
 
     public void unLoad() {
         clientHandler.close();

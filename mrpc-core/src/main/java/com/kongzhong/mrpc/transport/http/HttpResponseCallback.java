@@ -2,10 +2,14 @@ package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.enums.MediaType;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.model.Response;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
@@ -13,9 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -35,27 +41,25 @@ public class HttpResponseCallback implements Callable<HttpResponse> {
 
     @Override
     public HttpResponse call() throws Exception {
-        initResponse();
+        RpcResponse rpcResponse = new RpcResponse();
+        rpcResponse.setRequestId(request.getRequestId());
+        response.setRequestId(request.getRequestId());
         try {
             Object result = handle(request);
-            if (null != result) {
-                String body = getBody(result);
-                response = new HttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
-                if (ReflectUtils.isBasic(result.getClass())) {
-                    response.headers().set(CONTENT_TYPE, MediaType.TEXT);
-                }
-                initResponse();
+            rpcResponse.setResult(result);
+            if (null != request.getReturnType()) {
+                rpcResponse.setReturnType(request.getReturnType().getName());
             }
-            return response;
         } catch (Throwable t) {
-            response.setException(t);
+            rpcResponse.setException(t);
             log.error("rpc server invoke error", t);
-            return null;
+        } finally {
+            String body = JSONUtils.toJSONString(rpcResponse);
+            ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
+            response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+            response.content().clear().writeBytes(bbuf);
+            return response;
         }
-    }
-
-    private void initResponse() {
-        response.setRequestId(request.getRequestId());
     }
 
     private String getBody(Object result) {

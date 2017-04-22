@@ -19,7 +19,7 @@ public class HttpClientApplication {
         person.setName("王爵nice");
 
         Person person1 = userService.savePerson("hihihi", 99);
-        System.out.println("result = " + person1);
+        System.out.println("save result = " + person1);
 
         rpcClient.stop();
     }

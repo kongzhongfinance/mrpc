@@ -8,6 +8,6 @@ package com.kongzhong.mrpc.enums;
  */
 public enum TransportEnum {
 
-    TPC, HTTP
+    TCP, HTTP
 
 }

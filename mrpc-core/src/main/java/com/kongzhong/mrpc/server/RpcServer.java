@@ -54,7 +54,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     /**
      * 传输协议，默认tcp协议
      */
-    private String transport = TransportEnum.TPC.name();
+    private String transport = TransportEnum.TCP.name();
 
     /**
      * 服务注册实例
@@ -244,7 +244,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
         }, TPE);
     }
 
-    public static void submit(Callable<HttpResponse> task, final ChannelHandlerContext ctx, final RpcRequest request) {
+    public static void submit(Callable<HttpResponse> task, final ChannelHandlerContext ctx) {
 
         //提交任务, 异步获取结果
         ListenableFuture<HttpResponse> listenableFuture = TPE.submit(task);
@@ -253,6 +253,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
         Futures.addCallback(listenableFuture, new FutureCallback<HttpResponse>() {
             @Override
             public void onSuccess(HttpResponse response) {
+
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     /**
@@ -262,7 +263,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                      */
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("request [{}] success.", request.getRequestId());
+                        log.debug("request [{}] success.", response.getRequestId());
                     }
 
                 });

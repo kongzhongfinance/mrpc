@@ -1,9 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.client.RpcServerLoader;
-import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.transport.RpcClientHandler;
-import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -38,7 +35,8 @@ public class HttpRequestCallback implements Callable<Boolean> {
         b.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true);
-//        b.handler(new HttpClientChannelInitializer());
+
+        b.handler(new HttpClientChannelInitializer());
 
         // 和服务端建立连接,然后异步获取运行结果
         ChannelFuture channelFuture = b.connect(serverAddress);
@@ -54,7 +52,7 @@ public class HttpRequestCallback implements Callable<Boolean> {
                 if (channelFuture.isSuccess()) {
                     log.debug("client connect success");
                     //和服务器连接成功后, 获取MessageSendHandler对象
-                    RpcClientHandler handler = channelFuture.channel().pipeline().get(RpcClientHandler.class);
+                    HttpClientHandler handler = channelFuture.channel().pipeline().get(HttpClientHandler.class);
                     RpcServerLoader.me().setRpcClientHandler(handler);
                 }
             }
