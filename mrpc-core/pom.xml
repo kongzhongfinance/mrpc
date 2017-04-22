@@ -5,10 +5,10 @@
     <parent>
         <artifactId>mrpc</artifactId>
         <groupId>io.github.biezhi</groupId>
-        <version>0.0.1</version>
+        <version>${parent.version}</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>mrpc-core</artifactId>
 
     <dependencies>
@@ -16,19 +16,19 @@
         <dependency>
             <groupId>io.github.biezhi</groupId>
             <artifactId>mrpc-common</artifactId>
-            <version>0.0.1</version>
+            <version>${parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.9.Final</version>
+            <version>${netty.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.7.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <!-- Protostuff -->

@@ -24,7 +24,13 @@
 
         <protostuff.version>1.0.9</protostuff.version>
         <objenesis.version>2.1</objenesis.version>
-
+        <lombok.version>1.16.14</lombok.version>
+        <netty.version>4.1.9.Final</netty.version>
+        <spring.version>4.3.7.RELEASE</spring.version>
+        <guava.version>21.0</guava.version>
+        <slf4j-api.version>1.7.24</slf4j-api.version>
+        <fastjson.version>1.2.31</fastjson.version>
+        <zookeeper.version>3.4.8</zookeeper.version>
     </properties>
 
     <dependencies>
@@ -32,7 +38,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.14</version>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
@@ -65,9 +72,6 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
             <!--  Test  -->
