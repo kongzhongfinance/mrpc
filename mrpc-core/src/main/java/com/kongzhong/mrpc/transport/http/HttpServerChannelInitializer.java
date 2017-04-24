@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.kongzhong.mrpc.server.RpcMapping;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.*;
@@ -11,10 +12,8 @@ import java.util.Map;
  */
 public class HttpServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private Map<String, Object> handlerMap;
 
-    public HttpServerChannelInitializer(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
+    public HttpServerChannelInitializer() {
     }
 
     @Override
@@ -27,6 +26,6 @@ public class HttpServerChannelInitializer extends ChannelInitializer<SocketChann
                 .addLast(new HttpResponseEncoder())
                 .addLast(new HttpContentCompressor())
                 .addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
-                .addLast(new HttpServerHandler(handlerMap));
+                .addLast(new HttpServerHandler(RpcMapping.me().getHandlerMap()));
     }
 }

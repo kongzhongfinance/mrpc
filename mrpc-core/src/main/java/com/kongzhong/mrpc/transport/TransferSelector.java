@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.transport;
 
-import com.kongzhong.mrpc.client.RpcServerLoader;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
@@ -10,8 +9,6 @@ import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
 import io.netty.channel.ChannelHandler;
 
-import java.util.Map;
-
 /**
  * 传输协议选择器
  *
@@ -20,12 +17,10 @@ import java.util.Map;
  */
 public class TransferSelector {
 
-    private Map<String, Object> handlerMap;
     private String serialize;
     private RpcSerialize rpcSerialize;
 
-    public TransferSelector(Map<String, Object> handlerMap, String serialize) {
-        this.handlerMap = handlerMap;
+    public TransferSelector(String serialize) {
         this.serialize = serialize;
     }
 
@@ -53,19 +48,15 @@ public class TransferSelector {
         }
 
         if (null == rpcSerialize) {
-            rpcSerialize = RpcServerLoader.me().getRpcSerialize();
-        }
-
-        if (null == rpcSerialize) {
             throw new InitializeException("rpc server serialize is null.");
         }
 
         if (transportEnum.equals(TransportEnum.TCP)) {
-            return new TcpServerChannelInitializer(handlerMap, rpcSerialize);
+            return new TcpServerChannelInitializer(rpcSerialize);
         }
 
         if (transportEnum.equals(TransportEnum.HTTP)) {
-            return new HttpServerChannelInitializer(handlerMap);
+            return new HttpServerChannelInitializer();
         }
 
         throw new InitializeException("transfer type is null.");

@@ -20,19 +20,18 @@ public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpResponseCallback.class);
 
-    private HttpResponse response;
+    private HttpResponse httpResponse;
 
-    public HttpResponseCallback(RpcRequest request, HttpResponse response, Map<String, Object> handlerMap) {
-        this.request = request;
-        this.response = response;
-        this.handlerMap = handlerMap;
+    public HttpResponseCallback(RpcRequest request, HttpResponse httpResponse, Map<String, Object> handlerMap) {
+        super(request, null, handlerMap);
+        this.httpResponse = httpResponse;
     }
 
     @Override
     public HttpResponse call() throws Exception {
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(request.getRequestId());
-        response.setRequestId(request.getRequestId());
+        httpResponse.setRequestId(request.getRequestId());
         try {
             Object result = handle(request);
             rpcResponse.setResult(result);
@@ -45,9 +44,9 @@ public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
         } finally {
             String body = JSONUtils.toJSONString(rpcResponse);
             ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
-            response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
-            response.content().clear().writeBytes(bbuf);
-            return response;
+            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+            httpResponse.content().clear().writeBytes(bbuf);
+            return httpResponse;
         }
     }
 

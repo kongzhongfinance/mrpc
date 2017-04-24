@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.tcp;
 
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.server.RpcServer;
@@ -26,6 +27,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
+        request.setContext(new RpcContext(ctx));
         log.debug("request: {}", request);
         RpcResponse response = new RpcResponse();
         // new 一个服务器消息处理线程

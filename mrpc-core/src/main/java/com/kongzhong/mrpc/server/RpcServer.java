@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.server;
 
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
@@ -7,6 +8,7 @@ import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.interceptor.RpcInteceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -21,30 +23,34 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.nio.channels.spi.SelectorProvider;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
+@Slf4j
 @Data
 @NoArgsConstructor
 public class RpcServer implements ApplicationContextAware, InitializingBean {
-
-    public static final Logger log = LoggerFactory.getLogger(RpcServer.class);
 
     /**
      * 存储服务映射
      */
     private Map<String, Object> handlerMap = new ConcurrentHashMap<>();
+
+    /**
+     * RPC服务映射
+     */
+    private RpcMapping rpcMapping = RpcMapping.me();
 
     /**
      * rpc服务地址
@@ -71,6 +77,11 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
      */
     private TransferSelector transferSelector;
 
+    /**
+     * 拦截器列表
+     */
+    private List<RpcInteceptor> interceptorList;
+
     private static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     public RpcServer(String serverAddress) {
@@ -92,6 +103,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         try {
+            Map<String, Object> handlerMap = Maps.newConcurrentMap();
             if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
                 for (Object serviceBean : serviceBeanMap.values()) {
                     Object realBean = AopTargetUtils.getTarget(serviceBean);
@@ -116,11 +128,11 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     if (StringUtils.isNotEmpty(version)) {
                         serviceName += "_" + version;
                     }
-
                     handlerMap.put(serviceName, realBean);
                 }
             }
-            transferSelector = new TransferSelector(handlerMap, serialize);
+            rpcMapping.setHandlerMap(handlerMap);
+            transferSelector = new TransferSelector(serialize);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -179,6 +191,15 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
+    }
+
+    public List<RpcInteceptor> getInterceptorList() {
+        return interceptorList;
+    }
+
+    public void setInterceptorList(List<RpcInteceptor> interceptorList) {
+        this.interceptorList = interceptorList;
+        rpcMapping.setInteceptors(interceptorList);
     }
 
     /**

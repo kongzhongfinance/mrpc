@@ -4,9 +4,12 @@
 
 - 调用透明
 - 高性能
-- 支持分布式
+- 支持分布式(服务注册和发现)
 - 集成Spring/SpringBoot
 - 支持TCP/HTTP通讯
+- 负载均衡策略
+- 容错处理(FailOver/FailFast)
+- 拦截器处理
 
 ## HTTP协议快速入门
 
@@ -39,17 +42,6 @@ UserService userService = client.getProxyBean(UserService.class);
 System.out.println(userService.hello("mrpc"));
 ```
 
-## 包规划
+### 更多例子
 
-- codec: 编解码
-- serialize: 序列化
-- transport: 传输层
-- spring: 整合spring
-- server: rpc服务端
-- client: rpc客户端
-- ha: 高可用（负载均衡，容错，快速失败，限流）
-- monitor: 指标监控
-- trace: 服务调用链
-- filter: 服务拦截器
-- registry: 服务注册
-- exception: 异常处理
+[这里](/mrpc-demo)有更多的使用案例。

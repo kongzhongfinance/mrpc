@@ -20,8 +20,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RpcClient {
 
-    private RpcServerLoader loader = RpcServerLoader.me();
-
     /**
      * rpc服务地址
      */
