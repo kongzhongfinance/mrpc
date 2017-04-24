@@ -10,7 +10,7 @@
 
 
     <bean id="rpcClient" class="com.kongzhong.mrpc.client.RpcClient">
-        <property name="serverAddr" value="127.0.0.1:5066"/>
+        <constructor-arg name="serverAddr" value="127.0.0.1:5066"/>
     </bean>
 
     <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>

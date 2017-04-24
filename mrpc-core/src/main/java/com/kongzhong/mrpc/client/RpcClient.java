@@ -7,18 +7,31 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
+import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.Map;
 
 /**
  * rpc客户端
  */
 @Data
+@Slf4j
 @NoArgsConstructor
-public class RpcClient {
+public class RpcClient implements ApplicationContextAware, InitializingBean {
+
+    private ApplicationContext cxt;
 
     /**
      * rpc服务地址
@@ -100,4 +113,32 @@ public class RpcClient {
         }
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Map<String, ClientBean> clientBeanMap = cxt.getBeansOfType(ClientBean.class);
+        RpcClient rpcClient = cxt.getBean(RpcClient.class);
+
+        if (null != rpcClient && clientBeanMap != null && !clientBeanMap.isEmpty()) {
+            ConfigurableApplicationContext context = (ConfigurableApplicationContext) cxt;
+            DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
+            for (ClientBean bean : clientBeanMap.values()) {
+                String id = bean.getId();
+                String interfaceName = bean.getInterfaceName();
+                try {
+                    Class<?> clazz = Class.forName(interfaceName);
+                    Object object = rpcClient.getProxyBean(clazz);
+                    dbf.registerSingleton(id, object);
+                    log.info("bind rpc service [{}]", interfaceName);
+                } catch (Exception e) {
+                    log.warn("Not found rpc service [{}] component!", interfaceName);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        cxt = applicationContext;
+    }
+    
 }
