@@ -14,7 +14,7 @@ public class RpcResponse {
 
     private String requestId;
     private Object result;
-    private Throwable exception;
+    private Exception exception;
     private String returnType;
 
 }

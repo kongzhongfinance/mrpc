@@ -158,7 +158,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             this.sendError(ctx, RpcRet.notFound("method [" + methodName + "] not found."));
             return null;
         }
-
         // 解析参数到args中
         Object[] args = new Object[method.getParameterCount()];
         List<String> paramNames = ReflectUtils.getParamNames(method);
@@ -197,6 +196,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         RpcRequest request = new RpcRequest();
         request.setRequestId(requestId);
         request.setClassName(serviceName);
+        request.setMethod(method);
         request.setMethodName(method.getName());
         request.setParameterTypes(method.getParameterTypes());
         request.setReturnType(method.getReturnType());

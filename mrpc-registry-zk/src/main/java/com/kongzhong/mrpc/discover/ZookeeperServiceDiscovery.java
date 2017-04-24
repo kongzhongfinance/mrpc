@@ -8,7 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.config.Constant;
-import com.kongzhong.mrpc.support.Connections;
+import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;

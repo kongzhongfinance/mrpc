@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.RpcFuture;
-import com.kongzhong.mrpc.support.Connections;
+import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -50,6 +50,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         super.channelInactive(ctx);
         Connections.me().remove(this);
         log.debug("channelInactive: [{}]", this.channel);
+        // 创建异步重连
+
     }
 
     /**

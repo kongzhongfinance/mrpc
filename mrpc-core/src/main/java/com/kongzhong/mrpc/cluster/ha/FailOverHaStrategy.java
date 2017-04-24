@@ -1,10 +1,10 @@
-package com.kongzhong.mrpc.support.ha;
+package com.kongzhong.mrpc.cluster.ha;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.support.loadblance.LoadBalance;
+import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 

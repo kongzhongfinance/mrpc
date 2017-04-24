@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.support;
+package com.kongzhong.mrpc.cluster;
 
 /**
  * 容错策略

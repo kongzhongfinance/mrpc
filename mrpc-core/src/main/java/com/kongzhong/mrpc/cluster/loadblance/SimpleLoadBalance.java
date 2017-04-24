@@ -1,11 +1,11 @@
-package com.kongzhong.mrpc.support.loadblance;
+package com.kongzhong.mrpc.cluster.loadblance;
 
 import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcInvoker;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.support.Connections;
-import com.kongzhong.mrpc.support.LBStrategy;
+import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.cluster.LBStrategy;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import lombok.extern.slf4j.Slf4j;
 

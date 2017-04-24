@@ -1,8 +1,7 @@
-package com.kongzhong.mrpc.support.ha;
+package com.kongzhong.mrpc.cluster.ha;
 
-import com.kongzhong.mrpc.support.loadblance.LoadBalance;
+import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 
 /**
  * @author biezhi

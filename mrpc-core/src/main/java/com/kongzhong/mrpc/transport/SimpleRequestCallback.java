@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.transport;
 
-import com.kongzhong.mrpc.support.Connections;
+import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
@@ -70,6 +70,8 @@ public class SimpleRequestCallback implements Callable<Boolean> {
                     Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
                     SimpleClientHandler handler = channelFuture.channel().pipeline().get(clientHandler);
                     Connections.me().addRpcClientHandler(handler);
+                } else {
+                    log.error("client connect fail", channelFuture);
                 }
             }
         });

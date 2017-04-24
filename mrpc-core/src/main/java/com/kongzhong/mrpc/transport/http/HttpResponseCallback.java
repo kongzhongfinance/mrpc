@@ -1,5 +1,7 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.kongzhong.mrpc.exception.HttpException;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleResponseCallback;
@@ -38,10 +40,13 @@ public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
             if (null != request.getReturnType()) {
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
-        } catch (Throwable t) {
-            rpcResponse.setException(t);
-            log.error("rpc server invoke error", t);
+        } catch (Exception e) {
+            rpcResponse.setException(new HttpException(e));
+            throw e;
+//            log.error("rpc server invoke error", t);
         } finally {
+            RpcContext.remove();
+
             String body = JSONUtils.toJSONString(rpcResponse);
             ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());

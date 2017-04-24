@@ -27,13 +27,10 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        request.setContext(new RpcContext(ctx));
         log.debug("request: {}", request);
         RpcResponse response = new RpcResponse();
-        // new 一个服务器消息处理线程
         TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, handlerMap);
-        // 将服务端的处理任务提交给服务端的 消息处理线程池
-        //不要阻塞nio线程，复杂的业务逻辑丢给专门的线程池
+        //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池
         RpcServer.submit(tcpResponseCallback, ctx, request, response);
     }
 

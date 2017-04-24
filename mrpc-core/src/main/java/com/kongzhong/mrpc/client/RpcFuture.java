@@ -20,15 +20,18 @@ public class RpcFuture {
         this.request = request;
     }
 
-    public Object get() throws InterruptedException {
+    public Object get() throws Exception {
         return this.get(10);
     }
 
-    public Object get(int seconds) throws InterruptedException {
+    public Object get(int seconds) throws Exception {
         try {
             lock.lock();
             finish.await(seconds, TimeUnit.SECONDS);
-            return response != null ? response.getResult() : null;
+            if (null != response.getException()) {
+                throw response.getException();
+            }
+            return response.getResult();
         } finally {
             lock.unlock();
         }

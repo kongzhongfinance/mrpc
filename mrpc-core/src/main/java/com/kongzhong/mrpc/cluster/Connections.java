@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.support;
+package com.kongzhong.mrpc.cluster;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListeningExecutorService;

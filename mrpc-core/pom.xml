@@ -16,7 +16,7 @@
         <dependency>
             <groupId>io.github.biezhi</groupId>
             <artifactId>mrpc-common</artifactId>
-            <version>${parent.version}</version>
+            <version>${mrpc.version}</version>
         </dependency>
 
         <dependency>
@@ -46,6 +46,14 @@
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
             <version>${objenesis.version}</version>
+        </dependency>
+
+        <!--statsd：可选项-->
+        <dependency>
+            <groupId>com.timgroup</groupId>
+            <artifactId>java-statsd-client</artifactId>
+            <version>${statsd.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

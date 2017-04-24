@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcFuture;
+import com.kongzhong.mrpc.exception.HttpException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -62,7 +63,7 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
 
         try {
             String sendBody = JSONUtils.toJSONString(requestBody);
-            log.debug("client request body: {}", sendBody);
+            log.debug("http client request body: {}", sendBody);
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
             req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE); // or HttpHeaders.Values.CLOSE
@@ -82,30 +83,35 @@ public class HttpClientHandler extends SimpleClientHandler<Object> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof HttpContent) {
-            HttpContent content = (HttpContent) msg;
-            ByteBuf buf = content.content();
-            byte[] req = new byte[buf.readableBytes()];
-            buf.readBytes(req);
-            String body = new String(req, "UTF-8");
+        try {
+            if (msg instanceof HttpContent) {
+                HttpContent content = (HttpContent) msg;
+                ByteBuf buf = content.content();
+                byte[] req = new byte[buf.readableBytes()];
+                buf.readBytes(req);
+                String body = new String(req, "UTF-8");
 
-            if (StringUtils.isNotEmpty(body)) {
-                RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
-                Object result = rpcResponse.getResult();
-                if (null != result && result instanceof JSONObject) {
-                    if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                        Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                        ;
-                        rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                if (StringUtils.isNotEmpty(body)) {
+
+                    log.debug("http server response body: {}", body);
+
+                    RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
+                    Object result = rpcResponse.getResult();
+                    if (null != result && result instanceof JSONObject) {
+                        if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                            Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                            rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                        }
+                    }
+                    RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
+                    if (rpcFuture != null) {
+                        mapCallBack.remove(rpcResponse.getRequestId());
+                        rpcFuture.done(rpcResponse);
                     }
                 }
-                log.debug("rpc http server response: {}", body);
-                RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
-                if (rpcFuture != null) {
-                    mapCallBack.remove(rpcResponse.getRequestId());
-                    rpcFuture.done(rpcResponse);
-                }
             }
+        } catch (Exception e) {
+            throw new HttpException("client read response error", e);
         }
     }
 }

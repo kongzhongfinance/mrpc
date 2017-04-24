@@ -2,11 +2,11 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
+import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
-import com.kongzhong.mrpc.support.Connections;
-import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
@@ -93,7 +93,6 @@ public class RpcClient {
 
             if (null == serviceDiscovery) {
                 connections.updateNodes(Sets.newHashSet(serverAddr));
-//                serverAddr = serviceDiscovery.discover();
             } else {
                 serviceDiscovery.discover();
             }

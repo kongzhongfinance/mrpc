@@ -2,8 +2,8 @@ package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.support.FailStrategy;
-import com.kongzhong.mrpc.support.LBStrategy;
+import com.kongzhong.mrpc.cluster.FailStrategy;
+import com.kongzhong.mrpc.cluster.LBStrategy;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

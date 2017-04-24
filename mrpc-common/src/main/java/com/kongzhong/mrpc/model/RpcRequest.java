@@ -24,16 +24,5 @@ public class RpcRequest {
     private Class[] parameterTypes;
     private Object[] parameters;
     private Class<?> returnType;
-    private RpcContext context;
-
-    public RpcRequest(String requestId, Method method, String className, String methodName, Class[] parameterTypes, Object[] parameters, Class<?> returnType) {
-        this.requestId = requestId;
-        this.method = method;
-        this.className = className;
-        this.methodName = methodName;
-        this.parameterTypes = parameterTypes;
-        this.parameters = parameters;
-        this.returnType = returnType;
-    }
 
 }

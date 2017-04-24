@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.server.RpcMapping;
@@ -54,7 +55,9 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
      * @return
      * @throws Throwable
      */
-    protected Object handle(RpcRequest request) throws Throwable {
+    protected Object handle(RpcRequest request) throws Exception {
+        RpcContext.set();
+
         String className = request.getClassName();
         Object serviceBean = handlerMap.get(className);
 
@@ -67,6 +70,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         Class<?>[] parameterTypes = request.getParameterTypes();
         Object[] parameters = request.getParameters();
         Method method = request.getMethod();
+
 
         if (!hasInterceptors) {
             return method.invoke(serviceBean, parameters);

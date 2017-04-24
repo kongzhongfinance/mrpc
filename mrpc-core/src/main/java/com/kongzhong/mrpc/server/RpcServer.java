@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.server;
 
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
@@ -33,7 +32,6 @@ import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -41,11 +39,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Data
 @NoArgsConstructor
 public class RpcServer implements ApplicationContextAware, InitializingBean {
-
-    /**
-     * 存储服务映射
-     */
-    private Map<String, Object> handlerMap = new ConcurrentHashMap<>();
 
     /**
      * RPC服务映射
@@ -78,7 +71,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     private TransferSelector transferSelector;
 
     /**
-     * 拦截器列表
+     * 拦截器列表, 默认添加性能监控拦截器
      */
     private List<RpcInteceptor> interceptorList;
 
@@ -103,7 +96,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         try {
-            Map<String, Object> handlerMap = Maps.newConcurrentMap();
+
             if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
                 for (Object serviceBean : serviceBeanMap.values()) {
                     Object realBean = AopTargetUtils.getTarget(serviceBean);
@@ -128,10 +121,9 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     if (StringUtils.isNotEmpty(version)) {
                         serviceName += "_" + version;
                     }
-                    handlerMap.put(serviceName, realBean);
+                    rpcMapping.addHandler(serviceName, realBean);
                 }
             }
-            rpcMapping.setHandlerMap(handlerMap);
             transferSelector = new TransferSelector(serialize);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -173,7 +165,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 
                 //注册服务
-                for (String serviceName : handlerMap.keySet()) {
+                for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
                     if (serviceRegistry != null) {
                         serviceRegistry.register(serviceName);
                     } else {
@@ -199,7 +191,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     public void setInterceptorList(List<RpcInteceptor> interceptorList) {
         this.interceptorList = interceptorList;
-        rpcMapping.setInteceptors(interceptorList);
+        this.rpcMapping.addInterceptors(interceptorList);
     }
 
     /**
@@ -240,15 +232,12 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     }
 
     public static void submit(Callable<HttpResponse> task, final ChannelHandlerContext ctx) {
-
         //提交任务, 异步获取结果
         ListenableFuture<HttpResponse> listenableFuture = TPE.submit(task);
-
         //注册回调函数, 在task执行完之后 异步调用回调函数
         Futures.addCallback(listenableFuture, new FutureCallback<HttpResponse>() {
             @Override
             public void onSuccess(HttpResponse response) {
-
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     /**
@@ -270,6 +259,5 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             }
         }, TPE);
     }
-
 
 }

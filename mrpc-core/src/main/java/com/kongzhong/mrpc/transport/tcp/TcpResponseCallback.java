@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.tcp;
 
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleResponseCallback;
@@ -26,10 +27,12 @@ public class TcpResponseCallback extends SimpleResponseCallback<Boolean> {
             Object result = handle(request);
             response.setResult(result);
             return Boolean.TRUE;
-        } catch (Throwable t) {
-            response.setException(t);
-            log.error("rpc server invoke error", t);
+        } catch (Exception e) {
+            response.setException(e);
+            log.error("rpc server invoke error", e);
             return Boolean.FALSE;
+        } finally {
+            RpcContext.remove();
         }
     }
 
