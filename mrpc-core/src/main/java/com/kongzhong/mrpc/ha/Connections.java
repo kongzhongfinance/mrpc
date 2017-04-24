@@ -127,8 +127,9 @@ public class Connections {
     public List<SimpleClientHandler> getHandlers() throws Exception {
         lock.lock();
         try {
-            if (simpleClientHandlers.size() == 0) {
-                handlerStatus.await();// 阻塞
+            while (simpleClientHandlers.size() == 0) {
+                // 阻塞10ms
+                handlerStatus.await(10, TimeUnit.MILLISECONDS);
             }
             return simpleClientHandlers;
         } finally {

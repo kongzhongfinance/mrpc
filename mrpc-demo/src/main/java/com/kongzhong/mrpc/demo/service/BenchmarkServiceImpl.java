@@ -6,7 +6,7 @@ import com.kongzhong.mrpc.annotation.RpcService;
 import java.util.List;
 import java.util.Map;
 
-@RpcService(value = BenchmarkService.class)
+@RpcService
 public class BenchmarkServiceImpl implements BenchmarkService {
 
     @Override
