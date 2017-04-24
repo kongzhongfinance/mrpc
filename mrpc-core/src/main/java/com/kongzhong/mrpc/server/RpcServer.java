@@ -179,6 +179,8 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             } else {
                 log.warn("mrpc server start fail.");
             }
+        } catch (Exception e) {
+            log.error("start rpc server error", e);
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
