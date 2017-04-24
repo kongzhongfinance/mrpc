@@ -128,8 +128,8 @@ public class Connections {
         lock.lock();
         try {
             while (simpleClientHandlers.size() == 0) {
-                // 阻塞10ms
-                handlerStatus.await(10, TimeUnit.MILLISECONDS);
+                // 阻塞
+                handlerStatus.await();
             }
             return simpleClientHandlers;
         } finally {
