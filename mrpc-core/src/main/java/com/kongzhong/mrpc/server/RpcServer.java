@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.model.ServerConfig;
+import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.model.NoInterface;

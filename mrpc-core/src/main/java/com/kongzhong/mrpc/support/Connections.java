@@ -1,10 +1,10 @@
-package com.kongzhong.mrpc.ha;
+package com.kongzhong.mrpc.support;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.model.ClientConfig;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import com.kongzhong.mrpc.transport.SimpleRequestCallback;
 import io.netty.channel.EventLoopGroup;
@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;

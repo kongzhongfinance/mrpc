@@ -8,15 +8,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.config.Constant;
-import com.kongzhong.mrpc.ha.Connections;
-import com.kongzhong.mrpc.model.ServerConfig;
+import com.kongzhong.mrpc.support.Connections;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Zookeeper服务发现

@@ -3,8 +3,7 @@ package com.kongzhong.mrpc.registry;
 import com.github.zkclient.IZkClient;
 import com.github.zkclient.ZkClient;
 import com.kongzhong.mrpc.config.Constant;
-import com.kongzhong.mrpc.model.ClientConfig;
-import com.kongzhong.mrpc.model.ServerConfig;
+import com.kongzhong.mrpc.config.ServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

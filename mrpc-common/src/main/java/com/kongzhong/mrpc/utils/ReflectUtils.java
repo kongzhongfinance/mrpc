@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 反射工具类
@@ -69,6 +66,28 @@ public class ReflectUtils {
                 methodPool.put(key, method);
                 return method;
             }
+        }
+        return null;
+    }
+
+    /**
+     * 根据类型获取method
+     *
+     * @param type
+     * @param methodName
+     * @param paramTypes
+     * @return
+     */
+    public static Method method(Class<?> type, String methodName, Class[] paramTypes) {
+        try {
+            String key = type.getName() + ":" + methodName + ":" + Arrays.toString(paramTypes);
+            if (methodPool.containsKey(key)) {
+                return methodPool.get(key);
+            }
+            Method method = type.getMethod(methodName, paramTypes);
+            methodPool.put(key, method);
+            return method;
+        } catch (Exception e) {
         }
         return null;
     }

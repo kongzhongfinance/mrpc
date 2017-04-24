@@ -1,11 +1,11 @@
-package com.kongzhong.mrpc.model;
+package com.kongzhong.mrpc.support;
 
 /**
  * 负载均衡策略
  * <p>
  * Created by biezhi on 2016/12/30.
  */
-public enum Strategy {
+public enum LBStrategy {
 
     POLL("轮询"),
     RANDOM("随机"),
@@ -13,7 +13,7 @@ public enum Strategy {
 
     private final String desc;
 
-    Strategy(String desc) {
+    LBStrategy(String desc) {
         this.desc = desc;
     }
 

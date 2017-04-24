@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.model;
+package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;

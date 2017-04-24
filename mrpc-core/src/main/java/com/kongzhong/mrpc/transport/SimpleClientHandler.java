@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.RpcFuture;
-import com.kongzhong.mrpc.ha.Connections;
+import com.kongzhong.mrpc.support.Connections;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;

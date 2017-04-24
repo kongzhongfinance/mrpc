@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.transport.tcp;
 
 import com.kongzhong.mrpc.codec.RpcEncoder;
-import com.kongzhong.mrpc.model.ClientConfig;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;

@@ -1,7 +1,9 @@
-package com.kongzhong.mrpc.model;
+package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.support.FailStrategy;
+import com.kongzhong.mrpc.support.LBStrategy;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +23,11 @@ public class ClientConfig {
 
     private boolean isHttp;
 
-    private Strategy strategy = Strategy.POLL;
+    private LBStrategy lbStrategy = LBStrategy.POLL;
+
+    private FailStrategy failStrategy = FailStrategy.FAILOVER;
+
+    private int retryCount = 3;
 
     private static final ClientConfig conf = new ClientConfig();
 

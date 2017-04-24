@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
-import com.kongzhong.mrpc.ha.Connections;
-import com.kongzhong.mrpc.model.ClientConfig;
+import com.kongzhong.mrpc.support.Connections;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;

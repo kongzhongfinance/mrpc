@@ -21,9 +21,13 @@ public class RpcFuture {
     }
 
     public Object get() throws InterruptedException {
+        return this.get(10);
+    }
+
+    public Object get(int seconds) throws InterruptedException {
         try {
             lock.lock();
-            finish.await(10, TimeUnit.SECONDS);
+            finish.await(seconds, TimeUnit.SECONDS);
             return response != null ? response.getResult() : null;
         } finally {
             lock.unlock();
