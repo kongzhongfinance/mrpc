@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.client;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.cluster.Connections;
@@ -21,6 +22,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +57,8 @@ public class RpcClient implements ApplicationContextAware, InitializingBean {
     private ServiceDiscovery serviceDiscovery;
 
     private boolean isLoad;
+
+    private List<Class<?>> referers = Lists.newArrayList();
 
     public RpcClient(String serverAddr) {
         this.serverAddr = serverAddr;
@@ -113,14 +118,21 @@ public class RpcClient implements ApplicationContextAware, InitializingBean {
         }
     }
 
+    public void bindReferer(Class<?>... interfaces) {
+        if (null != interfaces) {
+            referers.addAll(Arrays.asList(interfaces));
+        }
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         Map<String, ClientBean> clientBeanMap = cxt.getBeansOfType(ClientBean.class);
         RpcClient rpcClient = cxt.getBean(RpcClient.class);
 
+        ConfigurableApplicationContext context = (ConfigurableApplicationContext) cxt;
+        DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
+
         if (null != rpcClient && clientBeanMap != null && !clientBeanMap.isEmpty()) {
-            ConfigurableApplicationContext context = (ConfigurableApplicationContext) cxt;
-            DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
             for (ClientBean bean : clientBeanMap.values()) {
                 String id = bean.getId();
                 String interfaceName = bean.getInterfaceName();
@@ -134,11 +146,28 @@ public class RpcClient implements ApplicationContextAware, InitializingBean {
                 }
             }
         }
+
+        if (null != referers && !referers.isEmpty()) {
+            referers.forEach(clazz -> {
+                String interfaceName = clazz.getName();
+                try {
+                    Object object = rpcClient.getProxyBean(clazz);
+
+                    String simeName = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
+
+                    dbf.registerSingleton(interfaceName, object);
+                    dbf.registerSingleton(simeName, object);
+                    log.info("bind rpc service [{}]", interfaceName);
+                } catch (Exception e) {
+                    log.warn("Not found rpc service [{}] component!", interfaceName);
+                }
+            });
+        }
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         cxt = applicationContext;
     }
-    
+
 }
