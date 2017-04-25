@@ -1,5 +1,8 @@
 package com.kongzhong.mrpc.transport.tcp;
 
+import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.ServiceException;
+import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -7,6 +10,7 @@ import com.kongzhong.mrpc.transport.SimpleResponseCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -28,8 +32,12 @@ public class TcpResponseCallback extends SimpleResponseCallback<Boolean> {
             response.setResult(result);
             return Boolean.TRUE;
         } catch (Exception e) {
-            response.setException(e);
-            log.error("rpc server invoke error", e);
+            Exception re = e;
+            if (e instanceof InvocationTargetException) {
+                re = new ServiceException(e.getCause());
+            }
+            response.setException(re);
+            log.error("rpc server invoke error", re);
             return Boolean.FALSE;
         } finally {
             RpcContext.remove();

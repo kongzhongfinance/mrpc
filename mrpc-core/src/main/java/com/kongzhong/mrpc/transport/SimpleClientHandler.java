@@ -51,7 +51,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         Connections.me().remove(this);
-        log.debug("Channel inactive: [{}]", this.channel);
+        log.debug("Channel inactive: {}", this.channel);
         // 创建异步重连
         final EventLoop eventLoopGroup = this.channel.eventLoop();
         TPE.submit(new SimpleRequestCallback(eventLoopGroup, this.channel.remoteAddress()));

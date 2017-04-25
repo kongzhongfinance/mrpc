@@ -76,7 +76,7 @@ public class SimpleRequestCallback implements Callable<Boolean> {
                 Connections.me().addRpcClientHandler(handler);
             } else {
                 // 启动重连
-                log.warn("Client reconnect ({})", retries.get());
+                log.warn("Client reconnect [{}] ({})", serverAddress, retries.get());
                 final EventLoop loop = future.channel().eventLoop();
                 loop.schedule(() -> {
                     if (retries.get() >= DEFAULT_TRCRY) {

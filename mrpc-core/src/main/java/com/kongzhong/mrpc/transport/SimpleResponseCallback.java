@@ -10,6 +10,8 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.server.RpcMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.reflect.FastClass;
+import org.springframework.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -71,13 +73,15 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         Object[] parameters = request.getParameters();
         Method method = request.getMethod();
 
+        FastClass serviceFastClass = FastClass.create(serviceClass);
+        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
 
         if (!hasInterceptors) {
-            return method.invoke(serviceBean, parameters);
+            return serviceFastMethod.invoke(serviceBean, parameters);
         }
 
         //执行拦截器
-        Invocation invocation = new Invocation(serviceBean, parameters, request, interceptors);
+        Invocation invocation = new Invocation(serviceFastMethod, serviceBean, parameters, request, interceptors);
         return invocation.next();
     }
 
