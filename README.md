@@ -10,8 +10,9 @@
 - 负载均衡策略
 - 容错处理(FailOver/FailFast)
 - 拦截器处理
+- 客户端断线重连
 
-## HTTP协议快速入门
+## 快速入门
 
 ### 创建服务端
 
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService{
 
 ```java
 RpcClient client = new RpcClient("127.0.0.1:5066");
+// http协议，默认情况走TCP
 client.setTransfer("http");
 
 UserService userService = client.getProxyBean(UserService.class);
