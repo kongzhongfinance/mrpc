@@ -42,6 +42,12 @@
             <version>${netty.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>1.4.0.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 

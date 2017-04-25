@@ -12,6 +12,7 @@ import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,97 +32,16 @@ import java.util.Map;
  */
 @Data
 @Slf4j
-@NoArgsConstructor
-public class RpcClient implements ApplicationContextAware, InitializingBean {
+public class RpcClient extends SimpleRpcClient implements ApplicationContextAware, InitializingBean {
 
-    private ApplicationContext cxt;
-
-    /**
-     * rpc服务地址
-     */
-    private String serverAddr;
-
-    /**
-     * 序列化类型，默认protostuff
-     */
-    private String serialize = SerializeEnum.PROTOSTUFF.name();
-
-    /**
-     * 传输协议，默认tcp协议
-     */
-    private String transport = TransportEnum.TCP.name();
-
-    /**
-     * 服务发现
-     */
-    private ServiceDiscovery serviceDiscovery;
-
-    private boolean isLoad;
-
-    private List<Class<?>> referers = Lists.newArrayList();
+    protected ApplicationContext cxt;
 
     public RpcClient(String serverAddr) {
-        this.serverAddr = serverAddr;
+        super(serverAddr);
     }
 
     public RpcClient(ServiceDiscovery serviceDiscovery) {
-        this.serviceDiscovery = serviceDiscovery;
-    }
-
-    public void stop() {
-        Connections.me().shutdown();
-    }
-
-    /***
-     * 动态代理,获得代理后的对象
-     * @param rpcInterface
-     * @param <T>
-     * @return
-     */
-    public <T> T getProxyBean(Class<T> rpcInterface) {
-        if (!isLoad) {
-            this.init();
-        }
-        return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
-    }
-
-    private void init() {
-        synchronized (Connections.class) {
-            Connections connections = Connections.me();
-            ClientConfig clientConfig = ClientConfig.me();
-
-            RpcSerialize rpcSerialize = null;
-            SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
-            if (null == serializeEnum) {
-                throw new InitializeException("serialize type [" + serialize + "] error.");
-            }
-
-            if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
-                clientConfig.setRpcSerialize(new ProtostuffSerialize());
-            }
-
-            TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
-            if (null == transportEnum) {
-                throw new InitializeException("transport type [" + transport + "] error.");
-            }
-            if (transportEnum.equals(TransportEnum.HTTP)) {
-                clientConfig.setHttp(true);
-            }
-            clientConfig.setTransport(transportEnum);
-
-            if (null == serviceDiscovery) {
-                connections.updateNodes(Sets.newHashSet(serverAddr));
-            } else {
-                serviceDiscovery.discover();
-            }
-            isLoad = true;
-        }
-    }
-
-    public void bindReferer(Class<?>... interfaces) {
-        if (null != interfaces) {
-            referers.addAll(Arrays.asList(interfaces));
-        }
+        super(serviceDiscovery);
     }
 
     @Override
@@ -140,7 +60,7 @@ public class RpcClient implements ApplicationContextAware, InitializingBean {
                     Class<?> clazz = Class.forName(interfaceName);
                     Object object = rpcClient.getProxyBean(clazz);
                     dbf.registerSingleton(id, object);
-                    log.info("bind rpc service [{}]", interfaceName);
+                    log.info("Bind rpc service [{}]", interfaceName);
                 } catch (Exception e) {
                     log.warn("Not found rpc service [{}] component!", interfaceName);
                 }
@@ -157,7 +77,7 @@ public class RpcClient implements ApplicationContextAware, InitializingBean {
 
                     dbf.registerSingleton(interfaceName, object);
                     dbf.registerSingleton(simeName, object);
-                    log.info("bind rpc service [{}]", interfaceName);
+                    log.info("Bind rpc service [{}]", interfaceName);
                 } catch (Exception e) {
                     log.warn("Not found rpc service [{}] component!", interfaceName);
                 }
@@ -167,6 +87,7 @@ public class RpcClient implements ApplicationContextAware, InitializingBean {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        log.info("Initializing rpc client.");
         cxt = applicationContext;
     }
 

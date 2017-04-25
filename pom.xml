@@ -15,7 +15,6 @@
         <module>mrpc-registry-zk</module>
         <module>mrpc-registry-consul</module>
         <module>mrpc-demo</module>
-        <module>mrpc-spring-boot</module>
     </modules>
 
     <properties>

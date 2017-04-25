@@ -65,13 +65,13 @@ public class SimpleRequestCallback implements Callable<Boolean> {
              */
             public void operationComplete(final ChannelFuture channelFuture) throws Exception {
                 if (channelFuture.isSuccess()) {
-                    log.debug("client connect success");
+                    log.debug("Client connect success");
                     //和服务器连接成功后, 获取MessageSendHandler对象
                     Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
                     SimpleClientHandler handler = channelFuture.channel().pipeline().get(clientHandler);
                     Connections.me().addRpcClientHandler(handler);
                 } else {
-                    log.error("client connect fail", channelFuture);
+                    log.error("Client connect fail", channelFuture);
                 }
             }
         });

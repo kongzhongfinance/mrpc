@@ -35,21 +35,21 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
         this.channel = ctx.channel();
-        log.debug("channel registered");
+        log.debug("Channel registered");
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.socketAddress = this.channel.remoteAddress();
-        log.debug("channel actived");
+        log.debug("Channel actived");
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         Connections.me().remove(this);
-        log.debug("channelInactive: [{}]", this.channel);
+        log.debug("Channel inactive: [{}]", this.channel);
         // 创建异步重连
 
     }

@@ -13,7 +13,7 @@
 
     <logger name="log4j.logger.com.kongzhong.mrpc.metric.MetricInterceptor" level="debug"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </root>
 
