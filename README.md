@@ -44,4 +44,4 @@ System.out.println(userService.hello("mrpc"));
 
 ### 更多例子
 
-[这里](/mrpc-demo/src/main/java/com/kongzhong/mrpc/demo)有更多的使用案例。
+[这里](/mrpc-demo)有更多的使用案例。

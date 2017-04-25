@@ -1,19 +1,20 @@
 package com.kongzhong.mrpc.transport;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 抽象客户端请求处理器
@@ -25,6 +26,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     public static final Logger log = LoggerFactory.getLogger(SimpleClientHandler.class);
 
+    private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+
     protected Map<String, RpcFuture> mapCallBack = new ConcurrentHashMap<>();
 
     protected volatile Channel channel;
@@ -35,7 +38,6 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
         this.channel = ctx.channel();
-        log.debug("Channel registered");
     }
 
     @Override
@@ -51,7 +53,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         Connections.me().remove(this);
         log.debug("Channel inactive: [{}]", this.channel);
         // 创建异步重连
-
+        final EventLoop eventLoopGroup = this.channel.eventLoop();
+        TPE.submit(new SimpleRequestCallback(eventLoopGroup, this.channel.remoteAddress()));
     }
 
     /**
