@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.io.Serializable;
  * 请求
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class RpcRequest implements Serializable {
