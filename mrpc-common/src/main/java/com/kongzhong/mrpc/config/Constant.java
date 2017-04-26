@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.config;
 
-import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 
 /**
