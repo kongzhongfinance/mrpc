@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.cluster.ha;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
+import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -26,7 +27,7 @@ public class FailOverHaStrategy implements HaStrategy {
 
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) {
-        int rc = getRetryCount();
+        int rc = DefaultConfig.serviceRecryCount();
         if (rc < 0) {
             rc = 0;
         }
@@ -43,18 +44,6 @@ public class FailOverHaStrategy implements HaStrategy {
             }
         }
         throw new RpcException("FailOverHaStrategy.invoke should not come here!");
-    }
-
-
-    /**
-     * 获取重试次数
-     *
-     * @param method
-     * @return
-     */
-    private int getRetryCount() {
-        int defaultRetryCount = ClientConfig.me().getRetryCount();
-        return defaultRetryCount;
     }
 
     public List<RpcInvoker> getReferers(LoadBalance loadBalance) {

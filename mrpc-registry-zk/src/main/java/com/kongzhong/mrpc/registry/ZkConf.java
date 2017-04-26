@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.config;
+package com.kongzhong.mrpc.registry;
 
 public class ZkConf {
 

@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.client;
 
 
+import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 
@@ -21,7 +22,7 @@ public class RpcFuture {
     }
 
     public Object get() throws Exception {
-        return this.get(10);
+        return this.get(DefaultConfig.serviceTimeout());
     }
 
     public Object get(int seconds) throws Exception {

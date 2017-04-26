@@ -34,4 +34,21 @@ public class DefaultConfig {
         return TransportEnum.TCP.name();
     }
 
+    /**
+     * 默认服务调用超时重试次数
+     *
+     * @return
+     */
+    public static int serviceRecryCount() {
+        return 3;
+    }
+
+    /**
+     * 服务调用超时时间，单位/秒
+     *
+     * @return
+     */
+    public static int serviceTimeout() {
+        return 10;
+    }
 }
