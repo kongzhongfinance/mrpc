@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,9 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
             Invocation invocation = new Invocation(serviceFastMethod, serviceBean, parameters, request, interceptors);
             return invocation.next();
         } catch (Exception e) {
+            if (e instanceof InvocationTargetException) {
+                throw new RpcException(e.getCause());
+            }
             throw new RpcException(e);
         }
     }

@@ -21,7 +21,4 @@ public class RpcRequest implements Serializable {
     private Object[] parameters;
     private Class<?> returnType;
 
-    public RpcRequest() {
-    }
-
 }

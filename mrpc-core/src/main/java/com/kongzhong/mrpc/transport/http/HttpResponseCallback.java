@@ -1,7 +1,8 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.google.common.base.Throwables;
-import com.kongzhong.mrpc.exception.HttpException;
+import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -13,6 +14,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -42,11 +44,17 @@ public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
         } catch (Exception e) {
-            rpcResponse.setException(Throwables.getStackTraceAsString(e));
-            log.error("rpc server invoke error", e);
+            Throwable t = e instanceof InvocationTargetException ? e.getCause() : e;
+            t = t instanceof RpcException ? t.getCause() : t;
+
+            if (t instanceof ServiceException || t instanceof RuntimeException) {
+                rpcResponse.setException(t.getMessage());
+            } else {
+                rpcResponse.setException(Throwables.getStackTraceAsString(t));
+            }
+            log.error("rpc server invoke error", t);
         } finally {
             RpcContext.remove();
-
             String body = JSONUtils.toJSONString(rpcResponse);
             ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());

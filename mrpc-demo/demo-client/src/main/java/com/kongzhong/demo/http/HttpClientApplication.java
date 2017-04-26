@@ -36,6 +36,10 @@ public class HttpClientApplication {
 
         userService.testArray(new String[]{"a", "b", "c"});
 
+        userService.testNormalExp();
+
+        userService.testBizExp();
+
         rpcClient.stop();
     }
 }

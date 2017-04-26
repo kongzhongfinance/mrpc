@@ -18,8 +18,4 @@ public class RpcResponse implements Serializable {
     private String exception;
     private String returnType;
 
-    public RpcResponse() {
-
-    }
-
 }
