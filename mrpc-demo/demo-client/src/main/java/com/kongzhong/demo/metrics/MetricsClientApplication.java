@@ -1,4 +1,4 @@
-package demo.metrics;
+package com.kongzhong.demo.metrics;
 
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.service.UserService;

@@ -5,6 +5,7 @@ import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +26,7 @@ public class FailOverHaStrategy implements HaStrategy {
 
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) {
-        int rc = getRetryCount(request.getMethod());
+        int rc = getRetryCount();
         if (rc < 0) {
             rc = 0;
         }
@@ -34,8 +35,7 @@ public class FailOverHaStrategy implements HaStrategy {
             RpcInvoker referer = handlers.get(i % handlers.size());
             try {
                 return referer.invoke(request);
-            } catch (Throwable e) {
-                // 对于业务异常，直接抛出
+            } catch (Exception e) {
                 if (i >= rc) {
                     throw new RpcException(e);
                 }
@@ -52,7 +52,7 @@ public class FailOverHaStrategy implements HaStrategy {
      * @param method
      * @return
      */
-    private int getRetryCount(Method method) {
+    private int getRetryCount() {
         int defaultRetryCount = ClientConfig.me().getRetryCount();
         return defaultRetryCount;
     }

@@ -20,7 +20,7 @@ public class RpcInvoker<T> {
 
     public Object invoke(RpcRequest request) throws Exception {
         if (!clientHandler.getChannel().isActive()) {
-            throw new RpcException("clientHandler is unactive.");
+            throw new RpcException("Client Channel is unactive.");
         }
         RpcFuture rpcFuture = clientHandler.sendRequest(request);
         return rpcFuture.get();

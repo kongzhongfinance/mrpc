@@ -25,6 +25,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     public RpcFuture sendRequest(RpcRequest request) {
         RpcFuture rpcFuture = new RpcFuture(request);
         mapCallBack.put(request.getRequestId(), rpcFuture);
+        log.debug("tcp client request: {}", request);
         channel.writeAndFlush(request);
         return rpcFuture;
     }

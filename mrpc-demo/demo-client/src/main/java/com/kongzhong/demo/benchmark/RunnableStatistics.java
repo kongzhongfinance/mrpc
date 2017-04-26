@@ -1,4 +1,4 @@
-package demo.benchmark;
+package com.kongzhong.demo.benchmark;
 
 public class RunnableStatistics {
     public int statisticTime;

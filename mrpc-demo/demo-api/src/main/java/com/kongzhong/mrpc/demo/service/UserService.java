@@ -27,4 +27,9 @@ public interface UserService {
     Map toMap(Map<String, Integer> map);
 
     void testArray(String[] strs);
+
+    void testBizExp();
+
+    void testNormalExp();
+
 }

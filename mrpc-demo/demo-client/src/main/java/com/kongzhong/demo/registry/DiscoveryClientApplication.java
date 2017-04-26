@@ -1,4 +1,4 @@
-package demo.registry;
+package com.kongzhong.demo.registry;
 
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.service.UserService;

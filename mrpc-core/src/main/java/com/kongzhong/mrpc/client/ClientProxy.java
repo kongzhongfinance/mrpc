@@ -1,11 +1,11 @@
 package com.kongzhong.mrpc.client;
 
 import com.google.common.reflect.AbstractInvocationHandler;
-import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.cluster.ha.FailOverHaStrategy;
 import com.kongzhong.mrpc.cluster.ha.HaStrategy;
 import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.cluster.loadblance.SimpleLoadBalance;
+import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.lang.reflect.Method;
@@ -30,7 +30,7 @@ public class ClientProxy<T> extends AbstractInvocationHandler {
     @Override
     public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
 
-        RpcRequest request = new RpcRequest(StringUtils.getUUID(), method,
+        RpcRequest request = new RpcRequest(StringUtils.getUUID(),
                 method.getDeclaringClass().getName(), method.getName(),
                 method.getParameterTypes(), args, method.getReturnType());
 

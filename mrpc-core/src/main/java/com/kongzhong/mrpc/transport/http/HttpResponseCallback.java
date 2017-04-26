@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.exception.HttpException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -41,9 +42,8 @@ public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
         } catch (Exception e) {
-            rpcResponse.setException(new HttpException(e));
-            throw e;
-//            log.error("rpc server invoke error", t);
+            rpcResponse.setException(Throwables.getStackTraceAsString(e));
+            log.error("rpc server invoke error", e);
         } finally {
             RpcContext.remove();
 

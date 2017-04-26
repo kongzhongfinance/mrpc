@@ -196,7 +196,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         RpcRequest request = new RpcRequest();
         request.setRequestId(requestId);
         request.setClassName(serviceName);
-        request.setMethod(method);
         request.setMethodName(method.getName());
         request.setParameterTypes(method.getParameterTypes());
         request.setReturnType(method.getReturnType());
@@ -218,7 +217,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("", cause);
+        log.error("Http server handler error", cause);
         sendError(ctx, RpcRet.error(Throwables.getStackTraceAsString(cause)));
         ctx.close();
     }

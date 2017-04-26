@@ -1,4 +1,4 @@
-package demo.benchmark;
+package com.kongzhong.demo.benchmark;
 
 import java.text.MessageFormat;
 import java.util.List;

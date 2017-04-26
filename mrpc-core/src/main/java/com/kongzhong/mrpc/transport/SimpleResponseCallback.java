@@ -8,6 +8,7 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.server.RpcMapping;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.reflect.FastClass;
@@ -58,31 +59,36 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
      * @throws Throwable
      */
     protected Object handle(RpcRequest request) throws Exception {
-        RpcContext.set();
+        try {
+            RpcContext.set();
 
-        String className = request.getClassName();
-        Object serviceBean = handlerMap.get(className);
+            String className = request.getClassName();
+            Object serviceBean = handlerMap.get(className);
 
-        if (null == serviceBean) {
-            throw new RpcException("not found service [" + className + "]");
+            if (null == serviceBean) {
+                throw new RpcException("not found service [" + className + "]");
+            }
+
+            Class<?> serviceClass = serviceBean.getClass();
+            String methodName = request.getMethodName();
+            Class<?>[] parameterTypes = request.getParameterTypes();
+            Object[] parameters = request.getParameters();
+
+            Method method = ReflectUtils.method(serviceClass, methodName, parameterTypes);
+
+            FastClass serviceFastClass = FastClass.create(serviceClass);
+            FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
+
+            if (!hasInterceptors) {
+                return serviceFastMethod.invoke(serviceBean, parameters);
+            }
+
+            //执行拦截器
+            Invocation invocation = new Invocation(serviceFastMethod, serviceBean, parameters, request, interceptors);
+            return invocation.next();
+        } catch (Exception e) {
+            throw new RpcException(e);
         }
-
-        Class<?> serviceClass = serviceBean.getClass();
-        String methodName = request.getMethodName();
-        Class<?>[] parameterTypes = request.getParameterTypes();
-        Object[] parameters = request.getParameters();
-        Method method = request.getMethod();
-
-        FastClass serviceFastClass = FastClass.create(serviceClass);
-        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
-
-        if (!hasInterceptors) {
-            return serviceFastMethod.invoke(serviceBean, parameters);
-        }
-
-        //执行拦截器
-        Invocation invocation = new Invocation(serviceFastMethod, serviceBean, parameters, request, interceptors);
-        return invocation.next();
     }
 
 }

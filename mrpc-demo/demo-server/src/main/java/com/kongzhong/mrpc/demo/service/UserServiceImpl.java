@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.annotation.RpcService;
+import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.model.Person;
 
 import java.util.Arrays;
@@ -13,6 +14,10 @@ import java.util.Map;
  */
 @RpcService
 public class UserServiceImpl implements UserService {
+
+    public UserServiceImpl() {
+
+    }
 
     @Override
     public int add(int a, int b) {
@@ -55,4 +60,16 @@ public class UserServiceImpl implements UserService {
     public void testArray(String[] strs) {
         System.out.println("接收到：" + Arrays.toString(strs));
     }
+
+    @Override
+    public void testBizExp() {
+        System.out.println("测试业务异常");
+        throw new BizException("xx对象不能为空");
+    }
+
+    @Override
+    public void testNormalExp() {
+        int a = 1 / 0;
+    }
+
 }

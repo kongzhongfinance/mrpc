@@ -1,4 +1,4 @@
-package demo.benchmark;
+package com.kongzhong.demo.benchmark;
 
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.service.BenchmarkService;

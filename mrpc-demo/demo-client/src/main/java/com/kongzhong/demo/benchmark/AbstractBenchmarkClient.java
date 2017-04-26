@@ -1,4 +1,4 @@
-package demo.benchmark;
+package com.kongzhong.demo.benchmark;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

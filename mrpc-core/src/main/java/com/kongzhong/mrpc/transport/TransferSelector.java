@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.transport;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
+import com.kongzhong.mrpc.serialize.KyroSerialize;
 import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
@@ -40,6 +41,10 @@ public class TransferSelector {
 
         if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
             rpcSerialize = new ProtostuffSerialize();
+        }
+
+        if (serializeEnum.equals(SerializeEnum.KRYO)) {
+            rpcSerialize = new KyroSerialize();
         }
 
         TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());

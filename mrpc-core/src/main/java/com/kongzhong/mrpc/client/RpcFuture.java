@@ -28,9 +28,6 @@ public class RpcFuture {
         try {
             lock.lock();
             finish.await(seconds, TimeUnit.SECONDS);
-            if (null != response.getException()) {
-                throw response.getException();
-            }
             return response.getResult();
         } finally {
             lock.unlock();

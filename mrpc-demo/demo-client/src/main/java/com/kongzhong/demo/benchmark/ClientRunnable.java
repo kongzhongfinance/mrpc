@@ -1,4 +1,4 @@
-package demo.benchmark;
+package com.kongzhong.demo.benchmark;
 
 public interface ClientRunnable extends Runnable {
 

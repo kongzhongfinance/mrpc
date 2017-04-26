@@ -4,6 +4,7 @@ import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
+import com.kongzhong.mrpc.exception.SerializeException;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 
@@ -33,7 +34,7 @@ public class ProtostuffSerialize implements RpcSerialize {
             Schema<T> schema = getSchema(cls);
             return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
         } catch (Exception e) {
-            throw new RuntimeException("serialize error", e);
+            throw new SerializeException(e.getMessage(), e);
         } finally {
             buffer.clear();
         }
@@ -45,21 +46,22 @@ public class ProtostuffSerialize implements RpcSerialize {
     @Override
     public <T> T deserialize(byte[] data, Class<T> cls) throws Exception {
         try {
-            T message = objenesis.newInstance(cls);
+            T message = (T) objenesis.newInstance(cls);
             Schema<T> schema = getSchema(cls);
             ProtostuffIOUtil.mergeFrom(data, message, schema);
             return message;
         } catch (Exception e) {
-            throw new RuntimeException("deserialize error", e);
+            throw new SerializeException(e.getMessage(), e);
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T> Schema<T> getSchema(Class<T> cls) {
         Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
         if (schema == null) {
             schema = RuntimeSchema.createFrom(cls);
-            cachedSchema.put(cls, schema);
+            if (schema != null) {
+                cachedSchema.put(cls, schema);
+            }
         }
         return schema;
     }

@@ -1,4 +1,4 @@
-package demo.http;
+package com.kongzhong.demo.http;
 
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.model.Person;

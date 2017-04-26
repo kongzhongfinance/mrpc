@@ -4,17 +4,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * 响应
  */
 @Data
-@NoArgsConstructor
 @ToString
-public class RpcResponse {
+public class RpcResponse implements Serializable {
 
     private String requestId;
     private Object result;
-    private Exception exception;
+    private String exception;
     private String returnType;
+
+    public RpcResponse() {
+
+    }
 
 }

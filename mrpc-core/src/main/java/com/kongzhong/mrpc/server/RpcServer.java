@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.config.Constant;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
@@ -53,12 +54,12 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     /**
      * 序列化类型，默认protostuff
      */
-    private String serialize = SerializeEnum.PROTOSTUFF.name();
+    private String serialize = Constant.DEFAULT_SERIALIZE.name();
 
     /**
      * 传输协议，默认tcp协议
      */
-    private String transport = TransportEnum.TCP.name();
+    private String transport = Constant.DEFAULT_TRANSPORT.name();
 
     /**
      * 服务注册实例

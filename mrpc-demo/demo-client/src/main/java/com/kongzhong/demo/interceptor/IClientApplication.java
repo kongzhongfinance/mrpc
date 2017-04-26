@@ -1,4 +1,4 @@
-package demo.interceptor;
+package com.kongzhong.demo.interceptor;
 
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.service.UserService;
