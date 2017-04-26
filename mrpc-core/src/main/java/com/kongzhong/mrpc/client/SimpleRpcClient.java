@@ -5,28 +5,17 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
-import com.kongzhong.mrpc.config.Constant;
-import com.kongzhong.mrpc.enums.SerializeEnum;
+import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
-import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
-import com.kongzhong.mrpc.serialize.KyroSerialize;
-import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * rpc客户端
@@ -43,12 +32,12 @@ public class SimpleRpcClient {
     /**
      * 序列化类型，默认protostuff
      */
-    protected String serialize = Constant.DEFAULT_SERIALIZE.name();
+    protected RpcSerialize serialize = DefaultConfig.serialize();
 
     /**
      * 传输协议，默认tcp协议
      */
-    protected String transport = Constant.DEFAULT_TRANSPORT.name();
+    protected String transport = DefaultConfig.transport();
 
     /**
      * 服务发现
@@ -93,19 +82,11 @@ public class SimpleRpcClient {
             Connections connections = Connections.me();
             ClientConfig clientConfig = ClientConfig.me();
 
-            RpcSerialize rpcSerialize = null;
-            SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize);
-            if (null == serializeEnum) {
-                throw new InitializeException("serialize type [" + serialize + "] error.");
+            if (null == serialize) {
+                throw new InitializeException("serialize not is null.");
             }
 
-            if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
-                clientConfig.setRpcSerialize(new ProtostuffSerialize());
-            }
-
-            if (serializeEnum.equals(SerializeEnum.KRYO)) {
-                clientConfig.setRpcSerialize(new KyroSerialize());
-            }
+            clientConfig.setRpcSerialize(serialize);
 
             TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
             if (null == transportEnum) {

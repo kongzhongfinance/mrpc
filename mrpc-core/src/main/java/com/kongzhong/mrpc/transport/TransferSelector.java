@@ -1,10 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
-import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
-import com.kongzhong.mrpc.serialize.KyroSerialize;
-import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
@@ -18,11 +15,10 @@ import io.netty.channel.ChannelHandler;
  */
 public class TransferSelector {
 
-    private String serialize;
     private RpcSerialize rpcSerialize;
 
-    public TransferSelector(String serialize) {
-        this.serialize = serialize;
+    public TransferSelector(RpcSerialize rpcSerialize) {
+        this.rpcSerialize = rpcSerialize;
     }
 
     /**
@@ -34,17 +30,8 @@ public class TransferSelector {
      */
     public ChannelHandler getServerChannelHandler(String transport) {
 
-        SerializeEnum serializeEnum = SerializeEnum.valueOf(serialize.toUpperCase());
-        if (null == serializeEnum) {
-            throw new InitializeException("serialize type [" + serialize + "] error.");
-        }
-
-        if (serializeEnum.equals(SerializeEnum.PROTOSTUFF)) {
-            rpcSerialize = new ProtostuffSerialize();
-        }
-
-        if (serializeEnum.equals(SerializeEnum.KRYO)) {
-            rpcSerialize = new KyroSerialize();
+        if (null == rpcSerialize) {
+            throw new InitializeException("rpc server serialize is null.");
         }
 
         TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
@@ -52,9 +39,6 @@ public class TransferSelector {
             throw new InitializeException("transfer type [" + transport + "] error.");
         }
 
-        if (null == rpcSerialize) {
-            throw new InitializeException("rpc server serialize is null.");
-        }
 
         if (transportEnum.equals(TransportEnum.TCP)) {
             return new TcpServerChannelInitializer(rpcSerialize);

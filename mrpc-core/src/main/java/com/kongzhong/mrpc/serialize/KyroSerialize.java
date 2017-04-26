@@ -3,11 +3,14 @@ package com.kongzhong.mrpc.serialize;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.kongzhong.mrpc.exception.SerializeException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
+ * Kyro序列化实现
+ *
  * @author biezhi
  *         2017/4/26
  */
@@ -24,37 +27,30 @@ public class KyroSerialize implements RpcSerialize {
         }
     };
 
-    private Kryo get() {
-        return kryos.get();
-    }
-
     @Override
     public <T> byte[] serialize(T obj) throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        Output output = new Output(bos);
-
-        Kryo kryo = get();
-        // writeObjectOrNull object.getClass()
-        kryo.writeClassAndObject(output, obj);
-        byte[] bs = output.toBytes();
-
-        bos.close();
-        output.close();
-
-        return bs;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             Output output = new Output(bos)) {
+            Kryo kryo = kryos.get();
+            // writeObjectOrNull object.getClass()
+            kryo.writeClassAndObject(output, obj);
+            byte[] bs = output.toBytes();
+            return bs;
+        } catch (Exception e) {
+            throw new SerializeException(e);
+        }
     }
 
     @Override
     public <T> T deserialize(byte[] data, Class<T> clazz) throws Exception {
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        Input input = new Input(bis);
-
-        Kryo kryo = get();
-        Object bean = kryo.readClassAndObject(input);
-
-        bis.close();
-        input.close();
-        return clazz.cast(bean);
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
+             Input input = new Input(bis)) {
+            Kryo kryo = kryos.get();
+            Object bean = kryo.readClassAndObject(input);
+            return clazz.cast(bean);
+        } catch (Exception e) {
+            throw new SerializeException(e);
+        }
     }
 
 }

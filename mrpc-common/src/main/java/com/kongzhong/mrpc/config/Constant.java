@@ -16,8 +16,4 @@ public interface Constant {
 
     int RPC_RETRY_COUNT = 3;
 
-    SerializeEnum DEFAULT_SERIALIZE = SerializeEnum.KRYO;
-
-    TransportEnum DEFAULT_TRANSPORT = TransportEnum.TCP;
-
 }

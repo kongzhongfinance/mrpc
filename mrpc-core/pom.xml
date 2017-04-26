@@ -58,6 +58,14 @@
             <version>4.0.0</version>
         </dependency>
 
+        <!--fst-->
+        <dependency>
+            <groupId>de.ruedigermoeller</groupId>
+            <artifactId>fst</artifactId>
+            <version>2.50</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--statsd：可选项-->
         <dependency>
             <groupId>com.timgroup</groupId>

@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
-import com.kongzhong.mrpc.enums.SerializeEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.model.ClientBean;
