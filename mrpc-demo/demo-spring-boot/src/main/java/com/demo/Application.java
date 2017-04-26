@@ -2,6 +2,7 @@ package com.demo;
 
 import com.kongzhong.mrpc.client.BootRpcClient;
 import com.kongzhong.mrpc.demo.service.UserService;
+import com.kongzhong.mrpc.enums.TransportEnum;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,8 @@ public class Application {
 
     @Bean
     public BootRpcClient bootRpcClient() {
-        BootRpcClient bootRpcClient = new BootRpcClient("127.0.0.1:5006");
+        BootRpcClient bootRpcClient = new BootRpcClient("127.0.0.1:5070");
+        bootRpcClient.setTransport(TransportEnum.HTTP.name());
         bootRpcClient.bindReferer(UserService.class);
         return bootRpcClient;
     }

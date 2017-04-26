@@ -76,9 +76,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
 
     @Override
     public void setEnvironment(Environment environment) {
-        this.serverAddr = environment.getProperty("mrpc.client.serverAddr", "127.0.0.1:5066");
-        log.info("mrpc.client.serverAddr: {}", this.serverAddr);
-
         referers.forEach(clazz -> {
             String interfaceName = clazz.getName();
             try {
