@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.exception.HttpException;
+import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;

@@ -59,7 +59,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
      * @return
      * @throws Throwable
      */
-    protected Object handle(RpcRequest request) throws Exception {
+    protected Object handle(RpcRequest request) throws Throwable {
         try {
             RpcContext.set();
 
@@ -89,9 +89,9 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
             return invocation.next();
         } catch (Exception e) {
             if (e instanceof InvocationTargetException) {
-                throw new RpcException(e.getCause());
+                throw e.getCause();
             }
-            throw new RpcException(e);
+            throw e;
         }
     }
 

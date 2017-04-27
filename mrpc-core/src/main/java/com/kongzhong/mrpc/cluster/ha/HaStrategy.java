@@ -9,6 +9,6 @@ import com.kongzhong.mrpc.model.RpcRequest;
  */
 public interface HaStrategy {
 
-    Object call(RpcRequest request, LoadBalance loadBalance);
+    Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable;
 
 }

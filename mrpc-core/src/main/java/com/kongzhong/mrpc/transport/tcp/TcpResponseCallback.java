@@ -32,10 +32,10 @@ public class TcpResponseCallback extends SimpleResponseCallback<Boolean> {
             Object result = handle(request);
             response.setResult(result);
             return Boolean.TRUE;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Throwable t = e instanceof InvocationTargetException ? e.getCause() : e;
             response.setException(Throwables.getStackTraceAsString(t));
-            log.error("rpc server invoke error", t);
+            log.error("rpc method invoke error", t);
             return Boolean.FALSE;
         } finally {
             RpcContext.remove();

@@ -1,16 +1,14 @@
 package com.kongzhong.mrpc.cluster.ha;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
+import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
-import com.kongzhong.mrpc.utils.ReflectUtils;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -26,7 +24,7 @@ public class FailOverHaStrategy implements HaStrategy {
     protected FastThreadLocal<List> referersHolder = new FastThreadLocal<>();
 
     @Override
-    public Object call(RpcRequest request, LoadBalance loadBalance) {
+    public Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable {
         int rc = DefaultConfig.serviceRecryCount();
         if (rc < 0) {
             rc = 0;
@@ -37,8 +35,11 @@ public class FailOverHaStrategy implements HaStrategy {
             try {
                 return referer.invoke(request);
             } catch (Exception e) {
+                if (e instanceof ServiceException) {
+                    throw e;
+                }
                 if (i >= rc) {
-                    throw new RpcException(e);
+                    throw e;
                 }
                 log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
             }

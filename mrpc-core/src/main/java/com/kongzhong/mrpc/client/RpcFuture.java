@@ -2,8 +2,10 @@ package com.kongzhong.mrpc.client;
 
 
 import com.kongzhong.mrpc.config.DefaultConfig;
+import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -29,6 +31,9 @@ public class RpcFuture {
         try {
             lock.lock();
             finish.await(seconds, TimeUnit.SECONDS);
+            if (StringUtils.isNotEmpty(response.getException())) {
+                throw new ServiceException(response.getException());
+            }
             return response.getResult();
         } finally {
             lock.unlock();
