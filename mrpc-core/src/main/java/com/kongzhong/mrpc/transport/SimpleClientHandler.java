@@ -54,7 +54,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         log.debug("Channel inactive: {}", this.channel);
         // 创建异步重连
         final EventLoop eventLoopGroup = this.channel.eventLoop();
-        TPE.submit(new SimpleRequestCallback(eventLoopGroup, this.channel.remoteAddress()));
+        TPE.submit(new SimpleRequestCallback(null, eventLoopGroup, this.channel.remoteAddress()));
     }
 
     /**

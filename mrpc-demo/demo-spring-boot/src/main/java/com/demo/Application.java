@@ -16,7 +16,7 @@ public class Application {
 
     @Bean
     public BootRpcClient bootRpcClient() {
-        BootRpcClient bootRpcClient = new BootRpcClient("127.0.0.1:5070");
+        BootRpcClient bootRpcClient = new BootRpcClient();
         bootRpcClient.setTransport(TransportEnum.HTTP.name());
         bootRpcClient.bindReferer(UserService.class);
         return bootRpcClient;

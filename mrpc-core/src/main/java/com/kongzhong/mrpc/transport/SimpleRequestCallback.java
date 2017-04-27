@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,7 +37,13 @@ public class SimpleRequestCallback implements Callable<Boolean> {
     // 10次重连机会,超过后关闭客户端连接,成功后清零
     private AtomicInteger retries = new AtomicInteger(1);
 
-    public SimpleRequestCallback(EventLoopGroup eventLoopGroup, SocketAddress serverAddress) {
+    /**
+     * 客户端服务引用
+     */
+    private Set<String> referNames;
+
+    public SimpleRequestCallback(Set<String> referNames, EventLoopGroup eventLoopGroup, SocketAddress serverAddress) {
+        this.referNames = referNames;
         this.eventLoopGroup = eventLoopGroup;
         this.serverAddress = serverAddress;
         this.rpcSerialize = ClientConfig.me().getRpcSerialize();
@@ -64,16 +71,23 @@ public class SimpleRequestCallback implements Callable<Boolean> {
         channelFuture.addListener(new ConnectionListener());
     }
 
+    /**
+     * 连接监听器，异步连接并重试的逻辑
+     */
     class ConnectionListener implements ChannelFutureListener {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
             if (future.isSuccess()) {
                 retries.set(0);
                 log.debug("Client connect success");
-                //和服务器连接成功后, 获取MessageSendHandler对象
-                Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
-                SimpleClientHandler handler = future.channel().pipeline().get(clientHandler);
-                Connections.me().addRpcClientHandler(handler);
+                if (null != referNames && referNames.size() > 0) {
+                    //和服务器连接成功后, 获取MessageSendHandler对象
+                    Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
+                    SimpleClientHandler handler = future.channel().pipeline().get(clientHandler);
+                    referNames.forEach(referName -> {
+                        Connections.me().addRpcClientHandler(referName, handler);
+                    });
+                }
             } else {
                 // 启动重连
                 log.warn("Client reconnect [{}] ({})", serverAddress, retries.get());

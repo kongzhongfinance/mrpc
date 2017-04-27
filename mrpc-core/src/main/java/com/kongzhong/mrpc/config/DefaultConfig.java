@@ -1,6 +1,10 @@
 package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.registry.DefaultDiscovery;
+import com.kongzhong.mrpc.registry.DefaultRegistry;
+import com.kongzhong.mrpc.registry.ServiceDiscovery;
+import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.KyroSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.NoArgsConstructor;
@@ -14,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DefaultConfig {
 
-    public static final RpcSerialize DEFAULT_SERIALIZE = new KyroSerialize();
+    private static final RpcSerialize DEFAULT_SERIALIZE = new KyroSerialize();
 
     /**
      * 默认序列化类型
@@ -32,6 +36,24 @@ public class DefaultConfig {
      */
     public static String transport() {
         return TransportEnum.TCP.name();
+    }
+
+    /**
+     * 默认的服务发现
+     *
+     * @return
+     */
+    public static ServiceDiscovery discovery() {
+        return new DefaultDiscovery();
+    }
+
+    /**
+     * 默认的服务注册
+     *
+     * @return
+     */
+    public static ServiceRegistry registry() {
+        return new DefaultRegistry();
     }
 
     /**

@@ -9,7 +9,7 @@ import com.kongzhong.mrpc.demo.service.UserService;
  */
 public class IClientApplication {
     public static void main(String[] args) {
-        RpcClient rpcClient = new RpcClient("127.0.0.1:5066");
+        RpcClient rpcClient = new RpcClient();
 
         UserService userService = rpcClient.getProxyBean(UserService.class);
         System.out.println(userService.add(10, 20));

@@ -11,7 +11,7 @@ public class MetricsClientApplication {
 
     public static void main(String[] args) throws Exception {
 
-        RpcClient rpcClient = new RpcClient("127.0.0.1:5066");
+        RpcClient rpcClient = new RpcClient();
 
         final UserService userService = rpcClient.getProxyBean(UserService.class);
         int pos = 1;

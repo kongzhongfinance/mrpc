@@ -164,17 +164,18 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 
-                //注册服务
-                for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
-                    if (serviceRegistry != null) {
-                        serviceRegistry.register(serviceName);
-                    } else {
-                        log.info("=> [{}] - [{}]", serviceName, serverAddress);
-                    }
+                if (null == serviceRegistry) {
+                    serviceRegistry = DefaultConfig.registry();
                 }
 
+                //注册服务
+                for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
+                    serviceRegistry.register(serviceName);
+                    log.info("=> [{}] - [{}]", serviceName, serverAddress);
+                }
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
+
                 future.channel().closeFuture().sync();
             } else {
                 log.warn("mrpc server start fail.");

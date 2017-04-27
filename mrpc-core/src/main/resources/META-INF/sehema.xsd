@@ -9,6 +9,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
             <xsd:attribute name="interface" type="xsd:string" use="required"/>
+            <xsd:attribute name="client" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 

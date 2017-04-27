@@ -1,7 +1,6 @@
 package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
@@ -25,11 +24,6 @@ import java.util.List;
 public class SimpleRpcClient {
 
     /**
-     * rpc服务地址
-     */
-    protected String serverAddr;
-
-    /**
      * 序列化类型，默认protostuff
      */
     protected RpcSerialize serialize = DefaultConfig.serialize();
@@ -42,18 +36,16 @@ public class SimpleRpcClient {
     /**
      * 服务发现
      */
-    protected ServiceDiscovery serviceDiscovery;
+    protected ServiceDiscovery serviceDiscovery = DefaultConfig.discovery();
 
     protected boolean isLoad;
 
     protected List<Class<?>> referers = Lists.newArrayList();
 
+    protected List<String> refererNames = Lists.newArrayList();
+
     public SimpleRpcClient() {
 
-    }
-
-    public SimpleRpcClient(String serverAddr) {
-        this.serverAddr = serverAddr;
     }
 
     public SimpleRpcClient(ServiceDiscovery serviceDiscovery) {
@@ -97,11 +89,13 @@ public class SimpleRpcClient {
             }
             clientConfig.setTransport(transportEnum);
 
-            if (null == serviceDiscovery) {
-                connections.updateNodes(Sets.newHashSet(serverAddr));
-            } else {
-                serviceDiscovery.discover();
-            }
+            serviceDiscovery.discover();
+
+//            if (null == serviceDiscovery) {
+//                connections.updateNodes(Sets.newHashSet(refererNames), Sets.newHashSet(serverAddr));
+//            } else {
+//                serviceDiscovery.discover();
+//            }
             isLoad = true;
         }
     }

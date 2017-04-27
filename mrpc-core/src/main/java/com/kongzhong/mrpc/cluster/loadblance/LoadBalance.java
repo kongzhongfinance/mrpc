@@ -2,15 +2,17 @@ package com.kongzhong.mrpc.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
 
-import java.util.List;
-
 /**
  * Created by biezhi on 2016/12/30.
  */
 public interface LoadBalance {
 
-    RpcInvoker getInvoker();
-
-    List<RpcInvoker> getInvokers();
+    /**
+     * 根据服务查询调用执行器
+     *
+     * @param serviceName
+     * @return
+     */
+    RpcInvoker getInvoker(String serviceName);
 
 }

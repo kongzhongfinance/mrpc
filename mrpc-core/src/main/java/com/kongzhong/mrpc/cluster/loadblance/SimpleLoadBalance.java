@@ -1,11 +1,10 @@
 package com.kongzhong.mrpc.cluster.loadblance;
 
-import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcInvoker;
-import com.kongzhong.mrpc.config.ClientConfig;
-import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.cluster.LBStrategy;
+import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,10 +26,10 @@ public class SimpleLoadBalance implements LoadBalance {
     private CountDownLatch latch = new CountDownLatch(1);
 
     @Override
-    public RpcInvoker getInvoker() {
+    public RpcInvoker getInvoker(String serviceName) {
         try {
             LBStrategy LBStrategy = ClientConfig.me().getLbStrategy();
-            List<SimpleClientHandler> handlers = Connections.me().getHandlers();
+            List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
             if (handlers.size() == 1) {
                 return new RpcInvoker(handlers.get(0));
             }
@@ -47,29 +46,6 @@ public class SimpleLoadBalance implements LoadBalance {
             throw new RpcException(e);
         }
         return null;
-    }
-
-    /**
-     * 读取一组连接执行器，此处应实现更具体的负载均衡策略
-     *
-     * @return
-     */
-    @Override
-    public List<RpcInvoker> getInvokers() {
-        try {
-            List<RpcInvoker> result = Lists.newCopyOnWriteArrayList();
-            Connections.me().getHandlers().forEach(clientHandler -> {
-                result.add(getRpcReferer(clientHandler));
-            });
-            return result;
-        } catch (Exception e) {
-            throw new RpcException(e);
-        }
-    }
-
-    private RpcInvoker getRpcReferer(SimpleClientHandler clientHandler) {
-        RpcInvoker rpcInvoker = new RpcInvoker(clientHandler);
-        return rpcInvoker;
     }
 
     /**

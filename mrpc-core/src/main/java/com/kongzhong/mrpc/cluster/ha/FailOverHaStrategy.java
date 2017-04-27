@@ -29,9 +29,8 @@ public class FailOverHaStrategy implements HaStrategy {
         if (rc < 0) {
             rc = 0;
         }
-        List<RpcInvoker> handlers = getReferers(loadBalance);
         for (int i = 0; i <= rc; i++) {
-            RpcInvoker referer = handlers.get(i % handlers.size());
+            RpcInvoker referer = loadBalance.getInvoker(request.getClassName());
             try {
                 return referer.invoke(request);
             } catch (Exception e) {
@@ -47,7 +46,4 @@ public class FailOverHaStrategy implements HaStrategy {
         throw new RpcException("FailOverHaStrategy.invoke should not come here!");
     }
 
-    public List<RpcInvoker> getReferers(LoadBalance loadBalance) {
-        return loadBalance.getInvokers();
-    }
 }

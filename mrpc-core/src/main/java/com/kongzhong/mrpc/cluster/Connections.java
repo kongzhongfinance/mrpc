@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.cluster;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +56,7 @@ public class Connections {
      */
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
-    private List<SimpleClientHandler> simpleClientHandlers = Lists.newCopyOnWriteArrayList();
+    private Map<String, List<SimpleClientHandler>> simpleClientHandlers = Maps.newConcurrentMap();
 
     private static final class ConnectionsHolder {
         private static final Connections $ = new Connections();
@@ -63,7 +66,7 @@ public class Connections {
         return ConnectionsHolder.$;
     }
 
-    public void updateNodes(Set<String> addressList) {
+    public void updateNodes(Set<String> referNames, Set<String> addressList) {
         try {
             lock.lock();
             addressList.forEach(address -> {
@@ -72,7 +75,7 @@ public class Connections {
                 String host = ipAddr[0];
                 //获取端口号
                 int port = Integer.parseInt(ipAddr[1]);
-                this.connect(host, port);
+                this.connect(referNames, host, port);
             });
             handlerStatus.signal();
         } finally {
@@ -80,13 +83,35 @@ public class Connections {
         }
     }
 
-    private void connect(String host, int port) {
+    /**
+     * server:port -> serviceNames
+     *
+     * @param mappings
+     */
+    public void updateNodes(Map<String, List<String>> mappings) {
+        try {
+            lock.lock();
+            mappings.forEach((serverAddr, serviceNames) -> {
+                String[] ipAddr = serverAddr.split(":");
+                //获取IP
+                String host = ipAddr[0];
+                //获取端口号
+                int port = Integer.parseInt(ipAddr[1]);
+                this.connect(Sets.newHashSet(serviceNames), host, port);
+            });
+            handlerStatus.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void connect(Set<String> referNames, String host, int port) {
         //获取socket的完整地址
         final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
         while (null == clientConfig.getTransport()) {
             sleep(1);
         }
-        TPE.submit(new SimpleRequestCallback(eventLoopGroup, remoteAddr));
+        TPE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, remoteAddr));
     }
 
     private void sleep(int seconds) {
@@ -97,7 +122,7 @@ public class Connections {
         }
     }
 
-    public SimpleClientHandler getRpcClientHandler() throws Exception {
+    /*public SimpleClientHandler getRpcClientHandler() throws Exception {
         lock.lock();
         try {
             if (simpleClientHandlers.size() == 0) {
@@ -107,15 +132,15 @@ public class Connections {
         } finally {
             lock.unlock();
         }
-    }
+    }*/
 
-    public void addRpcClientHandler(SimpleClientHandler handler) {
+    public void addRpcClientHandler(String serviceName, SimpleClientHandler handler) {
         try {
             lock.lock();
-            if (simpleClientHandlers.contains(handler)) {
-                simpleClientHandlers.set(simpleClientHandlers.indexOf(handler), handler);
+            if (!simpleClientHandlers.containsKey(serviceName)) {
+                simpleClientHandlers.put(serviceName, Lists.newArrayList(handler));
             } else {
-                simpleClientHandlers.add(handler);
+                simpleClientHandlers.get(serviceName).add(handler);
             }
             handlerStatus.signal();
         } finally {
@@ -123,14 +148,14 @@ public class Connections {
         }
     }
 
-    public List<SimpleClientHandler> getHandlers() throws Exception {
+    public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         lock.lock();
         try {
-            while (simpleClientHandlers.size() == 0) {
+            while (!simpleClientHandlers.containsKey(serviceName) || simpleClientHandlers.get(serviceName).size() == 0) {
                 // 阻塞
                 handlerStatus.await();
             }
-            return simpleClientHandlers;
+            return simpleClientHandlers.get(serviceName);
         } finally {
             lock.unlock();
         }

@@ -70,7 +70,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 }
             }
             // update node list
-            Connections.me().updateNodes(Sets.newTreeSet(dataList));
+//            Connections.me().updateNodes(Sets.newTreeSet(dataList));
         } catch (Exception e) {
             LOGGER.error("", e);
         }

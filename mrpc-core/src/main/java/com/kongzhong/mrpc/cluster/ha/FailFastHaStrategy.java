@@ -15,7 +15,7 @@ public class FailFastHaStrategy implements HaStrategy {
 
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) {
-        RpcInvoker invoker = loadBalance.getInvoker();
+        RpcInvoker invoker = loadBalance.getInvoker(request.getClassName());
         try {
             return invoker.invoke(request);
         } catch (Exception e) {

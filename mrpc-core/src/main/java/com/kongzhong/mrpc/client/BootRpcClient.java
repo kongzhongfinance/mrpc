@@ -35,10 +35,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
     public BootRpcClient() {
     }
 
-    public BootRpcClient(String serverAddr) {
-        this.serverAddr = serverAddr;
-    }
-
     public BootRpcClient(ServiceDiscovery serviceDiscovery) {
         this.serviceDiscovery = serviceDiscovery;
     }
