@@ -56,7 +56,10 @@ public class Connections {
      */
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
-    private Map<String, List<SimpleClientHandler>> simpleClientHandlers = Maps.newConcurrentMap();
+    /**
+     * 服务和服务提供方客户端映射
+     */
+    private Map<String, List<SimpleClientHandler>> serviceMapping = Maps.newConcurrentMap();
 
     private static final class ConnectionsHolder {
         private static final Connections $ = new Connections();
@@ -122,25 +125,13 @@ public class Connections {
         }
     }
 
-    /*public SimpleClientHandler getRpcClientHandler() throws Exception {
-        lock.lock();
-        try {
-            if (simpleClientHandlers.size() == 0) {
-                handlerStatus.await();// 阻塞
-            }
-            return simpleClientHandlers.get(0);
-        } finally {
-            lock.unlock();
-        }
-    }*/
-
     public void addRpcClientHandler(String serviceName, SimpleClientHandler handler) {
         try {
             lock.lock();
-            if (!simpleClientHandlers.containsKey(serviceName)) {
-                simpleClientHandlers.put(serviceName, Lists.newArrayList(handler));
+            if (!serviceMapping.containsKey(serviceName)) {
+                serviceMapping.put(serviceName, Lists.newArrayList(handler));
             } else {
-                simpleClientHandlers.get(serviceName).add(handler);
+                serviceMapping.get(serviceName).add(handler);
             }
             handlerStatus.signal();
         } finally {
@@ -151,18 +142,18 @@ public class Connections {
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         lock.lock();
         try {
-            while (!simpleClientHandlers.containsKey(serviceName) || simpleClientHandlers.get(serviceName).size() == 0) {
+            while (!serviceMapping.containsKey(serviceName) || serviceMapping.get(serviceName).size() == 0) {
                 // 阻塞
                 handlerStatus.await();
             }
-            return simpleClientHandlers.get(serviceName);
+            return serviceMapping.get(serviceName);
         } finally {
             lock.unlock();
         }
     }
 
     public void remove(SimpleClientHandler handler) {
-        simpleClientHandlers.remove(handler);
+        serviceMapping.remove(handler);
     }
 
     public void shutdown() {

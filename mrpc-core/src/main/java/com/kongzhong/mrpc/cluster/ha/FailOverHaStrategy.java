@@ -24,7 +24,7 @@ public class FailOverHaStrategy implements HaStrategy {
     protected FastThreadLocal<List> referersHolder = new FastThreadLocal<>();
 
     @Override
-    public Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable {
+    public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
         int rc = DefaultConfig.serviceRecryCount();
         if (rc < 0) {
             rc = 0;
