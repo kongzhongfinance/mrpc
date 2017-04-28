@@ -63,23 +63,25 @@ public class DefaultRegistry implements ServiceRegistry {
     @Override
     public void unregister(String data) {
         try {
-            String content = Files.readFirstLine(file, Charsets.UTF_8);
-            if (StringUtils.isNotEmpty(content)) {
-                JSONArray array = JSON.parseArray(content);
-                JSONArray newArr = new JSONArray();
-                for (int i = 0, len = array.size(); i < len; i++) {
-                    if (!data.equals(array.getJSONObject(i).getString("service"))) {
-                        newArr.add(array.getJSONObject(i));
+            if (file.exists() && file.isFile()) {
+                String content = Files.readFirstLine(file, Charsets.UTF_8);
+                if (StringUtils.isNotEmpty(content)) {
+                    JSONArray array = JSON.parseArray(content);
+                    JSONArray newArr = new JSONArray();
+                    for (int i = 0, len = array.size(); i < len; i++) {
+                        if (!data.equals(array.getJSONObject(i).getString("service"))) {
+                            newArr.add(array.getJSONObject(i));
+                        }
                     }
-                }
-                if (newArr.size() > 0) {
-                    Files.write(newArr.toJSONString(), file, Charsets.UTF_8);
-                } else {
-                    Files.write("", file, Charsets.UTF_8);
+                    if (newArr.size() > 0) {
+                        Files.write(newArr.toJSONString(), file, Charsets.UTF_8);
+                    } else {
+                        Files.write("", file, Charsets.UTF_8);
+                    }
                 }
             }
         } catch (Exception e) {
-            log.error("register fail", e);
+            log.error("unregister fail", e);
         }
     }
 
