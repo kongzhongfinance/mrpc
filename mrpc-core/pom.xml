@@ -31,33 +31,6 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!-- Protostuff -->
-        <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
-            <artifactId>protostuff-core</artifactId>
-            <version>${protostuff.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
-            <artifactId>protostuff-runtime</artifactId>
-            <version>${protostuff.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.objenesis</groupId>
-            <artifactId>objenesis</artifactId>
-            <version>${objenesis.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--kryo-->
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-
         <!--statsd：可选项-->
         <dependency>
             <groupId>com.timgroup</groupId>

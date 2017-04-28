@@ -11,6 +11,7 @@
 
     <artifactId>mrpc-demo</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>demo-api</module>
         <module>demo-client</module>
@@ -23,6 +24,12 @@
         <dependency>
             <groupId>io.github.biezhi</groupId>
             <artifactId>mrpc-core</artifactId>
+            <version>${mrpc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.biezhi</groupId>
+            <artifactId>mrpc-serialize-kryo</artifactId>
             <version>${mrpc.version}</version>
         </dependency>
 

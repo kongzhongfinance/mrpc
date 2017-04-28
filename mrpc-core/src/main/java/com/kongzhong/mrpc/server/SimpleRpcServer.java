@@ -57,7 +57,7 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
     /**
      * 序列化类型，默认protostuff
      */
-    protected RpcSerialize serialize = DefaultConfig.serialize();
+    protected RpcSerialize serialize;
 
     /**
      * 传输协议，默认tcp协议
@@ -98,6 +98,10 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+
+        if (null == serialize) {
+            serialize = DefaultConfig.serialize();
+        }
 
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
         if (clientBeanMap != null && !clientBeanMap.isEmpty()) {

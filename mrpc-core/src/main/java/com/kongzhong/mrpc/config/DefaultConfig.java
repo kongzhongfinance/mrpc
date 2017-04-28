@@ -3,8 +3,8 @@ package com.kongzhong.mrpc.config;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
-import com.kongzhong.mrpc.serialize.KyroSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.NoArgsConstructor;
 
 /**
@@ -16,15 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DefaultConfig {
 
-    private static final RpcSerialize DEFAULT_SERIALIZE = new KyroSerialize();
-
     /**
      * 默认序列化类型
      *
      * @return
      */
     public static RpcSerialize serialize() {
-        return DEFAULT_SERIALIZE;
+        return ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
     }
 
     /**

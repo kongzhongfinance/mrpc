@@ -15,6 +15,7 @@
         <module>mrpc-registry-zk</module>
         <module>mrpc-registry-consul</module>
         <module>mrpc-demo</module>
+        <module>mrpc-serialize</module>
     </modules>
 
     <properties>

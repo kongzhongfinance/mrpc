@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.serialize.RpcSerialize;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -387,5 +388,16 @@ public class ReflectUtils {
             return getBasicType(type);
         }
         return from(type);
+    }
+
+    public static <T> T newInstance(String className, Class<T> type) {
+        try {
+            Object obj = newInstance(Class.forName(className));
+            if (null != obj) {
+                return type.cast(obj);
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 }

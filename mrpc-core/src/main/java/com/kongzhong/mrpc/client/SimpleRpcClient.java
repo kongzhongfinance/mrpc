@@ -27,7 +27,7 @@ public class SimpleRpcClient {
     /**
      * 序列化类型，默认protostuff
      */
-    protected RpcSerialize serialize = DefaultConfig.serialize();
+    protected RpcSerialize serialize;
 
     /**
      * 传输协议，默认tcp协议
@@ -74,6 +74,10 @@ public class SimpleRpcClient {
         synchronized (Connections.class) {
             Connections connections = Connections.me();
             ClientConfig clientConfig = ClientConfig.me();
+
+            if (null == serialize) {
+                serialize = DefaultConfig.serialize();
+            }
 
             if (null == serialize) {
                 throw new InitializeException("serialize not is null.");
