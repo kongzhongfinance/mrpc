@@ -32,7 +32,7 @@ public class SimpleRpcClient {
     /**
      * 传输协议，默认tcp协议
      */
-    protected String transport = DefaultConfig.transport();
+    protected String transport;
 
     /**
      * 服务发现
@@ -84,6 +84,10 @@ public class SimpleRpcClient {
             }
 
             clientConfig.setRpcSerialize(serialize);
+
+            if (null == transport) {
+                transport = DefaultConfig.transport();
+            }
 
             TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
             if (null == transportEnum) {

@@ -26,6 +26,15 @@ public class DefaultConfig {
     }
 
     /**
+     * 默认的netty服务端配置
+     *
+     * @return
+     */
+    public static NettyConfig nettyServerConfig() {
+        return new NettyConfig(128, true);
+    }
+
+    /**
      * 默认传输协议
      *
      * @return

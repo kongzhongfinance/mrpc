@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.DefaultConfig;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -62,7 +63,7 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
     /**
      * 传输协议，默认tcp协议
      */
-    protected String transport = DefaultConfig.transport();
+    protected String transport;
 
     /**
      * 服务注册实例
@@ -78,6 +79,11 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
      * 拦截器列表, 默认添加性能监控拦截器
      */
     protected List<RpcInteceptor> interceptorList;
+
+    /**
+     * netty服务端配置
+     */
+    protected NettyConfig nettyConfig;
 
     protected static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
@@ -123,7 +129,6 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
                     }
                 }
             }
-
         }
 
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
@@ -171,6 +176,14 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        if (null == transport) {
+            transport = DefaultConfig.transport();
+        }
+
+        if (null == nettyConfig) {
+            nettyConfig = DefaultConfig.nettyServerConfig();
+        }
+
         ThreadFactory threadRpcFactory = new NamedThreadFactory("mrpc-server");
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -181,11 +194,11 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
                     .childHandler(transferSelector.getServerChannelHandler(transport))
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    .option(ChannelOption.SO_BACKLOG, nettyConfig.getBacklog())
+                    .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
+                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
 
             String[] ipAddr = serverAddress.split(":");
-
             if (ipAddr.length == 2) {
                 //获取服务器IP地址和端口
                 String host = ipAddr[0];
