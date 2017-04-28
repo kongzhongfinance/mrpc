@@ -31,6 +31,11 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         createNode(data);
     }
 
+    @Override
+    public void unregister(String data) {
+
+    }
+
     private void removeNode(String node) {
         String host = ServerConfig.me().getHost();
         int port = ServerConfig.me().getPort();

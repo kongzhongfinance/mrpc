@@ -25,7 +25,7 @@ public class DefaultRegistry implements ServiceRegistry {
     private File file = new File(DEFAULT_SWAP_NAME);
 
     public DefaultRegistry() {
-        this(false);
+        this(true);
     }
 
     public DefaultRegistry(boolean append) {
@@ -55,6 +55,29 @@ public class DefaultRegistry implements ServiceRegistry {
             array.add(getReg(data));
 
             Files.write(array.toJSONString(), file, Charsets.UTF_8);
+        } catch (Exception e) {
+            log.error("register fail", e);
+        }
+    }
+
+    @Override
+    public void unregister(String data) {
+        try {
+            String content = Files.readFirstLine(file, Charsets.UTF_8);
+            if (StringUtils.isNotEmpty(content)) {
+                JSONArray array = JSON.parseArray(content);
+                JSONArray newArr = new JSONArray();
+                for (int i = 0, len = array.size(); i < len; i++) {
+                    if (!data.equals(array.getJSONObject(i).getString("service"))) {
+                        newArr.add(array.getJSONObject(i));
+                    }
+                }
+                if (newArr.size() > 0) {
+                    Files.write(newArr.toJSONString(), file, Charsets.UTF_8);
+                } else {
+                    Files.write("", file, Charsets.UTF_8);
+                }
+            }
         } catch (Exception e) {
             log.error("register fail", e);
         }

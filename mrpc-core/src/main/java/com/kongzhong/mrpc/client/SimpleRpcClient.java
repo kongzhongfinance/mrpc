@@ -7,6 +7,7 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
+import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -36,7 +37,7 @@ public class SimpleRpcClient {
     /**
      * 服务发现
      */
-    protected ServiceDiscovery serviceDiscovery = DefaultConfig.discovery();
+    protected ServiceDiscovery serviceDiscovery;
 
     protected boolean isLoad;
 
@@ -45,7 +46,7 @@ public class SimpleRpcClient {
     protected List<String> refererNames = Lists.newArrayList();
 
     public SimpleRpcClient() {
-
+        this(new DefaultDiscovery());
     }
 
     public SimpleRpcClient(ServiceDiscovery serviceDiscovery) {
@@ -88,14 +89,7 @@ public class SimpleRpcClient {
                 clientConfig.setHttp(true);
             }
             clientConfig.setTransport(transportEnum);
-
             serviceDiscovery.discover();
-
-//            if (null == serviceDiscovery) {
-//                connections.updateNodes(Sets.newHashSet(refererNames), Sets.newHashSet(serverAddr));
-//            } else {
-//                serviceDiscovery.discover();
-//            }
             isLoad = true;
         }
     }

@@ -1,9 +1,7 @@
 package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
-import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.KyroSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
@@ -36,15 +34,6 @@ public class DefaultConfig {
      */
     public static String transport() {
         return TransportEnum.TCP.name();
-    }
-
-    /**
-     * 默认的服务发现
-     *
-     * @return
-     */
-    public static ServiceDiscovery discovery() {
-        return new DefaultDiscovery();
     }
 
     /**

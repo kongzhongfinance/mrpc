@@ -33,6 +33,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
     private ConfigurableBeanFactory configurableBeanFactory;
 
     public BootRpcClient() {
+        super();
     }
 
     public BootRpcClient(ServiceDiscovery serviceDiscovery) {

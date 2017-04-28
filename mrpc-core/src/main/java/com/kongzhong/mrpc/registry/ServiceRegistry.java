@@ -7,4 +7,5 @@ public interface ServiceRegistry {
 
     void register(String data);
 
+    void unregister(String data);
 }
