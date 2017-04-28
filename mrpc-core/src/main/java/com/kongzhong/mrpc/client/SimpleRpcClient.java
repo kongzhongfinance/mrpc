@@ -3,6 +3,8 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.cluster.ha.HaStrategy;
+import com.kongzhong.mrpc.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
@@ -39,11 +41,25 @@ public class SimpleRpcClient {
      */
     protected ServiceDiscovery serviceDiscovery;
 
-    protected boolean isLoad;
+    /**
+     * 客户端是否已经初始化
+     */
+    protected boolean isInit;
 
+    /**
+     * 负载均衡策略，默认轮询
+     */
+    protected LBStrategy lbStrategy;
+
+    /**
+     * 高可用策略，默认failover
+     */
+    protected HaStrategy haStrategy;
+
+    /**
+     * 引用类名
+     */
     protected List<Class<?>> referers = Lists.newArrayList();
-
-    protected List<String> refererNames = Lists.newArrayList();
 
     public SimpleRpcClient() {
         this(new DefaultDiscovery());
@@ -64,7 +80,7 @@ public class SimpleRpcClient {
      * @return
      */
     public <T> T getProxyBean(Class<T> rpcInterface) {
-        if (!isLoad) {
+        if (!isInit) {
             this.init();
         }
         return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
@@ -79,16 +95,20 @@ public class SimpleRpcClient {
                 serialize = DefaultConfig.serialize();
             }
 
-            if (null == serialize) {
-                throw new InitializeException("serialize not is null.");
-            }
-
-            clientConfig.setRpcSerialize(serialize);
-
             if (null == transport) {
                 transport = DefaultConfig.transport();
             }
 
+            if (null == lbStrategy) {
+                lbStrategy = DefaultConfig.lbStrategy();
+            }
+            if (null == haStrategy) {
+                haStrategy = DefaultConfig.haStrategy();
+            }
+
+            if (null == serialize) {
+                throw new InitializeException("serialize not is null.");
+            }
             TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
             if (null == transportEnum) {
                 throw new InitializeException("transport type [" + transport + "] error.");
@@ -96,9 +116,13 @@ public class SimpleRpcClient {
             if (transportEnum.equals(TransportEnum.HTTP)) {
                 clientConfig.setHttp(true);
             }
+
+            clientConfig.setRpcSerialize(serialize);
+            clientConfig.setLbStrategy(lbStrategy);
+            clientConfig.setHaStrategy(haStrategy);
             clientConfig.setTransport(transportEnum);
             serviceDiscovery.discover();
-            isLoad = true;
+            isInit = true;
         }
     }
 

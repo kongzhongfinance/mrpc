@@ -1,5 +1,8 @@
 package com.kongzhong.mrpc.config;
 
+import com.kongzhong.mrpc.cluster.ha.FailOverHaStrategy;
+import com.kongzhong.mrpc.cluster.ha.HaStrategy;
+import com.kongzhong.mrpc.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -68,5 +71,23 @@ public class DefaultConfig {
      */
     public static int serviceTimeout() {
         return 10;
+    }
+
+    /**
+     * 默认的负载均衡策略
+     *
+     * @return
+     */
+    public static LBStrategy lbStrategy() {
+        return LBStrategy.ROUND;
+    }
+
+    /**
+     * 默认高可用策略
+     *
+     * @return
+     */
+    public static HaStrategy haStrategy() {
+        return new FailOverHaStrategy();
     }
 }

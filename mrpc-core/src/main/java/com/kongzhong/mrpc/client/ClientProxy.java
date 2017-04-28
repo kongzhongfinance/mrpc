@@ -5,6 +5,7 @@ import com.kongzhong.mrpc.cluster.ha.FailOverHaStrategy;
 import com.kongzhong.mrpc.cluster.ha.HaStrategy;
 import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.cluster.loadblance.SimpleLoadBalance;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 
@@ -25,7 +26,7 @@ public class ClientProxy<T> extends AbstractInvocationHandler {
     /**
      * HA策略
      */
-    private HaStrategy haStrategy = new FailOverHaStrategy();
+    private HaStrategy haStrategy = ClientConfig.me().getHaStrategy();
 
     @Override
     public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {

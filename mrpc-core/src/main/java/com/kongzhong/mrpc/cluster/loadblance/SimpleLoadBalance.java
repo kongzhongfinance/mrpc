@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
 import com.kongzhong.mrpc.cluster.Connections;
-import com.kongzhong.mrpc.cluster.LBStrategy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
@@ -33,8 +32,8 @@ public class SimpleLoadBalance implements LoadBalance {
             if (handlers.size() == 1) {
                 return new RpcInvoker(handlers.get(0));
             }
-            if (LBStrategy == LBStrategy.POLL) {
-                return new RpcInvoker(this.poll(handlers));
+            if (LBStrategy == LBStrategy.ROUND) {
+                return new RpcInvoker(this.round(handlers));
             }
             if (LBStrategy == LBStrategy.RANDOM) {
                 return new RpcInvoker(this.random(handlers));
@@ -54,7 +53,7 @@ public class SimpleLoadBalance implements LoadBalance {
      * @param connections
      * @return
      */
-    private SimpleClientHandler poll(List<SimpleClientHandler> connections) {
+    private SimpleClientHandler round(List<SimpleClientHandler> connections) {
         int pos = posInt.get();
         if (pos >= connections.size()) {
             posInt.set(0);

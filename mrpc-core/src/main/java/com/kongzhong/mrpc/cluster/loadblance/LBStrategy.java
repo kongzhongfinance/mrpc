@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.cluster;
+package com.kongzhong.mrpc.cluster.loadblance;
 
 /**
  * 负载均衡策略
@@ -7,7 +7,7 @@ package com.kongzhong.mrpc.cluster;
  */
 public enum LBStrategy {
 
-    POLL("轮询"),
+    ROUND("轮询"),
     RANDOM("随机"),
     LAST("最新节点");
 

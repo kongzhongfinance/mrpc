@@ -1,9 +1,9 @@
 package com.kongzhong.mrpc.config;
 
+import com.kongzhong.mrpc.cluster.ha.HaStrategy;
+import com.kongzhong.mrpc.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.cluster.FailStrategy;
-import com.kongzhong.mrpc.cluster.LBStrategy;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +23,9 @@ public class ClientConfig {
 
     private boolean isHttp;
 
-    private LBStrategy lbStrategy = LBStrategy.POLL;
+    private LBStrategy lbStrategy;
 
-    private FailStrategy failStrategy = FailStrategy.FAILOVER;
+    private HaStrategy haStrategy;
 
     private int retryCount = 3;
 

@@ -47,7 +47,6 @@ public class RpcClient extends SimpleRpcClient implements ApplicationContextAwar
                     Class<?> clazz = Class.forName(interfaceName);
                     Object object = rpcClient.getProxyBean(clazz);
                     dbf.registerSingleton(id, object);
-                    refererNames.add(interfaceName);
                     log.info("Bind rpc service [{}]", interfaceName);
                 } catch (Exception e) {
                     log.warn("Not found rpc service [{}] component!", interfaceName);
@@ -61,7 +60,6 @@ public class RpcClient extends SimpleRpcClient implements ApplicationContextAwar
                 try {
                     Object object = rpcClient.getProxyBean(clazz);
                     dbf.registerSingleton(interfaceName, object);
-                    refererNames.add(interfaceName);
                     log.info("Bind rpc service [{}]", interfaceName);
                 } catch (Exception e) {
                     log.warn("Not found rpc service [{}] component!", interfaceName);
