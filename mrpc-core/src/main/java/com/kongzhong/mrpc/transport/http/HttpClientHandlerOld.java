@@ -3,10 +3,8 @@ package com.kongzhong.mrpc.transport.http;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.exception.HttpException;
-import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -22,16 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author biezhi
  *         2017/4/19
  */
-public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
+public class HttpClientHandlerOld extends SimpleClientHandler<Object> {
 
-    public static final Logger log = LoggerFactory.getLogger(HttpClientHandler.class);
+    public static final Logger log = LoggerFactory.getLogger(HttpClientHandlerOld.class);
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
@@ -83,28 +79,32 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse httpResponse) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
+            if (msg instanceof HttpContent) {
+                HttpContent content = (HttpContent) msg;
+                ByteBuf buf = content.content();
+                byte[] req = new byte[buf.readableBytes()];
+                buf.readBytes(req);
+                String body = new String(req, "UTF-8");
 
-            ByteBuf buf = httpResponse.content();
-            byte[] resp = new byte[buf.readableBytes()];
-            buf.readBytes(resp);
-            String body = new String(resp, "UTF-8");
+                if (StringUtils.isNotEmpty(body)) {
 
-            if (StringUtils.isNotEmpty(body)) {
-                log.debug("http server response body: {}", body);
-                RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
-                Object result = rpcResponse.getResult();
-                if (null != result && result instanceof JSONObject) {
-                    if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                        Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                        rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                    log.debug("http server response body: {}", body);
+
+                    RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
+                    Object result = rpcResponse.getResult();
+                    if (null != result && result instanceof JSONObject) {
+                        if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                            Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                            rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                        }
                     }
-                }
-                RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
-                if (rpcFuture != null) {
-                    mapCallBack.remove(rpcResponse.getRequestId());
-                    rpcFuture.done(rpcResponse);
+                    RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
+                    if (rpcFuture != null) {
+                        mapCallBack.remove(rpcResponse.getRequestId());
+                        rpcFuture.done(rpcResponse);
+                    }
                 }
             }
         } catch (Exception e) {

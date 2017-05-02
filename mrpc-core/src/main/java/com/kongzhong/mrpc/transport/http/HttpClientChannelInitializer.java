@@ -18,6 +18,7 @@ public class HttpClientChannelInitializer extends ChannelInitializer<SocketChann
                 .addLast(new HttpContentDecompressor())
                 // 客户端发送的是httprequest，所以要使用HttpRequestEncoder进行编码
                 .addLast(new HttpRequestEncoder())
+                .addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
                 .addLast(new HttpClientHandler());
     }
 }
