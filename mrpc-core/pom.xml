@@ -10,14 +10,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mrpc-core</artifactId>
-    <version>${mrpc.version}</version>
+    <version>${mrpc-core.version}</version>
 
     <dependencies>
 
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-common</artifactId>
-            <version>${mrpc-core.version}</version>
+            <version>${mrpc-common.version}</version>
         </dependency>
 
         <dependency>

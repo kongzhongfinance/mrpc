@@ -24,19 +24,19 @@
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-core</artifactId>
-            <version>${mrpc.version}</version>
+            <version>${mrpc-core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-serialize-kryo</artifactId>
-            <version>${mrpc.version}</version>
+            <version>${mrpc-serialize-kryo}</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-registry-zk</artifactId>
-            <version>${mrpc.version}</version>
+            <version>${mrpc-zk.version}</version>
         </dependency>
 
         <dependency>
