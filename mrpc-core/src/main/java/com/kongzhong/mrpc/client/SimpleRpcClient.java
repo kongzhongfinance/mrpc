@@ -121,6 +121,8 @@ public class SimpleRpcClient {
             clientConfig.setLbStrategy(lbStrategy);
             clientConfig.setHaStrategy(haStrategy);
             clientConfig.setTransport(transportEnum);
+            clientConfig.setReferers(referers);
+
             serviceDiscovery.discover();
             isInit = true;
         }

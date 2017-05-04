@@ -1,10 +1,13 @@
 package com.kongzhong.mrpc.transport;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -12,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -50,11 +55,19 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
+
         Connections.me().remove(this);
+
         log.debug("Channel inactive: {}", this.channel);
         // 创建异步重连
         final EventLoop eventLoopGroup = this.channel.eventLoop();
-        TPE.submit(new SimpleRequestCallback(null, eventLoopGroup, this.channel.remoteAddress()));
+        Set<String> referNames = Sets.newHashSet();
+        List<Class<?>> referers = ClientConfig.me().getReferers();
+        if (null != referers && !referers.isEmpty()) {
+            referers.forEach(type -> referNames.add(type.getName()));
+        }
+
+        TPE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, this.channel.remoteAddress()));
     }
 
     /**

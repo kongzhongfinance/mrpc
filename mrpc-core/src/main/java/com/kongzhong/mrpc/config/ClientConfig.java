@@ -7,6 +7,8 @@ import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author biezhi
  *         2017/4/22
@@ -28,6 +30,8 @@ public class ClientConfig {
     private HaStrategy haStrategy;
 
     private int retryCount = 3;
+
+    private List<Class<?>> referers;
 
     private static final ClientConfig conf = new ClientConfig();
 

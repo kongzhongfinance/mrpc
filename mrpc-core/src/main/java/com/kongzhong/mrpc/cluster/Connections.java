@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +58,13 @@ public class Connections {
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     /**
+     * 所有客户端的列表
+     */
+    private List<SimpleClientHandler> clientHandlers = Lists.newArrayList();
+
+    /**
      * 服务和服务提供方客户端映射
+     * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
     private Map<String, List<SimpleClientHandler>> serviceMapping = Maps.newConcurrentMap();
 
@@ -153,7 +160,19 @@ public class Connections {
     }
 
     public void remove(SimpleClientHandler handler) {
-        serviceMapping.remove(handler);
+        Collection<List<SimpleClientHandler>> simpleClientHandlers = serviceMapping.values();
+        if (null != simpleClientHandlers && !simpleClientHandlers.isEmpty()) {
+            simpleClientHandlers.forEach(clients -> {
+                List<SimpleClientHandler> temp = Lists.newArrayList();
+                clients.forEach(client -> {
+                    if (!client.equals(handler)) {
+                        temp.add(handler);
+                    }
+                });
+                clients.clear();
+                clients.addAll(temp);
+            });
+        }
     }
 
     public void shutdown() {
