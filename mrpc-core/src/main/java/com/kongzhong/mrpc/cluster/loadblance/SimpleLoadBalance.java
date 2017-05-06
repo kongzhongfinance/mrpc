@@ -22,7 +22,6 @@ public class SimpleLoadBalance implements LoadBalance {
 
     private AtomicInteger posInt = new AtomicInteger(0);
     private Random random = new Random();
-    private CountDownLatch latch = new CountDownLatch(1);
 
     @Override
     public RpcInvoker getInvoker(String serviceName) {

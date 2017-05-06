@@ -124,3 +124,4 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+mrpc_registry_swap.lock

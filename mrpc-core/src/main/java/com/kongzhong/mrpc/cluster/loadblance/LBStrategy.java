@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.cluster.loadblance;
 
 /**
  * 负载均衡策略
+ *
  * <p>
  * Created by biezhi on 2016/12/30.
  */

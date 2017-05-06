@@ -75,6 +75,7 @@ public class SimpleRpcClient {
 
     /***
      * 动态代理,获得代理后的对象
+     *
      * @param rpcInterface
      * @param <T>
      * @return
