@@ -4,17 +4,17 @@ import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.kongzhong.mrpc.registry.Constant;
+import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Zookeeper服务发现
@@ -61,16 +61,22 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 throw new RuntimeException(String.format("can not find any address node on path: %s", Constant.ZK_ROOT));
             }
 
+            Map<String, List<String>> mappings = Maps.newConcurrentMap();
+
             for (String node : addressList) {
                 String path = Constant.ZK_ROOT + "/" + node;
                 byte[] bytes = zkClient.readData(path);
                 String address = new String(bytes);
-                if (!Strings.isNullOrEmpty(address)) {
-                    dataList.add(address);
+                String[] sp = node.split("_");
+
+                if (!mappings.containsKey(address)) {
+                    mappings.put(address, Lists.newArrayList(sp[0]));
+                } else {
+                    mappings.get(address).add(sp[0]);
                 }
             }
             // update node list
-//            Connections.me().updateNodes(Sets.newTreeSet(dataList));
+            Connections.me().updateNodes(mappings);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
