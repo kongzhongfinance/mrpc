@@ -14,8 +14,8 @@
     <dependencies>
         <dependency>
             <groupId>io.github.junicorn</groupId>
-            <artifactId>mrpc-common</artifactId>
-            <version>${mrpc-common.version}</version>
+            <artifactId>mrpc-core</artifactId>
+            <version>${mrpc-core.version}</version>
             <scope>provided</scope>
         </dependency>
         <!--statsd：可选项-->
