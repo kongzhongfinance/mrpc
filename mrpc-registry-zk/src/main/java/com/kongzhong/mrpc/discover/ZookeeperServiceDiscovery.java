@@ -4,8 +4,10 @@ import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
-import com.google.common.collect.Lists;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Zookeeper服务发现
@@ -22,8 +25,6 @@ import java.util.Map;
 public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperServiceDiscovery.class);
-
-    private volatile List<String> dataList = Lists.newArrayList();
 
     private IZkClient zkClient;
 
@@ -55,26 +56,26 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private void watchNode(final IZkClient zkClient) {
         try {
-            dataList.clear();
             List<String> addressList = zkClient.getChildren(Constant.ZK_ROOT);
             if (null == addressList || addressList.size() == 0) {
                 throw new RuntimeException(String.format("can not find any address node on path: %s", Constant.ZK_ROOT));
             }
 
-            Map<String, List<String>> mappings = Maps.newConcurrentMap();
-
+            // { 127.0.0.1:5066 => [UserService, BatService] }
+            Map<String, Set<String>> mappings = Maps.newHashMap();
             for (String node : addressList) {
                 String path = Constant.ZK_ROOT + "/" + node;
                 byte[] bytes = zkClient.readData(path);
                 String address = new String(bytes);
                 String[] sp = node.split("_");
-
                 if (!mappings.containsKey(address)) {
-                    mappings.put(address, Lists.newArrayList(sp[0]));
+                    mappings.put(address, Sets.newHashSet(sp[0]));
                 } else {
                     mappings.get(address).add(sp[0]);
                 }
+
             }
+
             // update node list
             Connections.me().updateNodes(mappings);
         } catch (Exception e) {

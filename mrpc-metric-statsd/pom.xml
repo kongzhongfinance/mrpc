@@ -12,13 +12,14 @@
     <artifactId>mrpc-metric-statsd</artifactId>
 
     <dependencies>
+
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-core</artifactId>
             <version>${mrpc-core.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--statsd：可选项-->
+
         <dependency>
             <groupId>com.timgroup</groupId>
             <artifactId>java-statsd-client</artifactId>

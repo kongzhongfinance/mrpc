@@ -1,8 +1,6 @@
 package com.kongzhong.mrpc.cluster;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
@@ -16,10 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -66,7 +61,7 @@ public class Connections {
      * 服务和服务提供方客户端映射
      * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
-    private Map<String, List<SimpleClientHandler>> serviceMapping = Maps.newConcurrentMap();
+    private Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
 
     private static final class ConnectionsHolder {
         private static final Connections $ = new Connections();
@@ -98,11 +93,11 @@ public class Connections {
      *
      * @param mappings
      */
-    public void updateNodes(Map<String, List<String>> mappings) {
+    public void updateNodes(Map<String, Set<String>> mappings) {
         try {
             lock.lock();
-            mappings.forEach((serverAddr, serviceNames) -> {
-                String[] ipAddr = serverAddr.split(":");
+            mappings.forEach((key, serviceNames) -> {
+                String[] ipAddr = key.split(":");
                 //获取IP
                 String host = ipAddr[0];
                 //获取端口号
@@ -135,10 +130,13 @@ public class Connections {
     public void addRpcClientHandler(String serviceName, SimpleClientHandler handler) {
         try {
             lock.lock();
-            if (!serviceMapping.containsKey(serviceName)) {
-                serviceMapping.put(serviceName, Lists.newArrayList(handler));
+
+            if (mappings.containsKey(serviceName)) {
+                if (!mappings.get(serviceName).contains(handler)) {
+                    mappings.put(serviceName, handler);
+                }
             } else {
-                serviceMapping.get(serviceName).add(handler);
+                mappings.put(serviceName, handler);
             }
             handlerStatus.signal();
         } finally {
@@ -149,29 +147,24 @@ public class Connections {
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         lock.lock();
         try {
-            while (!serviceMapping.containsKey(serviceName) || serviceMapping.get(serviceName).size() == 0) {
+            while (!mappings.containsKey(serviceName) || mappings.get(serviceName).size() == 0) {
                 // 阻塞
                 handlerStatus.await();
             }
-            return serviceMapping.get(serviceName);
+            return Lists.newArrayList(mappings.get(serviceName));
         } finally {
             lock.unlock();
         }
     }
 
+    /**
+     * 客户端移除一个失效的连接
+     *
+     * @param handler
+     */
     public void remove(SimpleClientHandler handler) {
-        Collection<List<SimpleClientHandler>> simpleClientHandlers = serviceMapping.values();
-        if (null != simpleClientHandlers && !simpleClientHandlers.isEmpty()) {
-            simpleClientHandlers.forEach(clients -> {
-                List<SimpleClientHandler> temp = Lists.newArrayList();
-                clients.forEach(client -> {
-                    if (!client.equals(handler)) {
-                        temp.add(handler);
-                    }
-                });
-                clients.clear();
-                clients.addAll(temp);
-            });
+        if (mappings.values().size() > 0 && null != handler && mappings.values().contains(handler)) {
+            mappings.values().removeAll(Lists.newArrayList(handler));
         }
     }
 

@@ -13,10 +13,10 @@
     <version>${mrpc-zk.version}</version>
 
     <dependencies>
+
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-core</artifactId>
-            <version>${mrpc-core.version}</version>
             <scope>provided</scope>
         </dependency>
 

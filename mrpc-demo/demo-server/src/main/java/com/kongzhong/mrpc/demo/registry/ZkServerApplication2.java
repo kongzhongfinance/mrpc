@@ -7,7 +7,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author biezhi
  *         2017/4/19
  */
-public class ServerApplication2 {
+public class ZkServerApplication2 {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-server-2.xml");
