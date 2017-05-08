@@ -7,36 +7,22 @@
         <groupId>io.github.junicorn</groupId>
         <version>0.0.1</version>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mrpc-core</artifactId>
-    <version>${mrpc-core.version}</version>
+
+    <artifactId>mrpc-metric-statsd</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-common</artifactId>
             <version>${mrpc-common.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>1.4.0.RELEASE</version>
             <scope>provided</scope>
+        </dependency>
+        <!--statsd：可选项-->
+        <dependency>
+            <groupId>com.timgroup</groupId>
+            <artifactId>java-statsd-client</artifactId>
+            <version>${statsd.version}</version>
         </dependency>
 
     </dependencies>
