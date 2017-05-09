@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public class ZkServer {
 
     private final static Logger LOG = LoggerFactory.getLogger(ZkServer.class);
-    ;
 
     public static final int DEFAULT_PORT = 2181;
 

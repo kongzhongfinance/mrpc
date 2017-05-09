@@ -73,7 +73,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 } else {
                     mappings.get(address).add(sp[0]);
                 }
-
             }
 
             // update node list

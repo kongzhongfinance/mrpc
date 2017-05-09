@@ -1,6 +1,9 @@
 package com.kongzhong.mrpc.cluster;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
@@ -14,7 +17,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -22,7 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * 服务连接管理
+ * 客户端连接管理
  *
  * @author biezhi
  *         2017/4/22
@@ -43,7 +48,7 @@ public class Connections {
     /**
      * 并行处理器个数
      */
-    private final static int parallel = Runtime.getRuntime().availableProcessors() * 2;
+    private final static int parallel = Runtime.getRuntime().availableProcessors() + 1;
 
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
 
@@ -51,11 +56,6 @@ public class Connections {
      * 客户端 消息处理线程池
      */
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
-
-    /**
-     * 所有客户端的列表
-     */
-    private List<SimpleClientHandler> clientHandlers = Lists.newArrayList();
 
     /**
      * 服务和服务提供方客户端映射
