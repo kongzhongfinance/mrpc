@@ -33,6 +33,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.junicorn</groupId>
+            <artifactId>mrpc-registry-zk</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

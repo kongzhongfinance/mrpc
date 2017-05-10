@@ -1,20 +1,20 @@
 package com.kongzhong.mrpc.client;
 
+import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
+import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -48,22 +48,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
     }
 
-    private void registerBean(BeanDefinitionRegistry registry, String name, Class<?> beanClass) {
-        AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
-
-        ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
-
-        abd.setScope(scopeMetadata.getScopeName());
-        // 可以自动生成name
-        String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, registry));
-
-        AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
-
-        BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
-
-        BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
-    }
-
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         log.info("setBeanFactory");
@@ -73,6 +57,24 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
 
     @Override
     public void setEnvironment(Environment environment) {
+
+        log.info("setEnvironment");
+
+        // 注册中心
+        String registry = environment.getProperty("mrpc.registry", RegistryEnum.DEFAULT.getName());
+
+        if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
+            String zkAddr = environment.getProperty("mrpc.zk.addr", "127.0.0.1:2181");
+            log.info("zk address: {}", zkAddr);
+            String interfaceName = "com.kongzhong.mrpc.registry.ServiceDiscovery";
+            try {
+                Object zookeeperServiceDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
+                configurableBeanFactory.registerSingleton(interfaceName, zookeeperServiceDiscovery);
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
+
         referers.forEach(clazz -> {
             String interfaceName = clazz.getName();
             try {

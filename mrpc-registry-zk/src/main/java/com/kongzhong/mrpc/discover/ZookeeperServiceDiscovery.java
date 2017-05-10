@@ -4,9 +4,7 @@ import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.cluster.Connections;
 import com.kongzhong.mrpc.registry.Constant;
@@ -28,7 +26,20 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private IZkClient zkClient;
 
+    private String zkAddr;
+
+    private boolean isInit;
+
     public ZookeeperServiceDiscovery(String zkAddr) {
+        this.zkAddr = zkAddr;
+        init();
+    }
+
+    private void init() {
+        if (isInit) {
+            return;
+        }
+        isInit = true;
         zkClient = new ZkClient(zkAddr);
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
@@ -88,4 +99,11 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
+    public String getZkAddr() {
+        return zkAddr;
+    }
+
+    public void setZkAddr(String zkAddr) {
+        this.zkAddr = zkAddr;
+    }
 }
