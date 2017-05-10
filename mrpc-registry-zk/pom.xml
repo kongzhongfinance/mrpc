@@ -16,15 +16,8 @@
 
         <dependency>
             <groupId>io.github.junicorn</groupId>
-            <artifactId>mrpc-common</artifactId>
-            <version>0.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-core</artifactId>
-            <version>0.0.1</version>
+            <version>${mrpc-core.version}</version>
             <scope>provided</scope>
         </dependency>
 

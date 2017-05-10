@@ -30,7 +30,7 @@
         <dependency>
             <groupId>io.github.junicorn</groupId>
             <artifactId>mrpc-serialize-kryo</artifactId>
-            <version>${mrpc-serialize-kryo}</version>
+            <version>${mrpc-serialize-kryo.version}</version>
         </dependency>
 
         <dependency>

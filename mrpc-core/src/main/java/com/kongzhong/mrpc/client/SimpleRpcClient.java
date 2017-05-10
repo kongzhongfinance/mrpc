@@ -62,7 +62,6 @@ public class SimpleRpcClient {
     protected List<Class<?>> referers = Lists.newArrayList();
 
     public SimpleRpcClient() {
-        this(new DefaultDiscovery());
     }
 
     public SimpleRpcClient(ServiceDiscovery serviceDiscovery) {
@@ -124,6 +123,9 @@ public class SimpleRpcClient {
             clientConfig.setTransport(transportEnum);
             clientConfig.setReferers(referers);
 
+            if (null == serviceDiscovery) {
+                serviceDiscovery = new DefaultDiscovery();
+            }
             serviceDiscovery.discover();
             isInit = true;
         }

@@ -69,7 +69,9 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
             String interfaceName = "com.kongzhong.mrpc.registry.ServiceDiscovery";
             try {
                 Object zookeeperServiceDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
-                configurableBeanFactory.registerSingleton(interfaceName, zookeeperServiceDiscovery);
+                ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperServiceDiscovery;
+                this.setServiceDiscovery(serviceDiscovery);
+                configurableBeanFactory.registerSingleton(interfaceName, serviceDiscovery);
             } catch (Exception e) {
                 log.error("", e);
             }
