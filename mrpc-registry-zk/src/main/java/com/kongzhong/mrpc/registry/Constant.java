@@ -1,7 +1,5 @@
 package com.kongzhong.mrpc.registry;
 
-import com.kongzhong.mrpc.enums.TransportEnum;
-
 /**
  * Created by biezhi on 2016/10/14.
  */
