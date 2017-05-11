@@ -1,6 +1,6 @@
 #! /bin/bash
 
-mvn clean deploy -Durl=http://10.230.200.15:8081/nexus/content/repositories/releases/ -DrepositoryId=releases -P releases -h
+mvn clean deploy -Durl=http://10.230.200.15:8081/nexus/content/repositories/releases/ -DrepositoryId=releases -P releases -N
 
 cd mrpc-common
 mvn clean deploy -Durl=http://10.230.200.15:8081/nexus/content/repositories/releases/ -DrepositoryId=releases -P releases
