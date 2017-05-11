@@ -43,17 +43,11 @@ public class HttpResponseCallback extends SimpleResponseCallback<HttpResponse> {
             if (null != request.getReturnType()) {
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
+            rpcResponse.setSuccess(true);
         } catch (Throwable e) {
             Throwable t = e instanceof InvocationTargetException ? e.getCause() : e;
-            t = t instanceof RpcException ? t.getCause() : t;
-
-            if (t instanceof ServiceException || t instanceof RuntimeException) {
-                rpcResponse.setException(t.getMessage());
-            } else {
-                rpcResponse.setException(Throwables.getStackTraceAsString(t));
-            }
+            rpcResponse.setException(Throwables.getStackTraceAsString(t));
             log.error("rpc method invoke error", t);
-            rpcResponse.setException(t.getMessage());
         } finally {
             RpcContext.remove();
             String body = JSONUtils.toJSONString(rpcResponse);

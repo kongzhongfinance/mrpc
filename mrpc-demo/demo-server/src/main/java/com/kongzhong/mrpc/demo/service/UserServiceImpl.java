@@ -63,7 +63,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void testBizExp() {
-        System.out.println("测试业务异常");
         throw new BizException("xx对象不能为空");
     }
 

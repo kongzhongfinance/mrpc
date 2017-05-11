@@ -31,7 +31,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         RpcRequest request = new RpcRequest(StringUtils.getUUID(),
                 method.getDeclaringClass().getName(), method.getName(),
                 method.getParameterTypes(), args, method.getReturnType());
-
         return haStrategy.call(request, loadBalance);
     }
 

@@ -31,10 +31,10 @@ public class RpcFuture {
         try {
             lock.lock();
             finish.await(seconds, TimeUnit.SECONDS);
-            if (StringUtils.isNotEmpty(response.getException())) {
-                throw new ServiceException(response.getException());
+            if (null != response) {
+                return response.getResult();
             }
-            return response.getResult();
+            return null;
         } finally {
             lock.unlock();
         }

@@ -3,10 +3,8 @@ package com.kongzhong.mrpc.transport.http;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.exception.HttpException;
-import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -22,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author biezhi
@@ -92,14 +88,18 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             String body = new String(resp, "UTF-8");
 
             if (StringUtils.isNotEmpty(body)) {
-                log.debug("http server response body: {}", body);
                 RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
-                Object result = rpcResponse.getResult();
-                if (null != result && result instanceof JSONObject) {
-                    if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                        Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                        rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                if (rpcResponse.getSuccess()) {
+                    log.debug("http server response body: {}", body);
+                    Object result = rpcResponse.getResult();
+                    if (null != result && result instanceof JSONObject) {
+                        if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                            Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                            rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                        }
                     }
+                } else {
+                    log.error(rpcResponse.getException());
                 }
                 RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
                 if (rpcFuture != null) {

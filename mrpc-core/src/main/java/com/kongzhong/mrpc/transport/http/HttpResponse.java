@@ -51,4 +51,5 @@ public class HttpResponse extends DefaultFullHttpResponse {
     public void setRequestId(String requestId) {
         this.requestId = requestId;
     }
+
 }

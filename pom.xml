@@ -25,7 +25,7 @@
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
         <mrpc-common.version>0.0.1</mrpc-common.version>
-        <mrpc-core.version>0.0.1</mrpc-core.version>
+        <mrpc-core.version>0.0.2</mrpc-core.version>
         <mrpc-zk.version>0.0.1</mrpc-zk.version>
         <mrpc-serialize-kryo.version>0.0.1</mrpc-serialize-kryo.version>
         <mrpc-serialize-protostuff.version>0.0.1</mrpc-serialize-protostuff.version>
@@ -52,7 +52,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -73,7 +78,7 @@
             <dependency>
                 <groupId>io.github.junicorn</groupId>
                 <artifactId>mrpc-serialize-kryo</artifactId>
-                <version>0.0.1</version>
+                <version>${mrpc-serialize-kryo.version}</version>
             </dependency>
 
             <dependency>

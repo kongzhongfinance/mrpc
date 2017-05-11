@@ -27,16 +27,17 @@ public class TcpResponseCallback extends SimpleResponseCallback<Boolean> {
 
     @Override
     public Boolean call() throws Exception {
-        response.setRequestId(request.getRequestId());
         try {
+            response.setRequestId(request.getRequestId());
             Object result = handle(request);
             response.setResult(result);
+            response.setSuccess(true);
             return Boolean.TRUE;
         } catch (Throwable e) {
             Throwable t = e instanceof InvocationTargetException ? e.getCause() : e;
             response.setException(Throwables.getStackTraceAsString(t));
             log.error("rpc method invoke error", t);
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         } finally {
             RpcContext.remove();
         }

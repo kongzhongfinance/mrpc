@@ -4,7 +4,7 @@ package com.kongzhong.mrpc.exception;
  * @author biezhi
  *         2017/4/24
  */
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
 
     private String code;
 
