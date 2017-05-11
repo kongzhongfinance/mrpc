@@ -32,6 +32,9 @@ public class RpcFuture {
             lock.lock();
             finish.await(seconds, TimeUnit.SECONDS);
             if (null != response) {
+                if (StringUtils.isNotEmpty(response.getException())) {
+                    throw new ServiceException(response.getException());
+                }
                 return response.getResult();
             }
             return null;

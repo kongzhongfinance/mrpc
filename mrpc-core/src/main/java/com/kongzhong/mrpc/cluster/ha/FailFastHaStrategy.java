@@ -18,7 +18,7 @@ public class FailFastHaStrategy implements HaStrategy {
         RpcInvoker invoker = loadBalance.getInvoker(request.getClassName());
         try {
             return invoker.invoke(request);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RpcException(e);
         }
     }

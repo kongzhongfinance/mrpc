@@ -34,8 +34,6 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
         if (response.getSuccess()) {
             log.debug("rpc server response: {}", response);
-        } else {
-            log.error(response.getException());
         }
         String messageId = response.getRequestId();
         RpcFuture rpcFuture = mapCallBack.get(messageId);

@@ -98,8 +98,6 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                             rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
                         }
                     }
-                } else {
-                    log.error(rpcResponse.getException());
                 }
                 RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
                 if (rpcFuture != null) {

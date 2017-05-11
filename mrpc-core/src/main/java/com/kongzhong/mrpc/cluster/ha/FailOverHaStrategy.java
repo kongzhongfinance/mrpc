@@ -36,11 +36,13 @@ public class FailOverHaStrategy implements HaStrategy {
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
                     throw e;
+                } else if (e instanceof RpcException) {
+                    if (i >= rc) {
+                        throw e;
+                    }
+                } else {
+                    log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
                 }
-                if (i >= rc) {
-                    throw e;
-                }
-                log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
             }
         }
         throw new RpcException("FailOverHaStrategy.invoke should not come here!");
