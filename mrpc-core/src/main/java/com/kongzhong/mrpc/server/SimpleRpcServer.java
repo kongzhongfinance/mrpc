@@ -1,49 +1,35 @@
 package com.kongzhong.mrpc.server;
 
 import com.google.common.util.concurrent.*;
-import com.kongzhong.mrpc.annotation.RpcService;
-import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
-import com.kongzhong.mrpc.model.ClientBean;
-import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.transport.http.HttpResponse;
-import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
 @Data
-@NoArgsConstructor
-public class SimpleRpcServer implements ApplicationContextAware, InitializingBean {
+public class SimpleRpcServer {
 
     /**
      * RPC服务映射
@@ -87,6 +73,9 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
 
     protected static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
+    public SimpleRpcServer() {
+    }
+
     public SimpleRpcServer(String serverAddress) {
         this.serverAddress = serverAddress;
     }
@@ -96,86 +85,7 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
         this.serviceRegistry = serviceRegistry;
     }
 
-    /**
-     * ① 设置上下文
-     *
-     * @param ctx
-     * @throws BeansException
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-
-        if (null == serialize) {
-            serialize = DefaultConfig.serialize();
-        }
-
-        Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
-        if (clientBeanMap != null && !clientBeanMap.isEmpty()) {
-            RpcClient rpcClient = ctx.getBean(RpcClient.class);
-            ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
-            DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
-
-            if (null != rpcClient) {
-                for (ClientBean bean : clientBeanMap.values()) {
-                    String id = bean.getId();
-                    String interfaceName = bean.getInterfaceName();
-                    try {
-                        Class<?> clazz = Class.forName(interfaceName);
-                        Object object = rpcClient.getProxyBean(clazz);
-                        dbf.registerSingleton(id, object);
-                        log.info("Bind rpc service [{}]", interfaceName);
-                    } catch (Exception e) {
-                        log.warn("Not found rpc service [{}] component!", interfaceName);
-                    }
-                }
-            }
-        }
-
-        Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
-        try {
-
-            if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
-                for (Object serviceBean : serviceBeanMap.values()) {
-                    Object realBean = AopTargetUtils.getTarget(serviceBean);
-                    RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
-                    String serviceName = rpcService.value().getName();
-                    String version = rpcService.version();
-                    String name = rpcService.name();
-
-                    if (StringUtils.isNotEmpty(name)) {
-                        serviceName = name;
-                    } else {
-                        if (NoInterface.class.getName().equals(serviceName)) {
-                            Class<?>[] intes = realBean.getClass().getInterfaces();
-                            if (null == intes || intes.length != 1) {
-                                serviceName = realBean.getClass().getName();
-                            } else {
-                                serviceName = intes[0].getName();
-                            }
-                        }
-                    }
-
-                    if (StringUtils.isNotEmpty(version)) {
-                        serviceName += "_" + version;
-                    }
-                    rpcMapping.addHandler(serviceName, realBean);
-                }
-            }
-            transferSelector = new TransferSelector(serialize);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-    }
-
-    /**
-     * ② 后置操作
-     *
-     * @throws Exception
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
+    protected void startServer() {
         if (null == transport) {
             transport = DefaultConfig.transport();
         }
@@ -183,6 +93,12 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
         if (null == nettyConfig) {
             nettyConfig = DefaultConfig.nettyServerConfig();
         }
+
+        if (null == serialize) {
+            serialize = DefaultConfig.serialize();
+        }
+
+        transferSelector = new TransferSelector(serialize);
 
         ThreadFactory threadRpcFactory = new NamedThreadFactory("mrpc-server");
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
@@ -313,11 +229,11 @@ public class SimpleRpcServer implements ApplicationContextAware, InitializingBea
     /**
      * 销毁资源
      */
-    private void destroy() {
+    protected void destroy() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
                 serviceRegistry.unregister(serviceName);
-                log.info("unregister => [{}] - [{}]", serviceName, serverAddress);
+                log.debug("unregister => [{}] - [{}]", serviceName, serverAddress);
             }
         }));
     }
