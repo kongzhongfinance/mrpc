@@ -10,11 +10,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.AnnotationBeanNameGenerator;
-import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
-import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -25,12 +20,11 @@ import org.springframework.util.Assert;
  *         2017/4/25
  */
 @Slf4j
-public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, BeanDefinitionRegistryPostProcessor, EnvironmentAware {
-
-    private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
-    private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
+public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, BeanDefinitionRegistryPostProcessor {
 
     private ConfigurableBeanFactory configurableBeanFactory;
+
+    private Referers referersObj;
 
     public BootRpcClient() {
         super();
@@ -53,17 +47,14 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
         log.info("setBeanFactory");
         Assert.state(beanFactory instanceof ConfigurableBeanFactory, "wrong bean factory type");
         configurableBeanFactory = (ConfigurableBeanFactory) beanFactory;
-    }
+        this.referersObj = beanFactory.getBean(Referers.class);
 
-    @Override
-    public void setEnvironment(Environment environment) {
+        Environment environment = beanFactory.getBean(Environment.class);
 
-        log.debug("Set Environment");
-
-        this.transport = environment.getProperty("mrpc.transport", "tcp");
+        this.transport = environment.getProperty("mrpc.client.transport", "tcp");
 
         // 注册中心
-        String registry = environment.getProperty("mrpc.registry", RegistryEnum.DEFAULT.getName());
+        String registry = environment.getProperty("mrpc.client.registry", RegistryEnum.DEFAULT.getName());
 
         if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
             String zkAddr = environment.getProperty("mrpc.zk.addr", "127.0.0.1:2181");
@@ -74,12 +65,13 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
                 ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperServiceDiscovery;
                 this.setServiceDiscovery(serviceDiscovery);
                 configurableBeanFactory.registerSingleton(interfaceName, serviceDiscovery);
+
             } catch (Exception e) {
                 log.error("", e);
             }
         }
 
-        referers.forEach(clazz -> {
+        referersObj.getReferers().forEach(clazz -> {
             String interfaceName = clazz.getName();
             try {
                 Object object = getProxyBean(clazz);
@@ -89,6 +81,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
                 log.warn("Not found rpc service [{}] component!", interfaceName, e);
             }
         });
+
     }
 
 }

@@ -20,7 +20,6 @@ import java.util.Map;
 public class RpcMapping {
 
     private Map<String, Object> handlerMap = Maps.newConcurrentMap();
-
     private List<RpcInteceptor> inteceptors = Lists.newArrayList();
 
     private static final class RpcMappingHolder {
