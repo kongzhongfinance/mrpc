@@ -87,23 +87,22 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             buf.readBytes(resp);
             String body = new String(resp, "UTF-8");
 
-            if (StringUtils.isNotEmpty(body)) {
-                RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
-                if (rpcResponse.getSuccess()) {
-                    log.debug("http server response body: {}", body);
-                    Object result = rpcResponse.getResult();
-                    if (null != result && result instanceof JSONObject) {
-                        if (null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                            Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                            rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
-                        }
-                    }
+            if (StringUtils.isEmpty(body)) {
+                return;
+            }
+            RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
+            if (rpcResponse.getSuccess()) {
+                log.debug("http server response body: {}", body);
+                Object result = rpcResponse.getResult();
+                if (null != result && result instanceof JSONObject && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                    Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                    rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
                 }
-                RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
-                if (rpcFuture != null) {
-                    mapCallBack.remove(rpcResponse.getRequestId());
-                    rpcFuture.done(rpcResponse);
-                }
+            }
+            RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
+            if (rpcFuture != null) {
+                mapCallBack.remove(rpcResponse.getRequestId());
+                rpcFuture.done(rpcResponse);
             }
         } catch (Exception e) {
             throw new HttpException("client read response error", e);

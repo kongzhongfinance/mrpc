@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 软负载简单实现
@@ -23,9 +24,15 @@ public class SimpleLoadBalance implements LoadBalance {
     private AtomicInteger posInt = new AtomicInteger(0);
     private Random random = new Random();
 
+    /**
+     * 性能优于AtomicInteger（JDK8出现）
+     */
+    private LongAdder posLong = new LongAdder();
+
     @Override
     public RpcInvoker getInvoker(String serviceName) {
         try {
+
             LBStrategy LBStrategy = ClientConfig.me().getLbStrategy();
             List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
             if (handlers.size() == 1) {
