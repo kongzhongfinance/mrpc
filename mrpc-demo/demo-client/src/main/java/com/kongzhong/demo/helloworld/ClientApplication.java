@@ -1,6 +1,7 @@
 package com.kongzhong.demo.helloworld;
 
 import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.demo.model.StatusEnum;
 import com.kongzhong.mrpc.demo.service.UserService;
 
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,9 @@ public class ClientApplication {
 
         final UserService userService = rpcClient.getProxyBean(UserService.class);
         System.out.println(userService);
+
+        StatusEnum statusEnum = userService.testEnum(StatusEnum.SUCCESS);
+        System.out.println(statusEnum);
 
         int pos = 1;
         while (pos < 10_0000) {

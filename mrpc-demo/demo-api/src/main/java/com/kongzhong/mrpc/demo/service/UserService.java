@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.demo.model.StatusEnum;
 import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.util.List;
@@ -32,4 +33,5 @@ public interface UserService {
 
     void testNormalExp();
 
+    StatusEnum testEnum(StatusEnum statusEnum);
 }

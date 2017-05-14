@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.demo.service;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.demo.model.StatusEnum;
 
 import java.util.Arrays;
 import java.util.List;
@@ -71,4 +72,9 @@ public class UserServiceImpl implements UserService {
         int a = 1 / 0;
     }
 
+    @Override
+    public StatusEnum testEnum(StatusEnum statusEnum) {
+        System.out.println("接收到枚举：" + statusEnum);
+        return statusEnum;
+    }
 }
