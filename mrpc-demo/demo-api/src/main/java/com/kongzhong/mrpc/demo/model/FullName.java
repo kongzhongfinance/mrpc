@@ -1,9 +1,10 @@
 package com.kongzhong.mrpc.demo.model;
 
-import com.alibaba.fastjson.JSON;
+import lombok.ToString;
 
 import java.io.Serializable;
 
+@ToString
 public class FullName implements Serializable {
     private String firstName;
     private String lastName;
@@ -11,11 +12,6 @@ public class FullName implements Serializable {
     public FullName(String lastName, String firstName) {
         this.lastName = lastName;
         this.firstName = firstName;
-    }
-
-    @Override
-    public String toString() {
-        return JSON.toJSONString(this);
     }
 
     public String getFirstName() {

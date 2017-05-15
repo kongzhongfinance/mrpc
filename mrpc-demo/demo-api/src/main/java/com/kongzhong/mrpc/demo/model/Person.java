@@ -1,12 +1,13 @@
 package com.kongzhong.mrpc.demo.model;
 
-import com.alibaba.fastjson.JSON;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@ToString
 public class Person implements Serializable {
     private String name;
     private FullName fullName;
@@ -17,11 +18,6 @@ public class Person implements Serializable {
     private List<Person> friends;
 
     public Person() {
-    }
-
-    @Override
-    public String toString() {
-        return JSON.toJSONString(this);
     }
 
     public String getName() {

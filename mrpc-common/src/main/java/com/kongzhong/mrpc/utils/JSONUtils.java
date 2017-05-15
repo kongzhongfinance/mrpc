@@ -1,8 +1,7 @@
 package com.kongzhong.mrpc.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.kongzhong.mrpc.enums.JSONEnum;
-import com.kongzhong.mrpc.serialize.FastJsonSerialize;
+import com.kongzhong.mrpc.serialize.JacksonSerialize;
 import com.kongzhong.mrpc.serialize.JSONSerialize;
 import org.springframework.util.Assert;
 
@@ -12,18 +11,18 @@ import org.springframework.util.Assert;
  */
 public class JSONUtils {
 
-    private static JSONSerialize jsonSerialize = new FastJsonSerialize();
+    private static JSONSerialize jsonSerialize = new JacksonSerialize();
 
     public static void setJSONImpl(JSONEnum jsonImpl) {
         Assert.notNull(jsonImpl);
         if (jsonImpl == JSONEnum.FASTJSON) {
-            jsonSerialize = new FastJsonSerialize();
+            jsonSerialize = new JacksonSerialize();
         }
         if (jsonImpl == JSONEnum.JACKSON) {
-            jsonSerialize = new FastJsonSerialize();
+            jsonSerialize = new JacksonSerialize();
         }
         if (jsonImpl == JSONEnum.GSON) {
-            jsonSerialize = new FastJsonSerialize();
+            jsonSerialize = new JacksonSerialize();
         }
     }
 

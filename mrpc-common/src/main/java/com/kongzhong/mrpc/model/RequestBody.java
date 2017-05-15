@@ -1,7 +1,5 @@
 package com.kongzhong.mrpc.model;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.ToString;
 
@@ -21,8 +19,8 @@ public class RequestBody {
     private String service;
     private String method;
     private String version;
-    private JSONObject parameters;
-    private JSONArray parameterTypes;
-    private JSONArray parameterArray;
+    private List<Object> parameters;
+    private List<String> parameterTypes;
+
 
 }

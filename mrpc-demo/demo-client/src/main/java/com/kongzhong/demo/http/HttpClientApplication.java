@@ -19,9 +19,10 @@ public class HttpClientApplication {
 
         UserService userService = rpcClient.getProxyBean(UserService.class);
 
+        userService.testArray(new String[]{"a", "b", "c"});
+
         int sum = userService.add(10, 20);
         System.out.println("add => " + sum);
-
 
         Person person = new Person();
         person.setName("王爵nice");
@@ -33,8 +34,6 @@ public class HttpClientApplication {
         map.put("Hello", 22);
         Map<String, Integer> rmap = userService.toMap(map);
         System.out.println("toMap => " + rmap);
-
-        userService.testArray(new String[]{"a", "b", "c"});
 
         userService.testNormalExp();
 

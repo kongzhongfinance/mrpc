@@ -16,8 +16,9 @@
         <module>demo-api</module>
         <module>demo-client</module>
         <module>demo-server</module>
-        <module>demo-spring-boot</module>
         <module>demo-server-other</module>
+        <module>spring-boot-server</module>
+        <module>spring-boot-client</module>
     </modules>
 
     <dependencies>
@@ -25,13 +26,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.29</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>

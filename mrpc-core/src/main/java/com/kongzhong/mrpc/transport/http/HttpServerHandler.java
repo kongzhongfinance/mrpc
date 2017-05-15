@@ -1,8 +1,5 @@
 package com.kongzhong.mrpc.transport.http;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.enums.MediaType;
 import com.kongzhong.mrpc.model.RequestBody;
@@ -76,7 +73,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         RequestBody requestBody = null;
         try {
-            requestBody = JSON.parseObject(body, RequestBody.class);
+            requestBody = JSONUtils.parseObject(body, RequestBody.class);
         } catch (Exception e) {
             this.sendError(ctx, RpcRet.error("unable to identify the requested format."));
             return;
@@ -85,7 +82,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         String serviceName = requestBody.getService();
         String methodName = requestBody.getMethod();
         String version = requestBody.getVersion();
-        Map<String, Object> argJSON = requestBody.getParameters();
+        List<Object> argJSON = requestBody.getParameters();
 
         if (StringUtils.isEmpty(serviceName)) {
             this.sendError(ctx, RpcRet.notFound("[service] not is null."));
@@ -136,9 +133,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         String methodName = requestBody.getMethod();
 
         Method method = null;
-        JSONArray arrJSON = null;
-        JSONArray parameterTypes = requestBody.getParameterTypes();
-        JSONObject argJSON = requestBody.getParameters();
+        List<String> parameterTypes = requestBody.getParameterTypes();
+        List<Object> argJSON = requestBody.getParameters();
 
         // 判断根据参数列表类型查找method对象
         if (null != parameterTypes) {
@@ -148,7 +144,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
                 parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType.toString());
             }
             method = type.getMethod(methodName, parameterTypeArr);
-            arrJSON = JSON.parseArray(JSONUtils.toJSONString(requestBody.getParameterArray()));
+            argJSON = requestBody.getParameters();
         } else {
             method = ReflectUtils.method(type, methodName);
         }
@@ -166,15 +162,21 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             for (int i = 0, len = paramNames.size(); i < len; i++) {
                 String paramName = paramNames.get(i);
                 Class<?> paramType = types[i];
+
+                Object arr = argJSON.get(i);
+
+                args[i] = arr;
+
                 if (paramType.isArray()) {
                     Class<?> arrayType = paramType.getComponentType();
-                    JSONArray array = null != arrJSON ? arrJSON.getJSONArray(i) : argJSON.getJSONArray(paramName);
-                    if (null != array) {
-                        List list = array.toJavaList(arrayType);
-                        args[i] = listToArray(arrayType, list);
-                    }
-                } else {
-                    args[i] = null != arrJSON ? arrJSON.getObject(i, paramType) : argJSON.getObject(paramName, paramType);
+
+                    //null != arrJSON ? arrJSON.get(i) : argJSON[i];
+
+                    //JSONArray array = null != arrJSON ? arrJSON.getJSONArray(i) : argJSON.getJSONArray(paramName);
+                    //if (null != array) {
+                    //    List list = array.toJavaList(arrayType);
+                    //    args[i] = listToArray(arrayType, list);
+                    //}
                 }
             }
         }

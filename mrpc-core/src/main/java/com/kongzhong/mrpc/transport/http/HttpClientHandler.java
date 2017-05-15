@@ -1,8 +1,5 @@
 package com.kongzhong.mrpc.transport.http;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.exception.HttpException;
 import com.kongzhong.mrpc.model.RequestBody;
@@ -20,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author biezhi
@@ -45,13 +45,11 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         requestBody.setRequestId(rpcRequest.getRequestId());
         requestBody.setService(rpcRequest.getClassName());
         requestBody.setMethod(rpcRequest.getMethodName());
-        requestBody.setParameterArray(JSON.parseArray(JSONUtils.toJSONString(rpcRequest.getParameters())));
+        requestBody.setParameters(Arrays.asList(rpcRequest.getParameters()));
 
         Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
-        Object[] args = rpcRequest.getParameters();
-
         if (null != parameterTypes) {
-            JSONArray parameterTypesJSON = new JSONArray();
+            List<String> parameterTypesJSON = new ArrayList<>();
             for (Class<?> type : parameterTypes) {
                 parameterTypesJSON.add(type.getName());
             }
@@ -90,13 +88,13 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             if (StringUtils.isEmpty(body)) {
                 return;
             }
-            RpcResponse rpcResponse = JSON.parseObject(body, RpcResponse.class);
+            RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
             if (rpcResponse.getSuccess()) {
                 log.debug("http server response body: {}", body);
                 Object result = rpcResponse.getResult();
-                if (null != result && result instanceof JSONObject && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
                     Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                    rpcResponse.setResult(JSON.parseObject(((JSONObject) result).toJSONString(), re));
+                    rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
                 }
             }
             RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());

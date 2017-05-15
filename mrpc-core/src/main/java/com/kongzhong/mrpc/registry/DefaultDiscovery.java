@@ -1,19 +1,16 @@
 package com.kongzhong.mrpc.registry;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Charsets;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,12 +37,12 @@ public class DefaultDiscovery implements ServiceDiscovery {
         try {
             String content = Files.toString(file, Charsets.UTF_8);
             if (StringUtils.isNotEmpty(content)) {
-                JSONArray array = JSON.parseArray(content);
+                List<Map<String, String>> array = JSONUtils.parseObject(content, List.class);
                 Map<String, Set<String>> mappings = Maps.newHashMap();
                 for (int i = 0, len = array.size(); i < len; i++) {
-                    JSONObject object = array.getJSONObject(i);
-                    String serviceName = object.getString("service");
-                    String address = object.getString("addr");
+                    Map<String, String> object = array.get(i);
+                    String serviceName = object.get("service");
+                    String address = object.get("addr");
 
                     if (!mappings.containsKey(address)) {
                         mappings.put(address, Sets.newHashSet(serviceName));
