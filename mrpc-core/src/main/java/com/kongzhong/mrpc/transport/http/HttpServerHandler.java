@@ -19,7 +19,6 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -156,42 +155,15 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
         // 解析参数到args中
         Object[] args = new Object[method.getParameterCount()];
-        List<String> paramNames = ReflectUtils.getParamNames(method);
-        if (null != paramNames) {
-            Class<?>[] types = method.getParameterTypes();
-            for (int i = 0, len = paramNames.size(); i < len; i++) {
-                String paramName = paramNames.get(i);
-                Class<?> paramType = types[i];
-
-                Object arr = argJSON.get(i);
-
-                args[i] = arr;
-
-                if (paramType.isArray()) {
-                    Class<?> arrayType = paramType.getComponentType();
-
-                    //null != arrJSON ? arrJSON.get(i) : argJSON[i];
-
-                    //JSONArray array = null != arrJSON ? arrJSON.getJSONArray(i) : argJSON.getJSONArray(paramName);
-                    //if (null != array) {
-                    //    List list = array.toJavaList(arrayType);
-                    //    args[i] = listToArray(arrayType, list);
-                    //}
-                }
-            }
+        Class<?>[] types = method.getParameterTypes();
+        for (int i = 0; i < args.length; i++) {
+            Class<?> paramType = types[i];
+            args[i] = JSONUtils.parseObject(JSONUtils.toJSONString(argJSON.get(i)), paramType);
         }
 
         // 构造请求
         String requestId = null != requestBody.getRequestId() ? requestBody.getRequestId() : StringUtils.getUUID();
         return getRpcRequest(requestId, serviceName, method, args);
-    }
-
-    private <A> A[] listToArray(Class<A> type, List<A> list) {
-        if (null == type || null == list) {
-            return null;
-        }
-        A[] a = (A[]) Array.newInstance(type, list.size());
-        return (A[]) list.toArray(a);
     }
 
     private RpcRequest getRpcRequest(String requestId, String serviceName, Method method, Object[] paramters) {
