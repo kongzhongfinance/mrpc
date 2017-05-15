@@ -35,17 +35,6 @@ public class UserServiceImpl implements UserService{
 }
 ```
 
-### 客户端调用
-
-```java
-RpcClient client = new RpcClient("127.0.0.1:5066");
-// http协议，默认情况走TCP
-client.setTransfer("http");
-
-UserService userService = client.getProxyBean(UserService.class);
-System.out.println(userService.hello("mrpc"));
-```
-
 ### 更多例子
 
 [这里](/mrpc-demo)有更多的使用案例。
