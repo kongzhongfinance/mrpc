@@ -242,9 +242,9 @@ public class RpcServerAutoConfigure {
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 
-                this.destroy();
-
                 future.channel().closeFuture().sync();
+
+                Thread.currentThread().join();
             } else {
                 log.warn("mrpc server start fail.");
             }

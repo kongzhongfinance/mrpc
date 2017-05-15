@@ -137,8 +137,6 @@ public class SimpleRpcServer {
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 
-                this.destroy();
-
                 future.channel().closeFuture().sync();
             } else {
                 log.warn("mrpc server start fail.");
