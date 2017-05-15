@@ -2,9 +2,10 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.Reflection;
-import com.kongzhong.mrpc.cluster.Connections;
-import com.kongzhong.mrpc.cluster.ha.HaStrategy;
-import com.kongzhong.mrpc.cluster.loadblance.LBStrategy;
+import com.kongzhong.mrpc.client.cluster.Connections;
+import com.kongzhong.mrpc.client.cluster.ha.HaStrategy;
+import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
+import com.kongzhong.mrpc.client.proxy.ClientProxy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;

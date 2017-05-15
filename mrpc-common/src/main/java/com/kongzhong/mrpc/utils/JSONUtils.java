@@ -1,14 +1,19 @@
 package com.kongzhong.mrpc.utils;
 
 import com.kongzhong.mrpc.enums.JSONEnum;
-import com.kongzhong.mrpc.serialize.JacksonSerialize;
 import com.kongzhong.mrpc.serialize.JSONSerialize;
+import com.kongzhong.mrpc.serialize.JacksonSerialize;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 /**
+ * JSON工具类
+ *
  * @author biezhi
  *         2017/4/20
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JSONUtils {
 
     private static JSONSerialize jsonSerialize = new JacksonSerialize();

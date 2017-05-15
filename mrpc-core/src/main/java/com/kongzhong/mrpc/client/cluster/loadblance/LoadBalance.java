@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.cluster.loadblance;
+package com.kongzhong.mrpc.client.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
 

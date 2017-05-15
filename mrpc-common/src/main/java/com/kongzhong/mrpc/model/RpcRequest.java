@@ -8,7 +8,7 @@ import lombok.ToString;
 import java.io.Serializable;
 
 /**
- * 请求
+ * RPC请求对象
  */
 @Data
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class RpcRequest implements Serializable {
     private String requestId;
     private String className;
     private String methodName;
-    private Class[] parameterTypes;
+    private Class<?>[] parameterTypes;
     private Object[] parameters;
     private Class<?> returnType;
 

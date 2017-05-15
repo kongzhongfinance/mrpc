@@ -1,6 +1,6 @@
-package com.kongzhong.mrpc.cluster.ha;
+package com.kongzhong.mrpc.client.cluster.ha;
 
-import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
+import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.model.RpcRequest;
 
 /**

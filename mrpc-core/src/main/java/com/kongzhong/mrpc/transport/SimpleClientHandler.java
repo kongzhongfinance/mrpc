@@ -1,11 +1,10 @@
 package com.kongzhong.mrpc.transport;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.client.RpcFuture;
-import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;

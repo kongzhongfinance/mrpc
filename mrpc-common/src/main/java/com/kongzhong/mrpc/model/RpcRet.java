@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
+ * RPC HTTP 响应对象
+ *
  * @author biezhi
  *         2017/4/21
  */

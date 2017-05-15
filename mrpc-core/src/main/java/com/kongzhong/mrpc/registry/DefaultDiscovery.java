@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;

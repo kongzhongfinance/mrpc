@@ -1,9 +1,9 @@
-package com.kongzhong.mrpc.cluster.ha;
+package com.kongzhong.mrpc.client.cluster.ha;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
+import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
 
 /**
  * 快速失败策略

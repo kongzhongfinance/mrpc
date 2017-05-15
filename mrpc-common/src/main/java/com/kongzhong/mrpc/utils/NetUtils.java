@@ -1,5 +1,8 @@
 package com.kongzhong.mrpc.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -10,6 +13,10 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 网络相关工具类
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NetUtils {
 
     public static final String LOCALHOST = "127.0.0.1";

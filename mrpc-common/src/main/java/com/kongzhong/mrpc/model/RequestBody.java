@@ -22,5 +22,4 @@ public class RequestBody {
     private List<Object> parameters;
     private List<String> parameterTypes;
 
-
 }

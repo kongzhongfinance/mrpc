@@ -6,7 +6,7 @@ import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.kongzhong.mrpc.cluster.Connections;
+import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;

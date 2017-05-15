@@ -10,6 +10,8 @@ import lombok.ToString;
 import java.util.Map;
 
 /**
+ * RPC上下文
+ *
  * @author biezhi
  *         2017/4/24
  */

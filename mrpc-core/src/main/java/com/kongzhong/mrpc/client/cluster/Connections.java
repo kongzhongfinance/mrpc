@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.cluster;
+package com.kongzhong.mrpc.client.cluster;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;

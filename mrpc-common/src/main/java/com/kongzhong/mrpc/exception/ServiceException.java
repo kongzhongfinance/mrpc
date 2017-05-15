@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.exception;
 
 /**
+ * 业务异常
+ *
  * @author biezhi
  *         2017/4/24
  */

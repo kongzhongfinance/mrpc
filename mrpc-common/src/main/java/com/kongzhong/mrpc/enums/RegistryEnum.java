@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.enums;
 
 /**
+ * 支持的注册中心类型
+ *
  * @author biezhi
  *         2017/5/10
  */

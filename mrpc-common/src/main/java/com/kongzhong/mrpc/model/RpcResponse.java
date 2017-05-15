@@ -6,7 +6,7 @@ import lombok.ToString;
 import java.io.Serializable;
 
 /**
- * 响应
+ * RPC响应对象
  */
 @Data
 @ToString

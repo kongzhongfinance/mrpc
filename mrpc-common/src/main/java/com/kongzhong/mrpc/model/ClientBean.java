@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * 客户端引用Bean
+ */
 @Data
 @ToString
 @NoArgsConstructor

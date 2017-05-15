@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.enums;
 
 /**
+ * 支持的返回媒体类型
+ *
  * @author biezhi
  *         2017/4/20
  */

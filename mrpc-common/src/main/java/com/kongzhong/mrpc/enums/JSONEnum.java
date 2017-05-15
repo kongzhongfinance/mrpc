@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.enums;
 
 /**
- * json实现框架
+ * 支持的JSON序列化类型
  *
  * @author biezhi
  *         2017/4/20

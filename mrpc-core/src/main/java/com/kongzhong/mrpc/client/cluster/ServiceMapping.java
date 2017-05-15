@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.cluster;
+package com.kongzhong.mrpc.client.cluster;
 
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import lombok.Data;

@@ -1,4 +1,6 @@
-package com.kongzhong.mrpc.client;
+package com.kongzhong.mrpc.client.proxy;
+
+import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 
 /**
  * 客户端代理

@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.serialize;
 
 /**
- * 序列化接口
+ * RPC序列化接口
  *
  * Created by biezhi on 2016/11/6.
  */
@@ -15,8 +15,8 @@ public interface RpcSerialize {
     /**
      * 将对象序列化为byte数组
      *
-     * @param obj
-     * @param <T>
+     * @param obj   java对象
+     * @param <T>   泛型
      * @return
      * @throws Exception
      */

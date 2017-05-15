@@ -2,7 +2,8 @@ package com.kongzhong.mrpc.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.kongzhong.mrpc.serialize.RpcSerialize;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -18,6 +19,7 @@ import java.util.*;
  * @author biezhi
  *         2017/4/21
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReflectUtils {
 
     /**
@@ -29,6 +31,11 @@ public class ReflectUtils {
      * 缓存method
      */
     private static final Map<String, Method> methodPool = Maps.newConcurrentMap();
+
+    /**
+     * 缓存类型
+     */
+    private static final Map<String, Class<?>> primitiveTypes = Maps.newHashMap();
 
     /**
      * 加载一个class
@@ -362,8 +369,6 @@ public class ReflectUtils {
         }
     }
 
-    private static final Map<String, Class<?>> primitiveTypes = Maps.newHashMap();
-
     static {
         primitiveTypes.put("int", int.class);
         primitiveTypes.put("boolean", boolean.class);
@@ -375,14 +380,32 @@ public class ReflectUtils {
         primitiveTypes.put("double", double.class);
     }
 
+    /**
+     * 获取基本类型
+     *
+     * @param primitive
+     * @return
+     */
     public static Class<?> getBasicType(String primitive) {
         return primitiveTypes.get(primitive);
     }
 
+    /**
+     * 判断是否是基本类型
+     *
+     * @param primitive
+     * @return
+     */
     public static boolean isBasic(String primitive) {
         return primitiveTypes.containsKey(primitive);
     }
 
+    /**
+     * 根据type获取基本类型的class
+     *
+     * @param type
+     * @return
+     */
     public static Class<?> getClassType(String type) {
         if (isBasic(type)) {
             return getBasicType(type);
@@ -390,6 +413,14 @@ public class ReflectUtils {
         return from(type);
     }
 
+    /**
+     * 根据类名创建一个无参构造函数的对象
+     *
+     * @param className 类名
+     * @param type      Java类型
+     * @param <T>
+     * @return
+     */
     public static <T> T newInstance(String className, Class<T> type) {
         try {
             Object obj = newInstance(Class.forName(className));

@@ -1,7 +1,14 @@
 package com.kongzhong.mrpc.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
+/**
+ * 字符串工具类
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StringUtils {
 
     /**

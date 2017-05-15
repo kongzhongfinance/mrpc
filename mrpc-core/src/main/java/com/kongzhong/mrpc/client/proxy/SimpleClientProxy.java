@@ -1,9 +1,9 @@
-package com.kongzhong.mrpc.client;
+package com.kongzhong.mrpc.client.proxy;
 
 import com.google.common.reflect.AbstractInvocationHandler;
-import com.kongzhong.mrpc.cluster.ha.HaStrategy;
-import com.kongzhong.mrpc.cluster.loadblance.LoadBalance;
-import com.kongzhong.mrpc.cluster.loadblance.SimpleLoadBalance;
+import com.kongzhong.mrpc.client.cluster.ha.HaStrategy;
+import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalance;
+import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
