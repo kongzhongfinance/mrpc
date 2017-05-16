@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.discover;
 
+import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkClient;
-import com.github.zkclient.IZkDataListener;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
@@ -30,6 +30,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     private String zkAddr;
 
     private boolean isInit;
+
+    private IZkChildListener zkChildListener = new ZkChildListener();
 
     public ZookeeperServiceDiscovery(String zkAddr) {
         this.zkAddr = zkAddr;
@@ -71,7 +73,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
             // { 127.0.0.1:5066 => [UserService, BatService] }
             Map<String, Set<String>> mappings = Maps.newHashMap();
-            for (String service : serviceList) {
+            serviceList.forEach(service -> {
                 String servicePath = Constant.ZK_ROOT + "/" + ClientConfig.me().getAppId() + "/" + service;
                 if (zkClient.exists(servicePath)) {
                     List<String> addresses = zkClient.getChildren(servicePath);
@@ -83,24 +85,22 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                         }
                     });
                 }
-                zkClient.subscribeChildChanges(servicePath, (s, list) -> watchNode(zkClient));
-                zkClient.subscribeDataChanges(servicePath, new IZkDataListener() {
-                    @Override
-                    public void handleDataChange(String dataPath, byte[] data) throws Exception {
-                        watchNode(zkClient);
-                    }
-
-                    @Override
-                    public void handleDataDeleted(String dataPath) throws Exception {
-                        watchNode(zkClient);
-                    }
-                });
-            }
+                // 重新订阅改变
+                zkClient.unsubscribeChildChanges(servicePath, zkChildListener);
+                zkClient.subscribeChildChanges(servicePath, zkChildListener);
+            });
 
             // update node list
             Connections.me().updateNodes(mappings);
         } catch (Exception e) {
             LOGGER.error("", e);
+        }
+    }
+
+    class ZkChildListener implements IZkChildListener {
+        @Override
+        public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception {
+            watchNode(zkClient);
         }
     }
 
