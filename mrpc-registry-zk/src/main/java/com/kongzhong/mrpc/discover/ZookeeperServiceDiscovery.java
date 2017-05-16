@@ -1,12 +1,13 @@
 package com.kongzhong.mrpc.discover;
 
-import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkClient;
+import com.github.zkclient.IZkDataListener;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.client.cluster.Connections;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;
@@ -41,6 +42,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
         isInit = true;
         zkClient = new ZkClient(zkAddr);
+
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
             public void handleStateChanged(Watcher.Event.KeeperState keeperState) throws Exception {
@@ -52,13 +54,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 watchNode(zkClient);
             }
         });
-
-        zkClient.subscribeChildChanges(Constant.ZK_ROOT, new IZkChildListener() {
-            @Override
-            public void handleChildChange(String s, List<String> list) throws Exception {
-                watchNode(zkClient);
-            }
-        });
     }
 
     public void discover() {
@@ -67,23 +62,39 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private void watchNode(final IZkClient zkClient) {
         try {
-            List<String> addressList = zkClient.getChildren(Constant.ZK_ROOT);
-            if (null == addressList || addressList.size() == 0) {
+            String appId = ClientConfig.me().getAppId();
+
+            List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
+            if (null == serviceList || serviceList.size() == 0) {
                 throw new RuntimeException(String.format("can not find any address node on path: %s", Constant.ZK_ROOT));
             }
 
             // { 127.0.0.1:5066 => [UserService, BatService] }
             Map<String, Set<String>> mappings = Maps.newHashMap();
-            for (String node : addressList) {
-                String path = Constant.ZK_ROOT + "/" + node;
-                byte[] bytes = zkClient.readData(path);
-                String address = new String(bytes);
-                String[] sp = node.split("_");
-                if (!mappings.containsKey(address)) {
-                    mappings.put(address, Sets.newHashSet(sp[0]));
-                } else {
-                    mappings.get(address).add(sp[0]);
+            for (String service : serviceList) {
+                String servicePath = Constant.ZK_ROOT + "/" + ClientConfig.me().getAppId() + "/" + service;
+                if (zkClient.exists(servicePath)) {
+                    List<String> addresses = zkClient.getChildren(servicePath);
+                    addresses.forEach(address -> {
+                        if (!mappings.containsKey(address)) {
+                            mappings.put(address, Sets.newHashSet(service));
+                        } else {
+                            mappings.get(address).add(service);
+                        }
+                    });
                 }
+                zkClient.subscribeChildChanges(servicePath, (s, list) -> watchNode(zkClient));
+                zkClient.subscribeDataChanges(servicePath, new IZkDataListener() {
+                    @Override
+                    public void handleDataChange(String dataPath, byte[] data) throws Exception {
+                        watchNode(zkClient);
+                    }
+
+                    @Override
+                    public void handleDataDeleted(String dataPath) throws Exception {
+                        watchNode(zkClient);
+                    }
+                });
             }
 
             // update node list

@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.client.cluster.ha.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +15,7 @@ import java.util.List;
  *         2017/4/22
  */
 @Data
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientConfig {
 
     private String serverAddr;
@@ -22,6 +23,8 @@ public class ClientConfig {
     private TransportEnum transport;
 
     private RpcSerialize rpcSerialize;
+
+    private String appId = "default";
 
     private boolean isHttp;
 
