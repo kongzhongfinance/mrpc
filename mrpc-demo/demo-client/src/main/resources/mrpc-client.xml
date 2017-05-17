@@ -9,7 +9,9 @@
        http://junicorn.github.io/schema/mrpc http://junicorn.github.io/schema/mrpc.xsd">
 
 
-    <bean id="rpcClient" class="com.kongzhong.mrpc.client.RpcClient"/>
+    <bean id="rpcClient" class="com.kongzhong.mrpc.client.RpcClient">
+        <property name="appId" value="demo"/>
+    </bean>
 
     <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>
 

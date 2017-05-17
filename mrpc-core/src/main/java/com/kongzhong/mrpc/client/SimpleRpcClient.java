@@ -58,6 +58,11 @@ public class SimpleRpcClient {
     protected HaStrategy haStrategy;
 
     /**
+     * appId
+     */
+    protected String appId;
+
+    /**
      * 引用类名
      */
     protected List<Class<?>> referers = Lists.newArrayList();
@@ -120,6 +125,7 @@ public class SimpleRpcClient {
 
             clientConfig.setRpcSerialize(serialize);
             clientConfig.setLbStrategy(lbStrategy);
+            clientConfig.setAppId(appId);
             clientConfig.setHaStrategy(haStrategy);
             clientConfig.setTransport(transportEnum);
             clientConfig.setReferers(referers);

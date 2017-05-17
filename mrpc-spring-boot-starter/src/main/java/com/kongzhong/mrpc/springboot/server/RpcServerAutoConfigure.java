@@ -227,6 +227,9 @@ public class RpcServerAutoConfigure {
 
                 ServerConfig.me().setHost(host);
                 ServerConfig.me().setPort(port);
+                if (null != rpcServerProperties.getAppId()) {
+                    ServerConfig.me().setAppId(rpcServerProperties.getAppId());
+                }
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 

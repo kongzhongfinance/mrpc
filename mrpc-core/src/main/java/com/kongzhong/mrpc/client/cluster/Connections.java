@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,7 +165,14 @@ public class Connections {
      */
     public void remove(SimpleClientHandler handler) {
         if (mappings.values().size() > 0 && null != handler && mappings.values().contains(handler)) {
-            mappings.values().removeAll(Lists.newArrayList(handler));
+            mappings.values().remove(handler);
+//            Iterator<SimpleClientHandler> iterator = mappings.values().iterator();
+//            while (iterator.hasNext()) {
+//                SimpleClientHandler s = iterator.next();
+//                if (null != s && s.equals(handler)) {
+//                    iterator.remove();
+//                }
+//            }
         }
     }
 

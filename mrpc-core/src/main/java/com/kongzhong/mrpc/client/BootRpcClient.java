@@ -52,6 +52,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
         Environment environment = beanFactory.getBean(Environment.class);
 
         this.transport = environment.getProperty("mrpc.client.transport", "tcp");
+        this.appId = environment.getProperty("mrpc.client.appId", "default");
 
         // 注册中心
         String registry = environment.getProperty("mrpc.client.registry", RegistryEnum.DEFAULT.getName());

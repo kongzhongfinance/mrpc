@@ -52,6 +52,11 @@ public class SimpleRpcServer {
     protected String transport;
 
     /**
+     * appId
+     */
+    protected String appId;
+
+    /**
      * 服务注册实例
      */
     protected ServiceRegistry serviceRegistry;
@@ -122,6 +127,9 @@ public class SimpleRpcServer {
 
                 ServerConfig.me().setHost(host);
                 ServerConfig.me().setPort(port);
+                if (null != appId) {
+                    ServerConfig.me().setAppId(appId);
+                }
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 

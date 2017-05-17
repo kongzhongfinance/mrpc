@@ -14,5 +14,6 @@ public class RpcServerProperties {
     private String address;
     private String transport;
     private String registry;
+    private String appId;
 
 }
