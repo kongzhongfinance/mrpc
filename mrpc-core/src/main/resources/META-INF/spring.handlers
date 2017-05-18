@@ -1,1 +1,1 @@
-http\://junicorn.github.io/schema/mrpc=com.kongzhong.mrpc.spring.RpcNameSpaceHandler
+http\://mrpc.kongzhong.com/schema/mrpc=com.kongzhong.mrpc.spring.RpcNameSpaceHandler

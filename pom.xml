@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.junicorn</groupId>
+    <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
@@ -66,25 +66,25 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.github.junicorn</groupId>
+                <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-common</artifactId>
                 <version>${mrpc-common.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.github.junicorn</groupId>
+                <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-core</artifactId>
                 <version>${mrpc-core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.github.junicorn</groupId>
+                <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-serialize-kryo</artifactId>
                 <version>${mrpc-serialize-kryo.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.github.junicorn</groupId>
+                <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-registry-zk</artifactId>
                 <version>${mrpc-zk.version}</version>
             </dependency>

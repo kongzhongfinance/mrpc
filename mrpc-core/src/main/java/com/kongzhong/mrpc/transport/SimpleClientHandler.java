@@ -59,14 +59,15 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
         log.debug("Channel inactive: {}", this.channel);
         // 创建异步重连
-        final EventLoop eventLoopGroup = this.channel.eventLoop();
-        Set<String> referNames = Sets.newHashSet();
-        List<Class<?>> referers = ClientConfig.me().getReferers();
-        if (null != referers && !referers.isEmpty()) {
-            referers.forEach(type -> referNames.add(type.getName()));
-        }
-
-        TPE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, this.channel.remoteAddress()));
+//        final EventLoop eventLoopGroup = this.channel.eventLoop();
+//        Set<String> referNames = Sets.newHashSet();
+//        List<Class<?>> referers = ClientConfig.me().getReferers();
+//        if (null != referers && !referers.isEmpty()) {
+//            referers.forEach(type -> referNames.add(type.getName()));
+//        }
+//
+//        System.out.println("提交重连请求");
+//        TPE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, this.channel.remoteAddress()));
     }
 
     /**

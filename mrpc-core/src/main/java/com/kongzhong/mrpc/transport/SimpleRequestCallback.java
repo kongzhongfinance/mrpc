@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 请求回调处理
@@ -31,6 +33,8 @@ public class SimpleRequestCallback implements Callable<Boolean> {
     protected SocketAddress serverAddress = null;
     protected RpcSerialize rpcSerialize;
     private boolean isHttp = false;
+
+    private Lock lock = new ReentrantLock();
 
     private static final byte DEFAULT_TRCRY = 10;
 
@@ -77,6 +81,8 @@ public class SimpleRequestCallback implements Callable<Boolean> {
     class ConnectionListener implements ChannelFutureListener {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
+            System.out.println("开始重连...");
+            lock.lock();
             if (future.isSuccess()) {
                 retries.set(0);
                 log.debug("Client connect success");
@@ -102,6 +108,7 @@ public class SimpleRequestCallback implements Callable<Boolean> {
                     }
                 }, 3L, TimeUnit.SECONDS);
             }
+            lock.unlock();
         }
     }
 }
