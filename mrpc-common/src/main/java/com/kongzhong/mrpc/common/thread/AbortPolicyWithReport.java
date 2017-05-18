@@ -1,8 +1,11 @@
 package com.kongzhong.mrpc.common.thread;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
+@Slf4j
 public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
 
     private final String threadName;
@@ -23,7 +26,7 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
                         + " Executor status:(isShutdown:%s, isTerminated:%s, isTerminating:%s)]",
                 threadName, e.getPoolSize(), e.getActiveCount(), e.getCorePoolSize(), e.getMaximumPoolSize(), e.getLargestPoolSize(),
                 e.getTaskCount(), e.getCompletedTaskCount(), e.isShutdown(), e.isTerminated(), e.isTerminating());
-        System.out.println(msg);
+        log.warn(msg);
         throw new RejectedExecutionException(msg);
     }
 }

@@ -10,6 +10,7 @@ import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 失效切换策略
@@ -38,8 +39,10 @@ public class FailOverHaStrategy implements HaStrategy {
                     throw e;
                 } else if (e instanceof RpcException) {
                     if (i >= rc) {
-                        throw e;
+                        log.error("", e);
+                        return null;
                     }
+                    TimeUnit.MILLISECONDS.sleep(100);
                 } else {
                     log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
                 }

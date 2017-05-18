@@ -14,6 +14,7 @@ import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,7 +126,9 @@ public class SimpleRpcClient {
 
             clientConfig.setRpcSerialize(serialize);
             clientConfig.setLbStrategy(lbStrategy);
-            clientConfig.setAppId(appId);
+            if (StringUtils.isNotEmpty(appId)) {
+                clientConfig.setAppId(appId);
+            }
             clientConfig.setHaStrategy(haStrategy);
             clientConfig.setTransport(transportEnum);
             clientConfig.setReferers(referers);

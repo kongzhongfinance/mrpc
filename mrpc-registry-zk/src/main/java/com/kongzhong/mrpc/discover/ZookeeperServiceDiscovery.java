@@ -1,13 +1,11 @@
 package com.kongzhong.mrpc.discover;
 
-import com.github.zkclient.IZkChildListener;
-import com.github.zkclient.IZkClient;
-import com.github.zkclient.IZkStateListener;
-import com.github.zkclient.ZkClient;
+import com.github.zkclient.*;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import org.apache.zookeeper.Watcher;
@@ -32,6 +30,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     private boolean isInit;
 
     private IZkChildListener zkChildListener = new ZkChildListener();
+
+    private Map<String, IZkChildListener> subRelate = Maps.newConcurrentMap();
 
     public ZookeeperServiceDiscovery(String zkAddr) {
         this.zkAddr = zkAddr;
@@ -68,7 +68,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
             List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
             if (null == serviceList || serviceList.size() == 0) {
-                throw new RuntimeException(String.format("can not find any address node on path: %s", Constant.ZK_ROOT));
+                throw new RpcException(String.format("can not find any address node on path: %s/%s", Constant.ZK_ROOT, appId));
             }
 
             // { 127.0.0.1:5066 => [UserService, BatService] }
@@ -85,9 +85,14 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                         }
                     });
                 }
+
+                if (!subRelate.containsKey(servicePath)) {
+                    subRelate.put(servicePath, zkChildListener);
+                    zkClient.subscribeChildChanges(servicePath, zkChildListener);
+                }
                 // 重新订阅改变
-                zkClient.unsubscribeChildChanges(servicePath, zkChildListener);
-                zkClient.subscribeChildChanges(servicePath, zkChildListener);
+//                zkClient.unsubscribeChildChanges(servicePath, zkChildListener);
+//                zkClient.subscribeChildChanges(servicePath, zkChildListener);
             });
 
             // update node list
@@ -100,7 +105,9 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     class ZkChildListener implements IZkChildListener {
         @Override
         public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception {
-            watchNode(zkClient);
+            if (null != currentChildren && !currentChildren.isEmpty()) {
+                watchNode(zkClient);
+            }
         }
     }
 

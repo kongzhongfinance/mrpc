@@ -1,22 +1,21 @@
 package com.kongzhong.mrpc.transport;
 
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.client.RpcFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -38,6 +37,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     protected SocketAddress socketAddress;
 
+    protected String serverAddress;
+
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
@@ -54,7 +55,6 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-
         Connections.me().remove(this);
 
         log.debug("Channel inactive: {}", this.channel);
@@ -98,5 +98,13 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     public void setChannel(Channel channel) {
         this.channel = channel;
+    }
+
+    public String getServerAddress() {
+        return serverAddress;
+    }
+
+    public void setServerAddress(String serverAddress) {
+        this.serverAddress = serverAddress;
     }
 }

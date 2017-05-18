@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +63,7 @@ public class Connections {
      * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
     private Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
+    private List<String> aliveServers = Lists.newCopyOnWriteArrayList();
 
     private static final class ConnectionsHolder {
         private static final Connections $ = new Connections();
@@ -72,38 +73,25 @@ public class Connections {
         return ConnectionsHolder.$;
     }
 
-    public void updateNodes(Set<String> referNames, Set<String> addressList) {
-        try {
-            lock.lock();
-            addressList.forEach(address -> {
-                String[] ipAddr = address.split(":");
-                //获取IP
-                String host = ipAddr[0];
-                //获取端口号
-                int port = Integer.parseInt(ipAddr[1]);
-                this.connect(referNames, host, port);
-            });
-            handlerStatus.signal();
-        } finally {
-            lock.unlock();
-        }
-    }
-
     /**
      * server:port -> serviceNames
      *
      * @param mappings
      */
-    public void updateNodes(Map<String, Set<String>> mappings) {
+    public void updateNodes(Map<String, Set<String>> smapping) {
         try {
             lock.lock();
-            mappings.forEach((key, serviceNames) -> {
-                String[] ipAddr = key.split(":");
-                //获取IP
-                String host = ipAddr[0];
-                //获取端口号
-                int port = Integer.parseInt(ipAddr[1]);
-                this.connect(Sets.newHashSet(serviceNames), host, port);
+            smapping.forEach((key, serviceNames) -> {
+                // 如果不存活则建立连接
+                if (!aliveServers.contains(key)) {
+                    aliveServers.add(key);
+                    String[] ipAddr = key.split(":");
+                    //获取IP
+                    String host = ipAddr[0];
+                    //获取端口号
+                    int port = Integer.parseInt(ipAddr[1]);
+                    this.connect(Sets.newHashSet(serviceNames), host, port);
+                }
             });
             handlerStatus.signal();
         } finally {
@@ -131,7 +119,6 @@ public class Connections {
     public void addRpcClientHandler(String serviceName, SimpleClientHandler handler) {
         try {
             lock.lock();
-
             if (mappings.containsKey(serviceName)) {
                 if (!mappings.get(serviceName).contains(handler)) {
                     mappings.put(serviceName, handler);
@@ -165,14 +152,8 @@ public class Connections {
      */
     public void remove(SimpleClientHandler handler) {
         if (mappings.values().size() > 0 && null != handler && mappings.values().contains(handler)) {
-            mappings.values().remove(handler);
-//            Iterator<SimpleClientHandler> iterator = mappings.values().iterator();
-//            while (iterator.hasNext()) {
-//                SimpleClientHandler s = iterator.next();
-//                if (null != s && s.equals(handler)) {
-//                    iterator.remove();
-//                }
-//            }
+            mappings.values().removeAll(Arrays.asList(handler));
+            aliveServers.remove(handler.getServerAddress());
         }
     }
 

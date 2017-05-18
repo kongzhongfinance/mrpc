@@ -31,7 +31,6 @@ public class SimpleLoadBalance implements LoadBalance {
     @Override
     public RpcInvoker getInvoker(String serviceName) {
         try {
-
             LBStrategy LBStrategy = ClientConfig.me().getLbStrategy();
             List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
             if (handlers.size() == 1) {

@@ -12,6 +12,7 @@ public class DiscoveryClientApplication {
     public static void main(String[] args) throws Exception {
 
         RpcClient rpcClient = new RpcClient(new ZookeeperServiceDiscovery("127.0.0.1:2181"));
+        rpcClient.setAppId("demo");
         UserService userService = rpcClient.getProxyBean(UserService.class);
         int index = 1;
         while (true) {
