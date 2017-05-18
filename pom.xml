@@ -26,11 +26,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
-        <mrpc-common.version>0.0.1</mrpc-common.version>
-        <mrpc-core.version>0.0.1</mrpc-core.version>
-        <mrpc-zk.version>0.0.1</mrpc-zk.version>
-        <mrpc-serialize-kryo.version>0.0.1</mrpc-serialize-kryo.version>
-        <mrpc-serialize-protostuff.version>0.0.1</mrpc-serialize-protostuff.version>
+        <mrpc-common.version>0.0.1-SNAPSHOT</mrpc-common.version>
+        <mrpc-core.version>0.0.1-SNAPSHOT</mrpc-core.version>
+        <mrpc-zk.version>0.0.1-SNAPSHOT</mrpc-zk.version>
+        <mrpc-serialize-kryo.version>0.0.1-SNAPSHOT</mrpc-serialize-kryo.version>
+        <mrpc-serialize-protostuff.version>0.0.1-SNAPSHOT</mrpc-serialize-protostuff.version>
 
         <protostuff.version>1.0.9</protostuff.version>
         <objenesis.version>2.1</objenesis.version>
@@ -135,32 +135,15 @@
         </plugins>
     </build>
 
-    <repositories>
+    <distributionManagement>
         <repository>
             <id>releases</id>
             <name>Popocloud Release Repository</name>
             <url>http://106.75.120.228:8083/nexus/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>snapshots</id>
-            <name>Popocloud Snapshot Repository</name>
-            <url>http://106.75.120.228:8083/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>http://106.75.120.228:8083/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
+            <name>Popocloud Snapshot Repository</name>
             <url>http://106.75.120.228:8083/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>

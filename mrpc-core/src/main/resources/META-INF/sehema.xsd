@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://junicorn.github.io/schema/mrpc"
+<xsd:schema xmlns="http://mrpc.kongzhong.com/schema/mrpc"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://junicorn.github.io/schema/mrpc"
+            targetNamespace="http://mrpc.kongzhong.com/schema/mrpc"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
 
