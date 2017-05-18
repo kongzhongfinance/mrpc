@@ -139,7 +139,7 @@
         <repository>
             <id>releases</id>
             <name>Popocloud Release Repository</name>
-            <url>http://10.230.200.15:8081/nexus/content/repositories/releases/</url>
+            <url>http://106.75.120.228:8083/nexus/content/repositories/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -150,18 +150,18 @@
             </snapshots>
             <id>snapshots</id>
             <name>Popocloud Snapshot Repository</name>
-            <url>http://10.230.200.15:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://106.75.120.228:8083/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
     <distributionManagement>
         <repository>
             <id>releases</id>
-            <url>http://10.230.200.15:8081/nexus/content/repositories/releases/</url>
+            <url>http://106.75.120.228:8083/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>http://10.230.200.15:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://106.75.120.228:8083/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
