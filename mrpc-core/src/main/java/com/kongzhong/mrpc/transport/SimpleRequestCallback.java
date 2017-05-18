@@ -81,7 +81,6 @@ public class SimpleRequestCallback implements Callable<Boolean> {
     class ConnectionListener implements ChannelFutureListener {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
-            System.out.println("开始重连...");
             lock.lock();
             if (future.isSuccess()) {
                 retries.set(0);

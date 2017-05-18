@@ -1,6 +1,6 @@
 #! /bin/bash
 
-#mvn clean deploy -P snapshots -N
+mvn clean deploy -P snapshots -N
 
 cd mrpc-common && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ..
@@ -11,7 +11,10 @@ cd ..
 cd mrpc-registry-zk && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ..
 
-cd mrpc-serialize/mrpc-serialize-kryo && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
+cd mrpc-serialize && mvn clean deploy -P snapshots -N
+cd ..
+
+cd mrpc-serialize-kryo && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ../../
 
 cd mrpc-spring-boot-starter && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
