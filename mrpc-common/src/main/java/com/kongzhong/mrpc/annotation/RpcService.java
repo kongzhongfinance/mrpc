@@ -36,4 +36,10 @@ public @interface RpcService {
      */
     String name() default "";
 
+    /**
+     * 服务所属APPID
+     *
+     * @return
+     */
+    String appId() default "";
 }

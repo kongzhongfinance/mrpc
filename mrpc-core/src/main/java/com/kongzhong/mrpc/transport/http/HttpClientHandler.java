@@ -13,8 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -25,9 +24,8 @@ import java.util.List;
  * @author biezhi
  *         2017/4/19
  */
+@Slf4j
 public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
-
-    public static final Logger log = LoggerFactory.getLogger(HttpClientHandler.class);
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
@@ -93,7 +91,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                 log.debug("http server response body: {}", body);
                 Object result = rpcResponse.getResult();
                 if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                    Class re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                    Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());
                     rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
                 }
             }
