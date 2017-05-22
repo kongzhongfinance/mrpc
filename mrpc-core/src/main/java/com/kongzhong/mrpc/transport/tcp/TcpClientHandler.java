@@ -25,7 +25,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     public RpcFuture sendRequest(RpcRequest request) {
         RpcFuture rpcFuture = new RpcFuture(request);
         mapCallBack.put(request.getRequestId(), rpcFuture);
-        log.debug("tcp client request: {}", request);
+        log.debug("request: {}", request);
         channel.writeAndFlush(request);
         return rpcFuture;
     }
@@ -33,7 +33,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
         if (response.getSuccess()) {
-            log.debug("rpc server response: {}", response);
+            log.debug("response: {}", response);
         }
         String messageId = response.getRequestId();
         RpcFuture rpcFuture = mapCallBack.get(messageId);
