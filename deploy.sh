@@ -12,7 +12,6 @@ cd mrpc-registry-zk && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ..
 
 cd mrpc-serialize && mvn clean deploy -P snapshots -N
-cd ..
 
 cd mrpc-serialize-kryo && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ../../
