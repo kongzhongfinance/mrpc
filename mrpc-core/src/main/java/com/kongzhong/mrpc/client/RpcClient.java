@@ -40,7 +40,7 @@ public class RpcClient extends SimpleRpcClient implements ApplicationContextAwar
         DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
 
         if (null != rpcClient && clientBeanMap != null && !clientBeanMap.isEmpty()) {
-            for (ClientBean bean : clientBeanMap.values()) {
+            clientBeanMap.values().forEach(bean -> {
                 String id = bean.getId();
                 String interfaceName = bean.getInterfaceName();
                 try {
@@ -51,7 +51,7 @@ public class RpcClient extends SimpleRpcClient implements ApplicationContextAwar
                 } catch (Exception e) {
                     log.warn("Not found rpc service [{}] component!", interfaceName);
                 }
-            }
+            });
         }
 
         if (null != referers && !referers.isEmpty()) {

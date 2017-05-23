@@ -58,8 +58,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
         String registry = environment.getProperty("mrpc.client.registry", RegistryEnum.DEFAULT.getName());
 
         if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
-            String zkAddr = environment.getProperty("mrpc.zk.addr", "127.0.0.1:2181");
-            log.info("zk address: {}", zkAddr);
+            String zkAddr = environment.getProperty("mrpc.zookeeper.address", "127.0.0.1:2181");
+            log.info("mrpc client connect zookeeper address: {}", zkAddr);
             String interfaceName = "com.kongzhong.mrpc.registry.ServiceDiscovery";
             try {
                 Object zookeeperServiceDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);

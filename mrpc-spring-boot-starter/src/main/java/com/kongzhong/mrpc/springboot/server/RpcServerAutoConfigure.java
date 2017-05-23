@@ -93,8 +93,8 @@ public class RpcServerAutoConfigure {
             // 注册中心
             String registry = rpcServerProperties.getRegistry();
             if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
-                String zkAddr = environment.getProperty("mrpc.zk.addr", "127.0.0.1:2181");
-                log.info("zk address: {}", zkAddr);
+                String zkAddr = environment.getProperty("mrpc.zookeeper.address", "127.0.0.1:2181");
+                log.info("mrpc server connect zookeeper address: {}", zkAddr);
                 String interfaceName = "com.kongzhong.mrpc.registry.ServiceRegistry";
                 try {
                     Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
