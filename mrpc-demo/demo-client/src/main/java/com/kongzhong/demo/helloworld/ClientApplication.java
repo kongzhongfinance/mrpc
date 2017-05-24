@@ -22,6 +22,10 @@ public class ClientApplication {
         StatusEnum statusEnum = userService.testEnum(StatusEnum.SUCCESS);
         System.out.println(statusEnum);
 
+        System.out.println(userService.getPersons().get(0).getClass());
+
+        System.out.println(userService.getResult().getData().getClass());
+
         int pos = 1;
         while (pos < 10_0000) {
             System.out.println(userService.add(10, pos++));

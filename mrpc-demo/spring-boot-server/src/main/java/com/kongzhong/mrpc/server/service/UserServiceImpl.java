@@ -78,4 +78,9 @@ public class UserServiceImpl implements UserService {
         System.out.println("接收到枚举：" + statusEnum);
         return statusEnum;
     }
+
+    @Override
+    public List<Person> getPersons() {
+        return null;
+    }
 }

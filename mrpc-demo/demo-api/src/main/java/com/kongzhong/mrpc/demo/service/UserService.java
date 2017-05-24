@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.demo.model.Result;
 import com.kongzhong.mrpc.demo.model.StatusEnum;
 import com.kongzhong.mrpc.utils.StringUtils;
 
@@ -24,6 +25,10 @@ public interface UserService {
     Long delete(Long id);
 
     List<String> strList(List<String> strs);
+
+    List<Person> getPersons();
+
+    Result<Person> getResult();
 
     Map toMap(Map<String, Integer> map);
 
