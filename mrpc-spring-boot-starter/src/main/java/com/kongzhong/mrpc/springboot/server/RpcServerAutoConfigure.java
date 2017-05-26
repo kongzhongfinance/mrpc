@@ -10,13 +10,12 @@ import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.server.RpcMapping;
-import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.transport.http.HttpResponse;
+import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -25,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -74,6 +74,8 @@ public class RpcServerAutoConfigure {
      */
     protected List<RpcInteceptor> interceptorList;
 
+    private String isTestEnv;
+
     /**
      * netty服务端配置
      */
@@ -89,11 +91,14 @@ public class RpcServerAutoConfigure {
     @Bean
     @ConditionalOnBean(InitBean.class)
     public BeanFactoryAware beanFactoryAware() {
+
+        this.isTestEnv = environment.getProperty("mrpc.test", "false");
         return (beanFactory) -> {
             // 注册中心
             String registry = rpcServerProperties.getRegistry();
             if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
                 String zkAddr = environment.getProperty("mrpc.zookeeper.address", "127.0.0.1:2181");
+
                 log.info("mrpc server connect zookeeper address: {}", zkAddr);
                 String interfaceName = "com.kongzhong.mrpc.registry.ServiceRegistry";
                 try {
@@ -245,9 +250,22 @@ public class RpcServerAutoConfigure {
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 
-                future.channel().closeFuture().sync();
+                String isTestEnv = System.getProperty("mrpc.test");
+                if (StringUtils.isNotEmpty(isTestEnv)) {
+                    this.isTestEnv = isTestEnv;
+                }
 
-                Thread.currentThread().join();
+                if ("true".equals(this.isTestEnv)) {
+                    new Thread(() -> {
+                        try {
+                            future.channel().closeFuture().sync();
+                        } catch (Exception e) {
+                            log.error("", e);
+                        }
+                    }).start();
+                } else {
+                    future.channel().closeFuture().sync();
+                }
             } else {
                 log.warn("mrpc server start fail.");
             }
