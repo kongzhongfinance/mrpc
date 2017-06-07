@@ -13,9 +13,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,10 +59,11 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             log.debug("request: {}", sendBody);
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
-            req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE); // or HttpHeaders.Values.CLOSE
+            req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
             req.headers().set(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
-            req.headers().add(HttpHeaders.Names.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
-            ByteBuf bbuf = Unpooled.copiedBuffer(sendBody, StandardCharsets.UTF_8);
+            req.headers().set(HttpHeaders.Names.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
+
+            ByteBuf bbuf = Unpooled.wrappedBuffer(sendBody.getBytes(CharsetUtil.UTF_8));
             req.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
             req.content().clear().writeBytes(bbuf);
 
@@ -86,6 +87,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             if (StringUtils.isEmpty(body)) {
                 return;
             }
+
             RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
             if (rpcResponse.getSuccess()) {
                 log.debug("response: {}", body);

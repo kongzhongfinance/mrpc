@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.client.cluster.ha;
 
+import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.client.RpcInvoker;
 import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.config.DefaultConfig;
@@ -36,7 +37,7 @@ public class FailOverHaStrategy implements HaStrategy {
                 return referer.invoke(request);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
-                    throw e;
+                    Throwables.throwIfUnchecked(e.getCause());
                 } else if (e instanceof RpcException) {
                     if (i >= rc) {
                         log.error("", e);

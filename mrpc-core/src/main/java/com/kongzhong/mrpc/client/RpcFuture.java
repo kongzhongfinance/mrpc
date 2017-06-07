@@ -1,10 +1,12 @@
 package com.kongzhong.mrpc.client;
 
 
+import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -33,7 +35,9 @@ public class RpcFuture {
             finish.await(seconds, TimeUnit.SECONDS);
             if (null != response) {
                 if (StringUtils.isNotEmpty(response.getException())) {
-                    throw new ServiceException(response.getException());
+                    Exception t = (Exception) Class.forName(response.getReturnType()).getConstructor(String.class).newInstance(response.getException());
+                    Exception exception = new Exception(response.getMessage(), t);
+                    throw new ServiceException(exception.getCause());
                 }
                 return response.getResult();
             }

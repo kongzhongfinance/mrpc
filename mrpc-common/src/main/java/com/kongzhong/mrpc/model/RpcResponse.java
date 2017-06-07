@@ -15,8 +15,10 @@ public class RpcResponse implements Serializable {
     private String requestId;
     private Object result;
     private Boolean success = false;
-    private String exception;
     private String returnType;
+
+    private String message;
+    private String exception;
 
     public RpcResponse() {
 
