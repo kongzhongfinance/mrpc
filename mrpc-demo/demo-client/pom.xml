@@ -17,6 +17,22 @@
             <artifactId>demo-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-core</artifactId>
+            <version>${mrpc-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-registry-zk</artifactId>
+            <version>${mrpc-zk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-serialize-kryo</artifactId>
+            <version>${mrpc-serialize-kryo.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
