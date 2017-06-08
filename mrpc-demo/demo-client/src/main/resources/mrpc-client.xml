@@ -14,5 +14,6 @@
     </bean>
 
     <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>
+    <mrpc:referer id="benchmarkService" interface="com.kongzhong.mrpc.demo.service.BenchmarkService"/>
 
 </beans>

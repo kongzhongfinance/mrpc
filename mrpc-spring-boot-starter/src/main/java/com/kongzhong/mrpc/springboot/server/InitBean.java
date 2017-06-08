@@ -3,16 +3,23 @@ package com.kongzhong.mrpc.springboot.server;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.server.RpcMapping;
+import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
+ * Bean初始化拦截
+ *
  * @author biezhi
  *         2017/5/13
  */
 public class InitBean implements BeanPostProcessor {
+
+    private static final Logger log = LoggerFactory.getLogger(InitBean.class);
 
     public RpcMapping rpcMapping;
 
@@ -27,34 +34,38 @@ public class InitBean implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String s) throws BeansException {
+//        Class<?> service = bean.getClass();
+//        RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
+        try {
+            Object realBean = AopTargetUtils.getTarget(bean);
+            RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
+            if (null == rpcService) {
+                return bean;
+            }
+            String serviceName = rpcService.value().getName();
+            String version = rpcService.version();
+            String name = rpcService.name();
 
-        Class<?> service = bean.getClass();
-        RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
-        if (null == rpcService) {
-            return bean;
-        }
-
-        String serviceName = rpcService.value().getName();
-        String version = rpcService.version();
-        String name = rpcService.name();
-
-        if (StringUtils.isNotEmpty(name)) {
-            serviceName = name;
-        } else {
-            if (NoInterface.class.getName().equals(serviceName)) {
-                Class<?>[] intes = bean.getClass().getInterfaces();
-                if (null == intes || intes.length != 1) {
-                    serviceName = bean.getClass().getName();
-                } else {
-                    serviceName = intes[0].getName();
+            if (StringUtils.isNotEmpty(name)) {
+                serviceName = name;
+            } else {
+                if (NoInterface.class.getName().equals(serviceName)) {
+                    Class<?>[] intes = bean.getClass().getInterfaces();
+                    if (null == intes || intes.length != 1) {
+                        serviceName = bean.getClass().getName();
+                    } else {
+                        serviceName = intes[0].getName();
+                    }
                 }
             }
-        }
 
-        if (StringUtils.isNotEmpty(version)) {
-            serviceName += "_" + version;
+            if (StringUtils.isNotEmpty(version)) {
+                serviceName += "_" + version;
+            }
+            rpcMapping.addHandler(serviceName, bean);
+        } catch (Exception e) {
+            log.error("init bean error", e);
         }
-        rpcMapping.addHandler(serviceName, bean);
         return bean;
     }
 
