@@ -34,15 +34,15 @@ public class InitBean implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String s) throws BeansException {
-//        Class<?> service = bean.getClass();
-//        RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
+        Class<?> service = bean.getClass();
+        RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
         try {
-            Object realBean = AopTargetUtils.getTarget(bean);
-            RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
             if (null == rpcService) {
                 return bean;
             }
+            Object realBean = AopTargetUtils.getTarget(bean);
             String serviceName = rpcService.value().getName();
+
             String version = rpcService.version();
             String name = rpcService.name();
 
@@ -50,9 +50,9 @@ public class InitBean implements BeanPostProcessor {
                 serviceName = name;
             } else {
                 if (NoInterface.class.getName().equals(serviceName)) {
-                    Class<?>[] intes = bean.getClass().getInterfaces();
+                    Class<?>[] intes = realBean.getClass().getInterfaces();
                     if (null == intes || intes.length != 1) {
-                        serviceName = bean.getClass().getName();
+                        serviceName = realBean.getClass().getName();
                     } else {
                         serviceName = intes[0].getName();
                     }
@@ -62,7 +62,7 @@ public class InitBean implements BeanPostProcessor {
             if (StringUtils.isNotEmpty(version)) {
                 serviceName += "_" + version;
             }
-            rpcMapping.addHandler(serviceName, bean);
+            rpcMapping.addHandler(serviceName, realBean);
         } catch (Exception e) {
             log.error("init bean error", e);
         }
