@@ -66,9 +66,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
                 ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperServiceDiscovery;
                 this.setServiceDiscovery(serviceDiscovery);
                 configurableBeanFactory.registerSingleton(interfaceName, serviceDiscovery);
-
             } catch (Exception e) {
-                log.error("", e);
+                log.error("Setting service discovery error", e);
             }
         }
 
