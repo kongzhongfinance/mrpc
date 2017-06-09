@@ -1,9 +1,6 @@
 package com.kongzhong.mrpc.serialize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kongzhong.mrpc.exception.SerializeException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +32,25 @@ public class JacksonSerialize implements JSONSerialize {
      */
     @Override
     public String toJSONString(Object object) {
-        String jsonStr;
         try {
-            jsonStr = objectMapper.writeValueAsString(object);
+            return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
             log.error("Java convert JSON error", e);
             throw new SerializeException(e);
         }
-        return jsonStr;
+    }
+
+    @Override
+    public String toJSONString(Object object, boolean pretty) {
+        if (!pretty) {
+            return toJSONString(object);
+        }
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (Exception e) {
+            log.error("Java convert JSON error", e);
+            throw new SerializeException(e);
+        }
     }
 
     /**

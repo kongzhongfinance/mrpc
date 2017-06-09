@@ -56,7 +56,8 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
         try {
             String sendBody = JSONUtils.toJSONString(requestBody);
-            log.debug("request: {}", sendBody);
+
+            log.debug("request: \n{}", JSONUtils.toJSONString(requestBody, true));
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
             req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
@@ -90,7 +91,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
             if (rpcResponse.getSuccess()) {
-                log.debug("response: {}", body);
+                log.debug("response: \n{}", body);
                 Object result = rpcResponse.getResult();
                 if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
                     Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());

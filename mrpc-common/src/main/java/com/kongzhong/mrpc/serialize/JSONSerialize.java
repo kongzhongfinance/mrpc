@@ -17,6 +17,15 @@ public interface JSONSerialize {
     String toJSONString(Object object);
 
     /**
+     * 对象转json，是否格式化输出
+     *
+     * @param object
+     * @param pretty
+     * @return
+     */
+    String toJSONString(Object object, boolean pretty);
+
+    /**
      * json转对象
      *
      * @param json json字符串

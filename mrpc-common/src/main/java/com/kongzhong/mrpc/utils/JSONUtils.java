@@ -35,6 +35,10 @@ public class JSONUtils {
         return jsonSerialize.toJSONString(object);
     }
 
+    public static String toJSONString(Object object, boolean pretty) {
+        return jsonSerialize.toJSONString(object, pretty);
+    }
+
     public static <T> T parseObject(String json, Class<T> type) {
         return jsonSerialize.parseObject(json, type);
     }
