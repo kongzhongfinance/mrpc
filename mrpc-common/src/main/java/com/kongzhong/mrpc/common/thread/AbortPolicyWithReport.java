@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.common.thread;
 
+import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.RejectedExecutionException;
@@ -8,14 +9,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
 
-    private final String threadName;
+    var threadName;
 
     /**
      * 构造器
      *
      * @param threadName
      */
-    public AbortPolicyWithReport(String threadName) {
+    public AbortPolicyWithReport(var threadName) {
         this.threadName = threadName;
     }
 

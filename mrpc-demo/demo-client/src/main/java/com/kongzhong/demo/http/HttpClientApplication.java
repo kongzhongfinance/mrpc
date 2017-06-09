@@ -20,9 +20,10 @@ public class HttpClientApplication {
 
         UserService userService = rpcClient.getProxyBean(UserService.class);
 
+        int sum = userService.add(10, 20);
+
         userService.testArray(new String[]{"a", "b", "c"});
 
-        int sum = userService.add(10, 20);
         System.out.println("add => " + sum);
 
         Person person = new Person();
