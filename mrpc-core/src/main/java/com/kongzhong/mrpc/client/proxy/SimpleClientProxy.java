@@ -11,6 +11,8 @@ import com.kongzhong.mrpc.utils.StringUtils;
 import java.lang.reflect.Method;
 
 /**
+ * 默认的客户端代理
+ *
  * @author biezhi
  *         2017/4/28
  */

@@ -37,7 +37,7 @@ public class FailOverHaStrategy implements HaStrategy {
                 return referer.invoke(request);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
-                    Throwables.throwIfUnchecked(e.getCause());
+                    throw (Exception) e.getCause();
                 } else if (e instanceof RpcException) {
                     if (i >= rc) {
                         log.error("", e);

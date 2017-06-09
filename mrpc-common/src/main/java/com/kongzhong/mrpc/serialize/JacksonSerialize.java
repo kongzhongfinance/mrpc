@@ -63,14 +63,12 @@ public class JacksonSerialize implements JSONSerialize {
      */
     @Override
     public <T> T parseObject(String json, Class<T> type) {
-        T obj;
         try {
-            obj = objectMapper.readValue(json, type);
+            return objectMapper.readValue(json, type);
         } catch (Exception e) {
             log.error("JSON convert Java error", e);
             throw new SerializeException(e);
         }
-        return obj;
     }
 
 }

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
+
 /**
  * @author biezhi
  *         2017/4/19
@@ -70,9 +72,8 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             channel.writeAndFlush(req);
         } catch (Exception e) {
-            log.error("", e);
+            log.error("client send request error", e);
         }
-
         return rpcFuture;
     }
 
@@ -89,6 +90,8 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                 return;
             }
 
+            String requestId = httpResponse.headers().get(HEADER_REQUEST_ID);
+
             RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
             if (rpcResponse.getSuccess()) {
                 log.debug("response: \n{}", body);
@@ -98,9 +101,9 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                     rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
                 }
             }
-            RpcFuture rpcFuture = mapCallBack.get(rpcResponse.getRequestId());
+            RpcFuture rpcFuture = mapCallBack.get(requestId);
             if (rpcFuture != null) {
-                mapCallBack.remove(rpcResponse.getRequestId());
+                mapCallBack.remove(requestId);
                 rpcFuture.done(rpcResponse);
             }
         } catch (Exception e) {

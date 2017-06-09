@@ -1,6 +1,7 @@
 package com.kongzhong.demo.http;
 
 import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.service.UserService;
 
@@ -35,9 +36,17 @@ public class HttpClientApplication {
         Map<String, Integer> rmap = userService.toMap(map);
         System.out.println("toMap => " + rmap);
 
-        userService.testNormalExp();
-
-        userService.testBizExp();
+        try {
+            userService.testNormalExp();
+            userService.testBizExp(2333);
+        } catch (Exception e) {
+            if (e instanceof BizException) {
+                BizException bizException = (BizException) e;
+                System.out.println(bizException.getCode() + ":" + bizException.getMsg());
+            } else {
+                e.printStackTrace();
+            }
+        }
 
         rpcClient.stop();
     }

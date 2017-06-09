@@ -65,13 +65,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void testBizExp() {
-        throw new BizException("xx对象不能为空");
+    public void testBizExp(Integer num) {
+        num.compareTo(222);
+        throw new BizException(1200, "xx对象不能为空");
     }
 
     @Override
-    public void testNormalExp() {
-        int a = 1 / 0;
+    public void testNormalExp() throws Exception {
+        throw new Exception("我是一个异常");
     }
 
     @Override

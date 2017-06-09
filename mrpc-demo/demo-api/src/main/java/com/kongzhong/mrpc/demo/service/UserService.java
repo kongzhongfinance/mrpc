@@ -34,9 +34,9 @@ public interface UserService {
 
     void testArray(String[] strs);
 
-    void testBizExp();
+    void testBizExp(Integer num);
 
-    void testNormalExp();
+    void testNormalExp() throws Exception;
 
     StatusEnum testEnum(StatusEnum statusEnum);
 }

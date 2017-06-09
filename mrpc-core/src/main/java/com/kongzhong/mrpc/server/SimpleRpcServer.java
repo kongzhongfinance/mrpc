@@ -12,11 +12,11 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
-import com.kongzhong.mrpc.transport.http.HttpResponse;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.FullHttpResponse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
 
 @Slf4j
 @Data
@@ -202,13 +204,13 @@ public class SimpleRpcServer {
         }, TPE);
     }
 
-    public static void submit(Callable<HttpResponse> task, final ChannelHandlerContext ctx) {
+    public static void submit(Callable<FullHttpResponse> task, final ChannelHandlerContext ctx) {
         //提交任务, 异步获取结果
-        ListenableFuture<HttpResponse> listenableFuture = TPE.submit(task);
+        ListenableFuture<FullHttpResponse> listenableFuture = TPE.submit(task);
         //注册回调函数, 在task执行完之后 异步调用回调函数
-        Futures.addCallback(listenableFuture, new FutureCallback<HttpResponse>() {
+        Futures.addCallback(listenableFuture, new FutureCallback<FullHttpResponse>() {
             @Override
-            public void onSuccess(HttpResponse response) {
+            public void onSuccess(FullHttpResponse response) {
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     /**
@@ -218,7 +220,7 @@ public class SimpleRpcServer {
                      */
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("request [{}] success.", response.getRequestId());
+                        log.debug("request [{}] success.", response.headers().get(HEADER_REQUEST_ID));
                     }
 
                 });

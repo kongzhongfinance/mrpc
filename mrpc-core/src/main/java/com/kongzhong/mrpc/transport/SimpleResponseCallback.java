@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import static com.kongzhong.mrpc.model.Const.INTERCEPTOR_NAME_PREFIX;
+
 /**
  * 抽象响应回调处理
  *
@@ -45,7 +47,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
             hasInterceptors = true;
             int pos = interceptors.size();
             for (RpcInteceptor rpcInteceptor : interceptors) {
-                interceptorChain.addLast("mrpc:server:interceptor:" + (pos--), rpcInteceptor);
+                interceptorChain.addLast(INTERCEPTOR_NAME_PREFIX + (pos--), rpcInteceptor);
             }
         }
     }

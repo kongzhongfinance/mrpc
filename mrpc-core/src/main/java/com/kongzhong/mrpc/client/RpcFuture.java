@@ -1,7 +1,6 @@
 package com.kongzhong.mrpc.client;
 
 
-import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -9,6 +8,9 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 
+import java.lang.reflect.Constructor;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -34,10 +36,8 @@ public class RpcFuture {
             lock.lock();
             finish.await(seconds, TimeUnit.SECONDS);
             if (null != response) {
-                if (StringUtils.isNotEmpty(response.getException())) {
-                    Exception t = (Exception) Class.forName(response.getReturnType()).getConstructor(String.class).newInstance(response.getException());
-                    Exception exception = new Exception(response.getMessage(), t);
-                    throw new ServiceException(exception.getCause());
+                if (!response.getSuccess()) {
+                    throwException();
                 }
                 return response.getResult();
             }
@@ -55,6 +55,30 @@ public class RpcFuture {
         } finally {
             lock.unlock();
         }
+    }
+
+    private void throwException() throws Exception {
+        Class<?> expType = Class.forName(response.getReturnType());
+        Exception exception = null;
+        if (null != response.getResult()) {
+            List<Map> exceptionResults = (List<Map>) response.getResult();
+            Class<?>[] types = new Class[exceptionResults.size()];
+            Object[] values = new Object[exceptionResults.size()];
+            for (int i = 0; i < exceptionResults.size(); i++) {
+                Map<String, Object> exceptionResult = exceptionResults.get(i);
+                Class<?> ftype = ReflectUtils.getClassType(exceptionResult.get("type").toString());
+                types[i] = ftype;
+                values[i] = exceptionResult.get("data");
+            }
+            Constructor constructor = ReflectUtils.getConstructor(expType, types);
+            Exception t = (Exception) constructor.newInstance(values);
+            exception = new Exception(response.getMessage(), t);
+        } else {
+            Constructor constructor = ReflectUtils.getConstructor(expType, String.class);
+            Exception t = (Exception) constructor.newInstance(response.getException());
+            exception = new Exception(response.getMessage(), t);
+        }
+        throw new ServiceException(exception.getCause());
     }
 
 }

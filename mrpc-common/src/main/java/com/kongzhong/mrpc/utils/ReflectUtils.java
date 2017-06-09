@@ -431,4 +431,15 @@ public class ReflectUtils {
         }
         return null;
     }
+
+    public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
+        try {
+            Constructor<T> constructor = type.getConstructor(parameterTypes);
+            return constructor;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+
 }

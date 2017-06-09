@@ -21,7 +21,7 @@ public class ExpClientApplication {
         final UserService userService = rpcClient.getProxyBean(UserService.class);
 
         try {
-            userService.testBizExp();
+            userService.testBizExp(55);
             userService.testNormalExp();
         } catch (Exception e) {
             log.error(e.getMessage());
