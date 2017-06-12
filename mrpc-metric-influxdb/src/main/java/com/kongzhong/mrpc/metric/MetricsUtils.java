@@ -9,18 +9,17 @@ import java.util.Map;
 public class MetricsUtils {
 
     private MetricsClient metricsClient;
-    private String appId = "demo";
 
     public MetricsUtils(MetricsClient metricsClient) {
         this.metricsClient = metricsClient;
     }
 
     public void general(Class clazz, String method, String name, String type, long count, long time, Map.Entry<String, String>... tags) {
-        if (StringUtils.isEmpty(appId))
-            throw new RuntimeException("请在配置文件中设置common.appId为程序的名称");
+        if (StringUtils.isEmpty(metricsClient.getAppId()))
+            throw new RuntimeException("请在配置文件中设置metrics.appId为程序的名称");
         Map<String, String> tagMap = new HashMap<>();
 
-        String metrics = "[" + appId + "]";
+        String metrics = "[" + metricsClient.getAppId() + "]";
         if (clazz != null) {
             tagMap.put("class", clazz.getName());
             metrics += "_" + "{" + clazz.getName().replaceAll("\\.", "_") + "}";

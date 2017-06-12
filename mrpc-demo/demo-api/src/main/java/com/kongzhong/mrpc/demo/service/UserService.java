@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.demo.service;
 
+import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.model.Result;
 import com.kongzhong.mrpc.demo.model.StatusEnum;
@@ -34,7 +35,7 @@ public interface UserService {
 
     void testArray(String[] strs);
 
-    void testBizExp(Integer num);
+    void testBizExp(Integer num) throws BizException;
 
     void testNormalExp() throws Exception;
 

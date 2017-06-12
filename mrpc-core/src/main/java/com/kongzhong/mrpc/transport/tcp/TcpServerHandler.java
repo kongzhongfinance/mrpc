@@ -24,7 +24,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        log.debug("tcp server request: {}", request);
+        log.debug("Tcp server request: {}", request);
         RpcResponse response = new RpcResponse();
         TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, handlerMap);
         //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池

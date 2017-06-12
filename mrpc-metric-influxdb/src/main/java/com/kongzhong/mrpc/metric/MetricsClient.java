@@ -16,37 +16,45 @@ import java.util.concurrent.TimeUnit;
 public class MetricsClient {
 
     private static InfluxDB influxDB;
-    private String url;
-    private String username;
-    private String password;
-    private String database;
+    private String appId;
+    private String name = "";
+    private InfluxdbProperties influxdbProperties;
 
-    public MetricsClient(InfluxdbProperties influxdbProperties) {
-        this.url = influxdbProperties.getUrl();
-        this.username = influxdbProperties.getUsername();
-        this.password = influxdbProperties.getPassword();
-        this.database = influxdbProperties.getDatabase();
+    public MetricsClient() {
     }
 
-    public MetricsClient(String url, String username, String password, String database) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.database = database;
+    public MetricsClient(MetricsProperties metricsProperties) {
+        this.appId = metricsProperties.getAppId();
+        this.name = metricsProperties.getName();
+        this.influxdbProperties = metricsProperties.getInfluxdb();
+    }
+
+    public MetricsClient(String appId, String url, String username, String password, String database) {
+        this.appId = appId;
+
+        InfluxdbProperties influxdbProperties = new InfluxdbProperties();
+        influxdbProperties.setUrl(url);
+        influxdbProperties.setUsername(username);
+        influxdbProperties.setPassword(password);
+        influxdbProperties.setDatabase(database);
+        this.influxdbProperties = influxdbProperties;
     }
 
     public void init() {
-        if (StringUtils.isEmpty(url))
-            throw new RuntimeException("请在配置文件中设置metrics.url为InfluxDb地址");
-        if (StringUtils.isEmpty(username))
-            throw new RuntimeException("请在配置文件中设置metrics.username为InfluxDb用户名");
-        if (StringUtils.isEmpty(password))
-            throw new RuntimeException("请在配置文件中设置metrics.password为InfluxDb密码");
-        if (StringUtils.isEmpty(database))
-            throw new RuntimeException("请在配置文件中设置metrics.database为InfluxDb数据库名");
-        influxDB = InfluxDBFactory.connect(url, username, password);
-        influxDB.createDatabase(database);
-        influxDB.enableBatch(1000, 100, TimeUnit.MILLISECONDS);
+        if (StringUtils.isEmpty(appId))
+            throw new RuntimeException("请在配置文件中设置metrics.appId");
+        if (StringUtils.isEmpty(influxdbProperties.getUrl()))
+            throw new RuntimeException("请在配置文件中设置metrics.influxdb.url为InfluxDb地址");
+        if (StringUtils.isEmpty(influxdbProperties.getUsername()))
+            throw new RuntimeException("请在配置文件中设置metrics.influxdb.username为InfluxDb用户名");
+        if (StringUtils.isEmpty(influxdbProperties.getPassword()))
+            throw new RuntimeException("请在配置文件中设置metrics.influxdb.password为InfluxDb密码");
+        if (StringUtils.isEmpty(influxdbProperties.getDatabase()))
+            throw new RuntimeException("请在配置文件中设置metrics.influxdb.database为InfluxDb数据库名");
+
+        influxDB = InfluxDBFactory.connect(influxdbProperties.getUrl(), influxdbProperties.getUsername(), influxdbProperties.getPassword());
+        influxDB.createDatabase(influxdbProperties.getDatabase());
+        influxDB.enableBatch(influxdbProperties.getActions(), influxdbProperties.getFlushDuration(), TimeUnit.MILLISECONDS);
     }
 
     public void dispose() {
@@ -63,7 +71,7 @@ public class MetricsClient {
                     .addField("count", count)
                     .tag(tags)
                     .build();
-            influxDB.write(database, "autogen", point);
+            influxDB.write(influxdbProperties.getDatabase(), "autogen", point);
         } catch (Exception ex) {
             log.error("打点到InfluxDb出现异常", ex);
         }

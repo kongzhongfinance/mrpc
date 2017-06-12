@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-spring-boot-starter</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>${mrpc-starter.version}</version>
         </dependency>
     </dependencies>
 

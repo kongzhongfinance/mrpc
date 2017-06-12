@@ -16,7 +16,15 @@ public class MetricsClientApplication {
         final UserService userService = rpcClient.getProxyBean(UserService.class);
         int pos = 1;
         while (true) {
-            userService.add(10, pos++);
+            if (pos % 1 == 0) {
+                try {
+                    userService.testBizExp(33);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            } else {
+                userService.add(10, pos++);
+            }
         }
     }
 }

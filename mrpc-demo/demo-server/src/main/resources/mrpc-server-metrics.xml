@@ -9,13 +9,14 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
     <bean id="metricsClient" class="com.kongzhong.mrpc.metric.MetricsClient">
+        <property name="appId" value="demo"/>
         <property name="url" value="http://127.0.0.1:8086"/>
         <property name="username" value="telegraf"/>
         <property name="password" value="telegraf"/>
         <property name="database" value="appMetrics"/>
     </bean>
 
-    <bean id="metricInterceptor" class="com.kongzhong.mrpc.metric.MetricInterceptor">
+    <bean id="metricsInterceptor" class="com.kongzhong.mrpc.metric.MetricsInterceptor">
         <constructor-arg name="metricsClient" ref="metricsClient"/>
     </bean>
 
@@ -24,7 +25,7 @@
         <property name="appId" value="demo"/>
         <property name="interceptorList">
             <list>
-                <ref bean="metricInterceptor"/>
+                <ref bean="metricsInterceptor"/>
             </list>
         </property>
     </bean>

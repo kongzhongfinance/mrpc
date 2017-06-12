@@ -21,6 +21,5 @@ public class RpcResponse implements Serializable {
     private String exception;
 
     public RpcResponse() {
-
     }
 }

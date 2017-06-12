@@ -1,8 +1,5 @@
 package com.kongzhong.mrpc.transport.http;
 
-import com.google.common.base.Throwables;
-import com.kongzhong.mrpc.exception.ServiceException;
-import com.kongzhong.mrpc.model.ExceptionMeta;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -16,9 +13,6 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
@@ -49,34 +43,8 @@ public class HttpResponseCallback extends SimpleResponseCallback<FullHttpRespons
             }
             rpcResponse.setSuccess(true);
         } catch (Throwable e) {
-            Throwable t = e instanceof ServiceException ? e.getCause() : e;
-            Class<?> exceptionType = t.getClass();
-            Field[] fields = exceptionType.getDeclaredFields();
-            if (null != fields && fields.length > 0) {
-                List<ExceptionMeta> ftypes = new ArrayList<>();
-                for (Field field : fields) {
-                    if ("serialVersionUID".equals(field.getName())) {
-                        continue;
-                    }
-                    Class<?> ftype = field.getType();
-                    field.setAccessible(true);
-                    ExceptionMeta exceptionMeta = new ExceptionMeta(ftype.getTypeName(), field.get(t));
-                    ftypes.add(exceptionMeta);
-                }
-                if (!ftypes.isEmpty()) {
-                    rpcResponse.setResult(ftypes);
-                }
-            }
-
-            String exceptionName = exceptionType.getName();
-            String exception = Throwables.getStackTraceAsString(t).replace(exceptionName + ": ", "");
-            exception = exception.replace(exceptionName, "");
-            rpcResponse.setReturnType(exceptionName);
-            rpcResponse.setException(exception);
-            rpcResponse.setMessage(t.getMessage());
-            rpcResponse.setSuccess(false);
-
-            log.error("rpc method invoke error", t);
+            e = buildErrorResponse(e, rpcResponse);
+            log.error("Rpc method invoke error", e);
         } finally {
             RpcContext.remove();
             String body = JSONUtils.toJSONString(rpcResponse);

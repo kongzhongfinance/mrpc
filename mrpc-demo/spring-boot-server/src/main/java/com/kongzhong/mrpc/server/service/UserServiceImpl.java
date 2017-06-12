@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void testBizExp(Integer num) {
+    public void testBizExp(Integer num) throws BizException {
         throw new BizException("xx对象不能为空");
     }
 

@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-metric-statsd</artifactId>
+            <artifactId>mrpc-metric-influxdb</artifactId>
             <version>${mrpc-metric.version}</version>
         </dependency>
     </dependencies>

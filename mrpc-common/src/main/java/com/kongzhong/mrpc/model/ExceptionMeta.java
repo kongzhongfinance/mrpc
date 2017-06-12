@@ -13,6 +13,9 @@ public class ExceptionMeta implements Serializable {
     private String type;
     private Object data;
 
+    public ExceptionMeta() {
+    }
+
     public ExceptionMeta(String type, Object data) {
         this.type = type;
         this.data = data;

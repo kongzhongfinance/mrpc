@@ -4,7 +4,7 @@ package com.kongzhong.mrpc.demo.exception;
  * @author biezhi
  *         2017/4/26
  */
-public class BizException extends RuntimeException {
+public class BizException extends Exception {
 
     private int code;
     private String msg;

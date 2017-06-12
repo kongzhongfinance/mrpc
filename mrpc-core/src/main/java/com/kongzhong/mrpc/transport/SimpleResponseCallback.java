@@ -1,9 +1,11 @@
 package com.kongzhong.mrpc.transport;
 
+import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.model.ExceptionMeta;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -14,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -92,13 +96,39 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
             Object result = invocation.next();
             return result;
         } catch (Exception e) {
-            if (e instanceof InvocationTargetException) {
-                throw e.getCause();
-            }
             throw e;
         } finally {
             RpcContext.remove();
         }
+    }
+
+    protected Throwable buildErrorResponse(Throwable t, RpcResponse response) throws IllegalAccessException {
+        Class<?> exceptionType = t.getClass();
+        Field[] fields = exceptionType.getDeclaredFields();
+        if (null != fields && fields.length > 0) {
+            List<ExceptionMeta> ftypes = new ArrayList<>();
+            for (Field field : fields) {
+                if ("serialVersionUID".equals(field.getName())) {
+                    continue;
+                }
+                Class<?> ftype = field.getType();
+                field.setAccessible(true);
+                ExceptionMeta exceptionMeta = new ExceptionMeta(ftype.getTypeName(), field.get(t));
+                ftypes.add(exceptionMeta);
+            }
+            if (!ftypes.isEmpty()) {
+                response.setResult(ftypes);
+            }
+        }
+
+        String exceptionName = exceptionType.getName();
+        String exception = Throwables.getStackTraceAsString(t).replace(exceptionName + ": ", "");
+        exception = exception.replace(exceptionName, "");
+        response.setReturnType(exceptionName);
+        response.setException(exception);
+        response.setMessage(t.getMessage());
+        response.setSuccess(false);
+        return t;
     }
 
 }

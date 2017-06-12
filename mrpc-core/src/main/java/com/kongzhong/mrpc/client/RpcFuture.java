@@ -3,10 +3,10 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.ServiceException;
+import com.kongzhong.mrpc.model.ExceptionMeta;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.utils.ReflectUtils;
-import com.kongzhong.mrpc.utils.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -61,14 +61,22 @@ public class RpcFuture {
         Class<?> expType = Class.forName(response.getReturnType());
         Exception exception = null;
         if (null != response.getResult()) {
-            List<Map> exceptionResults = (List<Map>) response.getResult();
+            List exceptionResults = (List) response.getResult();
             Class<?>[] types = new Class[exceptionResults.size()];
             Object[] values = new Object[exceptionResults.size()];
             for (int i = 0; i < exceptionResults.size(); i++) {
-                Map<String, Object> exceptionResult = exceptionResults.get(i);
-                Class<?> ftype = ReflectUtils.getClassType(exceptionResult.get("type").toString());
-                types[i] = ftype;
-                values[i] = exceptionResult.get("data");
+                Object exceptionResult = exceptionResults.get(i);
+                if (exceptionResult instanceof Map) {
+                    Map map = (Map) exceptionResult;
+                    Class<?> ftype = ReflectUtils.getClassType(map.get("type").toString());
+                    types[i] = ftype;
+                    values[i] = map.get("data");
+                } else if (exceptionResult instanceof ExceptionMeta) {
+                    ExceptionMeta exceptionMeta = (ExceptionMeta) exceptionResult;
+                    Class<?> ftype = ReflectUtils.getClassType(exceptionMeta.getType());
+                    types[i] = ftype;
+                    values[i] = exceptionMeta.getData();
+                }
             }
             Constructor constructor = ReflectUtils.getConstructor(expType, types);
             Exception t = (Exception) constructor.newInstance(values);

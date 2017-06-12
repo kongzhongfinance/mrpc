@@ -4,8 +4,6 @@ import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
 import com.kongzhong.mrpc.model.RpcContext;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -15,16 +13,12 @@ import lombok.extern.slf4j.Slf4j;
  *         2017/4/24
  */
 @Slf4j
-public class MetricInterceptor implements RpcInteceptor {
+public class MetricsInterceptor implements RpcInteceptor {
 
     private MetricsClient metricsClient;
     private MetricsUtils metricsUtils;
 
-    @Getter
-    @Setter
-    private String name = "";
-
-    public MetricInterceptor(MetricsClient metricsClient) {
+    public MetricsInterceptor(MetricsClient metricsClient) {
         this.metricsClient = metricsClient;
         this.metricsClient.init();
         this.metricsUtils = new MetricsUtils(metricsClient);
@@ -33,18 +27,18 @@ public class MetricInterceptor implements RpcInteceptor {
     @Override
     public Object execute(Invocation invocation) throws Exception {
         Class<?> clazz = invocation.getTarget().getClass();
-        String method = invocation.getFastMethod().getJavaMethod().toString();
+        String method = invocation.getFastMethod().getName();
         String appId = RpcContext.get().getRpcRequest().getAppId();
         long begin = System.currentTimeMillis();
         try {
             Object bean = invocation.next();
-            metricsUtils.success(clazz, method, name, begin);
+            metricsUtils.success(clazz, method, metricsClient.getName(), begin);
             return bean;
         } catch (Exception e) {
             if (e instanceof RpcException) {
-                metricsUtils.systemFail(clazz, method, name, begin);
+                metricsUtils.systemFail(clazz, method, metricsClient.getName(), begin);
             } else {
-                metricsUtils.serviceFail(clazz, method, name, begin);
+                metricsUtils.serviceFail(clazz, method, metricsClient.getName(), begin);
             }
             throw e;
         }

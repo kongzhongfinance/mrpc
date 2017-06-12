@@ -39,7 +39,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
+            <groupId>io.github.biezhi</groupId>
             <artifactId>spring-boot-starter-jetbrick</artifactId>
             <version>0.0.1</version>
         </dependency>
