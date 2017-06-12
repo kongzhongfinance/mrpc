@@ -1,9 +1,11 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
+import com.kongzhong.mrpc.interceptor.RpcInteceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,10 @@ public class InitBean implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String s) throws BeansException {
         Class<?> service = bean.getClass();
+        boolean hasInterface = ReflectUtils.hasInterface(service, RpcInteceptor.class);
+        if (hasInterface) {
+            rpcMapping.addInterceptor((RpcInteceptor) bean);
+        }
         RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
         try {
             if (null == rpcService) {

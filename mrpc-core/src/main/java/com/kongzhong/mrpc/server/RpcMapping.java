@@ -32,6 +32,13 @@ public class RpcMapping {
         handlerMap.put(key, value);
     }
 
+    public void addInterceptor(RpcInteceptor inteceptor) {
+        if (null != inteceptor) {
+            log.info("add interceptor [{}]", inteceptor);
+            this.inteceptors.add(inteceptor);
+        }
+    }
+
     public void addInterceptors(List<RpcInteceptor> inteceptors) {
         if (null != inteceptors && !inteceptors.isEmpty()) {
             log.info("add interceptors {}", inteceptors.toString());

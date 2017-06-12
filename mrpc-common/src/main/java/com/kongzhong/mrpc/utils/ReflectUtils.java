@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * 反射工具类
@@ -441,5 +442,8 @@ public class ReflectUtils {
         return null;
     }
 
-
+    public static boolean hasInterface(Class<?> cls, Class<?> inter) {
+        Class<?>[] inters = cls.getInterfaces();
+        return Stream.of(inters).filter(interfaceType -> interfaceType.equals(inter)).count() > 0;
+    }
 }

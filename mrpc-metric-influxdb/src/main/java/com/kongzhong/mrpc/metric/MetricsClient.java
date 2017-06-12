@@ -21,7 +21,11 @@ public class MetricsClient {
     private String password;
     private String database;
 
-    public MetricsClient() {
+    public MetricsClient(InfluxdbProperties influxdbProperties) {
+        this.url = influxdbProperties.getUrl();
+        this.username = influxdbProperties.getUsername();
+        this.password = influxdbProperties.getPassword();
+        this.database = influxdbProperties.getDatabase();
     }
 
     public MetricsClient(String url, String username, String password, String database) {
