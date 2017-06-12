@@ -16,7 +16,7 @@
         <module>mrpc-registry-consul</module>
         <module>mrpc-demo</module>
         <module>mrpc-serialize</module>
-        <module>mrpc-metric-statsd</module>
+        <module>mrpc-metric-influxdb</module>
         <module>mrpc-spring-boot-starter</module>
         <module>mrpc-admin</module>
     </modules>
