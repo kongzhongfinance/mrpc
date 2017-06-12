@@ -10,6 +10,8 @@ import com.kongzhong.mrpc.demo.service.UserService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author biezhi
@@ -29,6 +31,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String hello(String name) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(new Random().nextInt(30));
+        } catch (InterruptedException e) {
+        }
         return "Hello, " + name;
     }
 
