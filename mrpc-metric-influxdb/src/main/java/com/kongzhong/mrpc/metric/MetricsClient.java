@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * metrics客户端
+ */
 @Slf4j
 @Data
 public class MetricsClient {
