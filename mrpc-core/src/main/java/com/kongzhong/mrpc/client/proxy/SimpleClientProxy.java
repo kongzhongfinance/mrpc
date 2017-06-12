@@ -30,7 +30,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     @Override
     protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
-        RpcRequest request = new RpcRequest(StringUtils.getUUID(),
+        RpcRequest request = new RpcRequest(ClientConfig.me().getAppId(), StringUtils.getUUID(),
                 method.getDeclaringClass().getName(), method.getName(),
                 method.getParameterTypes(), args, method.getReturnType());
         return haStrategy.call(request, loadBalance);

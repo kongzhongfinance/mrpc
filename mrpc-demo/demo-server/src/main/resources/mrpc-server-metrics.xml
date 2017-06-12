@@ -8,7 +8,16 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
-    <bean id="metricInterceptor" class="com.kongzhong.mrpc.metric.MetricInterceptor"/>
+    <bean id="metricsClient" class="com.kongzhong.mrpc.metric.MetricsClient">
+        <property name="url" value="http://127.0.0.1:8086"/>
+        <property name="username" value="telegraf"/>
+        <property name="password" value="telegraf"/>
+        <property name="database" value="appMetrics"/>
+    </bean>
+
+    <bean id="metricInterceptor" class="com.kongzhong.mrpc.metric.MetricInterceptor">
+        <constructor-arg name="metricsClient" ref="metricsClient"/>
+    </bean>
 
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
         <constructor-arg name="serverAddress" value="127.0.0.1:5066"/>

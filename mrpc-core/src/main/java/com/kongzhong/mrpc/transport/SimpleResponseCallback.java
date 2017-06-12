@@ -63,7 +63,8 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
      */
     protected Object handle(RpcRequest request) throws Throwable {
         try {
-            RpcContext.set();
+
+            RpcContext.set(new RpcContext(request));
 
             String className = request.getClassName();
             Object serviceBean = handlerMap.get(className);
@@ -88,12 +89,15 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
 
             //执行拦截器
             Invocation invocation = new Invocation(serviceFastMethod, serviceBean, parameters, request, interceptors);
-            return invocation.next();
+            Object result = invocation.next();
+            return result;
         } catch (Exception e) {
             if (e instanceof InvocationTargetException) {
                 throw e.getCause();
             }
             throw e;
+        } finally {
+            RpcContext.remove();
         }
     }
 

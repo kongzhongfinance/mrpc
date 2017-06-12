@@ -16,6 +16,7 @@ import java.io.Serializable;
 @ToString
 public class RpcRequest implements Serializable {
 
+    private String appId;
     private String requestId;
     private String className;
     private String methodName;

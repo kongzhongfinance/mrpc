@@ -17,6 +17,11 @@
             <artifactId>demo-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-metric-statsd</artifactId>
+            <version>${mrpc-metric.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

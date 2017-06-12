@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
  *         2017/4/24
  */
 @Data
+@Slf4j
 @NoArgsConstructor
 public class RpcMapping {
 
@@ -32,6 +34,7 @@ public class RpcMapping {
 
     public void addInterceptors(List<RpcInteceptor> inteceptors) {
         if (null != inteceptors && !inteceptors.isEmpty()) {
+            log.info("add interceptors {}", inteceptors.toString());
             this.inteceptors.addAll(inteceptors);
         }
     }

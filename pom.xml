@@ -40,8 +40,8 @@
         <guava.version>21.0</guava.version>
         <slf4j-api.version>1.7.24</slf4j-api.version>
         <zookeeper.version>3.4.8</zookeeper.version>
-        <statsd.version>3.1.0</statsd.version>
         <jackson.version>2.7.0</jackson.version>
+        <mrpc-metric.version>0.0.1-SNAPSHOT</mrpc-metric.version>
     </properties>
 
     <dependencies>

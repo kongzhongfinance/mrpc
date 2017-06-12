@@ -9,14 +9,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
 
-    var threadName;
+    private final String threadName;
 
     /**
      * 构造器
      *
      * @param threadName
      */
-    public AbortPolicyWithReport(var threadName) {
+    public AbortPolicyWithReport(String threadName) {
         this.threadName = threadName;
     }
 
