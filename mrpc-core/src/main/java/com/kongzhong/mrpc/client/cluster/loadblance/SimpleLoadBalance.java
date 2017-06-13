@@ -29,12 +29,15 @@ public class SimpleLoadBalance implements LoadBalance {
     private LongAdder posLong = new LongAdder();
 
     @Override
-    public RpcInvoker getInvoker(String serviceName) {
+    public RpcInvoker getInvoker(String serviceName) throws Exception {
         try {
             LBStrategy LBStrategy = ClientConfig.me().getLbStrategy();
             List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
             if (handlers.size() == 1) {
                 return new RpcInvoker(handlers.get(0));
+            }
+            if (handlers.size() == 0) {
+                throw new RpcException("Service [" + serviceName + "] not found.");
             }
             if (LBStrategy == LBStrategy.ROUND) {
                 return new RpcInvoker(this.round(handlers));
@@ -46,6 +49,9 @@ public class SimpleLoadBalance implements LoadBalance {
                 return new RpcInvoker(this.last(handlers));
             }
         } catch (Exception e) {
+            if (e instanceof RpcException) {
+                throw e;
+            }
             throw new RpcException(e);
         }
         return null;

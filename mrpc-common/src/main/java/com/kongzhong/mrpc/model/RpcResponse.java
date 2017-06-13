@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -9,6 +11,8 @@ import java.io.Serializable;
  * RPC响应对象
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class RpcResponse implements Serializable {
 
@@ -20,6 +24,4 @@ public class RpcResponse implements Serializable {
     private String message;
     private String exception;
 
-    public RpcResponse() {
-    }
 }

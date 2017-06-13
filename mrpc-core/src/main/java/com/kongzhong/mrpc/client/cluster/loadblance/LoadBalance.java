@@ -15,6 +15,6 @@ public interface LoadBalance {
      * @param serviceName
      * @return
      */
-    RpcInvoker getInvoker(String serviceName);
+    RpcInvoker getInvoker(String serviceName) throws Exception;
 
 }

@@ -16,14 +16,14 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class RpcFuture {
+public class RpcCallbackFuture {
 
     private RpcRequest request;
     private RpcResponse response;
     private Lock lock = new ReentrantLock();
     private Condition finish = lock.newCondition();
 
-    public RpcFuture(RpcRequest request) {
+    public RpcCallbackFuture(RpcRequest request) {
         this.request = request;
     }
 
@@ -79,14 +79,12 @@ public class RpcFuture {
                 }
             }
             Constructor constructor = ReflectUtils.getConstructor(expType, types);
-            Exception t = (Exception) constructor.newInstance(values);
-            exception = new Exception(response.getMessage(), t);
+            exception = (Exception) constructor.newInstance(values);
         } else {
             Constructor constructor = ReflectUtils.getConstructor(expType, String.class);
-            Exception t = (Exception) constructor.newInstance(response.getException());
-            exception = new Exception(response.getMessage(), t);
+            exception = (Exception) constructor.newInstance(response.getException());
         }
-        throw new ServiceException(exception.getCause());
+        throw new ServiceException(exception);
     }
 
 }

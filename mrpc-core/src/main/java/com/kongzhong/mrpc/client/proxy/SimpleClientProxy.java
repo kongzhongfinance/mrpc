@@ -18,21 +18,24 @@ import java.lang.reflect.Method;
  */
 public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
-    /**
-     * 负载均衡器
-     */
+    // 负载均衡器
     protected LoadBalance loadBalance = new SimpleLoadBalance();
 
-    /**
-     * HA策略
-     */
+    // HA策略
     protected HaStrategy haStrategy = ClientConfig.me().getHaStrategy();
 
     @Override
     protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
-        RpcRequest request = new RpcRequest(ClientConfig.me().getAppId(), StringUtils.getUUID(),
-                method.getDeclaringClass().getName(), method.getName(),
-                method.getParameterTypes(), args, method.getReturnType());
+        RpcRequest request = RpcRequest.builder()
+                .appId(ClientConfig.me().getAppId())
+                .requestId(StringUtils.getUUID())
+                .methodName(method.getName())
+                .className(method.getDeclaringClass().getName())
+                .parameterTypes(method.getParameterTypes())
+                .parameters(args)
+                .returnType(method.getReturnType())
+                .build();
+
         return haStrategy.call(request, loadBalance);
     }
 

@@ -5,7 +5,7 @@ import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.ha.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
-import com.kongzhong.mrpc.client.proxy.ClientProxy;
+import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
@@ -90,7 +90,7 @@ public class SimpleRpcClient {
         if (!isInit) {
             this.init();
         }
-        return (T) Reflection.newProxy(rpcInterface, new ClientProxy<T>());
+        return (T) Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>());
     }
 
     private void init() {

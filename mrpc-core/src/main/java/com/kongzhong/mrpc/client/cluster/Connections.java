@@ -17,10 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -135,9 +132,12 @@ public class Connections {
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         lock.lock();
         try {
-            while (!mappings.containsKey(serviceName) || mappings.get(serviceName).size() == 0) {
-                // 阻塞
-                handlerStatus.await();
+//            while (!mappings.containsKey(serviceName) || mappings.get(serviceName).size() == 0) {
+//                // 阻塞
+//                handlerStatus.await(3, TimeUnit.SECONDS);
+//            }
+            if (!mappings.containsKey(serviceName)) {
+                return Collections.EMPTY_LIST;
             }
             return Lists.newArrayList(mappings.get(serviceName));
         } finally {

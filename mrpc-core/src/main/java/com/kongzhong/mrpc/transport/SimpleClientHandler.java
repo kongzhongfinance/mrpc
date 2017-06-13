@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.transport;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.kongzhong.mrpc.client.RpcFuture;
+import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -31,7 +31,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
-    protected Map<String, RpcFuture> mapCallBack = new ConcurrentHashMap<>();
+    protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
 
     protected volatile Channel channel;
 
@@ -90,7 +90,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public abstract RpcFuture sendRequest(RpcRequest request);
+    public abstract RpcCallbackFuture sendRequest(RpcRequest request);
 
     public Channel getChannel() {
         return channel;

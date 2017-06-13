@@ -1,13 +1,11 @@
 package com.kongzhong.mrpc.transport.tcp;
 
-import com.kongzhong.mrpc.client.RpcFuture;
+import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author biezhi
@@ -22,12 +20,12 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
      * @param request
      * @return
      */
-    public RpcFuture sendRequest(RpcRequest request) {
-        RpcFuture rpcFuture = new RpcFuture(request);
-        mapCallBack.put(request.getRequestId(), rpcFuture);
+    public RpcCallbackFuture sendRequest(RpcRequest request) {
+        RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(request);
+        mapCallBack.put(request.getRequestId(), rpcCallbackFuture);
         log.debug("request: {}", request);
         channel.writeAndFlush(request);
-        return rpcFuture;
+        return rpcCallbackFuture;
     }
 
     @Override
@@ -36,10 +34,10 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
             log.debug("response: {}", response);
         }
         String messageId = response.getRequestId();
-        RpcFuture rpcFuture = mapCallBack.get(messageId);
-        if (rpcFuture != null) {
+        RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(messageId);
+        if (rpcCallbackFuture != null) {
             mapCallBack.remove(messageId);
-            rpcFuture.done(response);
+            rpcCallbackFuture.done(response);
         }
     }
 

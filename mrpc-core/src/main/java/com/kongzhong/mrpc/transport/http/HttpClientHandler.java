@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
-import com.kongzhong.mrpc.client.RpcFuture;
+import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.exception.HttpException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -36,10 +36,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      * @return
      */
     @Override
-    public RpcFuture sendRequest(RpcRequest rpcRequest) {
+    public RpcCallbackFuture sendRequest(RpcRequest rpcRequest) {
 
-        RpcFuture rpcFuture = new RpcFuture(rpcRequest);
-        mapCallBack.put(rpcRequest.getRequestId(), rpcFuture);
+        RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
+        mapCallBack.put(rpcRequest.getRequestId(), rpcCallbackFuture);
 
         RequestBody requestBody = new RequestBody();
         requestBody.setRequestId(rpcRequest.getRequestId());
@@ -74,7 +74,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         } catch (Exception e) {
             log.error("client send request error", e);
         }
-        return rpcFuture;
+        return rpcCallbackFuture;
     }
 
     @Override
@@ -101,10 +101,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                     rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
                 }
             }
-            RpcFuture rpcFuture = mapCallBack.get(requestId);
-            if (rpcFuture != null) {
+            RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
+            if (rpcCallbackFuture != null) {
                 mapCallBack.remove(requestId);
-                rpcFuture.done(rpcResponse);
+                rpcCallbackFuture.done(rpcResponse);
             }
         } catch (Exception e) {
             throw new HttpException("client read response error", e);

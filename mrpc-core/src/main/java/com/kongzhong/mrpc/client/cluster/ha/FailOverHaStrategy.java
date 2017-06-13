@@ -7,6 +7,7 @@ import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.model.RpcResponse;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +32,10 @@ public class FailOverHaStrategy implements HaStrategy {
         if (rc < 0) {
             rc = 0;
         }
+        String serviceName = request.getClassName();
         for (int i = 0; i <= rc; i++) {
-            RpcInvoker referer = loadBalance.getInvoker(request.getClassName());
             try {
+                RpcInvoker referer = loadBalance.getInvoker(serviceName);
                 return referer.invoke(request);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
@@ -44,6 +46,7 @@ public class FailOverHaStrategy implements HaStrategy {
                         return null;
                     }
                     TimeUnit.MILLISECONDS.sleep(100);
+                    log.debug("Client retry [{}]", i);
                 } else {
                     log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
                 }

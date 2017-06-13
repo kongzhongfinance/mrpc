@@ -70,11 +70,12 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
 
             RpcContext.set(new RpcContext(request));
 
-            String className = request.getClassName();
-            Object serviceBean = handlerMap.get(className);
+            String serviceName = request.getClassName();
+
+            Object serviceBean = handlerMap.get(serviceName);
 
             if (null == serviceBean) {
-                throw new RpcException("not found service [" + className + "]");
+                throw new RpcException("not found service [" + serviceName + "]");
             }
 
             Class<?> serviceClass = serviceBean.getClass();
@@ -103,6 +104,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
     }
 
     protected Throwable buildErrorResponse(Throwable t, RpcResponse response) throws IllegalAccessException {
+        t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
         Class<?> exceptionType = t.getClass();
         Field[] fields = exceptionType.getDeclaredFields();
         if (null != fields && fields.length > 0) {
@@ -122,12 +124,15 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         }
 
         String exceptionName = exceptionType.getName();
+
         String exception = Throwables.getStackTraceAsString(t).replace(exceptionName + ": ", "");
         exception = exception.replace(exceptionName, "");
+
         response.setReturnType(exceptionName);
         response.setException(exception);
         response.setMessage(t.getMessage());
         response.setSuccess(false);
+
         return t;
     }
 

@@ -24,7 +24,7 @@ public class ExpClientApplication {
             userService.testBizExp(55);
             userService.testNormalExp();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            e.printStackTrace();
         }
         rpcClient.stop();
     }

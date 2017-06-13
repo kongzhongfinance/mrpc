@@ -39,7 +39,6 @@ public class TransferSelector {
             throw new InitializeException("transfer type [" + transport + "] error.");
         }
 
-
         if (transportEnum.equals(TransportEnum.TCP)) {
             return new TcpServerChannelInitializer(rpcSerialize);
         }

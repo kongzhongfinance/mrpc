@@ -12,6 +12,10 @@ public class BizException extends Exception {
     public BizException() {
     }
 
+    public BizException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public BizException(int code, String msg) {
         super(msg);
         this.code = code;
@@ -36,10 +40,6 @@ public class BizException extends Exception {
 
     public BizException(String message) {
         super(message);
-    }
-
-    public BizException(String message, Throwable cause) {
-        super(message, cause);
     }
 
     public BizException(Throwable cause) {

@@ -2,9 +2,8 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 服务调用
@@ -24,8 +23,8 @@ public class RpcInvoker<T> {
         if (!clientHandler.getChannel().isActive()) {
             throw new RpcException("Client Channel is unactive.");
         }
-        RpcFuture rpcFuture = clientHandler.sendRequest(request);
-        return rpcFuture.get();
+        RpcCallbackFuture rpcCallbackFuture = clientHandler.sendRequest(request);
+        return rpcCallbackFuture.get();
     }
 
 }

@@ -6,7 +6,6 @@ import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
-import com.kongzhong.mrpc.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -48,25 +47,13 @@ public class InitBean implements BeanPostProcessor {
             }
             Object realBean = AopTargetUtils.getTarget(bean);
             String serviceName = rpcService.value().getName();
-
-            String version = rpcService.version();
-            String name = rpcService.name();
-
-            if (StringUtils.isNotEmpty(name)) {
-                serviceName = name;
-            } else {
-                if (NoInterface.class.getName().equals(serviceName)) {
-                    Class<?>[] intes = realBean.getClass().getInterfaces();
-                    if (null == intes || intes.length != 1) {
-                        serviceName = realBean.getClass().getName();
-                    } else {
-                        serviceName = intes[0].getName();
-                    }
+            if (NoInterface.class.getName().equals(serviceName)) {
+                Class<?>[] intes = realBean.getClass().getInterfaces();
+                if (null == intes || intes.length != 1) {
+                    serviceName = realBean.getClass().getName();
+                } else {
+                    serviceName = intes[0].getName();
                 }
-            }
-
-            if (StringUtils.isNotEmpty(version)) {
-                serviceName += "_" + version;
             }
             rpcMapping.addHandler(serviceName, realBean);
         } catch (Exception e) {

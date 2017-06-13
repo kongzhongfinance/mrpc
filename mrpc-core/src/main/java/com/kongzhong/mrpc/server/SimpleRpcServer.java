@@ -201,7 +201,6 @@ public class SimpleRpcServer {
             @Override
             public void onFailure(Throwable t) {
 //                log.error("", t);
-//                throw new ServiceException(t);
             }
         }, TPE);
     }
