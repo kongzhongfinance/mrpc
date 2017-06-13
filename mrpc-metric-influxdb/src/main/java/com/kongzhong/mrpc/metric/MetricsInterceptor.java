@@ -35,7 +35,7 @@ public class MetricsInterceptor implements RpcInteceptor {
             metricsUtils.success(clazz, method, metricsClient.getName(), begin);
             return bean;
         } catch (Exception e) {
-            if (e instanceof RpcException) {
+            if (e instanceof RuntimeException) {
                 metricsUtils.systemFail(clazz, method, metricsClient.getName(), begin);
             } else {
                 metricsUtils.serviceFail(clazz, method, metricsClient.getName(), begin);

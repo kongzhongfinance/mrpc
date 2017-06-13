@@ -46,8 +46,6 @@ public class ClientApplication {
 //                }
 //            });
 //        }
-
-
         rpcClient.stop();
     }
 }

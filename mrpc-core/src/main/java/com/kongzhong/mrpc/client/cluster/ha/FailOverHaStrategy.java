@@ -1,17 +1,13 @@
 package com.kongzhong.mrpc.client.cluster.ha;
 
-import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.client.RpcInvoker;
 import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalance;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
-import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,9 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class FailOverHaStrategy implements HaStrategy {
-
-    //确保每个线程持有一份单独的ArrayList<Referer<T>（FailOverHaStrategy，会有单个实例被多个线程调用）
-    protected FastThreadLocal<List> referersHolder = new FastThreadLocal<>();
 
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
@@ -46,7 +39,7 @@ public class FailOverHaStrategy implements HaStrategy {
                         return null;
                     }
                     TimeUnit.MILLISECONDS.sleep(100);
-                    log.debug("Client retry [{}]", i);
+                    log.debug("Client retry [{}]", i + 1);
                 } else {
                     log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
                 }
