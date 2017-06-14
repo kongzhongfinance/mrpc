@@ -58,6 +58,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         Connections.me().remove(this);
 
         log.debug("Channel inactive: {}", this.channel);
+
         // 创建异步重连
 //        final EventLoop eventLoopGroup = this.channel.eventLoop();
 //        Set<String> referNames = Sets.newHashSet();

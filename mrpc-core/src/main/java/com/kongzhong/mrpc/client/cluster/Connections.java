@@ -132,10 +132,6 @@ public class Connections {
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         lock.lock();
         try {
-//            while (!mappings.containsKey(serviceName) || mappings.get(serviceName).size() == 0) {
-//                // 阻塞
-//                handlerStatus.await(3, TimeUnit.SECONDS);
-//            }
             if (!mappings.containsKey(serviceName)) {
                 return Collections.EMPTY_LIST;
             }

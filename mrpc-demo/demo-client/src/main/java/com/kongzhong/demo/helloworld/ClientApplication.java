@@ -29,7 +29,7 @@ public class ClientApplication {
         int pos = 1;
         while (pos < 10_0000) {
             System.out.println(userService.add(10, pos++));
-//            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(3);
         }
 
 //        ExecutorService executorService = Executors.newCachedThreadPool();
