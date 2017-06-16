@@ -8,6 +8,7 @@ import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.model.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -94,20 +95,19 @@ public class RpcServerAutoConfigure {
     @ConditionalOnBean(InitBean.class)
     public BeanFactoryAware beanFactoryAware() {
 
-        this.isTestEnv = environment.getProperty("mrpc.test", "false");
+        this.isTestEnv = environment.getProperty(Const.TEST_KEY, "false");
         return (beanFactory) -> {
             // 注册中心
             String registry = rpcServerProperties.getRegistry();
             if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
-                String zkAddr = environment.getProperty("mrpc.zookeeper.address", "127.0.0.1:2181");
+                String zkAddr = environment.getProperty(Const.ZK_SERVER_ADDRESS, "127.0.0.1:2181");
 
                 log.info("mrpc server connect zookeeper address: {}", zkAddr);
-                String interfaceName = "com.kongzhong.mrpc.registry.ServiceRegistry";
                 try {
                     Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
                     ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
                     RpcServerAutoConfigure.this.serviceRegistry = serviceRegistry;
-                    configurableBeanFactory.registerSingleton(interfaceName, serviceRegistry);
+                    configurableBeanFactory.registerSingleton(Const.REGSITRY_INTERFACE, serviceRegistry);
                 } catch (Exception e) {
                     log.error("", e);
                 }

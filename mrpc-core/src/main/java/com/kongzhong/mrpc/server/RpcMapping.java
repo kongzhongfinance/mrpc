@@ -25,7 +25,7 @@ public class RpcMapping {
     private List<RpcInteceptor> inteceptors = Lists.newArrayList();
 
     private static final class RpcMappingHolder {
-        private static final RpcMapping $ = new RpcMapping();
+        private static final RpcMapping INSTANCE = new RpcMapping();
     }
 
     public void addHandler(String key, Object value) {
@@ -47,7 +47,7 @@ public class RpcMapping {
     }
 
     public static RpcMapping me() {
-        return RpcMappingHolder.$;
+        return RpcMappingHolder.INSTANCE;
     }
 
 }

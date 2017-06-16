@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.model.Const;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -51,14 +52,14 @@ public class BootRpcClient extends SimpleRpcClient implements BeanFactoryAware, 
 
         Environment environment = beanFactory.getBean(Environment.class);
 
-        this.transport = environment.getProperty("mrpc.client.transport", "tcp");
-        this.appId = environment.getProperty("mrpc.client.appId", "default");
+        this.transport = environment.getProperty(Const.TRANSPORT_CLIENT, "tcp");
+        this.appId = environment.getProperty(Const.APP_ID_CLIENT, "default");
 
         // 注册中心
-        String registry = environment.getProperty("mrpc.client.registry", RegistryEnum.DEFAULT.getName());
+        String registry = environment.getProperty(Const.REGSITRY_CLIENT, RegistryEnum.DEFAULT.getName());
 
         if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
-            String zkAddr = environment.getProperty("mrpc.zookeeper.address", "127.0.0.1:2181");
+            String zkAddr = environment.getProperty(Const.ZK_CLIENT_ADDRESS, "127.0.0.1:2181");
             log.info("mrpc client connect zookeeper address: {}", zkAddr);
             String interfaceName = "com.kongzhong.mrpc.registry.ServiceDiscovery";
             try {

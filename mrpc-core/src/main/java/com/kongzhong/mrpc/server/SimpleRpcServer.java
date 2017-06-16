@@ -6,8 +6,8 @@ import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
-import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.model.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -107,7 +107,7 @@ public class SimpleRpcServer {
 
         transferSelector = new TransferSelector(serialize);
 
-        ThreadFactory threadRpcFactory = new NamedThreadFactory("mrpc-server");
+        ThreadFactory threadRpcFactory = new NamedThreadFactory(Const.THREAD_POOL_NAME);
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
         EventLoopGroup boss = new NioEventLoopGroup();
@@ -144,6 +144,7 @@ public class SimpleRpcServer {
                     serviceRegistry.register(serviceName);
                     log.info("=> [{}] - [{}]", serviceName, serverAddress);
                 }
+
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 
