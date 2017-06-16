@@ -17,10 +17,10 @@ import org.springframework.context.annotation.Bean;
 @Slf4j
 @SpringBootApplication
 // metrics
-@EnableConfigurationProperties(value = {MetricsProperties.class})
+//@EnableConfigurationProperties(value = {MetricsProperties.class})
 public class ServerApplication {
 
-    @Autowired
+    /*@Autowired
     private MetricsProperties metricsProperties;
 
     @Bean
@@ -33,7 +33,7 @@ public class ServerApplication {
     public MetricsInterceptor metricInterceptor() {
         MetricsInterceptor metricsInterceptor = new MetricsInterceptor(metricsClient());
         return metricsInterceptor;
-    }
+    }*/
 
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
