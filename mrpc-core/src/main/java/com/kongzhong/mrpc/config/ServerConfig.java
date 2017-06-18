@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 服务配置
+ *
  * @author biezhi
  *         2017/4/22
  */
@@ -14,10 +16,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServerConfig {
 
-    private String host;
-    private int port;
+    // 服务绑定ip:port
+    private String address;
+
+    // 外网弹性ip:port，不清楚不用填写
+    private String elasticIp;
+
     private String appId = "default";
+
     private TransportEnum transport;
+
     private RpcSerialize rpcSerialize;
 
     private static final ServerConfig conf = new ServerConfig();

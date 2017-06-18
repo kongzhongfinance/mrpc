@@ -195,7 +195,6 @@ public class RpcServerAutoConfigure {
         }));
     }
 
-
     protected void startServer() {
         String transport = rpcServerProperties.getTransport();
         if (null == rpcServerProperties.getTransport()) {
@@ -232,8 +231,9 @@ public class RpcServerAutoConfigure {
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
 
-                ServerConfig.me().setHost(host);
-                ServerConfig.me().setPort(port);
+                ServerConfig.me().setAddress(rpcServerProperties.getAddress());
+                ServerConfig.me().setElasticIp(rpcServerProperties.getElasticIp());
+
                 if (null != rpcServerProperties.getAppId()) {
                     ServerConfig.me().setAppId(rpcServerProperties.getAppId());
                 }
@@ -249,6 +249,7 @@ public class RpcServerAutoConfigure {
                     serviceRegistry.register(serviceName);
                     log.info("=> [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
                 }
+
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 

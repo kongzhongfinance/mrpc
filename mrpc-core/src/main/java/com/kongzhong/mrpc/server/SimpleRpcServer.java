@@ -44,6 +44,11 @@ public class SimpleRpcServer {
     protected String serverAddress;
 
     /**
+     * 弹性ip地址，不清楚可不填
+     */
+    protected String elasticIp;
+
+    /**
      * 序列化类型，默认protostuff
      */
     protected RpcSerialize serialize;
@@ -127,8 +132,9 @@ public class SimpleRpcServer {
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
 
-                ServerConfig.me().setHost(host);
-                ServerConfig.me().setPort(port);
+                ServerConfig.me().setAddress(serverAddress);
+                ServerConfig.me().setElasticIp(elasticIp);
+
                 if (null != appId) {
                     ServerConfig.me().setAppId(appId);
                 }

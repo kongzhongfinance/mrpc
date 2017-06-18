@@ -87,11 +87,10 @@ public class DefaultRegistry implements ServiceRegistry {
     }
 
     private Map<String, String> getReg(String serviceName) {
-        String host = ServerConfig.me().getHost();
-        int port = ServerConfig.me().getPort();
+        String addr = ServerConfig.me().getAddress();
         Map<String, String> obj = new HashMap<>();
         obj.put("service", serviceName);
-        obj.put("addr", host + ":" + port);
+        obj.put("addr", addr);
         return obj;
     }
 
