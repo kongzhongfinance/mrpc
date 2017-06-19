@@ -19,14 +19,17 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
 
     public ZookeeperServiceRegistry(String zkAddr) {
         zkClient = new ZkClient(zkAddr);
-
-        this.serverAddr = StringUtils.isNotEmpty(ServerConfig.me().getElasticIp()) ?
-                ServerConfig.me().getElasticIp() : ServerConfig.me().getAddress();
-        this.appId = ServerConfig.me().getAppId();
     }
 
     @Override
     public void register(String data) {
+
+        if (null == serverAddr || null == appId) {
+            this.serverAddr = StringUtils.isNotEmpty(ServerConfig.me().getElasticIp()) ?
+                    ServerConfig.me().getElasticIp() : ServerConfig.me().getAddress();
+            this.appId = ServerConfig.me().getAppId();
+        }
+
         removeNode(data);
         createNode(data);
     }
