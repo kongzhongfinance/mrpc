@@ -183,18 +183,6 @@ public class RpcServerAutoConfigure {
         }, TPE);
     }
 
-    /**
-     * 销毁资源
-     */
-    protected void destroy() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
-                serviceRegistry.unregister(serviceName);
-                log.debug("unregister => [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
-            }
-        }));
-    }
-
     protected void startServer() {
         String transport = rpcServerProperties.getTransport();
         if (null == rpcServerProperties.getTransport()) {
@@ -253,6 +241,8 @@ public class RpcServerAutoConfigure {
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 
+                this.listenDestroy();
+
                 String isTestEnv = System.getProperty("mrpc.test");
                 if (StringUtils.isNotEmpty(isTestEnv)) {
                     this.isTestEnv = isTestEnv;
@@ -278,6 +268,18 @@ public class RpcServerAutoConfigure {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
+    }
+
+    /**
+     * 销毁资源
+     */
+    protected void listenDestroy() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
+                serviceRegistry.unregister(serviceName);
+                log.debug("unregister => [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
+            }
+        }));
     }
 
 }

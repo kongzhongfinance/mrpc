@@ -36,6 +36,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
 
     @Override
     public void unregister(String data) {
+        removeNode(data);
     }
 
     private void removeNode(String node) {

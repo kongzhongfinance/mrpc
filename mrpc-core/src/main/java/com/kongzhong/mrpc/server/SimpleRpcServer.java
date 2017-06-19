@@ -151,6 +151,8 @@ public class SimpleRpcServer {
                     log.info("=> [{}] - [{}]", serviceName, serverAddress);
                 }
 
+                this.listenDestroy();
+
                 log.info("publish services finished!");
                 log.info("mrpc server start with => {}", port);
 
@@ -244,7 +246,7 @@ public class SimpleRpcServer {
     /**
      * 销毁资源
      */
-    protected void destroy() {
+    protected void listenDestroy() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
                 serviceRegistry.unregister(serviceName);
