@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 
 /**
@@ -11,14 +10,15 @@ import com.kongzhong.mrpc.transport.SimpleClientHandler;
  * @author biezhi
  *         2017/4/24
  */
-public class RpcInvoker<T> {
+public class SimpleRpcInvoker<T> implements RpcInvoker {
 
     private SimpleClientHandler<T> clientHandler;
 
-    public RpcInvoker(SimpleClientHandler<T> clientHandler) {
+    public SimpleRpcInvoker(SimpleClientHandler<T> clientHandler) {
         this.clientHandler = clientHandler;
     }
 
+    @Override
     public Object invoke(RpcRequest request) throws Exception {
         if (!clientHandler.getChannel().isActive()) {
             throw new RpcException("Client Channel is unactive.");

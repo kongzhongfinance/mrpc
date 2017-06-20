@@ -44,7 +44,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         String path = Constant.ZK_ROOT + "/" + appId + "/" + node + "/" + serverAddr;
         if (zkClient.exists(path)) {
             if (!zkClient.delete(path)) {
-                log.warn("delete node [{}] fail", path);
+                log.warn("Delete node [{}] fail", path);
             }
         }
     }
@@ -56,7 +56,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
             zkClient.createPersistent(path, true);
         }
 
-        log.debug("create node [{}]", path);
+        log.debug("Create node [{}]", path);
         zkClient.createEphemeral(path + "/" + serverAddr, "".getBytes());
     }
 

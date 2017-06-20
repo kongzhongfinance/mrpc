@@ -68,7 +68,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
             List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
             if (null == serviceList || serviceList.size() == 0) {
-                throw new RpcException(String.format("can not find any address node on path: %s/%s", Constant.ZK_ROOT, appId));
+                throw new RpcException(String.format("Can not find any address node on path: %s/%s", Constant.ZK_ROOT, appId));
             }
 
             // { 127.0.0.1:5066 => [UserService, BatService] }

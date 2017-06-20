@@ -5,6 +5,7 @@ import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.RpcRet;
+import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcServer;
 import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.JSONUtils;
@@ -31,15 +32,15 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Slf4j
 public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
-    public TcpServerHandler(Map<String, Object> handlerMap) {
-        super(handlerMap);
+    public TcpServerHandler(Map<String, ServiceBean> serviceBeanMap) {
+        super(serviceBeanMap);
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
         log.debug("Tcp server request: {}", request);
         RpcResponse response = new RpcResponse();
-        TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, handlerMap);
+        TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, serviceBeanMap);
         //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池
         RpcServer.submit(tcpResponseCallback, ctx, request, response);
     }

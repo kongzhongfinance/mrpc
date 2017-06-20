@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.transport.http;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.transport.SimpleResponseCallback;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import io.netty.buffer.ByteBuf;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
 /**
  * Http响应回调处理
@@ -26,8 +27,8 @@ public class HttpResponseCallback extends SimpleResponseCallback<FullHttpRespons
 
     private FullHttpResponse httpResponse;
 
-    public HttpResponseCallback(RpcRequest request, FullHttpResponse httpResponse, Map<String, Object> handlerMap) {
-        super(request, null, handlerMap);
+    public HttpResponseCallback(RpcRequest request, FullHttpResponse httpResponse, Map<String, ServiceBean> serviceBeanMap) {
+        super(request, null, serviceBeanMap);
         this.httpResponse = httpResponse;
     }
 

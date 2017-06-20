@@ -35,7 +35,7 @@ public class JacksonSerialize implements JSONSerialize {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
-            log.error("Java convert JSON error", e);
+            log.error("Object to json stirng error", e);
             throw new SerializeException(e);
         }
     }
@@ -48,7 +48,7 @@ public class JacksonSerialize implements JSONSerialize {
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
         } catch (Exception e) {
-            log.error("Java convert JSON error", e);
+            log.error("Object to json stirng error", e);
             throw new SerializeException(e);
         }
     }
@@ -66,7 +66,7 @@ public class JacksonSerialize implements JSONSerialize {
         try {
             return objectMapper.readValue(json, type);
         } catch (Exception e) {
-            log.error("JSON convert Java error", e);
+            log.error("Json parse to object error", e);
             throw new SerializeException(e);
         }
     }

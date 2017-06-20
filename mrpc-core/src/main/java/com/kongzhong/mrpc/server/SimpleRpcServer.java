@@ -7,7 +7,7 @@ import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
-import com.kongzhong.mrpc.model.Const;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -27,11 +27,17 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
+/**
+ * 抽象服务端请求处理器
+ *
+ * @author biezhi
+ *         2017/4/19
+ */
 @Slf4j
 @Data
-public class SimpleRpcServer {
+public abstract class SimpleRpcServer {
 
     /**
      * RPC服务映射
@@ -47,6 +53,11 @@ public class SimpleRpcServer {
      * 弹性ip地址，不清楚可不填
      */
     protected String elasticIp;
+
+    /**
+     * 业务线程池前缀
+     */
+    protected String poolName = "mrpc-server";
 
     /**
      * 序列化类型，默认protostuff
@@ -76,14 +87,17 @@ public class SimpleRpcServer {
     /**
      * 拦截器列表, 默认添加性能监控拦截器
      */
-    protected List<RpcInteceptor> interceptorList;
+    protected List<RpcServerInteceptor> interceptorList;
 
     /**
      * netty服务端配置
      */
     protected NettyConfig nettyConfig;
 
-    protected static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+    /**
+     * 服务端处理线程池
+     */
+    protected static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     public SimpleRpcServer() {
     }
@@ -112,7 +126,7 @@ public class SimpleRpcServer {
 
         transferSelector = new TransferSelector(serialize);
 
-        ThreadFactory threadRpcFactory = new NamedThreadFactory(Const.THREAD_POOL_NAME);
+        ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
         EventLoopGroup boss = new NioEventLoopGroup();
@@ -146,7 +160,7 @@ public class SimpleRpcServer {
                 }
 
                 //注册服务
-                for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
+                for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
                     serviceRegistry.register(serviceName);
                     log.info("Register => [{}] - [{}]", serviceName, serverAddress);
                 }
@@ -168,11 +182,11 @@ public class SimpleRpcServer {
         }
     }
 
-    public List<RpcInteceptor> getInterceptorList() {
+    public List<RpcServerInteceptor> getInterceptorList() {
         return interceptorList;
     }
 
-    public void setInterceptorList(List<RpcInteceptor> interceptorList) {
+    public void setInterceptorList(List<RpcServerInteceptor> interceptorList) {
         this.interceptorList = interceptorList;
         this.rpcMapping.addInterceptors(interceptorList);
     }
@@ -188,7 +202,7 @@ public class SimpleRpcServer {
     public static void submit(Callable<Boolean> task, final ChannelHandlerContext ctx, final RpcRequest request, final RpcResponse response) {
 
         //提交任务, 异步获取结果
-        ListenableFuture<Boolean> listenableFuture = TPE.submit(task);
+        ListenableFuture<Boolean> listenableFuture = LISTENING_EXECUTOR_SERVICE.submit(task);
 
         //注册回调函数, 在task执行完之后 异步调用回调函数
         Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
@@ -202,7 +216,7 @@ public class SimpleRpcServer {
                      * @throws Exception
                      */
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("request [{}] success.", request.getRequestId());
+                        log.debug("Request Id [{}] success.", request.getRequestId());
                     }
                 });
             }
@@ -211,12 +225,12 @@ public class SimpleRpcServer {
             public void onFailure(Throwable t) {
 //                log.error("", t);
             }
-        }, TPE);
+        }, LISTENING_EXECUTOR_SERVICE);
     }
 
     public static void submit(Callable<FullHttpResponse> task, final ChannelHandlerContext ctx) {
         //提交任务, 异步获取结果
-        ListenableFuture<FullHttpResponse> listenableFuture = TPE.submit(task);
+        ListenableFuture<FullHttpResponse> listenableFuture = LISTENING_EXECUTOR_SERVICE.submit(task);
         //注册回调函数, 在task执行完之后 异步调用回调函数
         Futures.addCallback(listenableFuture, new FutureCallback<FullHttpResponse>() {
             @Override
@@ -230,7 +244,7 @@ public class SimpleRpcServer {
                      */
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("request [{}] success.", response.headers().get(HEADER_REQUEST_ID));
+                        log.debug("Request Id [{}] success.", response.headers().get(HEADER_REQUEST_ID));
                     }
 
                 });
@@ -240,7 +254,7 @@ public class SimpleRpcServer {
             public void onFailure(Throwable t) {
                 log.error("", t);
             }
-        }, TPE);
+        }, LISTENING_EXECUTOR_SERVICE);
     }
 
     /**
@@ -248,9 +262,9 @@ public class SimpleRpcServer {
      */
     protected void listenDestroy() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
+            for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
                 serviceRegistry.unregister(serviceName);
-                log.debug("unregister => [{}] - [{}]", serviceName, serverAddress);
+                log.debug("Unregister => [{}] - [{}]", serviceName, serverAddress);
             }
         }));
     }

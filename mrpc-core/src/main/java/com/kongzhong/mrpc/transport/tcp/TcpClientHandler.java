@@ -1,14 +1,10 @@
 package com.kongzhong.mrpc.transport.tcp;
 
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
-import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.model.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 /**

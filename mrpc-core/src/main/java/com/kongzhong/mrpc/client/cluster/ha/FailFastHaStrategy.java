@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.client.cluster.ha;
 
 import com.kongzhong.mrpc.client.RpcInvoker;
-import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalance;
+import com.kongzhong.mrpc.client.SimpleRpcInvoker;
+import com.kongzhong.mrpc.client.cluster.HaStrategy;
+import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;

@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.config;
 
-import com.kongzhong.mrpc.client.cluster.ha.HaStrategy;
+import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
 /**
  * @author biezhi

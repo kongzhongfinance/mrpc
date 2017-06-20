@@ -6,7 +6,7 @@ import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.model.Const;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -81,7 +81,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 //        }
 //
 //        System.out.println("提交重连请求");
-//        TPE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, this.channel.remoteAddress()));
+//        LISTENING_EXECUTOR_SERVICE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, this.channel.remoteAddress()));
     }
 
     /**

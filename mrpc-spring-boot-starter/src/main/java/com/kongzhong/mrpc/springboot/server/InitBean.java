@@ -1,8 +1,9 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
-import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.NoInterface;
+import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -36,9 +37,9 @@ public class InitBean implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String s) throws BeansException {
         Class<?> service = bean.getClass();
-        boolean hasInterface = ReflectUtils.hasInterface(service, RpcInteceptor.class);
+        boolean hasInterface = ReflectUtils.hasInterface(service, RpcServerInteceptor.class);
         if (hasInterface) {
-            rpcMapping.addInterceptor((RpcInteceptor) bean);
+            rpcMapping.addInterceptor((RpcServerInteceptor) bean);
         }
         RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
         try {
@@ -55,7 +56,13 @@ public class InitBean implements BeanPostProcessor {
                     serviceName = intes[0].getName();
                 }
             }
-            rpcMapping.addHandler(serviceName, realBean);
+
+            ServiceBean serviceBean = new ServiceBean();
+            serviceBean.setBean(realBean);
+            serviceBean.setServiceName(serviceName);
+
+            rpcMapping.addServiceBean(serviceBean);
+
         } catch (Exception e) {
             log.error("init bean error", e);
         }

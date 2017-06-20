@@ -378,7 +378,7 @@ public class ZkClient implements Watcher, IZkClient {
     }
 
     private void processStateChanged(WatchedEvent event) {
-        LOG.info("zookeeper state changed (" + event.getState() + ")");
+        LOG.info("Zookeeper state changed (" + event.getState() + ")");
         setCurrentState(event.getState());
         if (getShutdownTrigger()) {
             return;

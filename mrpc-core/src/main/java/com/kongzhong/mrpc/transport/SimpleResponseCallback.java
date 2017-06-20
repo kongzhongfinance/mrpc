@@ -2,13 +2,8 @@ package com.kongzhong.mrpc.transport;
 
 import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.interceptor.InterceptorChain;
-import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcInteceptor;
-import com.kongzhong.mrpc.model.ExceptionMeta;
-import com.kongzhong.mrpc.model.RpcContext;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.interceptor.*;
+import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import org.slf4j.Logger;
@@ -24,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import static com.kongzhong.mrpc.model.Const.INTERCEPTOR_NAME_PREFIX;
+import static com.kongzhong.mrpc.Const.INTERCEPTOR_NAME_PREFIX;
 
 /**
  * 抽象响应回调处理
@@ -35,17 +30,17 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
 
     public static final Logger log = LoggerFactory.getLogger(SimpleResponseCallback.class);
 
-    protected Map<String, Object> handlerMap;
-    protected List<RpcInteceptor> interceptors;
+    protected Map<String, ServiceBean> serviceBeanMap;
+    protected List<RpcServerInteceptor> interceptors;
     protected InterceptorChain interceptorChain = new InterceptorChain();
     protected RpcRequest request;
     protected RpcResponse response;
     protected boolean hasInterceptors;
 
-    public SimpleResponseCallback(RpcRequest request, RpcResponse response, Map<String, Object> handlerMap) {
+    public SimpleResponseCallback(RpcRequest request, RpcResponse response, Map<String, ServiceBean> serviceBeanMap) {
         this.request = request;
         this.response = response;
-        this.handlerMap = handlerMap;
+        this.serviceBeanMap = serviceBeanMap;
         this.interceptors = RpcMapping.me().getInteceptors();
         if (null != interceptors && !interceptors.isEmpty()) {
             hasInterceptors = true;
@@ -69,16 +64,19 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         try {
 
             RpcContext.set(new RpcContext(request));
-
             String serviceName = request.getClassName();
 
-            Object serviceBean = handlerMap.get(serviceName);
-
+            ServiceBean serviceBean = serviceBeanMap.get(serviceName);
             if (null == serviceBean) {
-                throw new RpcException("not found service [" + serviceName + "]");
+                throw new RpcException("Not found service bean define [" + serviceName + "]");
             }
 
-            Class<?> serviceClass = serviceBean.getClass();
+            Object bean = serviceBean.getBean();
+            if (null == bean) {
+                throw new RpcException("Not found service bean [" + serviceName + "]");
+            }
+
+            Class<?> serviceClass = bean.getClass();
             String methodName = request.getMethodName();
             Class<?>[] parameterTypes = request.getParameterTypes();
             Object[] parameters = request.getParameters();
@@ -89,11 +87,11 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
             FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
 
             if (!hasInterceptors) {
-                return serviceFastMethod.invoke(serviceBean, parameters);
+                return serviceFastMethod.invoke(bean, parameters);
             }
 
             //执行拦截器
-            Invocation invocation = new Invocation(serviceFastMethod, serviceBean, parameters, request, interceptors);
+            Invocation invocation = new ServerInvocation(serviceFastMethod, bean, parameters, request, interceptors);
             Object result = invocation.next();
             return result;
         } catch (Exception e) {

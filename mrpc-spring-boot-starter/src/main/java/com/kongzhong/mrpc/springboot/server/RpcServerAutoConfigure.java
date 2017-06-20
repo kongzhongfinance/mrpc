@@ -8,7 +8,7 @@ import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcInteceptor;
-import com.kongzhong.mrpc.model.Const;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -38,7 +38,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.kongzhong.mrpc.model.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
 @Configuration
 @EnableConfigurationProperties(RpcServerProperties.class)
@@ -233,7 +233,7 @@ public class RpcServerAutoConfigure {
                 }
 
                 //注册服务
-                for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
+                for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
                     serviceRegistry.register(serviceName);
                     log.info("=> [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
                 }
@@ -275,7 +275,7 @@ public class RpcServerAutoConfigure {
      */
     protected void listenDestroy() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (String serviceName : rpcMapping.getHandlerMap().keySet()) {
+            for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
                 serviceRegistry.unregister(serviceName);
                 log.debug("unregister => [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
             }

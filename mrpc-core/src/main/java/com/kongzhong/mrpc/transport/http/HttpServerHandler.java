@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcRet;
+import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcServer;
 import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.JSONUtils;
@@ -13,7 +14,6 @@ import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
@@ -37,8 +37,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     public static final Logger log = LoggerFactory.getLogger(HttpServerHandler.class);
 
-    public HttpServerHandler(Map<String, Object> handlerMap) {
-        super(handlerMap);
+    public HttpServerHandler(Map<String, ServiceBean> serviceBeanMap) {
+        super(serviceBeanMap);
     }
 
     @Override
@@ -94,9 +94,15 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        Object bean = handlerMap.get(serviceName);
+        ServiceBean serviceBean = serviceBeanMap.get(serviceName);
+        if (null == serviceBean) {
+            this.sendError(ctx, RpcRet.notFound("Not found [" + serviceName + "] bean defined."));
+            return;
+        }
+
+        Object bean = serviceBean.getBean();
         if (null == bean) {
-            this.sendError(ctx, RpcRet.notFound("not found [" + serviceName + "] bean."));
+            this.sendError(ctx, RpcRet.notFound("Not found [" + serviceName + "] bean."));
             return;
         }
 
@@ -114,7 +120,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
-        HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, httpResponse, handlerMap);
+        HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, httpResponse, serviceBeanMap);
         RpcServer.submit(responseCallback, ctx);
     }
 

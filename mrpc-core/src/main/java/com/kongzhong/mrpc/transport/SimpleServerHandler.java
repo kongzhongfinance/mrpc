@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport;
 
+import com.kongzhong.mrpc.model.ServiceBean;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -17,10 +18,10 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
 
     public static final Logger log = LoggerFactory.getLogger(SimpleServerHandler.class);
 
-    protected Map<String, Object> handlerMap;
+    protected Map<String, ServiceBean> serviceBeanMap;
 
-    public SimpleServerHandler(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
+    public SimpleServerHandler(Map<String, ServiceBean> serviceBeanMap) {
+        this.serviceBeanMap = serviceBeanMap;
     }
 
     public abstract void channelRead0(ChannelHandlerContext ctx, T msg) throws Exception;

@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.model.NoInterface;
+import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import lombok.Data;
@@ -40,8 +41,8 @@ public class RpcServer extends SimpleRpcServer implements ApplicationContextAwar
         try {
 
             if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
-                for (Object serviceBean : serviceBeanMap.values()) {
-                    Object realBean = AopTargetUtils.getTarget(serviceBean);
+                for (Object target : serviceBeanMap.values()) {
+                    Object realBean = AopTargetUtils.getTarget(target);
                     RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
                     String serviceName = rpcService.value().getName();
 
@@ -53,7 +54,12 @@ public class RpcServer extends SimpleRpcServer implements ApplicationContextAwar
                             serviceName = intes[0].getName();
                         }
                     }
-                    rpcMapping.addHandler(serviceName, realBean);
+
+                    ServiceBean serviceBean = new ServiceBean();
+                    serviceBean.setBean(realBean);
+                    serviceBean.setServiceName(serviceName);
+
+                    rpcMapping.addServiceBean(serviceBean);
                 }
             }
         } catch (Exception e) {
