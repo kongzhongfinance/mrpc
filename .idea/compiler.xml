@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="demo-api" />
+        <module name="demo-client" />
+        <module name="demo-server" />
+        <module name="demo-server-other" />
+        <module name="mrpc-admin" />
+        <module name="mrpc-common" />
+        <module name="mrpc-core" />
+        <module name="mrpc-metric-influxdb" />
+        <module name="mrpc-registry-consul" />
+        <module name="mrpc-registry-zk" />
+        <module name="mrpc-serialize-kryo" />
+        <module name="mrpc-serialize-protostuff" />
+        <module name="mrpc-spring-boot-starter" />
+        <module name="mrpc-trace-zipkin" />
+        <module name="spring-boot-client" />
+        <module name="spring-boot-server" />
+        <module name="spring-boot-server-and-client" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="demo-api" target="1.8" />
+      <module name="demo-client" target="1.8" />
+      <module name="demo-server" target="1.8" />
+      <module name="demo-server-other" target="1.8" />
+      <module name="mrpc" target="1.8" />
+      <module name="mrpc-admin" target="1.8" />
+      <module name="mrpc-common" target="1.8" />
+      <module name="mrpc-core" target="1.8" />
+      <module name="mrpc-demo" target="1.8" />
+      <module name="mrpc-metric-influxdb" target="1.8" />
+      <module name="mrpc-registry-consul" target="1.8" />
+      <module name="mrpc-registry-zk" target="1.8" />
+      <module name="mrpc-serialize" target="1.8" />
+      <module name="mrpc-serialize-kryo" target="1.8" />
+      <module name="mrpc-serialize-protostuff" target="1.8" />
+      <module name="mrpc-spring-boot-starter" target="1.8" />
+      <module name="mrpc-trace-zipkin" target="1.8" />
+      <module name="spring-boot-client" target="1.8" />
+      <module name="spring-boot-server" target="1.8" />
+      <module name="spring-boot-server-and-client" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

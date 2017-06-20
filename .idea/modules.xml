@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/demo-api/demo-api.iml" filepath="$PROJECT_DIR$/mrpc-demo/demo-api/demo-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/demo-client/demo-client.iml" filepath="$PROJECT_DIR$/mrpc-demo/demo-client/demo-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/demo-server/demo-server.iml" filepath="$PROJECT_DIR$/mrpc-demo/demo-server/demo-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/demo-server-other/demo-server-other.iml" filepath="$PROJECT_DIR$/mrpc-demo/demo-server-other/demo-server-other.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc.iml" filepath="$PROJECT_DIR$/mrpc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-admin/mrpc-admin.iml" filepath="$PROJECT_DIR$/mrpc-admin/mrpc-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-common/mrpc-common.iml" filepath="$PROJECT_DIR$/mrpc-common/mrpc-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-core/mrpc-core.iml" filepath="$PROJECT_DIR$/mrpc-core/mrpc-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/mrpc-demo.iml" filepath="$PROJECT_DIR$/mrpc-demo/mrpc-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-metric-influxdb/mrpc-metric-influxdb.iml" filepath="$PROJECT_DIR$/mrpc-metric-influxdb/mrpc-metric-influxdb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-registry-consul/mrpc-registry-consul.iml" filepath="$PROJECT_DIR$/mrpc-registry-consul/mrpc-registry-consul.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-registry-zk/mrpc-registry-zk.iml" filepath="$PROJECT_DIR$/mrpc-registry-zk/mrpc-registry-zk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-serialize/mrpc-serialize.iml" filepath="$PROJECT_DIR$/mrpc-serialize/mrpc-serialize.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-serialize/mrpc-serialize-kryo/mrpc-serialize-kryo.iml" filepath="$PROJECT_DIR$/mrpc-serialize/mrpc-serialize-kryo/mrpc-serialize-kryo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-serialize/mrpc-serialize-protostuff/mrpc-serialize-protostuff.iml" filepath="$PROJECT_DIR$/mrpc-serialize/mrpc-serialize-protostuff/mrpc-serialize-protostuff.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-spring-boot-starter/mrpc-spring-boot-starter.iml" filepath="$PROJECT_DIR$/mrpc-spring-boot-starter/mrpc-spring-boot-starter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-trace-zipkin/mrpc-trace-zipkin.iml" filepath="$PROJECT_DIR$/mrpc-trace-zipkin/mrpc-trace-zipkin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/spring-boot-client/spring-boot-client.iml" filepath="$PROJECT_DIR$/mrpc-demo/spring-boot-client/spring-boot-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/spring-boot-server/spring-boot-server.iml" filepath="$PROJECT_DIR$/mrpc-demo/spring-boot-server/spring-boot-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mrpc-demo/spring-boot-server-and-client/spring-boot-server-and-client.iml" filepath="$PROJECT_DIR$/mrpc-demo/spring-boot-server-and-client/spring-boot-server-and-client.iml" />
+    </modules>
+  </component>
+</project>
