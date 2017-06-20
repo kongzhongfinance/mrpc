@@ -45,7 +45,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         if (null != interceptors && !interceptors.isEmpty()) {
             hasInterceptors = true;
             int pos = interceptors.size();
-            for (RpcInteceptor rpcInteceptor : interceptors) {
+            for (RpcServerInteceptor rpcInteceptor : interceptors) {
                 interceptorChain.addLast(INTERCEPTOR_NAME_PREFIX + (pos--), rpcInteceptor);
             }
         }

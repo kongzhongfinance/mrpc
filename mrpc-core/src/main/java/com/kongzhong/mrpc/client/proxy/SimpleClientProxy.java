@@ -42,7 +42,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
             hasInterceptors = true;
             int pos = interceptors.size();
             log.info("Add interceptors {}", interceptors.toString());
-            for (RpcInteceptor rpcInteceptor : interceptors) {
+            for (RpcClientInteceptor rpcInteceptor : interceptors) {
                 interceptorChain.addLast(INTERCEPTOR_NAME_PREFIX + (pos--), rpcInteceptor);
             }
         }

@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.server.service;
 
-import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
  *         2017/4/24
  */
 @Slf4j
-public class TestInterceptor2 implements RpcInteceptor {
+public class TestInterceptor2 implements RpcServerInteceptor {
 
     @Override
-    public Object execute(Invocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Exception {
         log.info("test interceptor2 execute.");
         Object obj = invocation.next();
         log.info("test interceptor2 execute, sleep 3s.");

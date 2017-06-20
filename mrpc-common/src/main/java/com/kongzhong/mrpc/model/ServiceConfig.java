@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.model;
 
 import com.google.common.collect.Lists;
-import com.kongzhong.mrpc.interceptor.RpcInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import lombok.Data;
 import lombok.ToString;
 
@@ -21,6 +21,6 @@ public class ServiceConfig {
     private String transport;
     private String serialize;
     private String serviceRegistry;
-    private List<RpcInteceptor> inteceptors = Lists.newArrayList();
+    private List<RpcServerInteceptor> inteceptors = Lists.newArrayList();
 
 }

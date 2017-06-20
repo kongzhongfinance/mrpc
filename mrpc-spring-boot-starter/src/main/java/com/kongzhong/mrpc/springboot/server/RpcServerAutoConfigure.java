@@ -1,14 +1,14 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.google.common.util.concurrent.*;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.interceptor.RpcInteceptor;
-import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -75,7 +75,7 @@ public class RpcServerAutoConfigure {
     /**
      * 拦截器列表, 默认添加性能监控拦截器
      */
-    protected List<RpcInteceptor> interceptorList;
+    protected List<RpcServerInteceptor> interceptorList;
 
     private String isTestEnv;
 
@@ -102,7 +102,7 @@ public class RpcServerAutoConfigure {
             if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
                 String zkAddr = environment.getProperty(Const.ZK_SERVER_ADDRESS, "127.0.0.1:2181");
 
-                log.info("mrpc server connect zookeeper address: {}", zkAddr);
+                log.info("RPC server connect zookeeper address: {}", zkAddr);
                 try {
                     Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
                     ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
@@ -142,7 +142,7 @@ public class RpcServerAutoConfigure {
                      * @throws Exception
                      */
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("request [{}] success.", request.getRequestId());
+                        log.debug("Request id [{}] success.", request.getRequestId());
                     }
                 });
             }
@@ -170,7 +170,7 @@ public class RpcServerAutoConfigure {
                      */
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("request [{}] success.", response.headers().get(HEADER_REQUEST_ID));
+                        log.debug("Request id [{}] success.", response.headers().get(HEADER_REQUEST_ID));
                     }
 
                 });
@@ -235,11 +235,11 @@ public class RpcServerAutoConfigure {
                 //注册服务
                 for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
                     serviceRegistry.register(serviceName);
-                    log.info("=> [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
+                    log.info("Register => [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
                 }
 
-                log.info("publish services finished!");
-                log.info("mrpc server start with => {}", port);
+                log.info("Publish services finished!");
+                log.info("RPC server start with => {}", port);
 
                 this.listenDestroy();
 
@@ -260,10 +260,10 @@ public class RpcServerAutoConfigure {
                     future.channel().closeFuture().sync();
                 }
             } else {
-                log.warn("mrpc server start fail.");
+                log.warn("RPC server start fail.");
             }
         } catch (Exception e) {
-            log.error("start rpc server error", e);
+            log.error("RPC server start error", e);
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
@@ -277,7 +277,7 @@ public class RpcServerAutoConfigure {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
                 serviceRegistry.unregister(serviceName);
-                log.debug("unregister => [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
+                log.debug("Unregister => [{}] - [{}]", serviceName, rpcServerProperties.getAddress());
             }
         }));
     }
