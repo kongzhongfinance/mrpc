@@ -55,7 +55,7 @@ public class RpcServerAutoConfigure {
     protected RpcMapping rpcMapping = RpcMapping.me();
 
     /**
-     * 序列化类型，默认protostuff
+     * 序列化类型，kyro
      */
     protected RpcSerialize serialize;
 
@@ -77,6 +77,9 @@ public class RpcServerAutoConfigure {
      */
     protected List<RpcServerInteceptor> interceptorList;
 
+    /**
+     * 是否是测试环境
+     */
     private String isTestEnv;
 
     /**
@@ -84,10 +87,11 @@ public class RpcServerAutoConfigure {
      */
     protected NettyConfig nettyConfig;
 
-    protected static final ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+    protected static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     @Bean
     public InitBean initBean() {
+        log.debug("Initializing rpc server bean");
         return new InitBean(rpcMapping);
     }
 
@@ -97,6 +101,7 @@ public class RpcServerAutoConfigure {
 
         this.isTestEnv = environment.getProperty(Const.TEST_KEY, "false");
         return (beanFactory) -> {
+            log.debug("Initializing rpc server beanFactoryAware ");
             // 注册中心
             String registry = rpcServerProperties.getRegistry();
             if (RegistryEnum.ZOOKEEPER.getName().equals(registry)) {
@@ -128,7 +133,7 @@ public class RpcServerAutoConfigure {
     public static void submit(Callable<Boolean> task, final ChannelHandlerContext ctx, final RpcRequest request, final RpcResponse response) {
 
         //提交任务, 异步获取结果
-        ListenableFuture<Boolean> listenableFuture = TPE.submit(task);
+        ListenableFuture<Boolean> listenableFuture = LISTENING_EXECUTOR_SERVICE.submit(task);
 
         //注册回调函数, 在task执行完之后 异步调用回调函数
         Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
@@ -151,12 +156,12 @@ public class RpcServerAutoConfigure {
             public void onFailure(Throwable t) {
                 log.error("", t);
             }
-        }, TPE);
+        }, LISTENING_EXECUTOR_SERVICE);
     }
 
     public static void submit(Callable<FullHttpResponse> task, final ChannelHandlerContext ctx) {
         //提交任务, 异步获取结果
-        ListenableFuture<FullHttpResponse> listenableFuture = TPE.submit(task);
+        ListenableFuture<FullHttpResponse> listenableFuture = LISTENING_EXECUTOR_SERVICE.submit(task);
         //注册回调函数, 在task执行完之后 异步调用回调函数
         Futures.addCallback(listenableFuture, new FutureCallback<FullHttpResponse>() {
             @Override
@@ -180,7 +185,7 @@ public class RpcServerAutoConfigure {
             public void onFailure(Throwable t) {
                 log.error("", t);
             }
-        }, TPE);
+        }, LISTENING_EXECUTOR_SERVICE);
     }
 
     protected void startServer() {

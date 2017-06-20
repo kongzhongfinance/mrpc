@@ -15,13 +15,6 @@ import org.springframework.context.annotation.Bean;
 @Slf4j
 public class RpcClientAutoConfigure {
 
-//    @Bean
-//    @ConditionalOnBean(Referers.class)
-//    public BootRpcClient bootRpcClient() {
-//        BootRpcClient bootRpcClient = new BootRpcClient();
-//        return bootRpcClient;
-//    }
-
     private BootRpcClient bootRpcClient;
 
     @Bean
