@@ -37,18 +37,6 @@ public class HttpClientApplication {
         Map<String, Integer> rmap = userService.toMap(map);
         System.out.println("toMap => " + rmap);
 
-        try {
-            userService.testNormalExp();
-            userService.testBizExp(2333);
-        } catch (Exception e) {
-            if (e instanceof BizException) {
-                BizException bizException = (BizException) e;
-                System.out.println(bizException.getCode() + ":" + bizException.getMsg());
-            } else {
-                e.printStackTrace();
-            }
-        }
-
         rpcClient.stop();
     }
 }

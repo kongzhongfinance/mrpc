@@ -204,7 +204,7 @@ public class RpcServerAutoConfigure {
 
         transferSelector = new TransferSelector(serialize);
 
-        ThreadFactory threadRpcFactory = new NamedThreadFactory("mrpc-server");
+        ThreadFactory threadRpcFactory = new NamedThreadFactory(rpcServerProperties.getPoolName());
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
         EventLoopGroup boss = new NioEventLoopGroup();
