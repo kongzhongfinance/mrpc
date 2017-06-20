@@ -6,21 +6,36 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author biezhi
  *         2017/5/13
  */
-@Configuration
 @ConditionalOnProperty("mrpc.client.transport")
 @Slf4j
 public class RpcClientAutoConfigure {
 
+//    @Bean
+//    @ConditionalOnBean(Referers.class)
+//    public BootRpcClient bootRpcClient() {
+//        BootRpcClient bootRpcClient = new BootRpcClient();
+//        return bootRpcClient;
+//    }
+
+    private BootRpcClient bootRpcClient;
+
     @Bean
-    @ConditionalOnBean(Referers.class)
+    @ConditionalOnBean(value = BootRpcClient.class)
+    public RpcClientInitBean initBean() {
+        log.debug("Initializing rpc client bean");
+        return new RpcClientInitBean(this.bootRpcClient);
+    }
+
+    @Bean
+    @ConditionalOnBean(value = Referers.class)
     public BootRpcClient bootRpcClient() {
-        BootRpcClient bootRpcClient = new BootRpcClient();
+        log.debug("Initializing rpc client referers");
+        this.bootRpcClient = new BootRpcClient();
         return bootRpcClient;
     }
 

@@ -41,7 +41,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-
     }
 
     @Override
@@ -82,5 +81,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
                 log.warn("Not found rpc service [{}] component!", interfaceName, e);
             }
         });
+
     }
 }

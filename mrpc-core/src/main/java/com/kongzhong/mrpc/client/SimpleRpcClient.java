@@ -149,7 +149,7 @@ public abstract class SimpleRpcClient {
             clientConfig.setTransport(transportEnum);
             clientConfig.setReferers(referers);
 
-            if (null == directUrl) {
+            if (StringUtils.isEmpty(directUrl)) {
                 if (null == serviceDiscovery) {
                     serviceDiscovery = new DefaultDiscovery();
                 }

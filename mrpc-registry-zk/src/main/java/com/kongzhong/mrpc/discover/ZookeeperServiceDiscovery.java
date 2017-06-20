@@ -90,9 +90,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                     subRelate.put(servicePath, zkChildListener);
                     zkClient.subscribeChildChanges(servicePath, zkChildListener);
                 }
-                // 重新订阅改变
-//                zkClient.unsubscribeChildChanges(servicePath, zkChildListener);
-//                zkClient.subscribeChildChanges(servicePath, zkChildListener);
             });
 
             // update node list
