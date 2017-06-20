@@ -4,8 +4,6 @@ import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.ha.FailOverHaStrategy;
 import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.registry.DefaultRegistry;
-import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.NoArgsConstructor;
@@ -44,15 +42,6 @@ public class DefaultConfig {
      */
     public static String transport() {
         return TransportEnum.TCP.name();
-    }
-
-    /**
-     * 默认的服务注册
-     *
-     * @return
-     */
-    public static ServiceRegistry registry() {
-        return new DefaultRegistry();
     }
 
     /**

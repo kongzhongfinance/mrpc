@@ -7,7 +7,6 @@ import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
@@ -155,13 +154,11 @@ public abstract class SimpleRpcServer {
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 
-                if (null == serviceRegistry) {
-                    serviceRegistry = DefaultConfig.registry();
-                }
-
                 //注册服务
                 for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
-                    serviceRegistry.register(serviceName);
+                    if (null != serviceRegistry) {
+                        serviceRegistry.register(serviceName);
+                    }
                     log.info("Register => [{}] - [{}]", serviceName, serverAddress);
                 }
 

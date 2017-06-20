@@ -150,10 +150,9 @@ public abstract class SimpleRpcClient {
             clientConfig.setReferers(referers);
 
             if (StringUtils.isEmpty(directUrl)) {
-                if (null == serviceDiscovery) {
-                    serviceDiscovery = new DefaultDiscovery();
+                if (null != serviceDiscovery) {
+                    serviceDiscovery.discover();
                 }
-                serviceDiscovery.discover();
             }
             isInit = true;
         }
