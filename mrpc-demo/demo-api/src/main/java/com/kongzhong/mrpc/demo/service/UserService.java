@@ -40,4 +40,5 @@ public interface UserService {
     void testNormalExp() throws Exception;
 
     StatusEnum testEnum(StatusEnum statusEnum);
+
 }

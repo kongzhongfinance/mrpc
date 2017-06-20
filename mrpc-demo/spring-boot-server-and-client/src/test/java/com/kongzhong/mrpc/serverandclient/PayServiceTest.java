@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
+
 /**
  * @author biezhi
  *         16/06/2017
@@ -21,7 +23,7 @@ public class PayServiceTest {
 
     @Test
     public void testPay() {
-        payService.pay("支付...");
+        payService.pay("支付...", new BigDecimal("12.1"));
     }
 
 }

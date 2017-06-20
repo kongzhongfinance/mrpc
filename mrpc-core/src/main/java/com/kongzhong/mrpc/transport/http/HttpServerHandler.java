@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.transport.http;
 
 import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.enums.MediaType;
+import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcRet;
@@ -99,7 +100,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        RpcRequest rpcRequest = parseParams(ctx, requestBody, bean.getClass());
+        RpcRequest rpcRequest = this.parseParams(ctx, requestBody, bean.getClass());
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
         httpResponse.headers().set(CONTENT_TYPE, MediaType.JSON.toString());
@@ -126,7 +127,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
      * @return
      * @throws NoSuchMethodException
      */
-    private RpcRequest parseParams(ChannelHandlerContext ctx, RequestBody requestBody, Class<?> type) throws NoSuchMethodException {
+    private RpcRequest parseParams(ChannelHandlerContext ctx, RequestBody requestBody, Class<?> type) throws Exception {
 
         String serviceName = requestBody.getService();
         String methodName = requestBody.getMethod();
@@ -153,6 +154,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             this.sendError(ctx, RpcRet.notFound("method [" + methodName + "] not found."));
             return null;
         }
+
         // 解析参数到args中
         Object[] args = new Object[method.getParameterCount()];
         Class<?>[] types = method.getParameterTypes();
@@ -183,16 +185,16 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
      * @param ctx
      * @param status
      */
-    private void sendError(ChannelHandlerContext ctx, RpcRet ret) {
+    private void sendError(ChannelHandlerContext ctx, RpcRet ret) throws SerializeException {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JSONUtils.toJSONString(ret), CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        ctx.writeAndFlush(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Http server handler error", cause);
         sendError(ctx, RpcRet.error(Throwables.getStackTraceAsString(cause)));
-        ctx.close();
+//        ctx.close();
     }
 }

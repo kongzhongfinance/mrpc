@@ -31,7 +31,7 @@ public class JacksonSerialize implements JSONSerialize {
      * @return
      */
     @Override
-    public String toJSONString(Object object) {
+    public String toJSONString(Object object) throws SerializeException {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class JacksonSerialize implements JSONSerialize {
     }
 
     @Override
-    public String toJSONString(Object object, boolean pretty) {
+    public String toJSONString(Object object, boolean pretty) throws SerializeException {
         if (!pretty) {
             return toJSONString(object);
         }
@@ -62,7 +62,7 @@ public class JacksonSerialize implements JSONSerialize {
      * @return
      */
     @Override
-    public <T> T parseObject(String json, Class<T> type) {
+    public <T> T parseObject(String json, Class<T> type) throws SerializeException {
         try {
             return objectMapper.readValue(json, type);
         } catch (Exception e) {

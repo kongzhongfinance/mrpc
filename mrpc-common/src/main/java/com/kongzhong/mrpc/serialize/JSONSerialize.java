@@ -1,5 +1,7 @@
 package com.kongzhong.mrpc.serialize;
 
+import com.kongzhong.mrpc.exception.SerializeException;
+
 /**
  * JSON序列化接口
  *
@@ -14,7 +16,7 @@ public interface JSONSerialize {
      * @param object java对象
      * @return
      */
-    String toJSONString(Object object);
+    String toJSONString(Object object) throws SerializeException;
 
     /**
      * 对象转json，是否格式化输出
@@ -23,7 +25,7 @@ public interface JSONSerialize {
      * @param pretty
      * @return
      */
-    String toJSONString(Object object, boolean pretty);
+    String toJSONString(Object object, boolean pretty) throws SerializeException;
 
     /**
      * json转对象
@@ -33,6 +35,6 @@ public interface JSONSerialize {
      * @param <T>  泛型
      * @return
      */
-    <T> T parseObject(String json, Class<T> type);
+    <T> T parseObject(String json, Class<T> type) throws SerializeException;
 
 }

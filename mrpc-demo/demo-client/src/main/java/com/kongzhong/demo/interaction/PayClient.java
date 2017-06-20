@@ -3,6 +3,8 @@ package com.kongzhong.demo.interaction;
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.service.PayService;
 
+import java.math.BigDecimal;
+
 /**
  * @author biezhi
  *         2017/4/19
@@ -14,7 +16,7 @@ public class PayClient {
         RpcClient rpcClient = new RpcClient();
 
         final PayService payService = rpcClient.getProxyBean(PayService.class);
-        System.out.println(payService.pay("pay call"));
+        System.out.println(payService.pay("pay call", new BigDecimal("2201.1")));
         rpcClient.stop();
     }
 }

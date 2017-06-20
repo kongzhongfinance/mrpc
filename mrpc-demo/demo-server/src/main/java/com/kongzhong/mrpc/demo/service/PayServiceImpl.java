@@ -23,6 +23,11 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
+    public BigDecimal getMoney(Double money) {
+        return new BigDecimal(money.toString());
+    }
+
+    @Override
     public NoConstructor noConstructor(NoConstructor noConstructor) {
         System.out.println(noConstructor);
         return noConstructor;

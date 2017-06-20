@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.utils;
 
 import com.kongzhong.mrpc.enums.JSONEnum;
+import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.serialize.JSONSerialize;
 import com.kongzhong.mrpc.serialize.JacksonSerialize;
 import lombok.AccessLevel;
@@ -31,15 +32,15 @@ public class JSONUtils {
         }
     }
 
-    public static String toJSONString(Object object) {
+    public static String toJSONString(Object object) throws SerializeException {
         return jsonSerialize.toJSONString(object);
     }
 
-    public static String toJSONString(Object object, boolean pretty) {
+    public static String toJSONString(Object object, boolean pretty) throws SerializeException {
         return jsonSerialize.toJSONString(object, pretty);
     }
 
-    public static <T> T parseObject(String json, Class<T> type) {
+    public static <T> T parseObject(String json, Class<T> type) throws SerializeException {
         return jsonSerialize.parseObject(json, type);
     }
 

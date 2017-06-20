@@ -1,7 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
-import com.kongzhong.mrpc.exception.HttpException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -70,6 +69,8 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             req.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
             req.content().clear().writeBytes(bbuf);
 
+            this.setChannelRequestId(rpcRequest.getRequestId());
+
             channel.writeAndFlush(req);
         } catch (Exception e) {
             log.error("client send request error", e);
@@ -79,35 +80,38 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse httpResponse) throws Exception {
-        try {
+        ByteBuf buf = httpResponse.content();
+        byte[] resp = new byte[buf.readableBytes()];
+        buf.readBytes(resp);
+        String body = new String(resp, "UTF-8");
 
-            ByteBuf buf = httpResponse.content();
-            byte[] resp = new byte[buf.readableBytes()];
-            buf.readBytes(resp);
-            String body = new String(resp, "UTF-8");
+        if (StringUtils.isEmpty(body)) {
+            return;
+        }
 
-            if (StringUtils.isEmpty(body)) {
-                return;
+        String requestId = httpResponse.headers().get(HEADER_REQUEST_ID);
+
+        RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
+        if (rpcResponse.getSuccess()) {
+            log.debug("response: \n{}", body);
+            Object result = rpcResponse.getResult();
+            if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+                Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+                rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
             }
-
-            String requestId = httpResponse.headers().get(HEADER_REQUEST_ID);
-
-            RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
-            if (rpcResponse.getSuccess()) {
-                log.debug("response: \n{}", body);
-                Object result = rpcResponse.getResult();
-                if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                    Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                    rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
-                }
-            }
-            RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
-            if (rpcCallbackFuture != null) {
-                mapCallBack.remove(requestId);
-                rpcCallbackFuture.done(rpcResponse);
-            }
-        } catch (Exception e) {
-            throw new HttpException("client read response error", e);
+        }
+        RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
+        if (rpcCallbackFuture != null) {
+            mapCallBack.remove(requestId);
+            rpcCallbackFuture.done(rpcResponse);
         }
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("Http client accept error", cause);
+        super.sendError(ctx, cause);
+//        ctx.close();
+    }
+
 }

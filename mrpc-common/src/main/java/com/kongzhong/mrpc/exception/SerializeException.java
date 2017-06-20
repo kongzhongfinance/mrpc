@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.exception;
  * @author biezhi
  *         2017/4/26
  */
-public class SerializeException extends RpcException {
+public class SerializeException extends Exception {
 
     public SerializeException() {
     }

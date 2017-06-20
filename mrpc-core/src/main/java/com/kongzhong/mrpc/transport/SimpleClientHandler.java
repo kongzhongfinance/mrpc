@@ -5,12 +5,15 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.exception.SerializeException;
+import com.kongzhong.mrpc.model.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +55,16 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         log.debug("Channel actived");
     }
 
+    /**
+     * handler 中出现异常才会执行这个函数
+     *
+     * @param ctx
+     * @param cause
+     * @throws Exception
+     */
+    @Override
+    public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
+
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
@@ -72,19 +85,6 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     }
 
     /**
-     * handler 中出现异常才会执行这个函数
-     *
-     * @param ctx
-     * @param cause
-     * @throws Exception
-     */
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("", cause);
-        ctx.close();
-    }
-
-    /**
      * 客户端关闭时调用
      */
     public void close() {
@@ -95,6 +95,26 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     public Channel getChannel() {
         return channel;
+    }
+
+    protected void setChannelRequestId(String requestId) {
+        channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).set(requestId);
+    }
+
+    /**
+     * 错误处理
+     *
+     * @param ctx
+     * @param status
+     */
+    protected void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
+        Channel channel = ctx.channel();
+        String requestId = channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).get().toString();
+        RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
+        if (rpcCallbackFuture != null) {
+            mapCallBack.remove(requestId);
+            rpcCallbackFuture.done(null);
+        }
     }
 
     public void setChannel(Channel channel) {
