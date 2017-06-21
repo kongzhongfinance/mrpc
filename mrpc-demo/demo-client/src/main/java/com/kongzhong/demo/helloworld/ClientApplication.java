@@ -15,8 +15,9 @@ public class ClientApplication {
     public static void main(String[] args) throws Exception {
 
         RpcClient rpcClient = new RpcClient();
+        rpcClient.setDirectAddress("127.0.0.1:5066");
 
-        final UserService userService = rpcClient.getProxyBean(UserService.class);
+        final UserService userService = rpcClient.getProxyReferer(UserService.class);
         System.out.println(userService);
 
         StatusEnum statusEnum = userService.testEnum(StatusEnum.SUCCESS);

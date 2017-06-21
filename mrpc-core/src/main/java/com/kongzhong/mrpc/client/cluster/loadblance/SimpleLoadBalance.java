@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.client.SimpleRpcInvoker;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.enums.LBStrategy;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import lombok.extern.slf4j.Slf4j;

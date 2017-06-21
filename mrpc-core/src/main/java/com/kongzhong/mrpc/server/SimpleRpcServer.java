@@ -66,7 +66,7 @@ public abstract class SimpleRpcServer {
     /**
      * 传输协议，默认tcp协议
      */
-    protected String transport;
+    protected String transport = "tcp";
 
     /**
      * appId
@@ -111,10 +111,6 @@ public abstract class SimpleRpcServer {
     }
 
     protected void startServer() {
-        if (null == transport) {
-            transport = DefaultConfig.transport();
-        }
-
         if (null == nettyConfig) {
             nettyConfig = DefaultConfig.nettyServerConfig();
         }
@@ -164,15 +160,14 @@ public abstract class SimpleRpcServer {
 
                 this.listenDestroy();
 
-                log.info("publish services finished!");
-                log.info("mrpc server start with => {}", port);
-
+                log.info("Publish services finished!");
+//                log.info("mrpc server start with => {}", port);
                 future.channel().closeFuture().sync();
             } else {
-                log.warn("mrpc server start fail.");
+                log.warn("RPC server start fail.");
             }
         } catch (Exception e) {
-            log.error("start rpc server error", e);
+            log.error("RPC server start error", e);
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();

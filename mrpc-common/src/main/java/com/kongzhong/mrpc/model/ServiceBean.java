@@ -13,7 +13,8 @@ public class ServiceBean {
 
     private String serviceName;
     private Object bean;
-    private String export;
-    private String config;
+    private String address;
+    private boolean direct;
+    private String registry = "default";
 
 }

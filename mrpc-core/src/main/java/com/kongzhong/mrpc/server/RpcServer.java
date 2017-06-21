@@ -45,7 +45,6 @@ public class RpcServer extends SimpleRpcServer implements ApplicationContextAwar
                     Object realBean = AopTargetUtils.getTarget(target);
                     RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
                     String serviceName = rpcService.value().getName();
-
                     if (NoInterface.class.getName().equals(serviceName)) {
                         Class<?>[] intes = realBean.getClass().getInterfaces();
                         if (null == intes || intes.length != 1) {
@@ -54,11 +53,9 @@ public class RpcServer extends SimpleRpcServer implements ApplicationContextAwar
                             serviceName = intes[0].getName();
                         }
                     }
-
                     ServiceBean serviceBean = new ServiceBean();
                     serviceBean.setBean(realBean);
                     serviceBean.setServiceName(serviceName);
-
                     rpcMapping.addServiceBean(serviceBean);
                 }
             }

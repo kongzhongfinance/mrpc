@@ -1,7 +1,6 @@
 package com.kongzhong.demo.http;
 
 import com.kongzhong.mrpc.client.RpcClient;
-import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.service.UserService;
 
@@ -16,7 +15,7 @@ public class HttpClientApplication {
 
     public static void main(String[] args) {
         RpcClient rpcClient = new RpcClient();
-        rpcClient.setDirectUrl("127.0.0.1:5070");
+        rpcClient.setDirectAddress("127.0.0.1:5070");
         rpcClient.setTransport("http");
 
         UserService userService = rpcClient.getProxyBean(UserService.class);

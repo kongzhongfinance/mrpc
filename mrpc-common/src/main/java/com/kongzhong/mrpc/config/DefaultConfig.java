@@ -1,8 +1,5 @@
 package com.kongzhong.mrpc.config;
 
-import com.kongzhong.mrpc.client.cluster.HaStrategy;
-import com.kongzhong.mrpc.client.cluster.ha.FailOverHaStrategy;
-import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -36,15 +33,6 @@ public class DefaultConfig {
     }
 
     /**
-     * 默认传输协议
-     *
-     * @return
-     */
-    public static String transport() {
-        return TransportEnum.TCP.name();
-    }
-
-    /**
      * 默认服务调用超时重试次数
      *
      * @return
@@ -62,21 +50,4 @@ public class DefaultConfig {
         return 10;
     }
 
-    /**
-     * 默认的负载均衡策略
-     *
-     * @return
-     */
-    public static LBStrategy lbStrategy() {
-        return LBStrategy.ROUND;
-    }
-
-    /**
-     * 默认高可用策略
-     *
-     * @return
-     */
-    public static HaStrategy haStrategy() {
-        return new FailOverHaStrategy();
-    }
 }

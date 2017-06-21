@@ -13,7 +13,7 @@ public class DirectUrlApplication {
 
     public static void main(String[] args) throws Exception {
         RpcClient rpcClient = new RpcClient();
-        rpcClient.setDirectUrl("127.0.0.1:5066");
+        rpcClient.setDirectAddress("127.0.0.1:5066");
         final UserService userService = rpcClient.getProxyBean(UserService.class);
         String msg = userService.hello("direct url");
         System.out.println(msg);

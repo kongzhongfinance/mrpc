@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.springboot.client;
 
-import com.kongzhong.mrpc.client.BootRpcClient;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import org.springframework.beans.BeansException;

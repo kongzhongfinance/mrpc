@@ -1,9 +1,8 @@
 package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.model.ClientBean;
-import com.kongzhong.mrpc.registry.DefaultDiscovery;
-import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,34 +17,26 @@ import java.util.Map;
  * rpc客户端
  */
 @Data
+@NoArgsConstructor
 @Slf4j
 public class RpcClient extends SimpleRpcClient implements ApplicationContextAware, InitializingBean {
 
-    protected ApplicationContext ctx;
-
-    public RpcClient() {
-        super();
-    }
-
-    public RpcClient(ServiceDiscovery serviceDiscovery) {
-        super(serviceDiscovery);
-    }
+    private ApplicationContext ctx;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
-        RpcClient rpcClient = ctx.getBean(RpcClient.class);
 
         ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
         DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
 
-        if (null != rpcClient && clientBeanMap != null && !clientBeanMap.isEmpty()) {
+        if (clientBeanMap != null && !clientBeanMap.isEmpty()) {
             clientBeanMap.values().forEach(bean -> {
                 String id = bean.getId();
-                String interfaceName = bean.getInterfaceName();
+                String interfaceName = bean.getServiceName();
                 try {
                     Class<?> clazz = Class.forName(interfaceName);
-                    Object object = rpcClient.getProxyBean(clazz);
+                    Object object = super.getProxyBean(clazz);
                     dbf.registerSingleton(id, object);
                     log.info("Bind rpc service [{}]", interfaceName);
                 } catch (Exception e) {
@@ -53,24 +44,12 @@ public class RpcClient extends SimpleRpcClient implements ApplicationContextAwar
                 }
             });
         }
-
-        if (null != referers && !referers.isEmpty()) {
-            referers.forEach(clazz -> {
-                String interfaceName = clazz.getName();
-                try {
-                    Object object = rpcClient.getProxyBean(clazz);
-                    dbf.registerSingleton(interfaceName, object);
-                    log.info("Bind rpc service [{}]", interfaceName);
-                } catch (Exception e) {
-                    log.warn("Not found rpc service [{}] component!", interfaceName);
-                }
-            });
-        }
+        super.init();
+        referers.forEach(referer -> super.initReferer(referer, dbf));
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        log.info("Initializing rpc client.");
         ctx = applicationContext;
     }
 

@@ -38,7 +38,7 @@ public class FailOverHaStrategy implements HaStrategy {
                 } else if (e instanceof RpcException) {
                     if (i >= rc) {
                         log.error("", e);
-                        return null;
+                        throw e;
                     }
                     TimeUnit.MILLISECONDS.sleep(100);
                     log.debug("Client retry [{}]", i + 1);

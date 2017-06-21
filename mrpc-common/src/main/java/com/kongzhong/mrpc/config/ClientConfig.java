@@ -1,8 +1,9 @@
 package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
-import com.kongzhong.mrpc.client.cluster.loadblance.LBStrategy;
+import com.kongzhong.mrpc.enums.LBStrategy;
 import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -34,7 +35,7 @@ public class ClientConfig {
 
     private int retryCount = 3;
 
-    private List<Class<?>> referers;
+    private List<ClientBean> referers;
 
     private static final ClientConfig conf = new ClientConfig();
 

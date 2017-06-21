@@ -20,7 +20,7 @@ public class ClientBeanDefinitionParser extends AbstractBeanDefinitionParser {
         String interfaceName = element.getAttribute("interface");
 
         builder.addPropertyValue("id", id);
-        builder.addPropertyValue("interfaceName", interfaceName);
+        builder.addPropertyValue("serviceName", interfaceName);
         return builder.getBeanDefinition();
     }
 

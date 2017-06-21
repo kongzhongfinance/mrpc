@@ -27,10 +27,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
-        <mrpc-common.version>0.0.6-SNAPSHOT</mrpc-common.version>
-        <mrpc-core.version>0.0.6-SNAPSHOT</mrpc-core.version>
+        <mrpc-common.version>0.0.7-SNAPSHOT</mrpc-common.version>
+        <mrpc-core.version>0.0.7-SNAPSHOT</mrpc-core.version>
+        <mrpc-starter.version>0.0.7-SNAPSHOT</mrpc-starter.version>
         <mrpc-zk.version>0.0.5-SNAPSHOT</mrpc-zk.version>
-        <mrpc-starter.version>0.0.6-SNAPSHOT</mrpc-starter.version>
         <mrpc-serialize-kryo.version>0.0.3-SNAPSHOT</mrpc-serialize-kryo.version>
         <mrpc-serialize-protostuff.version>0.0.3-SNAPSHOT</mrpc-serialize-protostuff.version>
 

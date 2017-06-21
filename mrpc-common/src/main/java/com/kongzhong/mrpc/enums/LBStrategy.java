@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.client.cluster.loadblance;
+package com.kongzhong.mrpc.enums;
 
 /**
  * 负载均衡策略

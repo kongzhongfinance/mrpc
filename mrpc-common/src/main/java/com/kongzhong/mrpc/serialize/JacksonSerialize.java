@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.serialize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kongzhong.mrpc.exception.SerializeException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class JacksonSerialize implements JSONSerialize {
         // 默认非空不输出，时间格式
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**

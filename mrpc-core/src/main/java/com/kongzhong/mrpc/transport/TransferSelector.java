@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
@@ -28,7 +29,7 @@ public class TransferSelector {
      * @return
      * @see TransportEnum
      */
-    public ChannelHandler getServerChannelHandler(String transport) {
+    public ChannelHandler getServerChannelHandler(String transport) throws RpcException {
 
         if (null == rpcSerialize) {
             throw new InitializeException("rpc server serialize is null.");

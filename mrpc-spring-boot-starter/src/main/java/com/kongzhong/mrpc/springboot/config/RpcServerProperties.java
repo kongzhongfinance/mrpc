@@ -1,7 +1,10 @@
-package com.kongzhong.mrpc.springboot.server;
+package com.kongzhong.mrpc.springboot.config;
 
+import com.kongzhong.mrpc.enums.TransportEnum;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
  * mrpc服务端配置
  *
@@ -10,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("mrpc.server")
 @Data
+@ToString
 public class RpcServerProperties {
 
     // 服务绑定ip:port
@@ -19,16 +23,10 @@ public class RpcServerProperties {
     private String elasticIp;
 
     // 服务端传输协议，默认tcp
-    private String transport = "tcp";
-
-    // 服务端注册中心
-    private String registry;
+    private String transport = TransportEnum.TCP.name();
 
     // 服务所属appId
-    private String appId;
-
-    // 是否是测试环境, 为 "true" 时服务进程不会挂起
-    private String test;
+    private String appId = "default";
 
     // 业务线程池前缀
     private String poolName = "mrpc-server";

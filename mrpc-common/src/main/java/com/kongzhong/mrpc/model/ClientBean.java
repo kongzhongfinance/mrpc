@@ -10,11 +10,19 @@ import lombok.ToString;
  */
 @Data
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 public class ClientBean {
 
     private String id;
-    private String interfaceName;
+    private String serviceName;
+    private Class<?> serviceClass;
+    private String registry = "default";
+    private String directAddress;
 
+    public ClientBean() {
+    }
+
+    public ClientBean(Class<?> serviceClass) {
+        this.serviceClass = serviceClass;
+        this.serviceName = serviceClass.getName();
+    }
 }
