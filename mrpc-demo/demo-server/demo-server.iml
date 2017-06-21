@@ -16,6 +16,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.12.Final" level="project" />
     <orderEntry type="module" module-name="demo-api" />
     <orderEntry type="module" module-name="mrpc-metric-influxdb" />
     <orderEntry type="library" name="Maven: org.influxdb:influxdb-java:2.5" level="project" />

@@ -14,6 +14,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-all:4.1.12.Final" level="project" />
     <orderEntry type="module" module-name="mrpc-common" scope="PROVIDED" />
     <orderEntry type="module" module-name="mrpc-core" scope="PROVIDED" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-all:4.1.12.Final" level="project" />

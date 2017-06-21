@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Type;
+
 /**
  * JSON工具类
  *
@@ -44,4 +46,7 @@ public class JSONUtils {
         return jsonSerialize.parseObject(json, type);
     }
 
+    public static <T> T parseObject(String json, Type type) throws SerializeException {
+        return jsonSerialize.parseObject(json, type);
+    }
 }

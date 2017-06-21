@@ -2,6 +2,8 @@ package com.kongzhong.mrpc.serialize;
 
 import com.kongzhong.mrpc.exception.SerializeException;
 
+import java.lang.reflect.Type;
+
 /**
  * JSON序列化接口
  *
@@ -37,4 +39,8 @@ public interface JSONSerialize {
      */
     <T> T parseObject(String json, Class<T> type) throws SerializeException;
 
+    /**
+     * json转obj
+     */
+    <T> T parseObject(String json, Type type) throws SerializeException;
 }

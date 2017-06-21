@@ -2,10 +2,12 @@ package com.kongzhong.mrpc.serialize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kongzhong.mrpc.exception.SerializeException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 
 /**
@@ -73,4 +75,20 @@ public class JacksonSerialize implements JSONSerialize {
         }
     }
 
+    /**
+     * json转obj
+     */
+    @Override
+    public <T> T parseObject(String json, Type type) {
+        try {
+            return objectMapper.readValue(json, genJavaType(type));
+        } catch (Exception e) {
+            log.error("Json parse to object error", e);
+        }
+        return null;
+    }
+
+    private JavaType genJavaType(Type type) {
+        return objectMapper.getTypeFactory().constructType(type);
+    }
 }
