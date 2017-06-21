@@ -7,6 +7,9 @@ target/
 # Log file
 *.log
 
+# idea iml file
+*.iml
+
 # BlueJ files
 *.ctxt
 
