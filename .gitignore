@@ -2,6 +2,7 @@
 ### Java template
 # Compiled class file
 *.class
+target/
 
 # Log file
 *.log
@@ -71,6 +72,7 @@ local.properties
 
 # STS (Spring Tool Suite)
 .springBeans
+.apt_generated
 
 # Code Recommenders
 .recommenders/
@@ -111,12 +113,24 @@ local.properties
 
 # IntelliJ
 /out/
+.idea
+*.iws
+*.iml
+*.ipr
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
 # JIRA plugin
 atlassian-ide-plugin.xml
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
