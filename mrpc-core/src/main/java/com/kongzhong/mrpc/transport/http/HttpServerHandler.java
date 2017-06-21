@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -163,9 +164,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         // 解析参数到args中
         Object[] args = new Object[method.getParameterCount()];
-        Class<?>[] types = method.getParameterTypes();
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
+
         for (int i = 0; i < args.length; i++) {
-            Class<?> paramType = types[i];
+            Type paramType = genericParameterTypes[i];
             args[i] = JSONUtils.parseObject(JSONUtils.toJSONString(argJSON.get(i)), paramType);
         }
 
