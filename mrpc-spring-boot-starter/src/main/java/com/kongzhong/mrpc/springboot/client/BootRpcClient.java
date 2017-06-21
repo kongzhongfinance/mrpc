@@ -76,9 +76,13 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
         if (!usedRegistry && StringUtils.isEmpty(rpcClientProperties.getDirectAddress())) {
             throw new SystemException("Service discovery or direct must select one.");
         }
-        // 初始化客户端引用服务
-        referers.forEach(referer -> super.initReferer(referer, beanFactory));
-
+        try {
+            super.init();
+            // 初始化客户端引用服务
+            referers.forEach(referer -> super.initReferer(referer, beanFactory));
+        } catch (Exception e) {
+            log.error("RPC client init error", e);
+        }
     }
 
     private ServiceDiscovery mapToDiscovery(Map<String, String> map) {

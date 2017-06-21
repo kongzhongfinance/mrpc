@@ -53,7 +53,7 @@ public class Connections {
     /**
      * 客户端 消息处理线程池
      */
-    private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+    private static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     /**
      * 服务和服务提供方客户端映射
@@ -99,10 +99,7 @@ public class Connections {
     private void connect(Set<String> referNames, String host, int port) {
         //获取socket的完整地址
         final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
-        while (null == clientConfig.getTransport()) {
-            sleep(1);
-        }
-        TPE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, remoteAddr));
+        LISTENING_EXECUTOR_SERVICE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, remoteAddr));
     }
 
     private void sleep(int seconds) {
@@ -154,7 +151,7 @@ public class Connections {
     }
 
     public void shutdown() {
-        TPE.shutdown();
+        LISTENING_EXECUTOR_SERVICE.shutdown();
         eventLoopGroup.shutdownGracefully();
     }
 

@@ -39,3 +39,13 @@ public class UserServiceImpl implements UserService{
 ### 更多例子
 
 [这里](/mrpc-demo)有更多的使用案例。
+
+### 更新日志
+
+#### 0.0.7-SNAPSHOT
+
+1. 增加多注册中心配置
+2. 增加单个服务更小力度配置
+3. 增加直连服务选项
+4. 修复方法泛型入参/返回值
+5. 客户端增加拦截器

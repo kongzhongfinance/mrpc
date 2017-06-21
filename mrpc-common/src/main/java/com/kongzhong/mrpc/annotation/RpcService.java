@@ -35,6 +35,20 @@ public @interface RpcService {
      *
      * @return
      */
-    String appId() default "";
+    String appId() default "default";
+
+    /**
+     * 注册中心
+     *
+     * @return
+     */
+    String registry() default "default";
+
+    /**
+     * 服务暴露地址
+     *
+     * @return
+     */
+    String address() default "";
 
 }
