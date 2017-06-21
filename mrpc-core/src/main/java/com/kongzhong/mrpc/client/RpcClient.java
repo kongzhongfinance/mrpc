@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.client;
 
+import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -24,6 +24,12 @@ public class RpcClient extends SimpleRpcClient implements ApplicationContextAwar
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
+        Map<String, RpcClientInteceptor> rpcClientInteceptorMap = ctx.getBeansOfType(RpcClientInteceptor.class);
+        if (null != rpcClientInteceptorMap) {
+            rpcClientInteceptorMap.values().forEach(super::addInterceptor);
+        }
+
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
 
         ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;

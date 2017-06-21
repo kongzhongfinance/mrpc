@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static com.kongzhong.mrpc.Const.HEADER_METHOD_NAME;
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_SERVICE_CLASS;
 
 /**
  * Http响应回调处理
@@ -37,7 +39,7 @@ public class HttpResponseCallback extends SimpleResponseCallback<FullHttpRespons
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(request.getRequestId());
         try {
-            Object result = handle(request);
+            Object result = super.invokeMethod(request);
             rpcResponse.setResult(result);
             if (null != request.getReturnType()) {
                 rpcResponse.setReturnType(request.getReturnType().getName());
@@ -52,6 +54,8 @@ public class HttpResponseCallback extends SimpleResponseCallback<FullHttpRespons
             ByteBuf bbuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
             httpResponse.headers().set(HEADER_REQUEST_ID, request.getRequestId());
+            httpResponse.headers().set(HEADER_SERVICE_CLASS, request.getClassName());
+            httpResponse.headers().set(HEADER_METHOD_NAME, request.getMethodName());
             httpResponse.content().clear().writeBytes(bbuf);
             return httpResponse;
         }

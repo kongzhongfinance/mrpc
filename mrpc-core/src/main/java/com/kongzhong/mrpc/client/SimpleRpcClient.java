@@ -96,7 +96,6 @@ public abstract class SimpleRpcClient {
     @Setter
     protected List<ClientBean> referers = Lists.newArrayList();
 
-    @Setter
     protected List<RpcClientInteceptor> inteceptors = Lists.newArrayList();
 
     /***
@@ -164,7 +163,6 @@ public abstract class SimpleRpcClient {
             if (serialize.equalsIgnoreCase("protostuff")) {
                 rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
             }
-            ClientCommonConfig.me().setRpcSerialize(rpcSerialize);
 
             HaStrategy haStrategy = null;
             if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILOVER.name())) {

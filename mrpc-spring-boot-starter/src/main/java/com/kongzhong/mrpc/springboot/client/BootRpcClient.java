@@ -10,12 +10,10 @@ import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
-import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -31,7 +29,7 @@ import java.util.Map;
  */
 @Slf4j
 @NoArgsConstructor
-public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor, BeanDefinitionRegistryPostProcessor {
+public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegistryPostProcessor {
 
     private CommonProperties commonProperties;
     private RpcClientProperties rpcClientProperties;
@@ -52,6 +50,11 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
         // 加载配置
         Referers referersObject = beanFactory.getBean(Referers.class);
         super.referers = referersObject.getReferers();
+
+        Map<String, RpcClientInteceptor> rpcClientInteceptorMap = beanFactory.getBeansOfType(RpcClientInteceptor.class);
+        if (null != rpcClientInteceptorMap) {
+            rpcClientInteceptorMap.values().forEach(super::addInterceptor);
+        }
 
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
 
@@ -105,18 +108,4 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
         return null;
     }
 
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Class<?> service = bean.getClass();
-        boolean hasInterface = ReflectUtils.hasInterface(service, RpcClientInteceptor.class);
-        if (hasInterface) {
-            this.addInterceptor((RpcClientInteceptor) bean);
-        }
-        return bean;
-    }
 }

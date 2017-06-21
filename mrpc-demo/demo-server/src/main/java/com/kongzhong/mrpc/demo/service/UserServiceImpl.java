@@ -91,6 +91,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void setPersons(List<Person> persons) {
+        System.out.println(persons);
+    }
+
+    @Override
     public Result<Person> getResult() {
         Result<Person> personResult = new Result<>();
         Person person = new Person();

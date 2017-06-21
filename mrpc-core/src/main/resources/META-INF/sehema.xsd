@@ -17,7 +17,7 @@
                     <xsd:documentation><![CDATA[ 注册中心类型zookeeper/consul/defaul ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="address" type="xsd:string" use="required">
+            <xsd:attribute name="address" type="xsd:string" use="optional">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 注册中心连接地址 ]]></xsd:documentation>
                 </xsd:annotation>
@@ -64,11 +64,6 @@
             <xsd:attribute name="serialize" type="xsd:string" use="optional" default="kyro">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 序列化协议kyro/protobuf ]]></xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute name="inteceptors" type="xsd:string" use="optional">
-                <xsd:annotation>
-                    <xsd:documentation><![CDATA[ 拦截器列表 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
         </xsd:complexType>

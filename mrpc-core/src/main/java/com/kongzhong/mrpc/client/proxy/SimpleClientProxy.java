@@ -71,6 +71,8 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .returnType(method.getReturnType())
                 .build();
 
+        log.debug("Client send request");
+
         if (!hasInterceptors) {
             return haStrategy.call(request, loadBalance);
         }

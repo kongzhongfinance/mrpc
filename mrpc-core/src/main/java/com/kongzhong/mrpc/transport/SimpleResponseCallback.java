@@ -60,7 +60,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
      * @return
      * @throws Throwable
      */
-    protected Object handle(RpcRequest request) throws Throwable {
+    protected Object invokeMethod(RpcRequest request) throws Throwable {
         try {
 
             RpcContext.set(new RpcContext(request));

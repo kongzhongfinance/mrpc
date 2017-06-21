@@ -139,12 +139,12 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         String serviceName = requestBody.getService();
         String methodName = requestBody.getMethod();
 
-        Method method = null;
+        Method method = ReflectUtils.method(type, methodName);
         List<String> parameterTypes = requestBody.getParameterTypes();
         List<Object> argJSON = requestBody.getParameters();
 
         // 判断根据参数列表类型查找method对象
-        if (null != parameterTypes) {
+        /*if (null != parameterTypes) {
             Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
             int pos = 0;
             for (Object parameterType : parameterTypes) {
@@ -154,7 +154,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             argJSON = requestBody.getParameters();
         } else {
             method = ReflectUtils.method(type, methodName);
-        }
+        }*/
 
         // 找不到method
         if (null == method) {

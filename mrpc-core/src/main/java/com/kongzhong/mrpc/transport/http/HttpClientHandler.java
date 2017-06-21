@@ -99,15 +99,9 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             log.debug("response: \n{}", body);
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-
                 Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);
-
                 Object object = JSONUtils.parseObject(JSONUtils.toJSONString(result), method.getGenericReturnType());
-
                 rpcResponse.setResult(object);
-
-//                Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-//                rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
             }
         }
         RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);

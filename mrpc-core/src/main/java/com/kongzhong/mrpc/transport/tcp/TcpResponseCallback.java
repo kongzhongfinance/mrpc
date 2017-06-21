@@ -25,7 +25,7 @@ public class TcpResponseCallback extends SimpleResponseCallback<Boolean> {
     public Boolean call() throws Exception {
         try {
             response.setRequestId(request.getRequestId());
-            Object result = super.handle(request);
+            Object result = super.invokeMethod(request);
             response.setResult(result);
             response.setSuccess(true);
             return Boolean.TRUE;

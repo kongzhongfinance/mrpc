@@ -8,10 +8,7 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
-    <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
-        <constructor-arg name="address" value="127.0.0.1:5067"/>
-        <property name="appId" value="demo"/>
-    </bean>
+    <mrpc:serverConfig address="127.0.0.1:5067" appId="demo"/>
 
     <context:component-scan base-package="com.kongzhong.mrpc.demo.service"/>
 

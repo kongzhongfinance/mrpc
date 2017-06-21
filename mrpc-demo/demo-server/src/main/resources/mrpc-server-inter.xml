@@ -12,6 +12,8 @@
     <bean id="testInterceptor" class="com.kongzhong.mrpc.demo.service.TestInterceptor"/>
     <bean id="testInterceptor2" class="com.kongzhong.mrpc.demo.service.TestInterceptor2"/>
 
+    <mrpc:serverConfig address="127.0.0.1:5066" appId="demo"/>
+
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
         <constructor-arg name="address" value="127.0.0.1:5066"/>
         <property name="appId" value="demo"/>
