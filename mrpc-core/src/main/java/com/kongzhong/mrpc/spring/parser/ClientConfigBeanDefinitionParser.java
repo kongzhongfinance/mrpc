@@ -1,23 +1,26 @@
 package com.kongzhong.mrpc.spring.parser;
 
-import com.kongzhong.mrpc.model.ClientBean;
+import com.kongzhong.mrpc.config.ClientConfig;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-public class ClientBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ClientBean.class);
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ClientConfig.class);
 
-        String id = element.getAttribute("id");
-        String interfaceName = element.getAttribute("interface");
+        String appId = element.getAttribute("appId");
+        String transport = element.getAttribute("transport");
+        String serialize = element.getAttribute("serialize");
 
-        builder.addPropertyValue("id", id);
-        builder.addPropertyValue("serviceName", interfaceName);
+        builder.addPropertyValue("appId", appId);
+        builder.addPropertyValue("transport", transport);
+        builder.addPropertyValue("serialize", serialize);
+
         return builder.getBeanDefinition();
     }
 

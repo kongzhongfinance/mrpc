@@ -1,20 +1,19 @@
 package com.kongzhong.mrpc.enums;
 
 /**
- * 负载均衡策略
+ * HA策略
  *
  * <p>
  * Created by biezhi on 2016/12/30.
  */
-public enum LBStrategy {
+public enum HaStrategyEnum {
 
-    ROUND("轮询"),
-    RANDOM("随机"),
-    LAST("最新节点");
+    FAILFAST("快速失败"),
+    FAILOVER("失效切换");
 
     private final String desc;
 
-    LBStrategy(String desc) {
+    HaStrategyEnum(String desc) {
         this.desc = desc;
     }
 

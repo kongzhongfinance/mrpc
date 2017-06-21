@@ -1,12 +1,9 @@
 package com.kongzhong.mrpc.utils;
 
-import com.kongzhong.mrpc.enums.JSONEnum;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.serialize.JSONSerialize;
 import com.kongzhong.mrpc.serialize.JacksonSerialize;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.util.Assert;
 
 import java.lang.reflect.Type;
 
@@ -19,20 +16,7 @@ import java.lang.reflect.Type;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JSONUtils {
 
-    private static JSONSerialize jsonSerialize = new JacksonSerialize();
-
-    public static void setJSONImpl(JSONEnum jsonImpl) {
-        Assert.notNull(jsonImpl);
-        if (jsonImpl == JSONEnum.FASTJSON) {
-            jsonSerialize = new JacksonSerialize();
-        }
-        if (jsonImpl == JSONEnum.JACKSON) {
-            jsonSerialize = new JacksonSerialize();
-        }
-        if (jsonImpl == JSONEnum.GSON) {
-            jsonSerialize = new JacksonSerialize();
-        }
-    }
+    private static final JacksonSerialize jsonSerialize = new JacksonSerialize();
 
     public static String toJSONString(Object object) throws SerializeException {
         return jsonSerialize.toJSONString(object);

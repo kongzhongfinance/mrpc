@@ -11,9 +11,9 @@
         </encoder>
     </appender>
 
-    <logger name="log4j.logger.com.kongzhong.mrpc.metric.MetricsInterceptor" level="debug"/>
+    <logger name="com.kongzhong.mrpc" level="debug"/>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
 

@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.model;
+package com.kongzhong.mrpc.config;
 
 import com.google.common.collect.Lists;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
@@ -8,19 +8,18 @@ import lombok.ToString;
 import java.util.List;
 
 /**
+ * 全局服务配置
+ *
  * @author biezhi
  *         20/06/2017
  */
 @Data
 @ToString
-public class ServiceConfig {
+public class GlobalConfig {
 
-    private String id;
     private String appId;
-    private String address;
     private String transport;
     private String serialize;
-    private String serviceRegistry;
     private List<RpcServerInteceptor> inteceptors = Lists.newArrayList();
 
 }

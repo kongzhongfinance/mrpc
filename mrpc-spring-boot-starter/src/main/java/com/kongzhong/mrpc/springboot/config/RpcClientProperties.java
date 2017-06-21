@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.springboot.config;
 
-import com.kongzhong.mrpc.enums.LBStrategy;
+import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import lombok.Data;
 import lombok.ToString;
@@ -36,7 +36,7 @@ public class RpcClientProperties {
     /**
      * 负载均衡策略
      */
-    private String lbStrategy = LBStrategy.ROUND.name();
+    private String lbStrategy = LbStrategyEnum.ROUND.name();
 
     private String serialize = "kyro";
 

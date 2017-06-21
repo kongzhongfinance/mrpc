@@ -18,7 +18,7 @@ public class ExpClientApplication {
 
     public static void main(String[] args) throws Exception {
         RpcClient rpcClient = new RpcClient();
-        final UserService userService = rpcClient.getProxyBean(UserService.class);
+        final UserService userService = rpcClient.getProxyReferer(UserService.class);
 
         try {
             userService.testBizExp(55);

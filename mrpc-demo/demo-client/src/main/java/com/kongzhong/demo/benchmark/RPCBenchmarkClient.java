@@ -36,7 +36,7 @@ public class RPCBenchmarkClient extends AbstractBenchmarkClient {
         }
 
         RpcClient rpcClient = new RpcClient();
-        benchmarkService = rpcClient.getProxyBean(BenchmarkService.class);
+        benchmarkService = rpcClient.getProxyReferer(BenchmarkService.class);
         new RPCBenchmarkClient().start(concurrents, runtime, classname, params);
     }
 
@@ -54,7 +54,7 @@ public class RPCBenchmarkClient extends AbstractBenchmarkClient {
         BenchmarkService service;
         if (isMultiClient) {
             RpcClient rpcClient = new RpcClient();
-            service = rpcClient.getProxyBean(BenchmarkService.class);
+            service = rpcClient.getProxyReferer(BenchmarkService.class);
 //            ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("spring-rpc.xml");
 //            service = (BenchmarkService) ctx.getBean("benchmarkService");
         } else {

@@ -7,13 +7,15 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import com.kongzhong.mrpc.transport.SimpleRequestCallback;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -41,8 +43,6 @@ public class Connections {
     private Lock lock = new ReentrantLock();
     private Condition handlerStatus = lock.newCondition();
 
-    private ClientConfig clientConfig = ClientConfig.me();
-
     /**
      * 并行处理器个数
      */
@@ -63,11 +63,11 @@ public class Connections {
     private List<String> aliveServers = Lists.newCopyOnWriteArrayList();
 
     private static final class ConnectionsHolder {
-        private static final Connections $ = new Connections();
+        private static final Connections INSTANCE = new Connections();
     }
 
     public static Connections me() {
-        return ConnectionsHolder.$;
+        return ConnectionsHolder.INSTANCE;
     }
 
     /**

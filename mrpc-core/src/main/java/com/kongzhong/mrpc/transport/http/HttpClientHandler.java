@@ -15,11 +15,12 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.*;
 
 /**
  * @author biezhi
@@ -90,14 +91,23 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         }
 
         String requestId = httpResponse.headers().get(HEADER_REQUEST_ID);
+        String serviceClass = httpResponse.headers().get(HEADER_SERVICE_CLASS);
+        String methodName = httpResponse.headers().get(HEADER_METHOD_NAME);
 
         RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
         if (rpcResponse.getSuccess()) {
             log.debug("response: \n{}", body);
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
-                Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());
-                rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
+
+                Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);
+
+                Object object = JSONUtils.parseObject(JSONUtils.toJSONString(result), method.getGenericReturnType());
+
+                rpcResponse.setResult(object);
+
+//                Class<?> re = ReflectUtils.getClassType(rpcResponse.getReturnType());
+//                rpcResponse.setResult(JSONUtils.parseObject(JSONUtils.toJSONString(result), re));
             }
         }
         RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);

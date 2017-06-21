@@ -9,7 +9,7 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
-        <constructor-arg name="serverAddress" value="127.0.0.1:5069"/>
+        <constructor-arg name="address" value="127.0.0.1:5069"/>
         <property name="appId" value="demo"/>
     </bean>
 

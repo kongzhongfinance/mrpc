@@ -1,27 +1,36 @@
 package com.kongzhong.mrpc.server;
 
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.config.ServerConfig;
+import com.kongzhong.mrpc.config.ServerCommonConfig;
+import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.FullHttpResponse;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,7 +44,6 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
  *         2017/4/19
  */
 @Slf4j
-@Data
 public abstract class SimpleRpcServer {
 
     /**
@@ -43,40 +51,55 @@ public abstract class SimpleRpcServer {
      */
     protected RpcMapping rpcMapping = RpcMapping.me();
 
+    protected boolean usedRegistry;
+
+    protected Map<String, ServiceRegistry> serviceRegistryMap = Maps.newHashMap();
+
     /**
      * rpc服务地址
      */
-    protected String serverAddress;
+    @Getter
+    @Setter
+    protected String address;
 
     /**
      * 弹性ip地址，不清楚可不填
      */
+    @Getter
+    @Setter
     protected String elasticIp;
 
     /**
      * 业务线程池前缀
      */
+    @Getter
+    @Setter
     protected String poolName = "mrpc-server";
 
     /**
      * 序列化类型，默认protostuff
      */
-    protected RpcSerialize serialize;
+    @Getter
+    @Setter
+    protected String serialize;
 
     /**
      * 传输协议，默认tcp协议
      */
+    @Getter
+    @Setter
     protected String transport = "tcp";
 
     /**
      * appId
      */
+    @Getter
+    @Setter
     protected String appId;
 
-    /**
-     * 服务注册实例
-     */
-    protected ServiceRegistry serviceRegistry;
+    @Getter
+    @Setter
+    protected String test;
 
     /**
      * 传输协议选择
@@ -86,11 +109,15 @@ public abstract class SimpleRpcServer {
     /**
      * 拦截器列表, 默认添加性能监控拦截器
      */
+    @Getter
+    @Setter
     protected List<RpcServerInteceptor> interceptorList;
 
     /**
      * netty服务端配置
      */
+    @Getter
+    @Setter
     protected NettyConfig nettyConfig;
 
     /**
@@ -101,13 +128,8 @@ public abstract class SimpleRpcServer {
     public SimpleRpcServer() {
     }
 
-    public SimpleRpcServer(String serverAddress) {
-        this.serverAddress = serverAddress;
-    }
-
-    public SimpleRpcServer(String serverAddress, ServiceRegistry serviceRegistry) {
-        this.serverAddress = serverAddress;
-        this.serviceRegistry = serviceRegistry;
+    public SimpleRpcServer(String address) {
+        this.address = address;
     }
 
     protected void startServer() {
@@ -119,7 +141,19 @@ public abstract class SimpleRpcServer {
             serialize = DefaultConfig.serialize();
         }
 
-        transferSelector = new TransferSelector(serialize);
+        if (serviceRegistryMap.size() > 0) {
+            usedRegistry = true;
+        }
+
+        RpcSerialize rpcSerialize = null;
+        if (serialize.equalsIgnoreCase("kyro")) {
+            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
+        }
+        if (serialize.equalsIgnoreCase("protostuff")) {
+            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
+        }
+
+        transferSelector = new TransferSelector(rpcSerialize);
 
         ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
@@ -135,34 +169,53 @@ public abstract class SimpleRpcServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
 
-            String[] ipAddr = serverAddress.split(":");
+            String[] ipAddr = address.split(":");
             if (ipAddr.length == 2) {
                 //获取服务器IP地址和端口
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
 
-                ServerConfig.me().setAddress(serverAddress);
-                ServerConfig.me().setElasticIp(elasticIp);
-
-                if (null != appId) {
-                    ServerConfig.me().setAppId(appId);
-                }
+                ServerCommonConfig.me().setElasticIp(elasticIp);
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 
                 //注册服务
-                for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
-                    if (null != serviceRegistry) {
-                        serviceRegistry.register(serviceName);
+                //注册服务
+                rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+                    String serviceName = serviceBean.getServiceName();
+                    String address = this.getAddress(serviceBean);
+                    if (usedRegistry) {
+                        // 查找该服务的注册中心
+                        ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
+                        try {
+                            serviceBean.setAppId(appId);
+                            serviceBean.setAddress(address);
+                            serviceRegistry.register(serviceBean);
+                        } catch (RpcException e) {
+                            log.error("Service register error", e);
+                        }
                     }
-                    log.info("Register => [{}] - [{}]", serviceName, serverAddress);
-                }
+                    log.info("Register => [{}] - [{}]", serviceName, address);
+                });
 
-                this.listenDestroy();
+                if (usedRegistry) {
+                    this.listenDestroy();
+                }
 
                 log.info("Publish services finished!");
 //                log.info("mrpc server start with => {}", port);
-                future.channel().closeFuture().sync();
+
+                if ("true".equals(this.test)) {
+                    new Thread(() -> {
+                        try {
+                            future.channel().closeFuture().sync();
+                        } catch (Exception e) {
+                            log.error("", e);
+                        }
+                    }).start();
+                } else {
+                    future.channel().closeFuture().sync();
+                }
             } else {
                 log.warn("RPC server start fail.");
             }
@@ -172,6 +225,34 @@ public abstract class SimpleRpcServer {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
+    }
+
+    /**
+     * 获取服务暴露的地址 ip:port
+     *
+     * @param serviceBean
+     * @return
+     */
+    protected String getAddress(ServiceBean serviceBean) {
+        String address = this.address;
+        if (StringUtils.isNotEmpty(elasticIp)) {
+            address = elasticIp;
+        }
+        if (StringUtils.isNotEmpty(serviceBean.getAddress())) {
+            address = serviceBean.getAddress();
+        }
+        return address;
+    }
+
+    /**
+     * 获取服务使用的注册中心
+     *
+     * @param serviceBean
+     * @return
+     */
+    protected ServiceRegistry getRegistry(ServiceBean serviceBean) {
+        String registryName = serviceBean.getRegistry();
+        return serviceRegistryMap.get(registryName);
     }
 
     public List<RpcServerInteceptor> getInterceptorList() {
@@ -249,14 +330,34 @@ public abstract class SimpleRpcServer {
         }, LISTENING_EXECUTOR_SERVICE);
     }
 
+    private ServiceRegistry mapToRegistry(Map<String, String> map) {
+        String type = map.get("type");
+        if (RegistryEnum.DEFAULT.getName().equals(type)) {
+            ServiceRegistry serviceRegistry = new DefaultRegistry();
+            return serviceRegistry;
+        }
+        if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
+            String zkAddr = map.getOrDefault("address", "127.0.0.1:2181");
+            log.info("RPC server connect zookeeper address: {}", zkAddr);
+            try {
+                Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
+                ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
+                return serviceRegistry;
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
+        return null;
+    }
+
     /**
      * 销毁资源
      */
     protected void listenDestroy() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
-                serviceRegistry.unregister(serviceName);
-                log.debug("Unregister => [{}] - [{}]", serviceName, serverAddress);
+//                serviceRegistry.unregister(serviceName);
+                log.debug("Unregister => [{}] - [{}]", serviceName, address);
             }
         }));
     }

@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.google.common.base.Throwables;
-import com.kongzhong.mrpc.enums.MediaType;
+import com.kongzhong.mrpc.enums.MediaTypeEnum;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -110,7 +110,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         RpcRequest rpcRequest = this.parseParams(ctx, requestBody, bean.getClass());
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
-        httpResponse.headers().set(CONTENT_TYPE, MediaType.JSON.toString());
+        httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
         httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
         httpResponse.headers().set(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
         httpResponse.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");

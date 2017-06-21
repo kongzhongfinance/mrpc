@@ -1,10 +1,13 @@
 package com.kongzhong.mrpc.discover;
 
-import com.github.zkclient.*;
+import com.github.zkclient.IZkChildListener;
+import com.github.zkclient.IZkClient;
+import com.github.zkclient.IZkStateListener;
+import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.client.cluster.Connections;
-import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
@@ -64,7 +67,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private void watchNode(final IZkClient zkClient) {
         try {
-            String appId = ClientConfig.me().getAppId();
+            String appId = ClientCommonConfig.me().getAppId();
 
             List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
             if (null == serviceList || serviceList.size() == 0) {
@@ -74,7 +77,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             // { 127.0.0.1:5066 => [UserService, BatService] }
             Map<String, Set<String>> mappings = Maps.newHashMap();
             serviceList.forEach(service -> {
-                String servicePath = Constant.ZK_ROOT + "/" + ClientConfig.me().getAppId() + "/" + service;
+                String servicePath = Constant.ZK_ROOT + "/" + ClientCommonConfig.me().getAppId() + "/" + service;
                 if (zkClient.exists(servicePath)) {
                     List<String> addresses = zkClient.getChildren(servicePath);
                     addresses.forEach(address -> {

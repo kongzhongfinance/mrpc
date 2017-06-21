@@ -31,7 +31,6 @@ public class SimpleRequestCallback implements Callable<Boolean> {
 
     protected EventLoopGroup eventLoopGroup = null;
     protected SocketAddress serverAddress = null;
-    protected RpcSerialize rpcSerialize;
     private boolean isHttp = false;
 
     private Lock lock = new ReentrantLock();
@@ -50,8 +49,6 @@ public class SimpleRequestCallback implements Callable<Boolean> {
         this.referNames = referNames;
         this.eventLoopGroup = eventLoopGroup;
         this.serverAddress = serverAddress;
-        this.rpcSerialize = ClientConfig.me().getRpcSerialize();
-        this.isHttp = ClientConfig.me().isHttp();
     }
 
     @Override

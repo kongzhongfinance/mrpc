@@ -14,7 +14,7 @@ public class ExceptionApplication {
         RpcClient rpcClient = new RpcClient();
         rpcClient.setTransport("http");
 
-        UserService userService = rpcClient.getProxyBean(UserService.class);
+        UserService userService = rpcClient.getProxyReferer(UserService.class);
 
         try {
             userService.testNormalExp();

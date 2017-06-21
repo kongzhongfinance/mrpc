@@ -16,7 +16,6 @@ import java.util.Map;
 /**
  * rpc客户端
  */
-@Data
 @NoArgsConstructor
 @Slf4j
 public class RpcClient extends SimpleRpcClient implements ApplicationContextAware, InitializingBean {

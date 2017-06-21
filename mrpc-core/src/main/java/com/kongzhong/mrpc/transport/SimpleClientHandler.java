@@ -1,12 +1,9 @@
 package com.kongzhong.mrpc.transport;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
-import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -14,13 +11,13 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 抽象客户端请求处理器
@@ -28,18 +25,18 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author biezhi
  *         2017/4/19
  */
+@Slf4j
 public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler<T> {
-
-    public static final Logger log = LoggerFactory.getLogger(SimpleClientHandler.class);
-
-    private static ListeningExecutorService TPE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
 
+    @Getter
     protected volatile Channel channel;
 
     protected SocketAddress socketAddress;
 
+    @Getter
+    @Setter
     protected String serverAddress;
 
     @Override
@@ -93,10 +90,6 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     public abstract RpcCallbackFuture sendRequest(RpcRequest request);
 
-    public Channel getChannel() {
-        return channel;
-    }
-
     protected void setChannelRequestId(String requestId) {
         channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).set(requestId);
     }
@@ -117,15 +110,4 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         }
     }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public String getServerAddress() {
-        return serverAddress;
-    }
-
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
-    }
 }

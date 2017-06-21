@@ -20,7 +20,7 @@ public class ClientInterceptorApplication {
             return invocation.next();
         });
 
-        UserService userService = rpcClient.getProxyBean(UserService.class);
+        UserService userService = rpcClient.getProxyReferer(UserService.class);
         for (int i = 0; i < 10; i++) {
             System.out.println(userService.add(10, 20));
         }

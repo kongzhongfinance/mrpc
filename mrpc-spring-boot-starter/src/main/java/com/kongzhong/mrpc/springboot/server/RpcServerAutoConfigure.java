@@ -6,8 +6,9 @@ import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.config.ServerConfig;
+import com.kongzhong.mrpc.config.ServerCommonConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -19,6 +20,7 @@ import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -62,7 +64,7 @@ public class RpcServerAutoConfigure {
     /**
      * 序列化类型，kyro
      */
-    private RpcSerialize serialize;
+    private String serialize;
 
     /**
      * 服务注册实例
@@ -220,7 +222,15 @@ public class RpcServerAutoConfigure {
             serialize = DefaultConfig.serialize();
         }
 
-        transferSelector = new TransferSelector(serialize);
+        RpcSerialize rpcSerialize = null;
+        if (serialize.equalsIgnoreCase("kyro")) {
+            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
+        }
+        if (serialize.equalsIgnoreCase("protostuff")) {
+            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
+        }
+
+        transferSelector = new TransferSelector(rpcSerialize);
 
         ThreadFactory threadRpcFactory = new NamedThreadFactory(rpcServerProperties.getPoolName());
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
@@ -243,11 +253,10 @@ public class RpcServerAutoConfigure {
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
 
-                ServerConfig.me().setAddress(rpcServerProperties.getAddress());
-                ServerConfig.me().setElasticIp(rpcServerProperties.getElasticIp());
+                ServerCommonConfig.me().setElasticIp(rpcServerProperties.getElasticIp());
 
                 if (null != rpcServerProperties.getAppId()) {
-                    ServerConfig.me().setAppId(rpcServerProperties.getAppId());
+                    ServerCommonConfig.me().setAppId(rpcServerProperties.getAppId());
                 }
 
                 ChannelFuture future = bootstrap.bind(host, port).sync();
@@ -259,7 +268,13 @@ public class RpcServerAutoConfigure {
                     if (usedRegistry) {
                         // 查找该服务的注册中心
                         ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
-                        serviceRegistry.register(serviceName);
+                        try {
+                            serviceBean.setAppId(rpcServerProperties.getAppId());
+                            serviceBean.setAddress(address);
+                            serviceRegistry.register(serviceBean);
+                        } catch (RpcException e) {
+                            log.error("Service register error", e);
+                        }
                     }
                     log.info("Register => [{}] - [{}]", serviceName, address);
                 });
@@ -301,6 +316,9 @@ public class RpcServerAutoConfigure {
      */
     private String getAddress(ServiceBean serviceBean) {
         String address = rpcServerProperties.getAddress();
+        if (StringUtils.isNotEmpty(rpcServerProperties.getElasticIp())) {
+            address = rpcServerProperties.getElasticIp();
+        }
         Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
         if (null != custom && custom.containsKey("address")) {
             address = custom.get("address");
@@ -333,8 +351,12 @@ public class RpcServerAutoConfigure {
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
                 String serviceName = serviceBean.getServiceName();
                 ServiceRegistry serviceRegistry = getRegistry(serviceBean);
-                serviceRegistry.unregister(serviceName);
-                log.debug("Unregister => [{}]", serviceName);
+                try {
+                    serviceRegistry.unregister(serviceBean);
+                    log.debug("Unregister => [{}]", serviceName);
+                } catch (Exception e) {
+                    log.error("Service unregister error", e);
+                }
             });
         }));
     }

@@ -1,8 +1,12 @@
 package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
+import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.model.NoInterface;
+import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.registry.DefaultRegistry;
+import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,11 +21,7 @@ import java.util.Map;
 @Slf4j
 @Data
 @NoArgsConstructor
-public class RpcServer extends SimpleRpcServer implements ApplicationContextAware, InitializingBean {
-
-    public RpcServer(String serverAddress) {
-        super(serverAddress);
-    }
+public class RpcSpringInit extends SimpleRpcServer implements ApplicationContextAware, InitializingBean {
 
     /**
      * ① 设置上下文
@@ -31,9 +31,13 @@ public class RpcServer extends SimpleRpcServer implements ApplicationContextAwar
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
+        if (null != registryBeanMap) {
+            registryBeanMap.values().forEach(registryBean -> serviceRegistryMap.put(registryBean.getName(), parseRegistry(registryBean)));
+        }
+
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         try {
-
             if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
                 for (Object target : serviceBeanMap.values()) {
                     Object realBean = AopTargetUtils.getTarget(target);
@@ -66,6 +70,26 @@ public class RpcServer extends SimpleRpcServer implements ApplicationContextAwar
     @Override
     public void afterPropertiesSet() throws Exception {
         this.startServer();
+    }
+
+    protected ServiceRegistry parseRegistry(RegistryBean registryBean) {
+        String type = registryBean.getType();
+        if (RegistryEnum.DEFAULT.getName().equals(type)) {
+            ServiceRegistry serviceRegistry = new DefaultRegistry();
+            return serviceRegistry;
+        }
+        if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
+            String zkAddr = registryBean.getAddress();
+            log.info("RPC server connect zookeeper address: {}", zkAddr);
+            try {
+                Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
+                ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
+                return serviceRegistry;
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
+        return null;
     }
 
 

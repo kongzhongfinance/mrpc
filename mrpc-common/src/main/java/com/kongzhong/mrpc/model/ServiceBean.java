@@ -15,6 +15,7 @@ public class ServiceBean {
     private Object bean;
     private String address;
     private boolean direct;
+    private String appId;
     private String registry = "default";
 
 }

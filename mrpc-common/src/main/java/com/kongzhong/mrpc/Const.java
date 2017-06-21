@@ -11,6 +11,11 @@ public interface Const {
     // http头信息请求id key
     String HEADER_REQUEST_ID = "requestId";
 
+    // http头信息 服务接口名
+    String HEADER_SERVICE_CLASS = "service";
+
+    String HEADER_METHOD_NAME = "method";
+
     // 拦截器名称前缀
     String INTERCEPTOR_NAME_PREFIX = "mrpc:server:interceptor:";
 

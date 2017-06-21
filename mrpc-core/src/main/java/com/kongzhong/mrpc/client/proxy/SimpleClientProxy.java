@@ -4,8 +4,11 @@ import com.google.common.reflect.AbstractInvocationHandler;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
-import com.kongzhong.mrpc.config.ClientConfig;
-import com.kongzhong.mrpc.interceptor.*;
+import com.kongzhong.mrpc.config.ClientCommonConfig;
+import com.kongzhong.mrpc.interceptor.ClientInvocation;
+import com.kongzhong.mrpc.interceptor.InterceptorChain;
+import com.kongzhong.mrpc.interceptor.Invocation;
+import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +28,10 @@ import static com.kongzhong.mrpc.Const.INTERCEPTOR_NAME_PREFIX;
 public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     // 负载均衡器
-    protected LoadBalance loadBalance = new SimpleLoadBalance();
+    protected LoadBalance loadBalance;
 
     // HA策略
-    protected HaStrategy haStrategy = ClientConfig.me().getHaStrategy();
+    protected HaStrategy haStrategy;
 
     protected boolean hasInterceptors;
 
@@ -36,8 +39,15 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     protected InterceptorChain interceptorChain = new InterceptorChain();
 
+    private String appId;
+
     public SimpleClientProxy(List<RpcClientInteceptor> interceptors) {
+        this.appId = ClientCommonConfig.me().getAppId();
+        this.haStrategy = ClientCommonConfig.me().getHaStrategy();
+
         this.interceptors = interceptors;
+        this.loadBalance = new SimpleLoadBalance();
+
         if (null != interceptors && !interceptors.isEmpty()) {
             hasInterceptors = true;
             int pos = interceptors.size();
@@ -52,7 +62,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
     protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
 
         RpcRequest request = RpcRequest.builder()
-                .appId(ClientConfig.me().getAppId())
+                .appId(appId)
                 .requestId(StringUtils.getUUID())
                 .methodName(method.getName())
                 .className(method.getDeclaringClass().getName())

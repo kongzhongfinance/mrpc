@@ -1,8 +1,5 @@
 package com.kongzhong.mrpc.config;
 
-import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.NoArgsConstructor;
 
 /**
@@ -19,8 +16,8 @@ public class DefaultConfig {
      *
      * @return
      */
-    public static RpcSerialize serialize() {
-        return ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
+    public static String serialize() {
+        return "kyro";
     }
 
     /**

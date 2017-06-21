@@ -14,7 +14,7 @@ public class NoImplClientApplication {
     public static void main(String[] args) throws Exception {
 
         RpcClient rpcClient = new RpcClient();
-        final NoImplService noImplService = rpcClient.getProxyBean(NoImplService.class);
+        final NoImplService noImplService = rpcClient.getProxyReferer(NoImplService.class);
         System.out.println(noImplService);
         noImplService.say();
         rpcClient.stop();

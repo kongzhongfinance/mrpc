@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.enums;
  * @author biezhi
  *         2017/4/20
  */
-public enum MediaType {
+public enum MediaTypeEnum {
 
     JSON("application/json; charset=UTF-8"),
     TEXT("text/plain; charset=UTF-8"),
@@ -15,7 +15,7 @@ public enum MediaType {
 
     private String contentType;
 
-    MediaType(String contentType) {
+    MediaTypeEnum(String contentType) {
         this.contentType = contentType;
     }
 

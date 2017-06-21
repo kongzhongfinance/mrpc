@@ -13,7 +13,7 @@ public class MetricsClientApplication {
 
         RpcClient rpcClient = new RpcClient();
 
-        final UserService userService = rpcClient.getProxyBean(UserService.class);
+        final UserService userService = rpcClient.getProxyReferer(UserService.class);
         int pos = 1;
         while (true) {
             if (pos % 1 == 0) {

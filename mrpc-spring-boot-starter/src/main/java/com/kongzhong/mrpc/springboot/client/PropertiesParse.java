@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.springboot.client;
 
 import com.google.common.collect.Maps;
-import com.kongzhong.mrpc.enums.LBStrategy;
+import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class PropertiesParse {
         rpcClientProperties.setAppId(configurableEnvironment.getProperty("mrpc.client.appId", "default"));
         rpcClientProperties.setTransport(configurableEnvironment.getProperty("mrpc.client.transport", "tcp"));
         rpcClientProperties.setSerialize(configurableEnvironment.getProperty("mrpc.client.serialize", "kyro"));
-        rpcClientProperties.setLbStrategy(configurableEnvironment.getProperty("mrpc.client.lb-strategy", LBStrategy.ROUND.name()));
+        rpcClientProperties.setLbStrategy(configurableEnvironment.getProperty("mrpc.client.lb-strategy", LbStrategyEnum.ROUND.name()));
         rpcClientProperties.setHaStrategy(configurableEnvironment.getProperty("mrpc.client.ha-strategy"));
         rpcClientProperties.setDirectAddress(configurableEnvironment.getProperty("mrpc.client.direct-address"));
         return rpcClientProperties;

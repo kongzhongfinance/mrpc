@@ -13,7 +13,7 @@
         <constructor-arg name="append" value="true"/>
     </bean>
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
-        <constructor-arg name="serverAddress" value="127.0.0.1:5068"/>
+        <constructor-arg name="address" value="127.0.0.1:5068"/>
         <property name="appId" value="demo"/>
         <property name="serviceRegistry" ref="serviceRegistry"/>
     </bean>

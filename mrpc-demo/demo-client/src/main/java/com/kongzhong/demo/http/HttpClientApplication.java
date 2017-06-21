@@ -18,7 +18,7 @@ public class HttpClientApplication {
         rpcClient.setDirectAddress("127.0.0.1:5070");
         rpcClient.setTransport("http");
 
-        UserService userService = rpcClient.getProxyBean(UserService.class);
+        UserService userService = rpcClient.getProxyReferer(UserService.class);
 
         int sum = userService.add(10, 20);
 

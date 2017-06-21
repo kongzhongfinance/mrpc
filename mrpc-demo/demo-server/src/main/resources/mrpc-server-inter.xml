@@ -13,7 +13,7 @@
     <bean id="testInterceptor2" class="com.kongzhong.mrpc.demo.service.TestInterceptor2"/>
 
     <bean id="rpcServer" class="com.kongzhong.mrpc.server.RpcServer">
-        <constructor-arg name="serverAddress" value="127.0.0.1:5066"/>
+        <constructor-arg name="address" value="127.0.0.1:5066"/>
         <property name="appId" value="demo"/>
         <property name="interceptorList">
             <list>
