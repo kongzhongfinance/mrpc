@@ -42,10 +42,11 @@ public class UserServiceImpl implements UserService{
 
 ### 更新日志
 
-#### 0.0.7-SNAPSHOT
+#### 0.0.7-SNAPSHOT (2017/06/22)
 
 1. 增加多注册中心配置
-2. 增加单个服务更小力度配置
+2. 增加单个服务更小粒度配置
 3. 增加直连服务选项
 4. 修复方法泛型入参/返回值
 5. 客户端增加拦截器
+6. 增加 `mrpc` sehema 配置项
