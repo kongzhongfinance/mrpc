@@ -14,7 +14,6 @@ import lombok.ToString;
  *         20/06/2017
  */
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
 public class ServerCommonConfig {
 
@@ -22,6 +21,9 @@ public class ServerCommonConfig {
     private String elasticIp;
     private RpcSerialize rpcSerialize;
     private TransportEnum transport;
+
+    private ServerCommonConfig() {
+    }
 
     private static final class ClientCommonConfigHolder {
         private static final ServerCommonConfig INSTANCE = new ServerCommonConfig();

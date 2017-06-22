@@ -1,8 +1,5 @@
 package com.kongzhong.mrpc.server;
 
-import com.kongzhong.mrpc.metric.MetricsClient;
-import com.kongzhong.mrpc.metric.MetricsInterceptor;
-import com.kongzhong.mrpc.metric.MetricsProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

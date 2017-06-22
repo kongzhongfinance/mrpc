@@ -16,7 +16,6 @@ import lombok.ToString;
  *         20/06/2017
  */
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
 public class ClientCommonConfig {
 
@@ -25,6 +24,10 @@ public class ClientCommonConfig {
     private RpcSerialize rpcSerialize;
     private LbStrategyEnum lbStrategy;
     private TransportEnum transport;
+
+    private ClientCommonConfig() {
+
+    }
 
     private static final class ClientCommonConfigHolder {
         private static final ClientCommonConfig INSTANCE = new ClientCommonConfig();
