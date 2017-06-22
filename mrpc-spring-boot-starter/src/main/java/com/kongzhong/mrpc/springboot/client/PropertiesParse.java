@@ -48,7 +48,7 @@ public class PropertiesParse {
             // mrpc.registry[default].type
             String key_ = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
             String field = key.substring(key.indexOf(']') + 2);
-            Map<String, String> v = Maps.newHashMap();
+            Map<String, String> v = registry.getOrDefault(key_,Maps.newHashMap());
             v.put(field, value);
             registry.put(key_, v);
         });
