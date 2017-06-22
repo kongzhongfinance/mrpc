@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author biezhi
  *         2017/4/19
  */
-public class ClientApplication {
+public class HelloClientApplication {
 
     public static void main(String[] args) throws Exception {
 
@@ -33,20 +33,6 @@ public class ClientApplication {
             TimeUnit.SECONDS.sleep(3);
         }
 
-//        ExecutorService executorService = Executors.newCachedThreadPool();
-//        for (int i = 0; i < 20; i++) {
-//            executorService.submit(new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (int i = 0; i < 1000000000; i++) {
-//                        String say = userService.hello("hi, " + i);
-//                        if (i % 10000 == 0) {
-//                            System.out.println(say);
-//                        }
-//                    }
-//                }
-//            });
-//        }
         rpcClient.stop();
     }
 }

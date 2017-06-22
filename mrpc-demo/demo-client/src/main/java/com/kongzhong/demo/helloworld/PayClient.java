@@ -1,4 +1,4 @@
-package com.kongzhong.demo.interaction;
+package com.kongzhong.demo.helloworld;
 
 import com.kongzhong.mrpc.client.RpcClient;
 import com.kongzhong.mrpc.demo.service.PayService;

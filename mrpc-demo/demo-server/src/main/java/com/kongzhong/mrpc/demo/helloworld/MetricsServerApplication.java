@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.demo.metrics;
+package com.kongzhong.mrpc.demo.helloworld;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

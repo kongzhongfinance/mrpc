@@ -7,10 +7,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author biezhi
  *         2017/4/19
  */
-public class ServerApplication {
+public class InterceptorApplication {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-server.xml");
+        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-server-inter.xml");
         ctx.registerShutdownHook();
         ctx.start();
     }

@@ -9,9 +9,7 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
 
-    <bean id="rpcClient" class="com.kongzhong.mrpc.client.RpcClient">
-        <property name="appId" value="demo"/>
-    </bean>
+    <mrpc:clientConfig appId="demo" transport="http"/>
 
     <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>
     <mrpc:referer id="benchmarkService" interface="com.kongzhong.mrpc.demo.service.BenchmarkService"/>

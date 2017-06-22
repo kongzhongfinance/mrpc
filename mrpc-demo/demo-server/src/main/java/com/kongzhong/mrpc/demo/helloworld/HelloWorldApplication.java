@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.demo.interceptor;
+package com.kongzhong.mrpc.demo.helloworld;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -7,10 +7,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author biezhi
  *         2017/4/19
  */
-public class IServerApplication {
+public class HelloWorldApplication {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-server-inter.xml");
+        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-server.xml");
         ctx.registerShutdownHook();
         ctx.start();
     }
