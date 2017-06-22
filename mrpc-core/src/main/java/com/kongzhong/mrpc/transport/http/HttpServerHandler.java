@@ -7,7 +7,7 @@ import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcRet;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.server.RpcSpringInit;
+import com.kongzhong.mrpc.server.RpcSpringServer;
 import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -122,7 +122,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, httpResponse, serviceBeanMap);
-        RpcSpringInit.submit(responseCallback, ctx);
+        RpcSpringServer.submit(responseCallback, ctx);
     }
 
     /**

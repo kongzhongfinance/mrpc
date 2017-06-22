@@ -9,7 +9,7 @@ import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerCommonConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
@@ -25,11 +25,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.FullHttpResponse;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.spi.SelectorProvider;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
@@ -44,6 +44,7 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
  *         2017/4/19
  */
 @Slf4j
+@NoArgsConstructor
 public abstract class SimpleRpcServer {
 
     /**
@@ -51,9 +52,22 @@ public abstract class SimpleRpcServer {
      */
     protected RpcMapping rpcMapping = RpcMapping.me();
 
+    /**
+     * 是否使用了注册中心
+     */
     protected boolean usedRegistry;
 
+    /**
+     * 注册中心列表 [注册中心名->注册中心实现]
+     */
     protected Map<String, ServiceRegistry> serviceRegistryMap = Maps.newHashMap();
+
+    /**
+     * 服务端拦截器，多个用逗号相隔，顺序拦截
+     */
+    @Getter
+    @Setter
+    protected String interceptors;
 
     /**
      * rpc服务地址
@@ -97,21 +111,17 @@ public abstract class SimpleRpcServer {
     @Setter
     protected String appId;
 
+    /**
+     * 是否是测试环境，如果 "true" 则在启动后不会挂起程序
+     */
     @Getter
     @Setter
     protected String test;
 
     /**
-     * 传输协议选择
+     * 传输协议选择器
      */
     protected TransferSelector transferSelector;
-
-    /**
-     * 拦截器列表, 默认添加性能监控拦截器
-     */
-    @Getter
-    @Setter
-    protected List<RpcServerInteceptor> interceptorList;
 
     /**
      * netty服务端配置
@@ -125,13 +135,9 @@ public abstract class SimpleRpcServer {
      */
     protected static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
-    public SimpleRpcServer() {
-    }
-
-    public SimpleRpcServer(String address) {
-        this.address = address;
-    }
-
+    /**
+     * 启动RPC服务端
+     */
     protected void startServer() {
         if (null == nettyConfig) {
             nettyConfig = DefaultConfig.nettyServerConfig();
@@ -170,60 +176,67 @@ public abstract class SimpleRpcServer {
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
 
             String[] ipAddr = address.split(":");
-            if (ipAddr.length == 2) {
-                //获取服务器IP地址和端口
-                String host = ipAddr[0];
-                int port = Integer.parseInt(ipAddr[1]);
-
-                ServerCommonConfig.me().setElasticIp(elasticIp);
-
-                ChannelFuture future = bootstrap.bind(host, port).sync();
-
-                //注册服务
-                //注册服务
-                rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
-                    String serviceName = serviceBean.getServiceName();
-                    String address = this.getAddress(serviceBean);
-                    if (usedRegistry) {
-                        // 查找该服务的注册中心
-                        ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
-                        try {
-                            serviceBean.setAppId(appId);
-                            serviceBean.setAddress(address);
-                            serviceRegistry.register(serviceBean);
-                        } catch (RpcException e) {
-                            log.error("Service register error", e);
-                        }
-                    }
-                    log.info("Register => [{}] - [{}]", serviceName, address);
-                });
-
-                if (usedRegistry) {
-                    this.listenDestroy();
-                }
-
-                log.info("Publish services finished!");
-//                log.info("mrpc server start with => {}", port);
-
-                if ("true".equals(this.test)) {
-                    new Thread(() -> {
-                        try {
-                            future.channel().closeFuture().sync();
-                        } catch (Exception e) {
-                            log.error("", e);
-                        }
-                    }).start();
-                } else {
-                    future.channel().closeFuture().sync();
-                }
-            } else {
-                log.warn("RPC server start fail.");
+            if (null == ipAddr || ipAddr.length != 2) {
+                throw new SystemException("RPC server bind address error, please check your server address");
             }
+
+            //获取服务器IP地址和端口
+            String host = ipAddr[0];
+            int port = Integer.parseInt(ipAddr[1]);
+
+            ServerCommonConfig.me().setElasticIp(elasticIp);
+            ChannelFuture future = bootstrap.bind(host, port).sync();
+
+            //注册服务
+            rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+                String serviceName = serviceBean.getServiceName();
+                String address = this.getAddress(serviceBean);
+                if (usedRegistry) {
+                    // 查找该服务的注册中心
+                    ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
+                    try {
+                        serviceBean.setAppId(appId);
+                        serviceBean.setAddress(address);
+                        serviceRegistry.register(serviceBean);
+                    } catch (RpcException e) {
+                        log.error("Service register error", e);
+                    }
+                }
+                log.info("Register => [{}] - [{}]", serviceName, address);
+            });
+
+            if (usedRegistry) {
+                this.listenDestroy();
+            }
+
+            log.info("Publish services finished!");
+            this.channelSync(future);
+
         } catch (Exception e) {
             log.error("RPC server start error", e);
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
+        }
+    }
+
+    /**
+     * 后台监听
+     *
+     * @param future
+     * @throws InterruptedException
+     */
+    private void channelSync(ChannelFuture future) throws InterruptedException {
+        if ("true".equals(this.test)) {
+            new Thread(() -> {
+                try {
+                    future.channel().closeFuture().sync();
+                } catch (Exception e) {
+                    log.error("", e);
+                }
+            }).start();
+        } else {
+            future.channel().closeFuture().sync();
         }
     }
 
@@ -253,15 +266,6 @@ public abstract class SimpleRpcServer {
     protected ServiceRegistry getRegistry(ServiceBean serviceBean) {
         String registryName = serviceBean.getRegistry();
         return serviceRegistryMap.get(registryName);
-    }
-
-    public List<RpcServerInteceptor> getInterceptorList() {
-        return interceptorList;
-    }
-
-    public void setInterceptorList(List<RpcServerInteceptor> interceptorList) {
-        this.interceptorList = interceptorList;
-        this.rpcMapping.addInterceptors(interceptorList);
     }
 
     /**
@@ -330,14 +334,24 @@ public abstract class SimpleRpcServer {
         }, LISTENING_EXECUTOR_SERVICE);
     }
 
-    private ServiceRegistry mapToRegistry(Map<String, String> map) {
+    /**
+     * 将map转换为注册中心实现
+     *
+     * @param map
+     * @return
+     */
+    protected ServiceRegistry mapToRegistry(Map<String, String> map) {
         String type = map.get("type");
         if (RegistryEnum.DEFAULT.getName().equals(type)) {
             ServiceRegistry serviceRegistry = new DefaultRegistry();
             return serviceRegistry;
         }
+        // Zookeeper注册中心
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-            String zkAddr = map.getOrDefault("address", "127.0.0.1:2181");
+            String zkAddr = map.get("address");
+            if (StringUtils.isEmpty(zkAddr)) {
+                throw new SystemException("Zookeeper connect address not is empty");
+            }
             log.info("RPC server connect zookeeper address: {}", zkAddr);
             try {
                 Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
@@ -351,14 +365,20 @@ public abstract class SimpleRpcServer {
     }
 
     /**
-     * 销毁资源
+     * 销毁资源,卸载服务
      */
     protected void listenDestroy() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (String serviceName : rpcMapping.getServiceBeanMap().keySet()) {
-//                serviceRegistry.unregister(serviceName);
-                log.debug("Unregister => [{}] - [{}]", serviceName, address);
-            }
+            rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+                String serviceName = serviceBean.getServiceName();
+                ServiceRegistry serviceRegistry = getRegistry(serviceBean);
+                try {
+                    serviceRegistry.unregister(serviceBean);
+                    log.debug("Unregister service => [{}]", serviceName);
+                } catch (Exception e) {
+                    log.error("Unregister service error", e);
+                }
+            });
         }));
     }
 }

@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * RPC配置文件解析
+ *
  * @author biezhi
  *         21/06/2017
  */
@@ -29,9 +31,9 @@ public class PropertiesParse {
         rpcClientProperties.setAppId(configurableEnvironment.getProperty("mrpc.client.appId", "default"));
         rpcClientProperties.setTransport(configurableEnvironment.getProperty("mrpc.client.transport", "tcp"));
         rpcClientProperties.setSerialize(configurableEnvironment.getProperty("mrpc.client.serialize", "kyro"));
-        rpcClientProperties.setLbStrategy(configurableEnvironment.getProperty("mrpc.client.lb-strategy", LbStrategyEnum.ROUND.name()));
+        rpcClientProperties.setLbStrategy(configurableEnvironment.getProperty("mrpc.client.lb-strategy", configurableEnvironment.getProperty("mrpc.client.lbStrategy", LbStrategyEnum.ROUND.name())));
         rpcClientProperties.setHaStrategy(configurableEnvironment.getProperty("mrpc.client.ha-strategy"));
-        rpcClientProperties.setDirectAddress(configurableEnvironment.getProperty("mrpc.client.direct-address"));
+        rpcClientProperties.setDirectAddress(configurableEnvironment.getProperty("mrpc.client.direct-address", configurableEnvironment.getProperty("mrpc.client.directAddress")));
         return rpcClientProperties;
     }
 
@@ -48,7 +50,7 @@ public class PropertiesParse {
             // mrpc.registry[default].type
             String key_ = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
             String field = key.substring(key.indexOf(']') + 2);
-            Map<String, String> v = registry.getOrDefault(key_,Maps.newHashMap());
+            Map<String, String> v = registry.getOrDefault(key_, Maps.newHashMap());
             v.put(field, value);
             registry.put(key_, v);
         });
@@ -90,21 +92,16 @@ public class PropertiesParse {
 
     public static <V> Map<String, V> getAllProperties(PropertySource<?> aPropSource) {
         Map<String, V> result = new HashMap<>();
-
         if (aPropSource instanceof CompositePropertySource) {
             CompositePropertySource cps = (CompositePropertySource) aPropSource;
             cps.getPropertySources().forEach(ps -> addAll(result, getAllProperties(ps)));
             return result;
         }
-
         if (aPropSource instanceof EnumerablePropertySource<?>) {
             EnumerablePropertySource<?> ps = (EnumerablePropertySource<?>) aPropSource;
             Arrays.asList(ps.getPropertyNames()).forEach(key -> result.put(key, (V) ps.getProperty(key)));
             return result;
         }
-        // note: Most descendants of PropertySource are EnumerablePropertySource. There are some
-        // few others like JndiPropertySource or StubPropertySource
-        log.debug("Given PropertySource is instanceof " + aPropSource.getClass().getName() + " and cannot be iterated");
         return result;
     }
 

@@ -2,12 +2,14 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +22,16 @@ import java.util.Map;
 
 import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
+/**
+ * RPC服务端Spring实现
+ *
+ * @author biezhi
+ *         2017/4/24
+ */
 @Slf4j
 @Data
 @NoArgsConstructor
-public class RpcSpringInit extends SimpleRpcServer implements ApplicationContextAware, InitializingBean {
+public class RpcSpringServer extends SimpleRpcServer implements ApplicationContextAware, InitializingBean {
 
     /**
      * ① 设置上下文
@@ -33,9 +41,18 @@ public class RpcSpringInit extends SimpleRpcServer implements ApplicationContext
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (null != registryBeanMap) {
             registryBeanMap.values().forEach(registryBean -> serviceRegistryMap.put(MRPC_SERVER_REGISTRY_PREFIX + registryBean.getName(), parseRegistry(registryBean)));
+        }
+
+        if (StringUtils.isNotEmpty(this.interceptors)) {
+            String[] inters = this.interceptors.split(",");
+            for (String interceptorName : inters) {
+                RpcServerInteceptor rpcServerInteceptor = (RpcServerInteceptor) ctx.getBean(interceptorName);
+                rpcMapping.addInterceptor(rpcServerInteceptor);
+            }
         }
 
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);

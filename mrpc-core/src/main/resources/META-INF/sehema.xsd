@@ -5,6 +5,7 @@
             elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
 
+    <!--注册中心配置-->
     <xsd:element name="registry">
         <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string" use="required">
@@ -30,6 +31,7 @@
         </xsd:complexType>
     </xsd:element>
 
+    <!--客户端引用配置-->
     <xsd:element name="referer">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
@@ -43,6 +45,7 @@
         </xsd:complexType>
     </xsd:element>
 
+    <!--服务端统一配置-->
     <xsd:element name="serverConfig">
         <xsd:complexType>
             <xsd:attribute name="elasticIp" type="xsd:string" use="optional"/>
@@ -68,9 +71,17 @@
                     <xsd:documentation><![CDATA[ 序列化协议kyro/protobuf ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
+
+            <xsd:attribute name="interceptors" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 服务端拦截器 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
         </xsd:complexType>
     </xsd:element>
 
+    <!--客户端统一配置-->
     <xsd:element name="clientConfig">
         <xsd:complexType>
             <xsd:attribute name="appId" type="xsd:string" use="required">
@@ -97,6 +108,7 @@
         </xsd:complexType>
     </xsd:element>
 
+    <!--服务端服务暴露配置-->
     <xsd:element name="service">
         <xsd:complexType>
             <xsd:attribute name="interface" type="xsd:string" use="required">

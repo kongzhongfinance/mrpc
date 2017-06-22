@@ -2,20 +2,30 @@ package com.kongzhong.mrpc.springboot.server;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
+import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.config.ServerCommonConfig;
+import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
-import com.kongzhong.mrpc.server.SimpleRpcServer;
+import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
+import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.FullHttpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -26,9 +36,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
@@ -38,7 +50,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
 @ConditionalOnProperty("mrpc.server.transport")
 @Slf4j
-public class RpcServerAutoConfigure extends SimpleRpcServer {
+public class RpcServerAutoConfigureOld {
 
     @Autowired
     private CommonProperties commonProperties;
@@ -49,10 +61,32 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     @Autowired
     private ConfigurableBeanFactory configurableBeanFactory;
 
+    private RpcMapping rpcMapping = RpcMapping.me();
+
+    /**
+     * 序列化类型，kyro
+     */
+    private String serialize;
+
+    /**
+     * 服务注册实例
+     */
+    private Map<String, ServiceRegistry> serviceRegistryMap = Maps.newHashMap();
+
     /**
      * 自定义服务配置
      */
     private Map<String, Map<String, String>> customServiceMap = Maps.newHashMap();
+
+    /**
+     * 是否使用注册中心
+     */
+    private boolean usedRegistry;
+
+    /**
+     * 传输协议选择
+     */
+    private TransferSelector transferSelector;
 
     /**
      * 拦截器列表, 默认添加性能监控拦截器
@@ -80,7 +114,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             // 注册中心
             if (null != commonProperties.getRegistry() && !commonProperties.getRegistry().isEmpty()) {
                 commonProperties.getRegistry().forEach((registryName, map) -> {
-                    ServiceRegistry serviceRegistry = super.mapToRegistry(map);
+                    ServiceRegistry serviceRegistry = mapToRegistry(map);
                     serviceRegistryMap.put(registryName, serviceRegistry);
                     configurableBeanFactory.registerSingleton(MRPC_SERVER_REGISTRY_PREFIX + registryName, serviceRegistry);
                     usedRegistry = true;
@@ -89,20 +123,11 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             if (null != commonProperties.getCustom()) {
                 customServiceMap = commonProperties.getCustom();
             }
-
-            super.appId = rpcServerProperties.getAppId();
-            super.address = rpcServerProperties.getAddress();
-            super.elasticIp = rpcServerProperties.getElasticIp();
-            super.poolName = rpcServerProperties.getPoolName();
-            super.test = rpcServerProperties.getTest();
-            super.transport = rpcServerProperties.getTransport();
-            super.serialize = rpcServerProperties.getSerialize();
-
-            super.startServer();
+            RpcServerAutoConfigureOld.this.startServer();
         };
     }
 
-    /*private ServiceRegistry mapToRegistry(Map<String, String> map) {
+    private ServiceRegistry mapToRegistry(Map<String, String> map) {
         String type = map.get("type");
         if (RegistryEnum.DEFAULT.getName().equals(type)) {
             ServiceRegistry serviceRegistry = new DefaultRegistry();
@@ -120,7 +145,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             }
         }
         return null;
-    }*/
+    }
 
     /**
      * 提交任务,异步获取结果.
@@ -188,7 +213,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
         }, LISTENING_EXECUTOR_SERVICE);
     }
 
-    /*protected void startServer() {
+    protected void startServer() {
         String transport = rpcServerProperties.getTransport();
 
         if (null == nettyConfig) {
@@ -283,7 +308,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
-    }*/
+    }
 
     /**
      * 获取服务暴露的地址 ip:port
@@ -291,8 +316,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      * @param serviceBean
      * @return
      */
-    @Override
-    public String getAddress(ServiceBean serviceBean) {
+    private String getAddress(ServiceBean serviceBean) {
         String address = rpcServerProperties.getAddress();
         if (StringUtils.isNotEmpty(rpcServerProperties.getElasticIp())) {
             address = rpcServerProperties.getElasticIp();
@@ -311,8 +335,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      * @param serviceBean
      * @return
      */
-    @Override
-    public ServiceRegistry getRegistry(ServiceBean serviceBean) {
+    private ServiceRegistry getRegistry(ServiceBean serviceBean) {
         String registryName = null;
         Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
         if (null != custom && custom.containsKey("registry")) {
@@ -320,6 +343,24 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
         }
         registryName = StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : registryName;
         return serviceRegistryMap.get(registryName);
+    }
+
+    /**
+     * 销毁资源
+     */
+    protected void listenDestroy() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+                String serviceName = serviceBean.getServiceName();
+                ServiceRegistry serviceRegistry = getRegistry(serviceBean);
+                try {
+                    serviceRegistry.unregister(serviceBean);
+                    log.debug("Unregister => [{}]", serviceName);
+                } catch (Exception e) {
+                    log.error("Service unregister error", e);
+                }
+            });
+        }));
     }
 
 }

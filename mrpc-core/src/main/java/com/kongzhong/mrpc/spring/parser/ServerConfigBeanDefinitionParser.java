@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.spring.parser;
 
-import com.kongzhong.mrpc.server.RpcSpringInit;
+import com.kongzhong.mrpc.server.RpcSpringServer;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -11,19 +11,21 @@ public class ServerConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
 
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(RpcSpringInit.class);
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(RpcSpringServer.class);
 
         String appId = element.getAttribute("appId");
         String address = element.getAttribute("address");
         String elasticIp = element.getAttribute("elasticIp");
         String transport = element.getAttribute("transport");
         String serialize = element.getAttribute("serialize");
+        String interceptors = element.getAttribute("interceptors");
 
         builder.addPropertyValue("appId", appId);
         builder.addPropertyValue("address", address);
         builder.addPropertyValue("elasticIp", elasticIp);
         builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
+        builder.addPropertyValue("interceptors", interceptors);
 
         return builder.getBeanDefinition();
     }

@@ -31,4 +31,8 @@ public class RpcServerProperties {
     // 业务线程池前缀
     private String poolName = "mrpc-server";
 
+    private String serialize = "kyro";
+
+    private String test;
+
 }
