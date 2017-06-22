@@ -199,6 +199,12 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="elasticIp" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 注册外网地址 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
             <xsd:attribute name="registry" type="xsd:string" use="optional">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 服务注册中心 ]]></xsd:documentation>

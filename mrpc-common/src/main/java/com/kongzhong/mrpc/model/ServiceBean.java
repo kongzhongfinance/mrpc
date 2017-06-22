@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.ToString;
 
 /**
+ * 服务Bean
+ *
  * @author biezhi
  *         20/06/2017
  */
@@ -15,6 +17,7 @@ public class ServiceBean {
     private String registry = "default";
     private String serviceName;
     private Object bean;
+    private String beanName;
     private String address;
     private String elasticIp;
     private boolean direct;

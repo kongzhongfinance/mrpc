@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RegistryBean;
@@ -42,6 +43,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
 
+        // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (null != registryBeanMap) {
             registryBeanMap.values().forEach(registryBean -> serviceRegistryMap.put(MRPC_SERVER_REGISTRY_PREFIX + registryBean.getName(), parseRegistry(registryBean)));
@@ -55,10 +57,11 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
             }
         }
 
-        Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
+        Map<String, Object> rpcServiceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         try {
-            if (null != serviceBeanMap && !serviceBeanMap.isEmpty()) {
-                for (Object target : serviceBeanMap.values()) {
+
+            if (null != rpcServiceBeanMap && !rpcServiceBeanMap.isEmpty()) {
+                for (Object target : rpcServiceBeanMap.values()) {
                     Object realBean = AopTargetUtils.getTarget(target);
                     RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
                     String serviceName = rpcService.value().getName();
@@ -76,8 +79,23 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
                     rpcMapping.addServiceBean(serviceBean);
                 }
             }
+
+            // 服务
+            Map<String, ServiceBean> serviceBeanMap = ctx.getBeansOfType(ServiceBean.class);
+            if (serviceBeanMap != null && !serviceBeanMap.isEmpty()) {
+                serviceBeanMap.values().forEach(serviceBean -> {
+                    if (null == serviceBean.getBean()) {
+                        Object bean = ctx.getBean(serviceBean.getBeanName());
+                        if (null == bean) {
+                            throw new SystemException(String.format("Not found bean [%s]", serviceBean.getBeanName()));
+                        }
+                        serviceBean.setBean(bean);
+                        rpcMapping.addServiceBean(serviceBean);
+                    }
+                });
+            }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("Initializing service bean error", e);
         }
     }
 

@@ -16,11 +16,13 @@ public class ServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
         String serviceName = element.getAttribute("interface");
         String ref = element.getAttribute("ref");
         String address = element.getAttribute("address");
+        String elasticIp = element.getAttribute("elasticIp");
         String registry = element.getAttribute("registry");
 
         builder.addPropertyValue("serviceName", serviceName);
-        builder.addPropertyValue("bean", ref);
+        builder.addPropertyValue("beanName", ref);
         builder.addPropertyValue("address", address);
+        builder.addPropertyValue("elasticIp", elasticIp);
         builder.addPropertyValue("registry", registry);
 
         return builder.getBeanDefinition();
