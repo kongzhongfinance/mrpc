@@ -12,7 +12,6 @@ import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
@@ -46,9 +45,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         String uri = httpRequest.uri();
-        HttpMethod httpMethod = httpRequest.method();
         HttpHeaders headers = httpRequest.headers();
-        HttpVersion httpVersion = httpRequest.protocolVersion();
 
         QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
         String path = queryDecoder.path();
@@ -58,26 +55,24 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        ByteBuf buf = httpRequest.content();
-        byte[] req = new byte[buf.readableBytes()];
-        buf.readBytes(req);
-        String body = new String(req, "UTF-8");
+        String body = httpRequest.content().toString(CharsetUtil.UTF_8);
 
-        log.debug("{}", httpVersion);
-        log.info("{}\t{}", httpMethod, uri);
+        log.debug("{}\t", httpRequest.protocolVersion());
+        log.debug("{}\t{}", httpRequest.method(), uri);
 
         if (StringUtils.isEmpty(body)) {
             this.sendError(ctx, RpcRet.notFound("body not is empty."));
             return;
         }
 
-        log.debug("body: \n\n{}\n", body);
+        log.debug("Request body: \n\n{}\n", body);
 
         RequestBody requestBody = null;
         try {
             requestBody = JSONUtils.parseObject(body, RequestBody.class);
         } catch (Exception e) {
-            this.sendError(ctx, RpcRet.error("unable to identify the requested format."));
+            log.error("Request body parse error", e);
+            this.sendError(ctx, RpcRet.error("Unable to identify the requested format."));
             return;
         }
 
@@ -98,28 +93,29 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         ServiceBean serviceBean = serviceBeanMap.get(serviceName);
         if (null == serviceBean) {
-            this.sendError(ctx, RpcRet.notFound("Not found [" + serviceName + "] bean defined."));
+            this.sendError(ctx, RpcRet.notFound("Not register service [" + serviceName + "]."));
             return;
         }
 
         Object bean = serviceBean.getBean();
         if (null == bean) {
-            this.sendError(ctx, RpcRet.notFound("Not found [" + serviceName + "] bean."));
+            this.sendError(ctx, RpcRet.notFound("Not found bean [" + serviceName + "]."));
             return;
         }
 
+        // 解析请求
         RpcRequest rpcRequest = this.parseParams(ctx, requestBody, bean.getClass());
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
         httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
+        httpResponse.headers().set(HEADER_REQUEST_ID, requestBody.getRequestId());
+        httpResponse.headers().set(HEADER_SERVICE_CLASS, requestBody.getService());
+        httpResponse.headers().set(HEADER_METHOD_NAME, requestBody.getMethod());
         httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
         httpResponse.headers().set(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
         httpResponse.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
         httpResponse.headers().set(HttpHeaders.Names.PRAGMA, "no-cache");
         httpResponse.headers().set(HttpHeaders.Names.EXPIRES, "-1");
-        httpResponse.headers().set(HEADER_REQUEST_ID, requestBody.getRequestId());
-        httpResponse.headers().set(HEADER_SERVICE_CLASS, requestBody.getService());
-        httpResponse.headers().set(HEADER_METHOD_NAME, requestBody.getMethod());
 
         if (HttpHeaders.isKeepAlive(httpRequest)) {
             httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
@@ -148,17 +144,17 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         List<Object> argJSON = requestBody.getParameters();
 
         // 判断根据参数列表类型查找method对象
-        /*if (null != parameterTypes) {
-            Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
-            int pos = 0;
-            for (Object parameterType : parameterTypes) {
-                parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType.toString());
-            }
-            method = type.getMethod(methodName, parameterTypeArr);
-            argJSON = requestBody.getParameters();
-        } else {
-            method = ReflectUtils.method(type, methodName);
-        }*/
+//        if (null != parameterTypes) {
+//            Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
+//            int pos = 0;
+//            for (Object parameterType : parameterTypes) {
+//                parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType.toString());
+//            }
+//            method = type.getMethod(methodName, parameterTypeArr);
+//            argJSON = requestBody.getParameters();
+//        } else {
+//            method = ReflectUtils.method(type, methodName);
+//        }
 
         // 找不到method
         if (null == method) {

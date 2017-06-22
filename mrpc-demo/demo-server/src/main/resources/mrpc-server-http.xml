@@ -10,8 +10,6 @@
 
     <context:component-scan base-package="com.kongzhong.mrpc.demo.service"/>
 
-    <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181"/>
-
     <mrpc:serverConfig address="127.0.0.1:5066" appId="demo" transport="http"/>
 
 </beans>
