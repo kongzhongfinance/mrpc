@@ -190,8 +190,8 @@ public abstract class SimpleRpcServer {
             //注册服务
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
                 String serviceName = serviceBean.getServiceName();
-                String address = this.getAddress(serviceBean);
-                String elasticIp = this.getElasticIp(serviceBean);
+                String address = this.getBindAddress(serviceBean);
+                String elasticIp = this.getRegisterElasticIp(serviceBean);
                 if (usedRegistry) {
                     // 查找该服务的注册中心
                     ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
@@ -251,7 +251,7 @@ public abstract class SimpleRpcServer {
      * @param serviceBean
      * @return
      */
-    protected String getAddress(ServiceBean serviceBean) {
+    protected String getBindAddress(ServiceBean serviceBean) {
         String address = this.address;
         if (StringUtils.isNotEmpty(elasticIp)) {
             address = elasticIp;
@@ -262,7 +262,7 @@ public abstract class SimpleRpcServer {
         return address;
     }
 
-    protected String getElasticIp(ServiceBean serviceBean) {
+    protected String getRegisterElasticIp(ServiceBean serviceBean) {
         String elasticIp = this.elasticIp;
         if (null != serviceBean.getElasticIp()) {
             elasticIp = serviceBean.getElasticIp();

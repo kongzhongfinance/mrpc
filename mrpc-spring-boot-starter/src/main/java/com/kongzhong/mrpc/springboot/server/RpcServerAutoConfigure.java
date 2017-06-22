@@ -12,7 +12,6 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
-import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,7 +32,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
-
 
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
 @ConditionalOnProperty("mrpc.server.transport")
@@ -103,6 +101,53 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     }
 
     /**
+     * 获取服务暴露的地址 ip:port
+     *
+     * @param serviceBean
+     * @return
+     */
+    @Override
+    public String getBindAddress(ServiceBean serviceBean) {
+        String address = super.getBindAddress(serviceBean);
+        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        if (null != custom && custom.containsKey("address")) {
+            address = custom.get("address");
+        }
+        return address;
+    }
+
+    @Override
+    public String getRegisterElasticIp(ServiceBean serviceBean) {
+        String elasticIp = super.getRegisterElasticIp(serviceBean);
+        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        if (null != custom) {
+            if (custom.containsKey("elasticIp")) {
+                elasticIp = custom.get("elasticIp");
+            }
+            if (custom.containsKey("elastic-ip")) {
+                elasticIp = custom.get("elastic-ip");
+            }
+        }
+        return elasticIp;
+    }
+
+    /**
+     * 获取服务使用的注册中心
+     *
+     * @param serviceBean
+     * @return
+     */
+    @Override
+    public ServiceRegistry getRegistry(ServiceBean serviceBean) {
+        String registryName = null;
+        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        if (null != custom && custom.containsKey("registry")) {
+            registryName = custom.get("registry");
+        }
+        return serviceRegistryMap.get(registryName);
+    }
+
+    /**
      * 提交任务,异步获取结果.
      *
      * @param task
@@ -166,43 +211,6 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
                 log.error("", t);
             }
         }, LISTENING_EXECUTOR_SERVICE);
-    }
-
-    /**
-     * 获取服务暴露的地址 ip:port
-     *
-     * @param serviceBean
-     * @return
-     */
-    @Override
-    public String getAddress(ServiceBean serviceBean) {
-        String address = rpcServerProperties.getAddress();
-        if (StringUtils.isNotEmpty(rpcServerProperties.getElasticIp())) {
-            address = rpcServerProperties.getElasticIp();
-        }
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
-        if (null != custom && custom.containsKey("address")) {
-            address = custom.get("address");
-        }
-        address = StringUtils.isNotEmpty(serviceBean.getAddress()) ? serviceBean.getAddress() : address;
-        return address;
-    }
-
-    /**
-     * 获取服务使用的注册中心
-     *
-     * @param serviceBean
-     * @return
-     */
-    @Override
-    public ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        String registryName = null;
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
-        if (null != custom && custom.containsKey("registry")) {
-            registryName = custom.get("registry");
-        }
-        registryName = StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : registryName;
-        return serviceRegistryMap.get(registryName);
     }
 
 }
