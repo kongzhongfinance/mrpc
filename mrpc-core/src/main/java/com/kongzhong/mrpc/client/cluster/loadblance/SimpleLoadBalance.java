@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.client.cluster.loadblance;
 import com.kongzhong.mrpc.client.SimpleRpcInvoker;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
-import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
@@ -32,8 +31,8 @@ public class SimpleLoadBalance implements LoadBalance {
      */
     private LongAdder posLong = new LongAdder();
 
-    public SimpleLoadBalance() {
-        this.lbStrategy = ClientCommonConfig.me().getLbStrategy();
+    public SimpleLoadBalance(LbStrategyEnum lbStrategyEnum) {
+        this.lbStrategy = lbStrategyEnum;
     }
 
     @Override

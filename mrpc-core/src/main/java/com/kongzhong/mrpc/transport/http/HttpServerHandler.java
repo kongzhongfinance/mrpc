@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+import static com.kongzhong.mrpc.Const.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -116,6 +117,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         httpResponse.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
         httpResponse.headers().set(HttpHeaders.Names.PRAGMA, "no-cache");
         httpResponse.headers().set(HttpHeaders.Names.EXPIRES, "-1");
+        httpResponse.headers().set(HEADER_REQUEST_ID, requestBody.getRequestId());
+        httpResponse.headers().set(HEADER_SERVICE_CLASS, requestBody.getService());
+        httpResponse.headers().set(HEADER_METHOD_NAME, requestBody.getMethod());
 
         if (HttpHeaders.isKeepAlive(httpRequest)) {
             httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);

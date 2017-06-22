@@ -53,9 +53,6 @@ public class HttpResponseCallback extends SimpleResponseCallback<FullHttpRespons
             String body = JSONUtils.toJSONString(rpcResponse);
             ByteBuf bbuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
-            httpResponse.headers().set(HEADER_REQUEST_ID, request.getRequestId());
-            httpResponse.headers().set(HEADER_SERVICE_CLASS, request.getClassName());
-            httpResponse.headers().set(HEADER_METHOD_NAME, request.getMethodName());
             httpResponse.content().clear().writeBytes(bbuf);
             return httpResponse;
         }

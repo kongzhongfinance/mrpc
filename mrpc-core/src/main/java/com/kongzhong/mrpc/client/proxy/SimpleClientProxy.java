@@ -5,6 +5,8 @@ import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
 import com.kongzhong.mrpc.config.ClientCommonConfig;
+import com.kongzhong.mrpc.enums.LbStrategyEnum;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.ClientInvocation;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
@@ -45,8 +47,17 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         this.appId = ClientCommonConfig.me().getAppId();
         this.haStrategy = ClientCommonConfig.me().getHaStrategy();
 
+        if (null == this.haStrategy) {
+            throw new SystemException("HaStrategy not is null");
+        }
+
+        LbStrategyEnum lbStrategy = ClientCommonConfig.me().getLbStrategy();
+        if (null == lbStrategy) {
+            throw new SystemException("LbStrategy not is null");
+        }
+
         this.interceptors = interceptors;
-        this.loadBalance = new SimpleLoadBalance();
+        this.loadBalance = new SimpleLoadBalance(lbStrategy);
 
         if (null != interceptors && !interceptors.isEmpty()) {
             hasInterceptors = true;

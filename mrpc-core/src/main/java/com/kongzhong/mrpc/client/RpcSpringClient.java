@@ -31,37 +31,33 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (null != registryBeanMap) {
             registryBeanMap.values().forEach(registryBean -> serviceDiscoveryMap.put(MRPC_CLIENT_DISCOVERY_PREFIX + registryBean.getName(), parseRegistry(registryBean)));
         }
 
+        // 客户端拦截器
         Map<String, RpcClientInteceptor> rpcClientInteceptorMap = ctx.getBeansOfType(RpcClientInteceptor.class);
         if (null != rpcClientInteceptorMap) {
             rpcClientInteceptorMap.values().forEach(super::addInterceptor);
         }
 
+        // 客户端引用
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
 
         ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
         DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
 
-        if (clientBeanMap != null && !clientBeanMap.isEmpty()) {
-            clientBeanMap.values().forEach(bean -> {
-                String id = bean.getId();
-                String interfaceName = bean.getServiceName();
-                try {
-                    Class<?> clazz = Class.forName(interfaceName);
-                    Object object = super.getProxyBean(clazz);
-                    dbf.registerSingleton(id, object);
-                    log.info("Bind rpc service [{}]", interfaceName);
-                } catch (Exception e) {
-                    log.warn("Not found rpc service [{}] component!", interfaceName);
-                }
-            });
-        }
         super.init();
+
+        if (clientBeanMap != null && !clientBeanMap.isEmpty()) {
+            clientBeanMap.values().forEach(clientBean -> super.initReferer(clientBean, dbf));
+        }
+
+        // 初始化引用
         referers.forEach(referer -> super.initReferer(referer, dbf));
+        super.directConnect();
     }
 
     @Override

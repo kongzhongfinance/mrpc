@@ -27,9 +27,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -75,6 +77,8 @@ public abstract class SimpleRpcClient {
      * 服务注册实例
      */
     protected Map<String, ServiceDiscovery> serviceDiscoveryMap = Maps.newHashMap();
+
+    protected Map<String, List<ClientBean>> directAddressList = Maps.newHashMap();
 
     /**
      * appId
@@ -191,10 +195,18 @@ public abstract class SimpleRpcClient {
      * @param directUrl
      * @param rpcInterface
      */
-    protected void directConnect(String directUrl, Class<?> rpcInterface) {
+    protected void directConnect() {
         Map<String, Set<String>> mappings = Maps.newHashMap();
-        String serviceName = rpcInterface.getName();
-        mappings.put(directUrl, Sets.newHashSet(serviceName));
+        directAddressList.forEach((directAddress, clientBeans) -> {
+            Set<String> serviceNames = clientBeans.stream().map(clientBean -> clientBean.getServiceName()).collect(Collectors.toSet());
+            mappings.put(directAddress, serviceNames);
+        });
+        Connections.me().updateNodes(mappings);
+    }
+
+    private void directConnect(String directAddress, Class<?> rpcInterface) {
+        Map<String, Set<String>> mappings = Maps.newHashMap();
+        mappings.put(directAddress, Sets.newHashSet(rpcInterface.getName()));
         Connections.me().updateNodes(mappings);
     }
 
@@ -245,8 +257,13 @@ public abstract class SimpleRpcClient {
                 ServiceDiscovery serviceDiscovery = this.getDiscovery(clientBean);
                 serviceDiscovery.discover();
             } else {
-                if (StringUtils.isNotEmpty(this.directAddress)) {
-                    this.directConnect(this.directAddress, serviceClass);
+                String directAddress = StringUtils.isNotEmpty(clientBean.getDirectAddress()) ? clientBean.getDirectAddress() : this.directAddress;
+                if (StringUtils.isNotEmpty(directAddress)) {
+                    log.debug("Service [{}] direct to [{}]", serviceName, directAddress);
+
+                    List<ClientBean> directUrlServices = directAddressList.getOrDefault(directAddress, new ArrayList<>());
+                    directUrlServices.add(clientBean);
+                    directAddressList.put(directAddress, directUrlServices);
                 }
             }
             log.info("Bind rpc service [{}]", serviceName);

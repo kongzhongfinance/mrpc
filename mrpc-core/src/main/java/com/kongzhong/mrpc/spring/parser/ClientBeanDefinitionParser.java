@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.spring.parser;
 
 import com.kongzhong.mrpc.model.ClientBean;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -20,6 +21,7 @@ public class ClientBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
         builder.addPropertyValue("id", id);
         builder.addPropertyValue("serviceName", interfaceName);
+        builder.addPropertyValue("serviceClass", ReflectUtils.from(interfaceName));
         builder.addPropertyValue("directAddress", directAddress);
         builder.addPropertyValue("registry", registry);
         return builder.getBeanDefinition();
