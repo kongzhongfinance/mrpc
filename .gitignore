@@ -4,6 +4,9 @@
 *.class
 target/
 
+deploy.sh
+install.sh
+
 # Log file
 *.log
 

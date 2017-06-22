@@ -1,4 +1,4 @@
-package com.kongzhong.demo.helloworld;
+package com.kongzhong.demo.tcp;
 
 import com.kongzhong.mrpc.demo.service.UserService;
 import org.springframework.context.ApplicationContext;

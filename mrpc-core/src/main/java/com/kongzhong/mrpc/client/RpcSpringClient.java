@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.client;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -61,6 +62,8 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         // 初始化引用
         referers.forEach(referer -> super.initReferer(referer, dbf));
         super.directConnect();
+
+        log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
     }
 
     @Override

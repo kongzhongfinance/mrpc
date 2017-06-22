@@ -66,7 +66,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Bean
     public InitBean initBean() {
-        log.debug("Initializing rpc server bean");
+        log.debug("Initializing rpc service bean");
         return new InitBean(rpcMapping);
     }
 
@@ -109,7 +109,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     @Override
     public String getBindAddress(ServiceBean serviceBean) {
         String address = super.getBindAddress(serviceBean);
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        Map<String, String> custom = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("address")) {
             address = custom.get("address");
         }
@@ -119,7 +119,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     @Override
     public String getRegisterElasticIp(ServiceBean serviceBean) {
         String elasticIp = super.getRegisterElasticIp(serviceBean);
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        Map<String, String> custom = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom) {
             if (custom.containsKey("elasticIp")) {
                 elasticIp = custom.get("elasticIp");
@@ -139,12 +139,13 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      */
     @Override
     public ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        String registryName = null;
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        ServiceRegistry serviceRegistry = super.getRegistry(serviceBean);
+        Map<String, String> custom = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("registry")) {
-            registryName = custom.get("registry");
+            String registryName = custom.get("registry");
+            return serviceRegistryMap.get(registryName);
         }
-        return serviceRegistryMap.get(registryName);
+        return serviceRegistry;
     }
 
     /**

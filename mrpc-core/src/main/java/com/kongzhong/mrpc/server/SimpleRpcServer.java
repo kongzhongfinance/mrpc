@@ -2,9 +2,9 @@ package com.kongzhong.mrpc.server;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerCommonConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
@@ -140,11 +140,11 @@ public abstract class SimpleRpcServer {
      */
     protected void startServer() {
         if (null == nettyConfig) {
-            nettyConfig = DefaultConfig.nettyServerConfig();
+            nettyConfig = new NettyConfig(128, true);
         }
 
         if (null == serialize) {
-            serialize = DefaultConfig.serialize();
+            serialize = "kyro";
         }
 
         if (serviceRegistryMap.size() > 0) {
@@ -214,7 +214,8 @@ public abstract class SimpleRpcServer {
                 this.listenDestroy();
             }
 
-            log.info("Publish services finished!");
+            log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
+
             this.channelSync(future);
 
         } catch (Exception e) {

@@ -1,6 +1,6 @@
-package com.kongzhong.demo.helloworld;
+package com.kongzhong.demo.tcp;
 
-import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.model.StatusEnum;
 import com.kongzhong.mrpc.demo.service.UserService;
 
@@ -14,7 +14,7 @@ public class HelloClientApplication {
 
     public static void main(String[] args) throws Exception {
 
-        RpcClient rpcClient = new RpcClient();
+        RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setDirectAddress("127.0.0.1:5066");
 
         final UserService userService = rpcClient.getProxyReferer(UserService.class);

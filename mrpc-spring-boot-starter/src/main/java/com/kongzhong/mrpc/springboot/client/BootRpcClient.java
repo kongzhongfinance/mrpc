@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.springboot.client;
 
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
 import com.kongzhong.mrpc.enums.RegistryEnum;
@@ -87,6 +88,9 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             super.init();
             // 初始化客户端引用服务
             referers.forEach(referer -> super.initReferer(referer, beanFactory));
+
+            log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
+
         } catch (Exception e) {
             log.error("RPC client init error", e);
         }

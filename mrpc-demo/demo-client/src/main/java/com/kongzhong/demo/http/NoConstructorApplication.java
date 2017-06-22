@@ -1,6 +1,6 @@
-package com.kongzhong.demo.exception;
+package com.kongzhong.demo.http;
 
-import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.model.NoConstructor;
 import com.kongzhong.mrpc.demo.service.PayService;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ public class NoConstructorApplication {
     public static final Logger log = LoggerFactory.getLogger(NoConstructorApplication.class);
 
     public static void main(String[] args) throws Exception {
-        RpcClient rpcClient = new RpcClient();
+        RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setTransport("http");
         final PayService payService = rpcClient.getProxyReferer(PayService.class);
         NoConstructor noConstructor = payService.noConstructor(new NoConstructor("王大锤"));

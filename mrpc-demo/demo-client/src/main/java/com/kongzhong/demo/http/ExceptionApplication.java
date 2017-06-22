@@ -1,6 +1,6 @@
 package com.kongzhong.demo.http;
 
-import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.service.UserService;
 
@@ -11,7 +11,7 @@ import com.kongzhong.mrpc.demo.service.UserService;
 public class ExceptionApplication {
 
     public static void main(String[] args) {
-        RpcClient rpcClient = new RpcClient();
+        RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setTransport("http");
 
         UserService userService = rpcClient.getProxyReferer(UserService.class);

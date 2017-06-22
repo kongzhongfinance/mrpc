@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
  *         2017/5/15
  */
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.kongzhong.mrpc.server.service")
 // metrics
 //@EnableConfigurationProperties(value = {MetricsProperties.class})
 public class ServerApplication {

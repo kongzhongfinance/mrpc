@@ -1,6 +1,6 @@
-package com.kongzhong.demo.registry;
+package com.kongzhong.demo.tcp.registry;
 
-import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.service.UserService;
 import com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery;
 
@@ -11,7 +11,7 @@ import com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery;
 public class DiscoveryClientApplication {
     public static void main(String[] args) throws Exception {
 
-        RpcClient rpcClient = new RpcClient();
+        RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setDefaultDiscovery(new ZookeeperServiceDiscovery("127.0.0.1:2181"));
         rpcClient.setAppId("demo");
         UserService userService = rpcClient.getProxyReferer(UserService.class);

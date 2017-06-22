@@ -10,7 +10,6 @@ import com.kongzhong.mrpc.client.cluster.ha.FailFastHaStrategy;
 import com.kongzhong.mrpc.client.cluster.ha.FailOverHaStrategy;
 import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientCommonConfig;
-import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
@@ -143,7 +142,7 @@ public abstract class SimpleRpcClient {
         synchronized (Connections.class) {
             Connections connections = Connections.me();
             if (null == serialize) {
-                serialize = DefaultConfig.serialize();
+                serialize = "kyro";
             }
 
             if (null == transport) {

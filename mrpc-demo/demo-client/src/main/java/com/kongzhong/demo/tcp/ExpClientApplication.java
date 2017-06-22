@@ -1,12 +1,9 @@
-package com.kongzhong.demo.exception;
+package com.kongzhong.demo.tcp;
 
-import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.service.UserService;
-import com.kongzhong.mrpc.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author biezhi
@@ -17,7 +14,7 @@ public class ExpClientApplication {
     public static final Logger log = LoggerFactory.getLogger(ExpClientApplication.class);
 
     public static void main(String[] args) throws Exception {
-        RpcClient rpcClient = new RpcClient();
+        RpcSpringClient rpcClient = new RpcSpringClient();
         final UserService userService = rpcClient.getProxyReferer(UserService.class);
 
         try {

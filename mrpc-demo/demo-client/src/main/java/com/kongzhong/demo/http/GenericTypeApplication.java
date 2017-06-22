@@ -1,6 +1,6 @@
 package com.kongzhong.demo.http;
 
-import com.kongzhong.mrpc.client.RpcClient;
+import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.service.UserService;
 
@@ -16,7 +16,7 @@ public class GenericTypeApplication {
 
     public static void main(String[] args) {
 
-        RpcClient rpcClient = new RpcClient();
+        RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setDirectAddress("127.0.0.1:5066");
         rpcClient.setTransport("http");
 
