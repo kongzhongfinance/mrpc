@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mrpc="http://mrpc.kongzhong.com/schema/mrpc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
+
+    <mrpc:serverConfig address="127.0.0.1:5066" appId="demo"/>
+
+    <bean id="userService" class="com.kongzhong.mrpc.demo.service.UserServiceImpl"/>
+    <bean id="benchmarkService" class="com.kongzhong.mrpc.demo.service.BenchmarkServiceImpl"/>
+    <bean id="payService" class="com.kongzhong.mrpc.demo.service.PayServiceImpl"/>
+
+    <mrpc:service interface="com.kongzhong.mrpc.demo.service.UserService" ref="userService"/>
+    <mrpc:service interface="com.kongzhong.mrpc.demo.service.BenchmarkService" ref="benchmarkService"
+                  address="127.0.0.1:5067"/>
+    <mrpc:service interface="com.kongzhong.mrpc.demo.service.PayService" ref="benchmarkService"
+                  elasticIp="123.123.123.123:1234"/>
+
+</beans>

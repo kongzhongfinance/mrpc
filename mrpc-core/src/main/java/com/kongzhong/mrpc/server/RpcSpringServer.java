@@ -58,44 +58,45 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
         }
 
         Map<String, Object> rpcServiceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
-        try {
-
-            if (null != rpcServiceBeanMap && !rpcServiceBeanMap.isEmpty()) {
-                for (Object target : rpcServiceBeanMap.values()) {
-                    Object realBean = AopTargetUtils.getTarget(target);
-                    RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
-                    String serviceName = rpcService.value().getName();
-                    if (NoInterface.class.getName().equals(serviceName)) {
-                        Class<?>[] intes = realBean.getClass().getInterfaces();
-                        if (null == intes || intes.length != 1) {
-                            serviceName = realBean.getClass().getName();
-                        } else {
-                            serviceName = intes[0].getName();
-                        }
+        if (null != rpcServiceBeanMap && !rpcServiceBeanMap.isEmpty()) {
+            rpcServiceBeanMap.forEach((beanName, target) -> {
+                Object realBean = null;
+                try {
+                    realBean = AopTargetUtils.getTarget(target);
+                } catch (Exception e) {
+                    log.error("Initializing service bean error", e);
+                }
+                RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
+                String serviceName = rpcService.value().getName();
+                if (NoInterface.class.getName().equals(serviceName)) {
+                    Class<?>[] intes = realBean.getClass().getInterfaces();
+                    if (null == intes || intes.length != 1) {
+                        serviceName = realBean.getClass().getName();
+                    } else {
+                        serviceName = intes[0].getName();
                     }
-                    ServiceBean serviceBean = new ServiceBean();
-                    serviceBean.setBean(realBean);
-                    serviceBean.setServiceName(serviceName);
+                }
+                ServiceBean serviceBean = new ServiceBean();
+                serviceBean.setBean(realBean);
+                serviceBean.setBeanName(beanName);
+                serviceBean.setServiceName(serviceName);
+                rpcMapping.addServiceBean(serviceBean);
+            });
+        }
+
+        // 服务
+        Map<String, ServiceBean> serviceBeanMap = ctx.getBeansOfType(ServiceBean.class);
+        if (serviceBeanMap != null && !serviceBeanMap.isEmpty()) {
+            serviceBeanMap.values().forEach(serviceBean -> {
+                if (null == serviceBean.getBean()) {
+                    Object bean = ctx.getBean(serviceBean.getBeanName());
+                    if (null == bean) {
+                        throw new SystemException(String.format("Not found bean [%s]", serviceBean.getBeanName()));
+                    }
+                    serviceBean.setBean(bean);
                     rpcMapping.addServiceBean(serviceBean);
                 }
-            }
-
-            // 服务
-            Map<String, ServiceBean> serviceBeanMap = ctx.getBeansOfType(ServiceBean.class);
-            if (serviceBeanMap != null && !serviceBeanMap.isEmpty()) {
-                serviceBeanMap.values().forEach(serviceBean -> {
-                    if (null == serviceBean.getBean()) {
-                        Object bean = ctx.getBean(serviceBean.getBeanName());
-                        if (null == bean) {
-                            throw new SystemException(String.format("Not found bean [%s]", serviceBean.getBeanName()));
-                        }
-                        serviceBean.setBean(bean);
-                        rpcMapping.addServiceBean(serviceBean);
-                    }
-                });
-            }
-        } catch (Exception e) {
-            log.error("Initializing service bean error", e);
+            });
         }
     }
 

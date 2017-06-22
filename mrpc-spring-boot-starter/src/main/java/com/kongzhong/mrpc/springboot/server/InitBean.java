@@ -35,7 +35,7 @@ public class InitBean implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String s) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> service = bean.getClass();
         boolean hasInterface = ReflectUtils.hasInterface(service, RpcServerInteceptor.class);
         if (hasInterface) {
@@ -59,6 +59,7 @@ public class InitBean implements BeanPostProcessor {
 
             ServiceBean serviceBean = new ServiceBean();
             serviceBean.setBean(realBean);
+            serviceBean.setBeanName(beanName);
             serviceBean.setServiceName(serviceName);
 
             rpcMapping.addServiceBean(serviceBean);
