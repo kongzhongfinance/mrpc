@@ -23,5 +23,6 @@ public class RpcRequest implements Serializable {
     private Class<?> returnType;
     private long timestamp;
     private int waitTimeout;
+    private int retryNumber;
 
 }

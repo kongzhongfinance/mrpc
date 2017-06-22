@@ -51,6 +51,10 @@ public interface Const {
     String WAIT_TIMEOUT_S1_CLIENT = "mrpc.client.wait-timeout";
     String WAIT_TIMEOUT_S2_CLIENT = "mrpc.client.waitTimeout";
 
+    // 客户端重试次数
+    String TRCRY_NUMBER_S1_CLIENT = "mrpc.client.retry-number";
+    String TRCRY_NUMBER_S2_CLIENT = "mrpc.client.retryNumber";
+
     // 注册中心
     String REGSITRY_KEY = "mrpc.registry";
 

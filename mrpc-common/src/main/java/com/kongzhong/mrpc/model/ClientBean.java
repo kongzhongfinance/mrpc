@@ -17,7 +17,8 @@ public class ClientBean {
     private Class<?> serviceClass;
     private String registry = "default";
     private String directAddress;
-    private int waitTimeout;
+    private int waitTimeout = 10;
+    private int retryNumber = 3;
 
     public ClientBean(Class<?> serviceClass) {
         this.serviceClass = serviceClass;

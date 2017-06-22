@@ -34,6 +34,9 @@ public class RpcClientProperties {
     private String serialize;
 
     // 客户端连接超时时间，默认10秒
-    private int waitTimeout;
+    private int waitTimeout = 10;
+
+    // 客户端重试次数
+    private int retryNumber = 3;
 
 }

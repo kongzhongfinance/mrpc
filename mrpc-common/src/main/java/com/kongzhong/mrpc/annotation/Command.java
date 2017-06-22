@@ -23,4 +23,10 @@ public @interface Command {
      */
     int waitTimeout() default 10;
 
+    /**
+     * 重试次数，默认3次
+     *
+     * @return
+     */
+    int retryNumber() default 3;
 }

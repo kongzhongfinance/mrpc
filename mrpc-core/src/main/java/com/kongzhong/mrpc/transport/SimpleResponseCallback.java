@@ -101,6 +101,14 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         }
     }
 
+    /**
+     * 构建一个异常响应
+     *
+     * @param t
+     * @param response
+     * @return
+     * @throws IllegalAccessException
+     */
     protected Throwable buildErrorResponse(Throwable t, RpcResponse response) throws IllegalAccessException {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
         Class<?> exceptionType = t.getClass();
@@ -122,15 +130,12 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         }
 
         String exceptionName = exceptionType.getName();
-
         String exception = Throwables.getStackTraceAsString(t).replace(exceptionName + ": ", "");
         exception = exception.replace(exceptionName, "");
-
         response.setReturnType(exceptionName);
         response.setException(exception);
         response.setMessage(t.getMessage());
         response.setSuccess(false);
-
         return t;
     }
 

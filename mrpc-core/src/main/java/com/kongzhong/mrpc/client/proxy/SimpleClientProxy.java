@@ -84,6 +84,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .parameters(args)
                 .returnType(method.getReturnType())
                 .waitTimeout(this.getWaitTimeout(method))
+                .retryNumber(this.getRetryNumber(method))
                 .timestamp(System.currentTimeMillis())
                 .build();
 
@@ -100,7 +101,16 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     private int getWaitTimeout(Method method) {
         Command command = method.getAnnotation(Command.class);
-        int timeout = ClientCommonConfig.me().getTimeout();
+        int timeout = ClientCommonConfig.me().getWaitTimeout();
+        if (null != command) {
+            return command.waitTimeout();
+        }
+        return timeout;
+    }
+
+    private int getRetryNumber(Method method) {
+        Command command = method.getAnnotation(Command.class);
+        int timeout = ClientCommonConfig.me().getRetryNumber();
         if (null != command) {
             return command.waitTimeout();
         }

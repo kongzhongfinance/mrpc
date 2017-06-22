@@ -24,7 +24,8 @@ public class ClientCommonConfig {
     private RpcSerialize rpcSerialize;
     private LbStrategyEnum lbStrategy;
     private TransportEnum transport;
-    private int timeout = 10;
+    private int waitTimeout = 10;
+    private int retryNumber = 3;
 
     private static final class ClientCommonConfigHolder {
         private static final ClientCommonConfig INSTANCE = new ClientCommonConfig();

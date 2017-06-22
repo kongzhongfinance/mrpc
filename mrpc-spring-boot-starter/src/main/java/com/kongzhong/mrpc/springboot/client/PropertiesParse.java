@@ -37,6 +37,7 @@ public class PropertiesParse {
         if (null == env) {
             throw new SystemException("ConfigurableEnvironment not is null");
         }
+
         RpcClientProperties clientProperties = new RpcClientProperties();
         clientProperties.setAppId(env.getProperty(APP_ID_CLIENT, "default"));
         clientProperties.setTransport(env.getProperty(TRANSPORT_CLIENT, "tcp"));
@@ -45,6 +46,7 @@ public class PropertiesParse {
         clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_S1_CLIENT, env.getProperty(LB_STRATEGY_S2_CLIENT)));
         clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_S1_CLIENT, env.getProperty(DIRECT_ADDRESS_S2_CLIENT)));
         clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_S1_CLIENT, env.getProperty(WAIT_TIMEOUT_S2_CLIENT, "10"))));
+        clientProperties.setRetryNumber(Integer.valueOf(env.getProperty(TRCRY_NUMBER_S1_CLIENT, env.getProperty(TRCRY_NUMBER_S2_CLIENT, "3"))));
 
         return clientProperties;
     }
