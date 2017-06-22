@@ -16,6 +16,7 @@ import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
@@ -255,6 +256,9 @@ public abstract class SimpleRpcClient {
             if (usedRegistry) {
                 // 服务发现
                 ServiceDiscovery serviceDiscovery = this.getDiscovery(clientBean);
+                if (null == serviceDiscovery) {
+                    throw new SystemException(String.format("Client referer [%s] not found registry [%s]", serviceName, clientBean.getRegistry()));
+                }
                 serviceDiscovery.discover();
             } else {
                 String directAddress = StringUtils.isNotEmpty(clientBean.getDirectAddress()) ? clientBean.getDirectAddress() : this.directAddress;
