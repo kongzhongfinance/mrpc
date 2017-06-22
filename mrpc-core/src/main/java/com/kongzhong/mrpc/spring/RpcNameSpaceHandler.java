@@ -5,9 +5,6 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 public class RpcNameSpaceHandler extends NamespaceHandlerSupport {
 
-    public RpcNameSpaceHandler() {
-    }
-
     @Override
     public void init() {
         this.registerBeanDefinitionParser("referer", new ClientBeanDefinitionParser());

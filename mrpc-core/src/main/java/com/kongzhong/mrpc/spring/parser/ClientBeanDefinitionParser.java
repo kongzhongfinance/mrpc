@@ -15,9 +15,13 @@ public class ClientBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
         String id = element.getAttribute("id");
         String interfaceName = element.getAttribute("interface");
+        String directAddress = element.getAttribute("directAddress");
+        String registry = element.getAttribute("registry");
 
         builder.addPropertyValue("id", id);
         builder.addPropertyValue("serviceName", interfaceName);
+        builder.addPropertyValue("directAddress", directAddress);
+        builder.addPropertyValue("registry", registry);
         return builder.getBeanDefinition();
     }
 

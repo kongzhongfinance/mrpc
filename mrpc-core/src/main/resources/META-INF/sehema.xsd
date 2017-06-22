@@ -38,6 +38,8 @@
                     <xsd:documentation source="java:java.lang.Class"><![CDATA[ 接口名 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
+            <xsd:attribute name="directAddress" type="xsd:string" use="optional"/>
+            <xsd:attribute name="registry" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
@@ -91,6 +93,7 @@
                     <xsd:documentation><![CDATA[ 拦截器列表 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
+            <xsd:attribute name="directAddress" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
