@@ -46,7 +46,7 @@ public abstract class SimpleRpcClient {
      * 序列化类型，默认protostuff
      */
     @Setter
-    protected String serialize = DefaultConfig.serialize();
+    protected String serialize;
 
     /**
      * 传输协议，默认tcp协议

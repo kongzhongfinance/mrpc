@@ -49,4 +49,6 @@ public interface Const {
     // 服务发现接口名
     String DISCOVERY_INTERFACE = "com.kongzhong.mrpc.registry.ServiceDiscovery";
 
+    String MRPC_SERVER_REGISTRY_PREFIX = "mrpc-server-registry-";
+    String MRPC_CLIENT_DISCOVERY_PREFIX = "mrpc-client-discovery-";
 }

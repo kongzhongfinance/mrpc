@@ -21,6 +21,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.util.Map;
 
+import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
+
 /**
  * Spring Boot启动器
  *
@@ -71,7 +73,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             commonProperties.getRegistry().forEach((registryName, map) -> {
                 ServiceDiscovery serviceDiscovery = mapToDiscovery(map);
                 serviceDiscoveryMap.put(registryName, serviceDiscovery);
-                beanFactory.registerSingleton(registryName, serviceDiscovery);
+                beanFactory.registerSingleton(MRPC_CLIENT_DISCOVERY_PREFIX + registryName, serviceDiscovery);
                 usedRegistry = true;
             });
         }

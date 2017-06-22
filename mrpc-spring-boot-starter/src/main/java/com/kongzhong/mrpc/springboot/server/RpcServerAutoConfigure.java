@@ -44,6 +44,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
 @ConditionalOnProperty("mrpc.server.transport")
@@ -114,7 +115,7 @@ public class RpcServerAutoConfigure {
                 commonProperties.getRegistry().forEach((registryName, map) -> {
                     ServiceRegistry serviceRegistry = mapToRegistry(map);
                     serviceRegistryMap.put(registryName, serviceRegistry);
-                    configurableBeanFactory.registerSingleton(registryName, serviceRegistry);
+                    configurableBeanFactory.registerSingleton(MRPC_SERVER_REGISTRY_PREFIX + registryName, serviceRegistry);
                     usedRegistry = true;
                 });
             }

@@ -18,6 +18,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
 
+import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
+
 @Slf4j
 @Data
 @NoArgsConstructor
@@ -33,7 +35,7 @@ public class RpcSpringInit extends SimpleRpcServer implements ApplicationContext
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (null != registryBeanMap) {
-            registryBeanMap.values().forEach(registryBean -> serviceRegistryMap.put(registryBean.getName(), parseRegistry(registryBean)));
+            registryBeanMap.values().forEach(registryBean -> serviceRegistryMap.put(MRPC_SERVER_REGISTRY_PREFIX + registryBean.getName(), parseRegistry(registryBean)));
         }
 
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);

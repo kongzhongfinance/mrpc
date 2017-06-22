@@ -6,7 +6,7 @@ import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.RpcRet;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.server.RpcServer;
+import com.kongzhong.mrpc.server.RpcSpringInit;
 import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.JSONUtils;
 import io.netty.buffer.Unpooled;
@@ -42,7 +42,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
         RpcResponse response = new RpcResponse();
         TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, serviceBeanMap);
         //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池
-        RpcServer.submit(tcpResponseCallback, ctx, request, response);
+        RpcSpringInit.submit(tcpResponseCallback, ctx, request, response);
     }
 
     @Override
