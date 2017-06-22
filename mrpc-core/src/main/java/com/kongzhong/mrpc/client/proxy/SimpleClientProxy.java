@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.client.proxy;
 
 import com.google.common.reflect.AbstractInvocationHandler;
+import com.kongzhong.mrpc.annotation.Command;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
@@ -35,10 +36,13 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
     // HA策略
     protected HaStrategy haStrategy;
 
+    // 是否有客户端拦截器
     protected boolean hasInterceptors;
 
+    // 客户端拦截器列表
     protected List<RpcClientInteceptor> interceptors;
 
+    // 拦截器链
     protected InterceptorChain interceptorChain = new InterceptorChain();
 
     private String appId;
@@ -71,7 +75,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     @Override
     protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
-
         RpcRequest request = RpcRequest.builder()
                 .appId(appId)
                 .requestId(StringUtils.getUUID())
@@ -80,6 +83,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .parameterTypes(method.getParameterTypes())
                 .parameters(args)
                 .returnType(method.getReturnType())
+                .waitTimeout(this.getWaitTimeout(method))
                 .build();
 
         log.debug("Client send request");
@@ -91,6 +95,15 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         Invocation invocation = new ClientInvocation(haStrategy, loadBalance, request, interceptors);
         Object result = invocation.next();
         return result;
+    }
+
+    private int getWaitTimeout(Method method) {
+        Command command = method.getAnnotation(Command.class);
+        int timeout = ClientCommonConfig.me().getTimeout();
+        if (null != command) {
+            return command.waitTimeout();
+        }
+        return timeout;
     }
 
 }

@@ -1,7 +1,5 @@
 package com.kongzhong.mrpc.springboot.config;
 
-import com.kongzhong.mrpc.enums.LbStrategyEnum;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,26 +16,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class RpcClientProperties {
 
     // 服务端传输协议，默认tcp
-    private String transport = TransportEnum.TCP.name();
+    private String transport;
 
     // 服务所属appId
-    private String appId = "default";
+    private String appId;
 
-    /**
-     * 直连服务地址
-     */
+    // 直连服务地址
     private String directAddress;
 
-    /**
-     * 高可用策略
-     */
+    // 高可用策略
     private String haStrategy;
 
-    /**
-     * 负载均衡策略
-     */
-    private String lbStrategy = LbStrategyEnum.ROUND.name();
+    // 负载均衡策略
+    private String lbStrategy;
 
-    private String serialize = "kyro";
+    // 序列化组件，默认kyro
+    private String serialize;
+
+    // 客户端连接超时时间，默认10秒
+    private int waitTimeout;
 
 }

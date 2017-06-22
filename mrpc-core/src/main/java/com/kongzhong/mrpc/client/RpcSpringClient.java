@@ -20,7 +20,10 @@ import java.util.Map;
 import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
 
 /**
- * rpc客户端
+ * RPC客户端
+ *
+ * @author biezhi
+ *         2017/4/25
  */
 @NoArgsConstructor
 @Slf4j

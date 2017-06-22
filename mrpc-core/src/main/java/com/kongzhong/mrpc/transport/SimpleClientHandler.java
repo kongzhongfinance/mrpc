@@ -28,16 +28,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler<T> {
 
-    protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
+    protected SocketAddress socketAddress;
 
     @Getter
     protected volatile Channel channel;
 
-    protected SocketAddress socketAddress;
-
     @Getter
     @Setter
     protected String serverAddress;
+
+    protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
@@ -49,7 +49,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.socketAddress = this.channel.remoteAddress();
-        log.debug("Channel actived");
+        log.debug("Channel actived: {}", this.channel);
     }
 
     /**
@@ -66,7 +66,6 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         Connections.me().remove(this);
-
         log.debug("Channel inactive: {}", this.channel);
 
         // 创建异步重连
@@ -90,6 +89,11 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     public abstract RpcCallbackFuture sendRequest(RpcRequest request);
 
+    /**
+     * 在channel上保存一个requestId
+     *
+     * @param requestId
+     */
     protected void setChannelRequestId(String requestId) {
         channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).set(requestId);
     }

@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.transport;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
@@ -59,6 +58,12 @@ public class SimpleRequestCallback implements Callable<Boolean> {
         return Boolean.TRUE;
     }
 
+    /**
+     * 建立连接
+     *
+     * @param b
+     * @param eventLoopGroup
+     */
     private void connectServer(Bootstrap b, EventLoopGroup eventLoopGroup) {
         b.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)

@@ -16,6 +16,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +35,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @author biezhi
  *         2017/4/21
  */
+@Slf4j
 public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
-
-    public static final Logger log = LoggerFactory.getLogger(HttpServerHandler.class);
 
     public HttpServerHandler(Map<String, ServiceBean> serviceBeanMap) {
         super(serviceBeanMap);
@@ -44,6 +44,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
+
         String uri = httpRequest.uri();
         HttpHeaders headers = httpRequest.headers();
 

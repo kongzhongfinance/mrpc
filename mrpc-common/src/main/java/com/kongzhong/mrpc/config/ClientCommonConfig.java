@@ -4,7 +4,6 @@ import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -16,6 +15,7 @@ import lombok.ToString;
  *         20/06/2017
  */
 @Data
+@NoArgsConstructor
 @ToString(callSuper = true)
 public class ClientCommonConfig {
 
@@ -24,10 +24,7 @@ public class ClientCommonConfig {
     private RpcSerialize rpcSerialize;
     private LbStrategyEnum lbStrategy;
     private TransportEnum transport;
-
-    private ClientCommonConfig() {
-
-    }
+    private int timeout = 10;
 
     private static final class ClientCommonConfigHolder {
         private static final ClientCommonConfig INSTANCE = new ClientCommonConfig();

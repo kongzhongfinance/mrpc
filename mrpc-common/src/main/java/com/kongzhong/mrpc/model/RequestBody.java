@@ -1,7 +1,6 @@
 package com.kongzhong.mrpc.model;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -12,6 +11,9 @@ import java.util.List;
  *         2017/4/22
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class RequestBody {
 

@@ -5,7 +5,7 @@ import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 
 /**
- * 服务调用
+ * 服务执行器
  *
  * @author biezhi
  *         2017/4/24

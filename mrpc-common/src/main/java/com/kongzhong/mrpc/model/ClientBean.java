@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -9,6 +8,7 @@ import lombok.ToString;
  * 客户端引用Bean
  */
 @Data
+@NoArgsConstructor
 @ToString
 public class ClientBean {
 
@@ -17,9 +17,7 @@ public class ClientBean {
     private Class<?> serviceClass;
     private String registry = "default";
     private String directAddress;
-
-    public ClientBean() {
-    }
+    private int waitTimeout;
 
     public ClientBean(Class<?> serviceClass) {
         this.serviceClass = serviceClass;

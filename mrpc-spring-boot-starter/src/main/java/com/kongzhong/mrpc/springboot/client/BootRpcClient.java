@@ -53,11 +53,13 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         Referers referersObject = beanFactory.getBean(Referers.class);
         super.referers = referersObject.getReferers();
 
+        // 客户端拦截器
         Map<String, RpcClientInteceptor> rpcClientInteceptorMap = beanFactory.getBeansOfType(RpcClientInteceptor.class);
         if (null != rpcClientInteceptorMap) {
             rpcClientInteceptorMap.values().forEach(super::addInterceptor);
         }
 
+        // 解析客户端配置
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
 
         this.rpcClientProperties = PropertiesParse.getRpcClientProperties(configurableEnvironment);

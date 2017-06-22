@@ -16,9 +16,7 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static com.kongzhong.mrpc.Const.*;
 
@@ -37,29 +35,29 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      */
     @Override
     public RpcCallbackFuture sendRequest(RpcRequest rpcRequest) {
-
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
         mapCallBack.put(rpcRequest.getRequestId(), rpcCallbackFuture);
 
-        RequestBody requestBody = new RequestBody();
-        requestBody.setRequestId(rpcRequest.getRequestId());
-        requestBody.setService(rpcRequest.getClassName());
-        requestBody.setMethod(rpcRequest.getMethodName());
-        requestBody.setParameters(Arrays.asList(rpcRequest.getParameters()));
+        RequestBody requestBody = RequestBody.builder()
+                .requestId(rpcRequest.getRequestId())
+                .service(rpcRequest.getClassName())
+                .method(rpcRequest.getMethodName())
+                .parameters(Arrays.asList(rpcRequest.getParameters()))
+                .build();
 
-        Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
-        if (null != parameterTypes) {
-            List<String> parameterTypesJSON = new ArrayList<>();
-            for (Class<?> type : parameterTypes) {
-                parameterTypesJSON.add(type.getName());
-            }
-            requestBody.setParameterTypes(parameterTypesJSON);
-        }
+//        Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
+//        if (null != parameterTypes) {
+//            List<String> parameterTypesJSON = new ArrayList<>();
+//            for (Class<?> type : parameterTypes) {
+//                parameterTypesJSON.add(type.getName());
+//            }
+//            requestBody.setParameterTypes(parameterTypesJSON);
+//        }
 
         try {
             String sendBody = JSONUtils.toJSONString(requestBody);
 
-            log.debug("request: \n{}", JSONUtils.toJSONString(requestBody, true));
+            log.debug("Request body: \n{}", JSONUtils.toJSONString(requestBody, true));
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
             req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
@@ -74,18 +72,17 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             channel.writeAndFlush(req);
         } catch (Exception e) {
-            log.error("client send request error", e);
+            log.error("Client send request error", e);
         }
         return rpcCallbackFuture;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse httpResponse) throws Exception {
-        ByteBuf buf = httpResponse.content();
-        byte[] resp = new byte[buf.readableBytes()];
-        buf.readBytes(resp);
-        String body = new String(resp, "UTF-8");
 
+        log.debug("Channel read: {}", ctx.channel());
+
+        String body = httpResponse.content().toString(CharsetUtil.UTF_8);
         if (StringUtils.isEmpty(body)) {
             return;
         }
@@ -96,7 +93,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
         RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
         if (rpcResponse.getSuccess()) {
-            log.debug("response: \n{}", body);
+            log.debug("Response body: \n{}", body);
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
                 Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);

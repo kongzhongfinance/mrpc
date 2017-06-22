@@ -17,10 +17,10 @@ import java.lang.annotation.Target;
 public @interface Command {
 
     /**
-     * 服务超时时间，单位/秒
+     * 服务调用超时时间，单位/秒
      *
      * @return
      */
-    int timeout() default 10;
+    int waitTimeout() default 10;
 
 }

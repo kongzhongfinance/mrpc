@@ -1,7 +1,5 @@
 package com.kongzhong.mrpc.client;
 
-
-import com.kongzhong.mrpc.config.DefaultConfig;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.ExceptionMeta;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -16,6 +14,12 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * RPC客户端回调
+ *
+ * @author biezhi
+ *         2017/4/29
+ */
 public class RpcCallbackFuture {
 
     private RpcRequest request;
@@ -28,7 +32,7 @@ public class RpcCallbackFuture {
     }
 
     public Object get() throws Exception {
-        return this.get(DefaultConfig.serviceTimeout());
+        return this.get(request.getWaitTimeout());
     }
 
     public Object get(int seconds) throws Exception {
@@ -57,6 +61,11 @@ public class RpcCallbackFuture {
         }
     }
 
+    /**
+     * 抛异常
+     *
+     * @throws Exception
+     */
     private void throwException() throws Exception {
         Class<?> expType = Class.forName(response.getReturnType());
         Exception exception = null;
@@ -86,5 +95,6 @@ public class RpcCallbackFuture {
         }
         throw new ServiceException(exception);
     }
+
 
 }

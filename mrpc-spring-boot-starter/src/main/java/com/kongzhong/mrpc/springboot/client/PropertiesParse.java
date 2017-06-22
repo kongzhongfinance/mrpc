@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.springboot.client;
 
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kongzhong.mrpc.Const.*;
+
 /**
  * RPC配置文件解析
  *
@@ -23,29 +27,44 @@ import java.util.Map;
 @Slf4j
 public class PropertiesParse {
 
-    public static RpcClientProperties getRpcClientProperties(ConfigurableEnvironment configurableEnvironment) {
-        RpcClientProperties rpcClientProperties = new RpcClientProperties();
-        if (null == configurableEnvironment) {
-            return rpcClientProperties;
+    /**
+     * 解析RpcClient配置
+     *
+     * @param env
+     * @return
+     */
+    public static RpcClientProperties getRpcClientProperties(ConfigurableEnvironment env) {
+        if (null == env) {
+            throw new SystemException("ConfigurableEnvironment not is null");
         }
-        rpcClientProperties.setAppId(configurableEnvironment.getProperty("mrpc.client.appId", "default"));
-        rpcClientProperties.setTransport(configurableEnvironment.getProperty("mrpc.client.transport", "tcp"));
-        rpcClientProperties.setSerialize(configurableEnvironment.getProperty("mrpc.client.serialize", "kyro"));
-        rpcClientProperties.setLbStrategy(configurableEnvironment.getProperty("mrpc.client.lb-strategy", configurableEnvironment.getProperty("mrpc.client.lbStrategy", LbStrategyEnum.ROUND.name())));
-        rpcClientProperties.setHaStrategy(configurableEnvironment.getProperty("mrpc.client.ha-strategy"));
-        rpcClientProperties.setDirectAddress(configurableEnvironment.getProperty("mrpc.client.direct-address", configurableEnvironment.getProperty("mrpc.client.directAddress")));
-        return rpcClientProperties;
+        RpcClientProperties clientProperties = new RpcClientProperties();
+        clientProperties.setAppId(env.getProperty(APP_ID_CLIENT, "default"));
+        clientProperties.setTransport(env.getProperty(TRANSPORT_CLIENT, "tcp"));
+        clientProperties.setSerialize(env.getProperty(SERIALIZE_CLIENT, "kyro"));
+        clientProperties.setLbStrategy(env.getProperty(LB_STRATEGY_S1_CLIENT, env.getProperty(LB_STRATEGY_S2_CLIENT, LbStrategyEnum.ROUND.name())));
+        clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_S1_CLIENT, env.getProperty(LB_STRATEGY_S2_CLIENT)));
+        clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_S1_CLIENT, env.getProperty(DIRECT_ADDRESS_S2_CLIENT)));
+        clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_S1_CLIENT, env.getProperty(WAIT_TIMEOUT_S2_CLIENT, "10"))));
+
+        return clientProperties;
     }
 
-    public static CommonProperties getCommonProperties(ConfigurableEnvironment configurableEnvironment) {
-        CommonProperties commonProperties = new CommonProperties();
-        if (null == configurableEnvironment) {
-            return commonProperties;
+    /**
+     * 解析Common配置
+     *
+     * @param env
+     * @return
+     */
+    public static CommonProperties getCommonProperties(ConfigurableEnvironment env) {
+        if (null == env) {
+            throw new SystemException("ConfigurableEnvironment not is null");
         }
-        commonProperties.setTest(configurableEnvironment.getProperty("mrpc.test", "false"));
+
+        CommonProperties commonProperties = new CommonProperties();
+        commonProperties.setTest(env.getProperty(Const.TEST_KEY));
 
         Map<String, Map<String, String>> registry = Maps.newHashMap();
-        Map<String, String> registries = getPropertiesStartingWith(configurableEnvironment, "mrpc.registry");
+        Map<String, String> registries = getPropertiesStartingWith(env, REGSITRY_KEY);
         registries.forEach((key, value) -> {
             // mrpc.registry[default].type
             String key_ = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
@@ -59,12 +78,12 @@ public class PropertiesParse {
 
         Map<String, Map<String, String>> custom = Maps.newHashMap();
 
-        Map<String, String> customs = getPropertiesStartingWith(configurableEnvironment, "mrpc.custom");
+        Map<String, String> customs = getPropertiesStartingWith(env, CUSTOM_KEY);
         customs.forEach((key, value) -> {
-            // mrpc.registry[default].type
+            // mrpc.custom[userService].directAddress=10.50.11.221:3921
             String key_ = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
             String field = key.substring(key.indexOf(']') + 2);
-            Map<String, String> v = Maps.newHashMap();
+            Map<String, String> v = custom.getOrDefault(key_, Maps.newHashMap());
             v.put(field, value);
             custom.put(key_, v);
         });
