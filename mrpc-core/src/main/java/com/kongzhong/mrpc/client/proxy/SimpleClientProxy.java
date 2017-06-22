@@ -84,6 +84,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .parameters(args)
                 .returnType(method.getReturnType())
                 .waitTimeout(this.getWaitTimeout(method))
+                .timestamp(System.currentTimeMillis())
                 .build();
 
         log.debug("Client send request");

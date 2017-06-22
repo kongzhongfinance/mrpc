@@ -21,6 +21,7 @@ public class RpcRequest implements Serializable {
     private Class<?>[] parameterTypes;
     private Object[] parameters;
     private Class<?> returnType;
+    private long timestamp;
     private int waitTimeout;
 
 }
