@@ -13,7 +13,6 @@ import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
@@ -78,6 +77,9 @@ public abstract class SimpleRpcClient {
      */
     protected Map<String, ServiceDiscovery> serviceDiscoveryMap = Maps.newHashMap();
 
+    /**
+     * 客户端直连地址列表
+     */
     protected Map<String, List<ClientBean>> directAddressList = Maps.newHashMap();
 
     /**
@@ -86,6 +88,9 @@ public abstract class SimpleRpcClient {
     @Setter
     protected String appId;
 
+    /**
+     * 是否使用注册中心
+     */
     protected boolean usedRegistry;
 
     /**
@@ -100,6 +105,9 @@ public abstract class SimpleRpcClient {
     @Setter
     protected List<ClientBean> referers = Lists.newArrayList();
 
+    /**
+     * 客户端拦截器列表
+     */
     protected List<RpcClientInteceptor> inteceptors = Lists.newArrayList();
 
     /***
@@ -123,6 +131,13 @@ public abstract class SimpleRpcClient {
         return this.getProxyBean(rpcInterface);
     }
 
+    /**
+     * 获取一个Class的代理对象
+     *
+     * @param rpcInterface
+     * @param <T>
+     * @return
+     */
     protected <T> T getProxyBean(Class<T> rpcInterface) {
         return (T) Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>(inteceptors));
     }
@@ -139,54 +154,37 @@ public abstract class SimpleRpcClient {
     }
 
     protected void init() throws RpcException {
-        synchronized (Connections.class) {
-            Connections connections = Connections.me();
-            if (null == serialize) {
-                serialize = "kyro";
-            }
+        Connections connections = Connections.me();
+        if (null == serialize) serialize = "kyro";
+        if (null == transport) transport = "tcp";
+        if (null == lbStrategy) lbStrategy = LbStrategyEnum.ROUND.name();
+        if (null == haStrategy) haStrategy = HaStrategyEnum.FAILOVER.name();
 
-            if (null == transport) {
-                transport = "tcp";
-            }
-
-            if (null == lbStrategy) {
-                lbStrategy = LbStrategyEnum.ROUND.name();
-            }
-            if (null == haStrategy) {
-                haStrategy = HaStrategyEnum.FAILOVER.name();
-            }
-
-            if (null == serialize) {
-                throw new InitializeException("serialize not is null.");
-            }
-
-            RpcSerialize rpcSerialize = null;
-            if (serialize.equalsIgnoreCase("kyro")) {
-                rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
-            }
-            if (serialize.equalsIgnoreCase("protostuff")) {
-                rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
-            }
-
-            HaStrategy haStrategy = null;
-            if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILOVER.name())) {
-                haStrategy = new FailOverHaStrategy();
-            }
-            if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILFAST.name())) {
-                haStrategy = new FailFastHaStrategy();
-            }
-
-            LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
-            TransportEnum transportEnum = TransportEnum.valueOf(this.transport.toUpperCase());
-
-            ClientCommonConfig.me().setAppId(appId);
-            ClientCommonConfig.me().setRpcSerialize(rpcSerialize);
-            ClientCommonConfig.me().setHaStrategy(haStrategy);
-            ClientCommonConfig.me().setLbStrategy(lbStrategyEnum);
-            ClientCommonConfig.me().setTransport(transportEnum);
-
-            isInit = true;
+        RpcSerialize rpcSerialize = null;
+        if (serialize.equalsIgnoreCase("kyro")) {
+            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
         }
+        if (serialize.equalsIgnoreCase("protostuff")) {
+            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
+        }
+
+        HaStrategy haStrategy = null;
+        if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILOVER.name())) {
+            haStrategy = new FailOverHaStrategy();
+        }
+        if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILFAST.name())) {
+            haStrategy = new FailFastHaStrategy();
+        }
+
+        LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
+        TransportEnum transportEnum = TransportEnum.valueOf(this.transport.toUpperCase());
+
+        ClientCommonConfig.me().setAppId(appId);
+        ClientCommonConfig.me().setRpcSerialize(rpcSerialize);
+        ClientCommonConfig.me().setHaStrategy(haStrategy);
+        ClientCommonConfig.me().setLbStrategy(lbStrategyEnum);
+        ClientCommonConfig.me().setTransport(transportEnum);
+        isInit = true;
     }
 
     /**
@@ -236,6 +234,11 @@ public abstract class SimpleRpcClient {
         }
     }
 
+    /**
+     * 添加一个客户端拦截器
+     *
+     * @param inteceptor
+     */
     public void addInterceptor(RpcClientInteceptor inteceptor) {
         if (null == inteceptor) {
             throw new IllegalArgumentException("RpcClientInteceptor not is null");
@@ -244,6 +247,12 @@ public abstract class SimpleRpcClient {
         this.inteceptors.add(inteceptor);
     }
 
+    /**
+     * 初始化客户端引用
+     *
+     * @param clientBean
+     * @param beanFactory
+     */
     protected void initReferer(ClientBean clientBean, ConfigurableListableBeanFactory beanFactory) {
         String serviceName = clientBean.getServiceName();
         Class<?> serviceClass = clientBean.getServiceClass();

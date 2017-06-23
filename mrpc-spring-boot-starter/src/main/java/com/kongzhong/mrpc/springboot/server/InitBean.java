@@ -65,7 +65,7 @@ public class InitBean implements BeanPostProcessor {
             rpcMapping.addServiceBean(serviceBean);
 
         } catch (Exception e) {
-            log.error("init bean error", e);
+            log.error("Init bean error", e);
         }
         return bean;
     }

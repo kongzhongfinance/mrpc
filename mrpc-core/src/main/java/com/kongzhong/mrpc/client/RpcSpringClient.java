@@ -18,8 +18,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Map;
 
-import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
-
 /**
  * RPC客户端
  *
@@ -38,7 +36,10 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (null != registryBeanMap) {
-            registryBeanMap.values().forEach(registryBean -> serviceDiscoveryMap.put(MRPC_CLIENT_DISCOVERY_PREFIX + registryBean.getName(), parseRegistry(registryBean)));
+            registryBeanMap.values().forEach(registryBean -> {
+                serviceDiscoveryMap.put(registryBean.getName(), parseRegistry(registryBean));
+                this.usedRegistry = true;
+            });
         }
 
         // 客户端拦截器

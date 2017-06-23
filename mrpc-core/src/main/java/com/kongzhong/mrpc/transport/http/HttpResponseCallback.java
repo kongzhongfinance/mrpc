@@ -11,21 +11,15 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.util.CharsetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-
-import static com.kongzhong.mrpc.Const.HEADER_METHOD_NAME;
-import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
-import static com.kongzhong.mrpc.Const.HEADER_SERVICE_CLASS;
 
 /**
  * Http响应回调处理
  */
+@Slf4j
 public class HttpResponseCallback extends SimpleResponseCallback<FullHttpResponse> {
-
-    public static final Logger log = LoggerFactory.getLogger(HttpResponseCallback.class);
 
     private FullHttpResponse httpResponse;
 

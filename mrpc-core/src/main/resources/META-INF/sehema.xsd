@@ -156,7 +156,7 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="registry" type="xsd:string" use="optional">
+            <xsd:attribute name="registry" type="xsd:string" use="optional" default="default">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 注册中心配置 ]]></xsd:documentation>
                 </xsd:annotation>
