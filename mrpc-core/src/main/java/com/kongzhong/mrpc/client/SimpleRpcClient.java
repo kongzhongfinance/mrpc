@@ -25,6 +25,7 @@ import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +76,14 @@ public abstract class SimpleRpcClient {
      */
     @Setter
     protected String haStrategy;
+
+    @Getter
+    @Setter
+    protected int waitTimeout;
+
+    @Getter
+    @Setter
+    protected int failOverRetry;
 
     /**
      * 服务注册实例

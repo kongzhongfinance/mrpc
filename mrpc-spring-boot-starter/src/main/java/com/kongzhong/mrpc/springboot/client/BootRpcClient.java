@@ -70,6 +70,10 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.directAddress = clientConfig.getDirectAddress();
         ClientConfig.me().setFailOverRetry(clientConfig.getFailOverRetry());
 
+        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(clientConfig.getDirectAddress())) {
+            throw new SystemException("Service discovery or direct address must select one.");
+        }
+
         // 注册中心
         if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {
             commonProperties.getRegistry().forEach((registryName, map) -> {
@@ -77,10 +81,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
                 serviceDiscoveryMap.put(registryName, serviceDiscovery);
                 beanFactory.registerSingleton(MRPC_CLIENT_DISCOVERY_PREFIX + registryName, serviceDiscovery);
             });
-        }
-
-        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(clientConfig.getDirectAddress())) {
-            throw new SystemException("Service discovery or direct must select one.");
         }
 
         try {

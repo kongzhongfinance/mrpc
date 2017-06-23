@@ -3,7 +3,7 @@ package com.kongzhong.mrpc.registry;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.utils.JSONUtils;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,10 +52,10 @@ public class DefaultRegistry implements ServiceRegistry {
             if (StringUtils.isEmpty(content)) {
                 array = new ArrayList<>();
             } else {
-                array = JSONUtils.parseObject(content, List.class);
+                array = JacksonSerialize.parseObject(content, List.class);
             }
             array.add(this.getReg(address, data));
-            Files.write(JSONUtils.toJSONString(array), file, Charsets.UTF_8);
+            Files.write(JacksonSerialize.toJSONString(array), file, Charsets.UTF_8);
         } catch (Exception e) {
             log.error("register fail", e);
         }
@@ -68,7 +68,7 @@ public class DefaultRegistry implements ServiceRegistry {
             if (file.exists() && file.isFile()) {
                 String content = Files.readFirstLine(file, Charsets.UTF_8);
                 if (StringUtils.isNotEmpty(content)) {
-                    List<Map<String, String>> array = JSONUtils.parseObject(content, List.class);
+                    List<Map<String, String>> array = JacksonSerialize.parseObject(content, List.class);
                     List<Map<String, String>> newArr = new ArrayList<>();
                     for (int i = 0, len = array.size(); i < len; i++) {
                         if (!data.equals(array.get(i).get("service"))) {
@@ -76,7 +76,7 @@ public class DefaultRegistry implements ServiceRegistry {
                         }
                     }
                     if (newArr.size() > 0) {
-                        Files.write(JSONUtils.toJSONString(newArr), file, Charsets.UTF_8);
+                        Files.write(JacksonSerialize.toJSONString(newArr), file, Charsets.UTF_8);
                     } else {
                         Files.write("", file, Charsets.UTF_8);
                     }

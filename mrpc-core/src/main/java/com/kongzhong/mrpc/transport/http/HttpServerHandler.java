@@ -7,9 +7,9 @@ import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcRet;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.RpcSpringServer;
 import com.kongzhong.mrpc.transport.SimpleServerHandler;
-import com.kongzhong.mrpc.utils.JSONUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.Unpooled;
@@ -17,8 +17,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -66,11 +64,11 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        log.debug("Request body: \n\n{}\n", body);
+        log.debug("Request body: \n{}", body);
 
         RequestBody requestBody = null;
         try {
-            requestBody = JSONUtils.parseObject(body, RequestBody.class);
+            requestBody = JacksonSerialize.parseObject(body, RequestBody.class);
         } catch (Exception e) {
             log.error("Request body parse error", e);
             this.sendError(ctx, RpcRet.error("Unable to identify the requested format."));
@@ -141,21 +139,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         String methodName = requestBody.getMethod();
 
         Method method = ReflectUtils.method(type, methodName);
-        List<String> parameterTypes = requestBody.getParameterTypes();
         List<Object> argJSON = requestBody.getParameters();
-
-        // 判断根据参数列表类型查找method对象
-//        if (null != parameterTypes) {
-//            Class<?>[] parameterTypeArr = new Class[parameterTypes.size()];
-//            int pos = 0;
-//            for (Object parameterType : parameterTypes) {
-//                parameterTypeArr[pos++] = ReflectUtils.getClassType(parameterType.toString());
-//            }
-//            method = type.getMethod(methodName, parameterTypeArr);
-//            argJSON = requestBody.getParameters();
-//        } else {
-//            method = ReflectUtils.method(type, methodName);
-//        }
 
         // 找不到method
         if (null == method) {
@@ -169,7 +153,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         for (int i = 0; i < args.length; i++) {
             Type paramType = genericParameterTypes[i];
-            args[i] = JSONUtils.parseObject(JSONUtils.toJSONString(argJSON.get(i)), paramType);
+            args[i] = JacksonSerialize.parseObject(JacksonSerialize.toJSONString(argJSON.get(i)), paramType);
         }
 
         // 构造请求
@@ -195,15 +179,14 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
      * @param status
      */
     private void sendError(ChannelHandlerContext ctx, RpcRet ret) throws SerializeException {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JSONUtils.toJSONString(ret), CharsetUtil.UTF_8));
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
         ctx.writeAndFlush(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Http server handler error", cause);
+        log.error("Server handler error", cause);
         sendError(ctx, RpcRet.error(Throwables.getStackTraceAsString(cause)));
-//        ctx.close();
     }
 }

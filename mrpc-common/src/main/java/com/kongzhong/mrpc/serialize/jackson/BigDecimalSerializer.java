@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.serialize;
+package com.kongzhong.mrpc.serialize.jackson;
 
 import java.io.IOException;
 import java.math.BigDecimal;

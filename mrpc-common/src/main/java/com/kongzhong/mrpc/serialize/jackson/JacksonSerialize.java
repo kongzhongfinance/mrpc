@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.serialize;
+package com.kongzhong.mrpc.serialize.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kongzhong.mrpc.exception.SerializeException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;
@@ -15,12 +17,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
- * Jackson JSON序列化实现
+ * JSON工具类
  *
  * @author biezhi
- *         2017/5/11
+ *         2017/4/20
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JacksonSerialize {
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -39,13 +42,12 @@ public class JacksonSerialize {
 
     private static SimpleModule initModule() {
         return new SimpleModule().
-//                addSerializer(BigDecimal.class, new BigDecimalSerializer()).
-        addSerializer(LocalTime.class, new LocalTimeSerializer()).
-                        addDeserializer(LocalTime.class, new LocalTimeDeserializer()).
-                        addSerializer(LocalDate.class, new LocalDateSerializer()).
-                        addDeserializer(LocalDate.class, new LocalDateDeserializer()).
-                        addSerializer(LocalDateTime.class, new LocalDateTimeSerializer()).
-                        addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+                addSerializer(LocalTime.class, new LocalTimeSerializer()).
+                addDeserializer(LocalTime.class, new LocalTimeDeserializer()).
+                addSerializer(LocalDate.class, new LocalDateSerializer()).
+                addDeserializer(LocalDate.class, new LocalDateDeserializer()).
+                addSerializer(LocalDateTime.class, new LocalDateTimeSerializer()).
+                addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
     }
 
     public static JavaType getJavaType(Type type) {
@@ -58,16 +60,16 @@ public class JacksonSerialize {
      * @param object
      * @return
      */
-    public String toJSONString(Object object) throws SerializeException {
+    public static String toJSONString(Object object) {
         try {
             return mapper.writeValueAsString(object);
         } catch (Exception e) {
             log.error("Object to json stirng error", e);
-            throw new SerializeException(e);
+            return null;
         }
     }
 
-    public String toJSONString(Object object, boolean pretty) throws SerializeException {
+    public static String toJSONString(Object object, boolean pretty) {
         if (!pretty) {
             return toJSONString(object);
         }
@@ -75,7 +77,7 @@ public class JacksonSerialize {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
         } catch (Exception e) {
             log.error("Object to json stirng error", e);
-            throw new SerializeException(e);
+            return null;
         }
     }
 
@@ -87,7 +89,7 @@ public class JacksonSerialize {
      * @param <T>
      * @return
      */
-    public <T> T parseObject(String json, Class<T> type) throws SerializeException {
+    public static <T> T parseObject(String json, Class<T> type) throws SerializeException {
         try {
             return mapper.readValue(json, type);
         } catch (Exception e) {
@@ -99,16 +101,13 @@ public class JacksonSerialize {
     /**
      * json转obj
      */
-    public <T> T parseObject(String json, Type type) {
+    public static <T> T parseObject(String json, Type type) {
         try {
-            return mapper.readValue(json, genJavaType(type));
+            return mapper.readValue(json, getJavaType(type));
         } catch (Exception e) {
             log.error("Json parse to object error", e);
         }
         return null;
     }
 
-    private JavaType genJavaType(Type type) {
-        return mapper.getTypeFactory().constructType(type);
-    }
 }

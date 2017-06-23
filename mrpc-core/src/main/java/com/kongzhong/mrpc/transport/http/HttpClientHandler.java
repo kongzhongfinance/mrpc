@@ -5,7 +5,7 @@ import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
-import com.kongzhong.mrpc.utils.JSONUtils;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
@@ -55,9 +55,9 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 //        }
 
         try {
-            String sendBody = JSONUtils.toJSONString(requestBody);
+            String sendBody = JacksonSerialize.toJSONString(requestBody);
 
-            log.debug("Request body: \n{}", JSONUtils.toJSONString(requestBody, true));
+            log.debug("Request body: \n{}", JacksonSerialize.toJSONString(requestBody, true));
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
             req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
@@ -91,13 +91,13 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         String serviceClass = httpResponse.headers().get(HEADER_SERVICE_CLASS);
         String methodName = httpResponse.headers().get(HEADER_METHOD_NAME);
 
-        RpcResponse rpcResponse = JSONUtils.parseObject(body, RpcResponse.class);
+        RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
         if (rpcResponse.getSuccess()) {
             log.debug("Response body: \n{}", body);
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
                 Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);
-                Object object = JSONUtils.parseObject(JSONUtils.toJSONString(result), method.getGenericReturnType());
+                Object object = JacksonSerialize.parseObject(JacksonSerialize.toJSONString(result), method.getGenericReturnType());
                 rpcResponse.setResult(object);
             }
         }
@@ -110,7 +110,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Http client accept error", cause);
+        log.error("Client accept error", cause);
         super.sendError(ctx, cause);
 //        ctx.close();
     }

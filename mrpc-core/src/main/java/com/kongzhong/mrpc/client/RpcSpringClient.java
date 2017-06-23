@@ -2,10 +2,12 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -35,6 +37,10 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (CollectionUtils.isNotEmpty(registryBeanMap)) {
             registryBeanMap.values().forEach(registryBean -> serviceDiscoveryMap.put(registryBean.getName(), this.parseRegistry(registryBean)));
+        }
+
+        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(this.directAddress)) {
+            throw new SystemException("Service discovery or direct address must select one.");
         }
 
         // 客户端拦截器

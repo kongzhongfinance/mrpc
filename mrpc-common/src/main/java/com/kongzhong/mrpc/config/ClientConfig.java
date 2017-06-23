@@ -27,12 +27,13 @@ public class ClientConfig {
     private TransportEnum transport;
 
     // 客户端服务调用超时，单位/秒
-    private int waitTimeout = 10;
+    private Integer waitTimeout = 10;
 
     // 快速失效重试次数
-    private int failOverRetry = 3;
+    private Integer failOverRetry = 3;
 
     private static final class ClientCommonConfigHolder {
+
         private static final ClientConfig INSTANCE = new ClientConfig();
     }
 

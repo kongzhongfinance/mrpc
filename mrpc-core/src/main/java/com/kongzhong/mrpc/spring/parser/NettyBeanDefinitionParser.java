@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.spring.parser;
 
 import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.utils.StringUtils;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -18,10 +19,21 @@ public class NettyBeanDefinitionParser extends AbstractBeanDefinitionParser {
         String lowWaterMark = element.getAttribute("lowWaterMark");
         String highWaterMark = element.getAttribute("highWaterMark");
 
-        builder.addPropertyValue("connTimeout", Integer.valueOf(connTimeout));
-        builder.addPropertyValue("backlog", Integer.valueOf(backlog));
-        builder.addPropertyValue("lowWaterMark", Integer.valueOf(lowWaterMark));
-        builder.addPropertyValue("highWaterMark", Integer.valueOf(highWaterMark));
+        if (StringUtils.isNotEmpty(connTimeout)) {
+            builder.addPropertyValue("connTimeout", Integer.valueOf(connTimeout));
+        }
+
+        if (StringUtils.isNotEmpty(backlog)) {
+            builder.addPropertyValue("backlog", Integer.valueOf(backlog));
+        }
+
+        if (StringUtils.isNotEmpty(lowWaterMark)) {
+            builder.addPropertyValue("lowWaterMark", Integer.valueOf(lowWaterMark));
+        }
+
+        if (StringUtils.isNotEmpty(highWaterMark)) {
+            builder.addPropertyValue("highWaterMark", Integer.valueOf(highWaterMark));
+        }
 
         return builder.getBeanDefinition();
     }

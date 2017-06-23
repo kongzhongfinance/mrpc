@@ -30,4 +30,8 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         return builder.getBeanDefinition();
     }
 
+    @Override
+    protected boolean shouldGenerateId() {
+        return true;
+    }
 }

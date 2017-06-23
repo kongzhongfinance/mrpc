@@ -9,7 +9,7 @@
     <xsd:element name="registry">
         <xsd:complexType>
 
-            <xsd:attribute name="name" type="xsd:string" use="required" default="default">
+            <xsd:attribute name="name" type="xsd:string" use="optional" default="default">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 注册中心标识 ]]></xsd:documentation>
                 </xsd:annotation>
@@ -218,7 +218,7 @@
     <xsd:element name="netty">
         <xsd:complexType>
 
-            <xsd:attribute name="connTimeout" type="xsd:int" use="required" default="2">
+            <xsd:attribute name="connTimeout" type="xsd:int" use="optional" default="2">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 客户端连接超时 ]]></xsd:documentation>
                 </xsd:annotation>

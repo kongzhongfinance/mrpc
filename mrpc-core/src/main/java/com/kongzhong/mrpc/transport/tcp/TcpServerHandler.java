@@ -5,6 +5,7 @@ import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.RpcSpringServer;
 import com.kongzhong.mrpc.transport.SimpleServerHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,7 +28,8 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        log.debug("Tcp server request: {}", request);
+        log.debug("Request body: \n{}", JacksonSerialize.toJSONString(request, true));
+
         RpcResponse response = new RpcResponse();
         TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, serviceBeanMap);
         //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池
@@ -36,9 +38,8 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Tcp server accept error", cause);
+        log.error("Server accept error", cause);
         this.sendError(ctx, cause);
-//        ctx.close();
     }
 
     /**

@@ -50,6 +50,7 @@ public class PropertiesParse {
         clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_S1_CLIENT, env.getProperty(WAIT_TIMEOUT_S2_CLIENT, "10"))));
         clientProperties.setFailOverRetry(Integer.valueOf(env.getProperty(FAILOVER_TRCRY_NUMBER_S1_CLIENT, env.getProperty(FAILOVER_TRCRY_NUMBER_S2_CLIENT, "3"))));
 
+        log.debug(clientProperties.toString());
         return clientProperties;
     }
 
@@ -95,20 +96,21 @@ public class PropertiesParse {
 
         // netty配置读取
         Map<String, Object> nettyConfigMap = getPropertiesStartingWith(env, "mrpc.netty");
-
         if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
             NettyConfig nettyConfig = new NettyConfig();
 
-            int connTimeout = (Integer) nettyConfigMap.getOrDefault("mrpc.netty.connTimeout",
+            Object connTimeout = nettyConfigMap.getOrDefault("mrpc.netty.connTimeout",
                     nettyConfigMap.getOrDefault("mrpc.netty.conn-timeout", 10));
 
-            nettyConfig.setConnTimeout(connTimeout);
+            nettyConfig.setConnTimeout(Integer.valueOf(connTimeout.toString()));
 
-            int backlog = (Integer) nettyConfigMap.getOrDefault("mrpc.netty.backlog", 1024);
-            nettyConfig.setBacklog(backlog);
-
+            Object backlog = nettyConfigMap.getOrDefault("mrpc.netty.backlog", 1024);
+            nettyConfig.setBacklog(Integer.valueOf(backlog.toString()));
             commonProperties.setNetty(nettyConfig);
         }
+
+        log.debug(commonProperties.toString());
+
         return commonProperties;
     }
 
