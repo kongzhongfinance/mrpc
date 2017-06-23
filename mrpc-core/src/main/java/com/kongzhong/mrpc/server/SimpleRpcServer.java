@@ -257,9 +257,6 @@ public abstract class SimpleRpcServer {
      */
     protected String getBindAddress(ServiceBean serviceBean) {
         String address = this.address;
-        if (StringUtils.isNotEmpty(elasticIp)) {
-            address = elasticIp;
-        }
         if (StringUtils.isNotEmpty(serviceBean.getAddress())) {
             address = serviceBean.getAddress();
         }

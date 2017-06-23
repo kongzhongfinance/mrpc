@@ -20,10 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 import java.util.Map;
@@ -95,9 +97,26 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             super.test = rpcServerProperties.getTest();
             super.transport = rpcServerProperties.getTransport();
             super.serialize = rpcServerProperties.getSerialize();
-
-            super.startServer();
         };
+    }
+
+    @Bean
+    @Order(-1)
+    public RpcDaemon rpcDaemon() {
+        return new RpcDaemon(this);
+    }
+
+    private class RpcDaemon implements CommandLineRunner {
+        private RpcServerAutoConfigure simpleRpcServer;
+
+        RpcDaemon(RpcServerAutoConfigure simpleRpcServer) {
+            this.simpleRpcServer = simpleRpcServer;
+        }
+
+        @Override
+        public void run(String... strings) throws Exception {
+            this.simpleRpcServer.startServer();
+        }
     }
 
     /**
