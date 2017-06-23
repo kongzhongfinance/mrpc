@@ -7,7 +7,7 @@
     <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.7-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
 
     <modules>
         <module>mrpc-common</module>
@@ -27,14 +27,14 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
-        <parent.version>0.0.7-SNAPSHOT</parent.version>
+        <parent.version>0.0.8-SNAPSHOT</parent.version>
 
-        <mrpc-common.version>0.0.7-SNAPSHOT</mrpc-common.version>
-        <mrpc-core.version>0.0.7-SNAPSHOT</mrpc-core.version>
-        <mrpc-starter.version>0.0.7-SNAPSHOT</mrpc-starter.version>
-        <mrpc-zk.version>0.0.7-SNAPSHOT</mrpc-zk.version>
-        <mrpc-serialize-kryo.version>0.0.7-SNAPSHOT</mrpc-serialize-kryo.version>
-        <mrpc-serialize-protostuff.version>0.0.7-SNAPSHOT</mrpc-serialize-protostuff.version>
+        <mrpc-common.version>0.0.8-SNAPSHOT</mrpc-common.version>
+        <mrpc-core.version>0.0.8-SNAPSHOT</mrpc-core.version>
+        <mrpc-starter.version>0.0.8-SNAPSHOT</mrpc-starter.version>
+        <mrpc-zk.version>0.0.8-SNAPSHOT</mrpc-zk.version>
+        <mrpc-serialize-kryo.version>0.0.8-SNAPSHOT</mrpc-serialize-kryo.version>
+        <mrpc-serialize-protostuff.version>0.0.8-SNAPSHOT</mrpc-serialize-protostuff.version>
 
         <protostuff.version>1.0.9</protostuff.version>
         <objenesis.version>2.1</objenesis.version>

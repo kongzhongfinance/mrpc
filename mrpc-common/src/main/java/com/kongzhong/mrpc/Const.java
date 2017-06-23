@@ -8,7 +8,7 @@ package com.kongzhong.mrpc;
  */
 public interface Const {
 
-    String VERSION = "0.0.7-SNAPSHOT";
+    String VERSION = "0.0.8-SNAPSHOT";
 
     // http头信息请求id key
     String HEADER_REQUEST_ID = "requestId";
