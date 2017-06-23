@@ -2,12 +2,15 @@ package com.kongzhong.mrpc.transport;
 
 import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.interceptor.*;
+import com.kongzhong.mrpc.interceptor.InterceptorChain;
+import com.kongzhong.mrpc.interceptor.Invocation;
+import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.server.RpcMapping;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
@@ -19,16 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import static com.kongzhong.mrpc.Const.INTERCEPTOR_NAME_PREFIX;
+import static com.kongzhong.mrpc.Const.SERVER_INTERCEPTOR_PREFIX;
 
 /**
  * 抽象响应回调处理
  *
  * @param <T>
  */
+@Slf4j
 public abstract class SimpleResponseCallback<T> implements Callable<T> {
-
-    public static final Logger log = LoggerFactory.getLogger(SimpleResponseCallback.class);
 
     protected Map<String, ServiceBean> serviceBeanMap;
     protected List<RpcServerInteceptor> interceptors;
@@ -42,11 +44,11 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
         this.response = response;
         this.serviceBeanMap = serviceBeanMap;
         this.interceptors = RpcMapping.me().getInteceptors();
-        if (null != interceptors && !interceptors.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(interceptors)) {
             hasInterceptors = true;
             int pos = interceptors.size();
             for (RpcServerInteceptor rpcInteceptor : interceptors) {
-                interceptorChain.addLast(INTERCEPTOR_NAME_PREFIX + (pos--), rpcInteceptor);
+                interceptorChain.addLast(SERVER_INTERCEPTOR_PREFIX + (pos--), rpcInteceptor);
             }
         }
     }

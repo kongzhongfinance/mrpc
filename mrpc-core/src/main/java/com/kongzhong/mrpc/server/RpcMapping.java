@@ -2,9 +2,12 @@ package com.kongzhong.mrpc.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,42 @@ public class RpcMapping {
 
     private static final class RpcMappingHolder {
         private static final RpcMapping INSTANCE = new RpcMapping();
+    }
+
+    public void addServiceBean(Object bean, String beanName) {
+        RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
+        try {
+            if (null == rpcService) {
+                return;
+            }
+            Object realBean = AopTargetUtils.getTarget(bean);
+            String serviceName = rpcService.value().getName();
+            String appId = rpcService.appId();
+            String registry = rpcService.registry();
+            String address = rpcService.address();
+            String elasticIp = rpcService.elasticIp();
+
+            if (NoInterface.class.getName().equals(serviceName)) {
+                Class<?>[] intes = realBean.getClass().getInterfaces();
+                if (null == intes || intes.length != 1) {
+                    serviceName = realBean.getClass().getName();
+                } else {
+                    serviceName = intes[0].getName();
+                }
+            }
+
+            ServiceBean serviceBean = new ServiceBean();
+            serviceBean.setAppId(appId);
+            serviceBean.setBean(realBean);
+            serviceBean.setBeanName(beanName);
+            serviceBean.setServiceName(serviceName);
+            serviceBean.setRegistry(registry);
+            serviceBean.setAddress(address);
+            serviceBean.setElasticIp(elasticIp);
+            this.addServiceBean(serviceBean);
+        } catch (Exception e) {
+            log.error("Add service bean [" + beanName + "] error", e);
+        }
     }
 
     public RpcMapping addServiceBean(ServiceBean serviceBean) {

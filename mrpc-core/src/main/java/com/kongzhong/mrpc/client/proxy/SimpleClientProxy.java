@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static com.kongzhong.mrpc.Const.INTERCEPTOR_NAME_PREFIX;
+import static com.kongzhong.mrpc.Const.CLIENT_INTERCEPTOR_PREFIX;
 
 /**
  * 默认的客户端代理
@@ -68,7 +68,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
             int pos = interceptors.size();
             log.info("Add interceptors {}", interceptors.toString());
             for (RpcClientInteceptor rpcInteceptor : interceptors) {
-                interceptorChain.addLast(INTERCEPTOR_NAME_PREFIX + (pos--), rpcInteceptor);
+                interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcInteceptor);
             }
         }
     }

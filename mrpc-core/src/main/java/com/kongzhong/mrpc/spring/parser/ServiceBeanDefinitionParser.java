@@ -14,18 +14,19 @@ public class ServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServiceBean.class);
 
         String serviceName = element.getAttribute("interface");
-        String ref = element.getAttribute("ref");
+        String appId = element.getAttribute("appId");
+        String beanName = element.getAttribute("ref");
         String address = element.getAttribute("address");
         String elasticIp = element.getAttribute("elasticIp");
         String registry = element.getAttribute("registry");
-        String directed = element.getAttribute("directed");
 
+        builder.addPropertyValue("appId", appId);
         builder.addPropertyValue("serviceName", serviceName);
-        builder.addPropertyValue("beanName", ref);
+        builder.addPropertyValue("beanName", beanName);
         builder.addPropertyValue("address", address);
         builder.addPropertyValue("elasticIp", elasticIp);
         builder.addPropertyValue("registry", registry);
-        builder.addPropertyValue("directed", Boolean.valueOf(directed));
+        builder.addPropertyReference("bean", beanName);
 
         return builder.getBeanDefinition();
     }

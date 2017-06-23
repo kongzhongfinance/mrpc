@@ -4,7 +4,6 @@ import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
-import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
@@ -64,23 +63,9 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
                 try {
                     realBean = AopTargetUtils.getTarget(target);
                 } catch (Exception e) {
-                    log.error("Initializing service bean error", e);
+                    log.error("Get bean target error", e);
                 }
-                RpcService rpcService = realBean.getClass().getAnnotation(RpcService.class);
-                String serviceName = rpcService.value().getName();
-                if (NoInterface.class.getName().equals(serviceName)) {
-                    Class<?>[] intes = realBean.getClass().getInterfaces();
-                    if (null == intes || intes.length != 1) {
-                        serviceName = realBean.getClass().getName();
-                    } else {
-                        serviceName = intes[0].getName();
-                    }
-                }
-                ServiceBean serviceBean = new ServiceBean();
-                serviceBean.setBean(realBean);
-                serviceBean.setBeanName(beanName);
-                serviceBean.setServiceName(serviceName);
-                rpcMapping.addServiceBean(serviceBean);
+                rpcMapping.addServiceBean(realBean, beanName);
             });
         }
 

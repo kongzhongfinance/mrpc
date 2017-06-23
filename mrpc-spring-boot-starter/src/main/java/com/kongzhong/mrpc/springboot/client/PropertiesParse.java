@@ -41,13 +41,13 @@ public class PropertiesParse {
         }
 
         RpcClientProperties clientProperties = new RpcClientProperties();
-        clientProperties.setAppId(env.getProperty(APP_ID_CLIENT, "default"));
+        clientProperties.setAppId(env.getProperty(CLINET_APP_ID_STYLE1, env.getProperty(CLINET_APP_ID_STYLE2, "default")));
         clientProperties.setTransport(env.getProperty(TRANSPORT_CLIENT, "tcp"));
         clientProperties.setSerialize(env.getProperty(SERIALIZE_CLIENT, "kyro"));
-        clientProperties.setLbStrategy(env.getProperty(LB_STRATEGY_S1_CLIENT, env.getProperty(LB_STRATEGY_S2_CLIENT, LbStrategyEnum.ROUND.name())));
-        clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_S1_CLIENT, env.getProperty(LB_STRATEGY_S2_CLIENT)));
-        clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_S1_CLIENT, env.getProperty(DIRECT_ADDRESS_S2_CLIENT)));
-        clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_S1_CLIENT, env.getProperty(WAIT_TIMEOUT_S2_CLIENT, "10"))));
+        clientProperties.setLbStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT, LbStrategyEnum.ROUND.name())));
+        clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT)));
+        clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_STYLE1_CLIENT, env.getProperty(DIRECT_ADDRESS_STYLE2_CLIENT)));
+        clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_STYLE1_CLIENT, env.getProperty(WAIT_TIMEOUT_STYLE2_CLIENT, "10"))));
         clientProperties.setFailOverRetry(Integer.valueOf(env.getProperty(FAILOVER_TRCRY_NUMBER_S1_CLIENT, env.getProperty(FAILOVER_TRCRY_NUMBER_S2_CLIENT, "3"))));
 
         log.debug(clientProperties.toString());
@@ -95,16 +95,16 @@ public class PropertiesParse {
         commonProperties.setCustom(custom);
 
         // netty配置读取
-        Map<String, Object> nettyConfigMap = getPropertiesStartingWith(env, "mrpc.netty");
+        Map<String, Object> nettyConfigMap = getPropertiesStartingWith(env, NETTY_CONFIG_PREFIX);
         if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
             NettyConfig nettyConfig = new NettyConfig();
 
-            Object connTimeout = nettyConfigMap.getOrDefault("mrpc.netty.connTimeout",
-                    nettyConfigMap.getOrDefault("mrpc.netty.conn-timeout", 10));
+            Object connTimeout = nettyConfigMap.getOrDefault(NETTY_CONN_STYLE1_TIMEOUT,
+                    nettyConfigMap.getOrDefault(NETTY_CONN_STYLE2_TIMEOUT, 10));
 
             nettyConfig.setConnTimeout(Integer.valueOf(connTimeout.toString()));
 
-            Object backlog = nettyConfigMap.getOrDefault("mrpc.netty.backlog", 1024);
+            Object backlog = nettyConfigMap.getOrDefault(NETTY_BACKLOG, 1024);
             nettyConfig.setBacklog(Integer.valueOf(backlog.toString()));
             commonProperties.setNetty(nettyConfig);
         }

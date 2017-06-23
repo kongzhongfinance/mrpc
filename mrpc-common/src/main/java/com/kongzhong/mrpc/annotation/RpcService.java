@@ -28,14 +28,14 @@ public @interface RpcService {
      *
      * @return
      */
-    String appId() default "default";
+    String appId() default "";
 
     /**
      * 注册中心
      *
      * @return
      */
-    String registry() default "default";
+    String registry() default "";
 
     /**
      * 服务绑定地址
@@ -50,4 +50,5 @@ public @interface RpcService {
      * @return
      */
     String elasticIp() default "";
+
 }

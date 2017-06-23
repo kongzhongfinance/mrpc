@@ -32,11 +32,16 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
-import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
+import static com.kongzhong.mrpc.Const.*;
 
+/**
+ * RPC服务端自动配置
+ *
+ * @author biezhi
+ *         2017/5/13
+ */
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
-@ConditionalOnProperty("mrpc.server.transport")
+@ConditionalOnProperty(SERVER_TRANSPORT)
 @Slf4j
 public class RpcServerAutoConfigure extends SimpleRpcServer {
 
@@ -67,13 +72,13 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     private static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     @Bean
-    public InitBean initBean() {
+    public ServiceBeanProcessor initBean() {
         log.debug("Initializing rpc service bean");
-        return new InitBean(rpcMapping);
+        return new ServiceBeanProcessor(rpcMapping);
     }
 
     @Bean
-    @ConditionalOnBean(InitBean.class)
+    @ConditionalOnBean(ServiceBeanProcessor.class)
     public BeanFactoryAware beanFactoryAware() {
         return (beanFactory) -> {
             log.debug("Initializing rpc server beanFactoryAware ");
@@ -102,21 +107,8 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Bean
     @Order(-1)
-    public RpcDaemon rpcDaemon() {
-        return new RpcDaemon(this);
-    }
-
-    private class RpcDaemon implements CommandLineRunner {
-        private RpcServerAutoConfigure simpleRpcServer;
-
-        RpcDaemon(RpcServerAutoConfigure simpleRpcServer) {
-            this.simpleRpcServer = simpleRpcServer;
-        }
-
-        @Override
-        public void run(String... strings) throws Exception {
-            this.simpleRpcServer.startServer();
-        }
+    public CommandLineRunner rpcDaemon() {
+        return (args) -> super.startServer();
     }
 
     /**

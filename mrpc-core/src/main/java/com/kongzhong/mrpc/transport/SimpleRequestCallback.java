@@ -88,7 +88,7 @@ public class SimpleRequestCallback implements Callable<Boolean> {
             lock.lock();
             if (future.isSuccess()) {
                 retries.set(0);
-                log.debug("Client connect success");
+                log.debug("Client {} connect success", future.channel());
                 if (null != referNames && referNames.size() > 0) {
                     //和服务器连接成功后, 获取MessageSendHandler对象
                     Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
@@ -100,13 +100,13 @@ public class SimpleRequestCallback implements Callable<Boolean> {
                 }
             } else {
                 // 启动重连
-                log.warn("Client reconnect [{}] ({})", serverAddress, retries.get());
+                log.warn("Client {} reconnect [{}] ({})", future.channel(), serverAddress, retries.get());
                 final EventLoop loop = future.channel().eventLoop();
                 loop.schedule(() -> {
                     if (retries.get() >= DEFAULT_TRCRY) {
                         future.channel().close();
                         Connections.me().getAliveServers().remove(serverAddress.toString().substring(1));
-                        log.warn("Client channel connect fail, closed.");
+                        log.warn("Client channel {} connect fail, closed.", future.channel());
                     } else {
                         connectServer(new Bootstrap(), loop);
                         retries.incrementAndGet();

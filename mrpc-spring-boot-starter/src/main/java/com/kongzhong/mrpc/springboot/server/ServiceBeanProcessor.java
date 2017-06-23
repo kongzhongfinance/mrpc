@@ -2,13 +2,10 @@ package com.kongzhong.mrpc.springboot.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
-import com.kongzhong.mrpc.model.NoInterface;
-import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -19,13 +16,12 @@ import org.springframework.core.annotation.AnnotationUtils;
  * @author biezhi
  *         2017/5/13
  */
-public class InitBean implements BeanPostProcessor {
-
-    private static final Logger log = LoggerFactory.getLogger(InitBean.class);
+@Slf4j
+public class ServiceBeanProcessor implements BeanPostProcessor {
 
     public RpcMapping rpcMapping;
 
-    public InitBean(RpcMapping rpcMapping) {
+    public ServiceBeanProcessor(RpcMapping rpcMapping) {
         this.rpcMapping = rpcMapping;
     }
 
@@ -41,32 +37,20 @@ public class InitBean implements BeanPostProcessor {
         if (hasInterface) {
             rpcMapping.addInterceptor((RpcServerInteceptor) bean);
         }
+
         RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
-        try {
-            if (null == rpcService) {
-                return bean;
-            }
-            Object realBean = AopTargetUtils.getTarget(bean);
-            String serviceName = rpcService.value().getName();
-            if (NoInterface.class.getName().equals(serviceName)) {
-                Class<?>[] intes = realBean.getClass().getInterfaces();
-                if (null == intes || intes.length != 1) {
-                    serviceName = realBean.getClass().getName();
-                } else {
-                    serviceName = intes[0].getName();
-                }
-            }
-
-            ServiceBean serviceBean = new ServiceBean();
-            serviceBean.setBean(realBean);
-            serviceBean.setBeanName(beanName);
-            serviceBean.setServiceName(serviceName);
-
-            rpcMapping.addServiceBean(serviceBean);
-
-        } catch (Exception e) {
-            log.error("Init bean error", e);
+        if (null == rpcService) {
+            return bean;
         }
+        Object realBean = null;
+        try {
+            realBean = AopTargetUtils.getTarget(bean);
+        } catch (Exception e) {
+            log.error("Get bean target error", e);
+        }
+        rpcMapping.addServiceBean(realBean, beanName);
+        System.out.println("bean = " + bean);
+        System.out.println("realBean = " + realBean);
         return bean;
     }
 

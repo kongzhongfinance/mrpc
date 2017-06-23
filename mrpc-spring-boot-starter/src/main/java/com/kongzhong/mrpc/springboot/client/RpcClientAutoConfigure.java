@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.springboot.client;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Bean;
  *         2017/5/13
  */
 @Slf4j
-@ConditionalOnProperty("mrpc.client.transport")
+@ConditionalOnProperty(Const.TRANSPORT_CLIENT)
 public class RpcClientAutoConfigure {
 
     @Bean

@@ -20,7 +20,8 @@ public interface Const {
     String HEADER_METHOD_NAME = "methodName";
 
     // 拦截器名称前缀
-    String INTERCEPTOR_NAME_PREFIX = "mrpc:server:interceptor:";
+    String SERVER_INTERCEPTOR_PREFIX = "server-interceptor-";
+    String CLIENT_INTERCEPTOR_PREFIX = "client-interceptor-";
 
     // 测试环境变量
     String TEST_KEY = "mrpc.test";
@@ -30,32 +31,44 @@ public interface Const {
 
     // 客户端传输协议
     String TRANSPORT_CLIENT = "mrpc.client.transport";
+    String SERVER_TRANSPORT = "mrpc.server.transport";
 
     // 客户端appId
-    String APP_ID_CLIENT = "mrpc.client.appId";
+    String CLINET_APP_ID_STYLE1 = "mrpc.client.appId";
+    String CLINET_APP_ID_STYLE2 = "mrpc.client.app-id";
 
     // 客户端序列化配置
     String SERIALIZE_CLIENT = "mrpc.client.serialize";
 
     // 客户端负载均衡配置
-    String LB_STRATEGY_S1_CLIENT = "mrpc.client.lb-strategy";
-    String LB_STRATEGY_S2_CLIENT = "mrpc.client.lbStrategy";
+    String LB_STRATEGY_STYLE1_CLIENT = "mrpc.client.lb-strategy";
+    String LB_STRATEGY_STYLE2_CLIENT = "mrpc.client.lbStrategy";
 
     // 客户端高可用配置
-    String HA_STRATEGY_S1_CLIENT = "mrpc.client.ha-strategy";
-    String HA_STRATEGY_S2_CLIENT = "mrpc.client.haStrategy";
+    String HA_STRATEGY_STYLE1_CLIENT = "mrpc.client.ha-strategy";
+    String HA_STRATEGY_STYLE2_CLIENT = "mrpc.client.haStrategy";
 
     // 客户端直连地址配置
-    String DIRECT_ADDRESS_S1_CLIENT = "mrpc.client.directAdress";
-    String DIRECT_ADDRESS_S2_CLIENT = "mrpc.client.direct-address";
+    String DIRECT_ADDRESS_STYLE1_CLIENT = "mrpc.client.directAdress";
+    String DIRECT_ADDRESS_STYLE2_CLIENT = "mrpc.client.direct-address";
 
     // 客户端等待超时配置
-    String WAIT_TIMEOUT_S1_CLIENT = "mrpc.client.wait-timeout";
-    String WAIT_TIMEOUT_S2_CLIENT = "mrpc.client.waitTimeout";
+    String WAIT_TIMEOUT_STYLE1_CLIENT = "mrpc.client.wait-timeout";
+    String WAIT_TIMEOUT_STYLE2_CLIENT = "mrpc.client.waitTimeout";
 
     // 客户端FailOver重试次数
     String FAILOVER_TRCRY_NUMBER_S1_CLIENT = "mrpc.client.failover-retry";
     String FAILOVER_TRCRY_NUMBER_S2_CLIENT = "mrpc.client.failoverRetry";
+
+    // netty配置前缀
+    String NETTY_CONFIG_PREFIX = "mrpc.netty";
+
+    // netty客户端连接超时时长，单位/秒
+    String NETTY_CONN_STYLE1_TIMEOUT = "mrpc.netty.connTimeout";
+    String NETTY_CONN_STYLE2_TIMEOUT = "mrpc.netty.conn-timeout";
+
+    // netty tcp backlog
+    String NETTY_BACKLOG = "mrpc.netty.backlog";
 
     // 注册中心
     String REGSITRY_KEY = "mrpc.registry";
@@ -74,4 +87,5 @@ public interface Const {
 
     // 客户端服务发现bean前缀
     String MRPC_CLIENT_DISCOVERY_PREFIX = "mrpc-client-discovery-";
+
 }

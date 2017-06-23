@@ -181,6 +181,12 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="appId" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 服务所属APPID ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
             <xsd:attribute name="ref" type="xsd:string">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 服务实现 "<ref bean='...'/>". ]]></xsd:documentation>
@@ -236,7 +242,7 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="highWaterMark" type="xsd:int">
+            <xsd:attribute name="highWaterMark" type="xsd:int" use="optional">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ highWaterMark ]]></xsd:documentation>
                 </xsd:annotation>

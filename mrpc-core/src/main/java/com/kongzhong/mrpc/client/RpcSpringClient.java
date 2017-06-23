@@ -49,7 +49,10 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
             inteceptorMap.values().forEach(super::addInterceptor);
         }
 
-        this.nettyConfig = ctx.getBean(NettyConfig.class);
+        Map<String, NettyConfig> nettyConfigMap = ctx.getBeansOfType(NettyConfig.class);
+        if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
+            this.nettyConfig = nettyConfigMap.values().stream().findFirst().get();
+        }
 
         // 客户端引用
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);

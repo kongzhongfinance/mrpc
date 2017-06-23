@@ -36,6 +36,9 @@ import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
 @NoArgsConstructor
 public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegistryPostProcessor {
 
+    /**
+     * 自定义引用配置
+     */
     private Map<String, Map<String, String>> customServiceMap;
 
     @Override
@@ -46,8 +49,12 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         log.debug("BootRpcClient postProcessBeanFactory");
 
-        // 加载配置
+        // 读取Bean工厂的引用对象
         Referers referersObject = beanFactory.getBean(Referers.class);
+        if (null == referersObject) {
+            return;
+        }
+
         super.referers = referersObject.getReferers();
 
         // 客户端拦截器
@@ -70,10 +77,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.directAddress = clientConfig.getDirectAddress();
         ClientConfig.me().setFailOverRetry(clientConfig.getFailOverRetry());
 
-        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(clientConfig.getDirectAddress())) {
-            throw new SystemException("Service discovery or direct address must select one.");
-        }
-
         // 注册中心
         if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {
             commonProperties.getRegistry().forEach((registryName, map) -> {
@@ -81,6 +84,10 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
                 serviceDiscoveryMap.put(registryName, serviceDiscovery);
                 beanFactory.registerSingleton(MRPC_CLIENT_DISCOVERY_PREFIX + registryName, serviceDiscovery);
             });
+        }
+
+        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(clientConfig.getDirectAddress())) {
+            throw new SystemException("Service discovery or direct address must select one.");
         }
 
         try {

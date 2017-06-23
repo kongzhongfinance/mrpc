@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.server;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
@@ -10,12 +11,14 @@ import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
+import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -29,6 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Map;
@@ -256,6 +260,14 @@ public abstract class SimpleRpcServer {
         }
     }
 
+    protected String getAppId(ServiceBean serviceBean) {
+        String appId = this.appId;
+        if (StringUtils.isNotEmpty(serviceBean.getAppId())) {
+            appId = serviceBean.getAppId();
+        }
+        return appId;
+    }
+
     /**
      * 获取服务暴露的地址 ip:port
      *
@@ -285,7 +297,7 @@ public abstract class SimpleRpcServer {
      * @return
      */
     protected ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        String registryName = serviceBean.getRegistry();
+        String registryName = StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : "default";
         return serviceRegistryMap.get(registryName);
     }
 

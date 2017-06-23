@@ -14,12 +14,11 @@ import lombok.ToString;
 public class ServiceBean {
 
     private String appId;
-    private String registry = "default";
+    private String registry;
     private String serviceName;
     private Object bean;
     private String beanName;
     private String address;
     private String elasticIp;
-    private boolean directed;
 
 }

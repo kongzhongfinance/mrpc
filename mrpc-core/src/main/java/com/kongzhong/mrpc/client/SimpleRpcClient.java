@@ -159,7 +159,8 @@ public abstract class SimpleRpcClient {
      * @return
      */
     protected ServiceDiscovery getDiscovery(ClientBean clientBean) {
-        ServiceDiscovery serviceDiscovery = serviceDiscoveryMap.get(clientBean.getRegistry());
+        String registryName = StringUtils.isNotEmpty(clientBean.getRegistry()) ? clientBean.getRegistry() : "default";
+        ServiceDiscovery serviceDiscovery = serviceDiscoveryMap.get(registryName);
         return serviceDiscovery;
     }
 
