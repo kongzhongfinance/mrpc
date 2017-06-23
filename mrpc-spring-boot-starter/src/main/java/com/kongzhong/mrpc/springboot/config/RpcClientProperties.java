@@ -36,7 +36,7 @@ public class RpcClientProperties {
     // 客户端连接超时时间，默认10秒
     private int waitTimeout = 10;
 
-    // 客户端重试次数
-    private int retryNumber = 3;
+    // FailOver重试次数
+    private int failOverRetry = 3;
 
 }

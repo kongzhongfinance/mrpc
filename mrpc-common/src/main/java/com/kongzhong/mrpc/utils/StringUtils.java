@@ -39,4 +39,12 @@ public class StringUtils {
         return fix + "_" + (uuid.toString().replaceAll("-", ""));
     }
 
+    public static String getSimpleClassName(Class<?> clazz) {
+        String name = clazz.getName();
+        if (name.indexOf('.') != -1) {
+            name = name.substring(name.lastIndexOf('.') + 1);
+        }
+        return name.substring(0, 1).toLowerCase() + name.substring(1);
+    }
+
 }

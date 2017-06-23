@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.model;
 
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -15,13 +16,18 @@ public class ClientBean {
     private String id;
     private String serviceName;
     private Class<?> serviceClass;
-    private String registry = "default";
+    private String registry;
     private String directAddress;
     private int waitTimeout = 10;
-    private int retryNumber = 3;
 
     public ClientBean(Class<?> serviceClass) {
-        this.serviceClass = serviceClass;
-        this.serviceName = serviceClass.getName();
+        this(StringUtils.getSimpleClassName(serviceClass), serviceClass);
     }
+
+    public ClientBean(String id, Class<?> serviceClass) {
+        this.id = id;
+        this.serviceName = serviceClass.getName();
+        this.serviceClass = serviceClass;
+    }
+
 }

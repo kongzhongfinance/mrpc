@@ -1,16 +1,17 @@
 package com.kongzhong.mrpc.springboot.client;
 
-import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
+import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,13 +35,7 @@ import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
 @NoArgsConstructor
 public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegistryPostProcessor {
 
-    private CommonProperties commonProperties;
-    private RpcClientProperties rpcClientProperties;
-
-    /**
-     * 自定义服务配置
-     */
-    private Map<String, Map<String, String>> customServiceMap = Maps.newHashMap();
+    private Map<String, Map<String, String>> customServiceMap;
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -63,27 +58,30 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         // 解析客户端配置
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
 
-        this.rpcClientProperties = PropertiesParse.getRpcClientProperties(configurableEnvironment);
-        this.commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
-        this.customServiceMap = this.commonProperties.getCustom();
+        RpcClientProperties rpcClientProperties = PropertiesParse.getRpcClientProperties(configurableEnvironment);
+        CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
+        this.customServiceMap = commonProperties.getCustom();
 
-        super.transport = rpcClientProperties.getTransport();
         super.appId = rpcClientProperties.getAppId();
+        super.transport = rpcClientProperties.getTransport();
+        super.serialize = rpcClientProperties.getSerialize();
         super.directAddress = rpcClientProperties.getDirectAddress();
+        super.directAddress = rpcClientProperties.getDirectAddress();
+        super.failOverRetry = rpcClientProperties.getFailOverRetry();
 
         // 注册中心
-        if (null != commonProperties.getRegistry() && !commonProperties.getRegistry().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {
             commonProperties.getRegistry().forEach((registryName, map) -> {
                 ServiceDiscovery serviceDiscovery = mapToDiscovery(map);
                 serviceDiscoveryMap.put(registryName, serviceDiscovery);
                 beanFactory.registerSingleton(MRPC_CLIENT_DISCOVERY_PREFIX + registryName, serviceDiscovery);
-                usedRegistry = true;
             });
         }
 
-        if (!usedRegistry && StringUtils.isEmpty(rpcClientProperties.getDirectAddress())) {
+        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(rpcClientProperties.getDirectAddress())) {
             throw new SystemException("Service discovery or direct must select one.");
         }
+
         try {
             super.init();
             // 初始化客户端引用服务
@@ -94,6 +92,33 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         } catch (Exception e) {
             log.error("RPC client init error", e);
         }
+    }
+
+    @Override
+    protected boolean usedRegistry(ClientBean clientBean) {
+        boolean usedRegistry = super.usedRegistry(clientBean);
+        if (CollectionUtils.isNotEmpty(customServiceMap) && customServiceMap.containsKey(clientBean.getId())) {
+            Map<String, String> customConfig = customServiceMap.get(clientBean.getId());
+            if (customConfig.containsKey("registry")) {
+                return StringUtils.isNotEmpty(customConfig.get("registry"));
+            }
+        }
+        return usedRegistry;
+    }
+
+    @Override
+    protected String getDirectAddress(ClientBean clientBean) {
+        String directAddress = super.getDirectAddress(clientBean);
+        if (CollectionUtils.isNotEmpty(customServiceMap) && customServiceMap.containsKey(clientBean.getId())) {
+            Map<String, String> customConfig = customServiceMap.get(clientBean.getId());
+            if (customConfig.containsKey("directAddress")) {
+                return customConfig.get("directAddress");
+            }
+            if (customConfig.containsKey("direct-address")) {
+                return customConfig.get("direct-address");
+            }
+        }
+        return directAddress;
     }
 
     private ServiceDiscovery mapToDiscovery(Map<String, String> map) {

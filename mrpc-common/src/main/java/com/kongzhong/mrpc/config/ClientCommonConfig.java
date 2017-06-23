@@ -25,7 +25,7 @@ public class ClientCommonConfig {
     private LbStrategyEnum lbStrategy;
     private TransportEnum transport;
     private int waitTimeout = 10;
-    private int retryNumber = 3;
+    private int failOverRetry = 3;
 
     private static final class ClientCommonConfigHolder {
         private static final ClientCommonConfig INSTANCE = new ClientCommonConfig();

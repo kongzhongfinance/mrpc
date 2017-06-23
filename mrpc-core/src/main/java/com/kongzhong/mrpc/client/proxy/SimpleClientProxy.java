@@ -57,7 +57,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
         LbStrategyEnum lbStrategy = ClientCommonConfig.me().getLbStrategy();
         if (null == lbStrategy) {
-            throw new SystemException("LbStrategy not is null");
+            throw new SystemException("LoadBalance strategy not is null.");
         }
 
         this.interceptors = interceptors;
@@ -84,7 +84,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .parameters(args)
                 .returnType(method.getReturnType())
                 .waitTimeout(this.getWaitTimeout(method))
-                .retryNumber(this.getRetryNumber(method))
                 .timestamp(System.currentTimeMillis())
                 .build();
 
@@ -107,14 +106,4 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         }
         return timeout;
     }
-
-    private int getRetryNumber(Method method) {
-        Command command = method.getAnnotation(Command.class);
-        int timeout = ClientCommonConfig.me().getRetryNumber();
-        if (null != command) {
-            return command.waitTimeout();
-        }
-        return timeout;
-    }
-
 }

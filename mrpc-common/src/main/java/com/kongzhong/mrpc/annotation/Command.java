@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.annotation;
 
-import com.kongzhong.mrpc.model.NoInterface;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -23,10 +22,4 @@ public @interface Command {
      */
     int waitTimeout() default 10;
 
-    /**
-     * 重试次数，默认3次
-     *
-     * @return
-     */
-    int retryNumber() default 3;
 }

@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.client.cluster.ha;
 import com.kongzhong.mrpc.client.RpcInvoker;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
+import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -21,7 +22,7 @@ public class FailOverHaStrategy implements HaStrategy {
 
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
-        int rc = request.getRetryNumber();
+        int rc = ClientCommonConfig.me().getFailOverRetry();
         if (rc < 0) {
             rc = 0;
         }

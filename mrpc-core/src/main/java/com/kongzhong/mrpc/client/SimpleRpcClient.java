@@ -12,11 +12,14 @@ import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
+import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
+import com.kongzhong.mrpc.model.RegistryBean;
+import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -72,6 +75,12 @@ public abstract class SimpleRpcClient {
     @Setter
     protected String haStrategy;
 
+    @Setter
+    protected int waitTimeout;
+
+    @Setter
+    protected int failOverRetry;
+
     /**
      * 服务注册实例
      */
@@ -87,11 +96,6 @@ public abstract class SimpleRpcClient {
      */
     @Setter
     protected String appId;
-
-    /**
-     * 是否使用注册中心
-     */
-    protected boolean usedRegistry;
 
     /**
      * 直连地址，开发时可配置，当配置了直连则不会走注册中心
@@ -261,6 +265,7 @@ public abstract class SimpleRpcClient {
             if (null != beanFactory) {
                 beanFactory.registerSingleton(serviceName, object);
             }
+            boolean usedRegistry = this.usedRegistry(clientBean);
             if (usedRegistry) {
                 // 服务发现
                 ServiceDiscovery serviceDiscovery = this.getDiscovery(clientBean);
@@ -269,7 +274,7 @@ public abstract class SimpleRpcClient {
                 }
                 serviceDiscovery.discover();
             } else {
-                String directAddress = StringUtils.isNotEmpty(clientBean.getDirectAddress()) ? clientBean.getDirectAddress() : this.directAddress;
+                String directAddress = this.getDirectAddress(clientBean);
                 if (StringUtils.isNotEmpty(directAddress)) {
                     log.debug("Service [{}] direct to [{}]", serviceName, directAddress);
 
@@ -282,6 +287,51 @@ public abstract class SimpleRpcClient {
         } catch (Exception e) {
             throw new SystemException(String.format("Bind rpc service [%s] error.", serviceName), e);
         }
+    }
+
+    /**
+     * 返回引用是否使用注册中心
+     *
+     * @param clientBean
+     * @return
+     */
+    protected boolean usedRegistry(ClientBean clientBean) {
+        if (StringUtils.isNotEmpty(clientBean.getRegistry())) {
+            return true;
+        }
+        if (serviceDiscoveryMap.containsKey("default") && StringUtils.isEmpty(clientBean.getDirectAddress())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 返回客户端的直连地址
+     *
+     * @param clientBean
+     * @return
+     */
+    protected String getDirectAddress(ClientBean clientBean) {
+        String directAddress = StringUtils.isNotEmpty(clientBean.getDirectAddress()) ? clientBean.getDirectAddress() : this.directAddress;
+        return directAddress;
+    }
+
+    protected ServiceDiscovery parseRegistry(RegistryBean registryBean) {
+        String type = registryBean.getType();
+        if (RegistryEnum.DEFAULT.getName().equals(type)) {
+            return new DefaultDiscovery();
+        }
+        try {
+            if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
+                String zkAddr = registryBean.getAddress();
+                Object zookeeperDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
+                ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperDiscovery;
+                return serviceDiscovery;
+            }
+        } catch (Exception e) {
+            throw new SystemException("Parse ServiceDiscovery error", e);
+        }
+        return null;
     }
 
     /**

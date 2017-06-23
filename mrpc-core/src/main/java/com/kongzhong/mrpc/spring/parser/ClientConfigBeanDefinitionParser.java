@@ -17,11 +17,15 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         String transport = element.getAttribute("transport");
         String serialize = element.getAttribute("serialize");
         String directAddress = element.getAttribute("directAddress");
+        String waitTimeout = element.getAttribute("waitTimeout");
+        String failOverRetry = element.getAttribute("failOverRetry");
 
         builder.addPropertyValue("appId", appId);
         builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
         builder.addPropertyValue("directAddress", directAddress);
+        builder.addPropertyValue("waitTimeout", waitTimeout);
+        builder.addPropertyValue("failOverRetry", failOverRetry);
 
         return builder.getBeanDefinition();
     }
