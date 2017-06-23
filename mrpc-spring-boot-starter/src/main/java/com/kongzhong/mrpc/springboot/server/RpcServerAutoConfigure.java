@@ -113,10 +113,10 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
         return new RpcDaemon(this);
     }
 
-    public class RpcDaemon implements CommandLineRunner {
+    private class RpcDaemon implements CommandLineRunner {
         private RpcServerAutoConfigure simpleRpcServer;
 
-        public RpcDaemon(RpcServerAutoConfigure simpleRpcServer) {
+        RpcDaemon(RpcServerAutoConfigure simpleRpcServer) {
             this.simpleRpcServer = simpleRpcServer;
         }
 
