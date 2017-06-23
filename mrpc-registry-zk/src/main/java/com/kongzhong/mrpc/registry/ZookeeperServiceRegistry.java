@@ -4,6 +4,7 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.ZkClient;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -52,7 +53,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     private void createNode(ServiceBean serviceBean) {
         String appId = serviceBean.getAppId();
         String node = serviceBean.getServiceName();
-        String serverAddr = serviceBean.getRegisterAddress();
+        String serverAddr = StringUtils.isNotEmpty(serviceBean.getElasticIp()) ? serviceBean.getElasticIp() : serviceBean.getAddress();
 
         // node path = rootPath + appId + node + address
         String path = Constant.ZK_ROOT + "/" + appId + "/" + node;

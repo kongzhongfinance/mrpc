@@ -198,7 +198,7 @@ public abstract class SimpleRpcServer {
                     try {
                         serviceBean.setAppId(appId);
                         serviceBean.setAddress(address);
-                        serviceBean.setRegisterAddress(StringUtils.isNotEmpty(elasticIp) ? elasticIp : address);
+                        serviceBean.setElasticIp(elasticIp);
                         serviceRegistry.register(serviceBean);
                     } catch (RpcException e) {
                         log.error("Service register error", e);
