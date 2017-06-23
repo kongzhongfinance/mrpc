@@ -62,7 +62,11 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         }
 
         log.debug("Create node [{}]", path);
-        zkClient.createEphemeral(path + "/" + serverAddr, "".getBytes());
+
+        String serviceNode = path + "/" + serverAddr;
+        if (!zkClient.exists(serviceNode)) {
+            zkClient.createEphemeral(serviceNode, "".getBytes());
+        }
     }
 
 }

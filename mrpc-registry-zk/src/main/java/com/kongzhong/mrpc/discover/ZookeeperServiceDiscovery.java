@@ -11,6 +11,8 @@ import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private IZkClient zkClient;
 
+    @Getter
+    @Setter
     private String zkAddr;
 
     private boolean isInit;
@@ -61,45 +65,41 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         });
     }
 
-    public void discover() {
+    public void discover() throws Exception {
         watchNode(zkClient);
     }
 
-    private void watchNode(final IZkClient zkClient) {
-        try {
-            String appId = ClientCommonConfig.me().getAppId();
+    private void watchNode(final IZkClient zkClient) throws RpcException {
+        String appId = ClientCommonConfig.me().getAppId();
 
-            List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
-            if (null == serviceList || serviceList.size() == 0) {
-                throw new RpcException(String.format("Can not find any address node on path: %s/%s", Constant.ZK_ROOT, appId));
+        List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
+        if (null == serviceList || serviceList.size() == 0) {
+            throw new RpcException(String.format("Can not find any address node on path: %s/%s", Constant.ZK_ROOT, appId));
+        }
+
+        // { 127.0.0.1:5066 => [UserService, BatService] }
+        Map<String, Set<String>> mappings = Maps.newHashMap();
+        serviceList.forEach(service -> {
+            String servicePath = Constant.ZK_ROOT + "/" + ClientCommonConfig.me().getAppId() + "/" + service;
+            if (zkClient.exists(servicePath)) {
+                List<String> addresses = zkClient.getChildren(servicePath);
+                addresses.forEach(address -> {
+                    if (!mappings.containsKey(address)) {
+                        mappings.put(address, Sets.newHashSet(service));
+                    } else {
+                        mappings.get(address).add(service);
+                    }
+                });
             }
 
-            // { 127.0.0.1:5066 => [UserService, BatService] }
-            Map<String, Set<String>> mappings = Maps.newHashMap();
-            serviceList.forEach(service -> {
-                String servicePath = Constant.ZK_ROOT + "/" + ClientCommonConfig.me().getAppId() + "/" + service;
-                if (zkClient.exists(servicePath)) {
-                    List<String> addresses = zkClient.getChildren(servicePath);
-                    addresses.forEach(address -> {
-                        if (!mappings.containsKey(address)) {
-                            mappings.put(address, Sets.newHashSet(service));
-                        } else {
-                            mappings.get(address).add(service);
-                        }
-                    });
-                }
+            if (!subRelate.containsKey(servicePath)) {
+                subRelate.put(servicePath, zkChildListener);
+                zkClient.subscribeChildChanges(servicePath, zkChildListener);
+            }
+        });
 
-                if (!subRelate.containsKey(servicePath)) {
-                    subRelate.put(servicePath, zkChildListener);
-                    zkClient.subscribeChildChanges(servicePath, zkChildListener);
-                }
-            });
-
-            // update node list
-            Connections.me().updateNodes(mappings);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        // update node list
+        Connections.me().updateNodes(mappings);
     }
 
     class ZkChildListener implements IZkChildListener {
@@ -117,11 +117,4 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
-    public String getZkAddr() {
-        return zkAddr;
-    }
-
-    public void setZkAddr(String zkAddr) {
-        this.zkAddr = zkAddr;
-    }
 }
