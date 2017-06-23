@@ -280,9 +280,8 @@ public abstract class SimpleRpcClient {
             }
             log.info("Bind rpc service [{}]", serviceName);
         } catch (Exception e) {
-            log.warn("Bind rpc service [{}] error", serviceName, e);
+            throw new SystemException(String.format("Bind rpc service [%s] error.", serviceName), e);
         }
-
     }
 
     /**

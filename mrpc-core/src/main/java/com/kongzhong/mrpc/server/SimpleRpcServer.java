@@ -17,6 +17,7 @@ import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
@@ -102,7 +103,7 @@ public abstract class SimpleRpcServer {
      */
     @Getter
     @Setter
-    protected String transport = "tcp";
+    protected String transport;
 
     /**
      * appId
@@ -139,15 +140,19 @@ public abstract class SimpleRpcServer {
      * 启动RPC服务端
      */
     protected void startServer() {
+        this.initConfig();
+        this.bindRpcServer();
+    }
+
+    private void initConfig() {
         if (null == nettyConfig) {
             nettyConfig = new NettyConfig(128, true);
         }
 
-        if (null == serialize) {
-            serialize = "kyro";
-        }
+        if (null == transport) transport = "tcp";
+        if (null == serialize) serialize = "kyro";
 
-        if (serviceRegistryMap.size() > 0) {
+        if (CollectionUtils.isNotEmpty(serviceRegistryMap)) {
             usedRegistry = true;
         }
 
@@ -160,6 +165,10 @@ public abstract class SimpleRpcServer {
         }
 
         transferSelector = new TransferSelector(rpcSerialize);
+
+    }
+
+    private void bindRpcServer() {
 
         ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
         int parallel = Runtime.getRuntime().availableProcessors() * 2;

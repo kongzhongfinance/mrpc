@@ -11,11 +11,11 @@ import com.kongzhong.mrpc.config.ClientCommonConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -24,9 +24,8 @@ import java.util.Set;
 /**
  * Zookeeper服务发现
  */
+@Slf4j
 public class ZookeeperServiceDiscovery implements ServiceDiscovery {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperServiceDiscovery.class);
 
     private IZkClient zkClient;
 
@@ -52,6 +51,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         isInit = true;
         zkClient = new ZkClient(zkAddr);
 
+        log.info("Connect zookeeper server: [{}]", zkAddr);
+
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
             public void handleStateChanged(Watcher.Event.KeeperState keeperState) throws Exception {
@@ -73,8 +74,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         String appId = ClientCommonConfig.me().getAppId();
 
         List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
-        if (null == serviceList || serviceList.size() == 0) {
-            throw new RpcException(String.format("Can not find any address node on path: %s/%s", Constant.ZK_ROOT, appId));
+        if (CollectionUtils.isEmpty(serviceList)) {
+            throw new RpcException(String.format("Can not find any address node on path: %s/%s. please check your zookeeper services :)", Constant.ZK_ROOT, appId));
         }
 
         // { 127.0.0.1:5066 => [UserService, BatService] }

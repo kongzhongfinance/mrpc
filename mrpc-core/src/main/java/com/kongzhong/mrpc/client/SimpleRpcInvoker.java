@@ -21,7 +21,7 @@ public class SimpleRpcInvoker<T> implements RpcInvoker {
     @Override
     public Object invoke(RpcRequest request) throws Exception {
         if (!clientHandler.getChannel().isActive()) {
-            throw new RpcException("Client Channel is unactive.");
+            throw new RpcException(String.format("Client Channel %s unactive.", clientHandler.getChannel()));
         }
         RpcCallbackFuture rpcCallbackFuture = clientHandler.sendRequest(request);
         return rpcCallbackFuture.get();
