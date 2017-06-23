@@ -1,7 +1,11 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.*;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
@@ -20,11 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -33,6 +41,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
+@Configuration
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
 @ConditionalOnProperty("mrpc.server.transport")
 @Slf4j
@@ -95,9 +104,26 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             super.test = rpcServerProperties.getTest();
             super.transport = rpcServerProperties.getTransport();
             super.serialize = rpcServerProperties.getSerialize();
-
-            super.startServer();
         };
+    }
+
+    @Bean
+    @Order(-1)
+    public RpcDaemon rpcDaemon() {
+        return new RpcDaemon(this);
+    }
+
+    public class RpcDaemon implements CommandLineRunner {
+        private RpcServerAutoConfigure simpleRpcServer;
+
+        public RpcDaemon(RpcServerAutoConfigure simpleRpcServer) {
+            this.simpleRpcServer = simpleRpcServer;
+        }
+
+        @Override
+        public void run(String... strings) throws Exception {
+            this.simpleRpcServer.startServer();
+        }
     }
 
     /**
