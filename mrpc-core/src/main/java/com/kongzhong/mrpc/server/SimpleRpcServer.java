@@ -138,7 +138,7 @@ public abstract class SimpleRpcServer {
     /**
      * 启动RPC服务端
      */
-    protected ChannelFuture startServer() {
+    protected void startServer() {
         if (null == nettyConfig) {
             nettyConfig = new NettyConfig(128, true);
         }
@@ -216,13 +216,10 @@ public abstract class SimpleRpcServer {
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
 
-//            this.channelSync(future);
-
-            return future.channel().closeFuture();
+            this.channelSync(future);
 
         } catch (Exception e) {
             log.error("RPC server start error", e);
-            return null;
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
