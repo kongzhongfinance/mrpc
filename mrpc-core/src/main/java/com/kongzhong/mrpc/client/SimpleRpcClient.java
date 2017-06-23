@@ -9,7 +9,8 @@ import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.ha.FailFastHaStrategy;
 import com.kongzhong.mrpc.client.cluster.ha.FailOverHaStrategy;
 import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
-import com.kongzhong.mrpc.config.ClientCommonConfig;
+import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
@@ -75,12 +76,6 @@ public abstract class SimpleRpcClient {
     @Setter
     protected String haStrategy;
 
-    @Setter
-    protected int waitTimeout;
-
-    @Setter
-    protected int failOverRetry;
-
     /**
      * 服务注册实例
      */
@@ -113,6 +108,8 @@ public abstract class SimpleRpcClient {
      * 客户端拦截器列表
      */
     protected List<RpcClientInteceptor> inteceptors = Lists.newArrayList();
+
+    protected NettyConfig nettyConfig;
 
     /***
      * 动态代理,获得代理后的对象
@@ -183,11 +180,11 @@ public abstract class SimpleRpcClient {
         LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
         TransportEnum transportEnum = TransportEnum.valueOf(this.transport.toUpperCase());
 
-        ClientCommonConfig.me().setAppId(appId);
-        ClientCommonConfig.me().setRpcSerialize(rpcSerialize);
-        ClientCommonConfig.me().setHaStrategy(haStrategy);
-        ClientCommonConfig.me().setLbStrategy(lbStrategyEnum);
-        ClientCommonConfig.me().setTransport(transportEnum);
+        ClientConfig.me().setAppId(appId);
+        ClientConfig.me().setRpcSerialize(rpcSerialize);
+        ClientConfig.me().setHaStrategy(haStrategy);
+        ClientConfig.me().setLbStrategy(lbStrategyEnum);
+        ClientConfig.me().setTransport(transportEnum);
         isInit = true;
     }
 

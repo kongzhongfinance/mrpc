@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.springboot.config;
 
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.config.NettyConfig;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -41,5 +42,10 @@ public class CommonProperties {
      * 是否是测试环境, 为 "true" 时服务进程不会挂起
      */
     private String test;
+
+    /**
+     * netty配置
+     */
+    private NettyConfig netty;
 
 }

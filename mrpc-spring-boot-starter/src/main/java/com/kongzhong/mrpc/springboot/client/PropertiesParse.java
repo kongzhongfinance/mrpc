@@ -2,10 +2,12 @@ package com.kongzhong.mrpc.springboot.client;
 
 import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -46,7 +48,7 @@ public class PropertiesParse {
         clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_S1_CLIENT, env.getProperty(LB_STRATEGY_S2_CLIENT)));
         clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_S1_CLIENT, env.getProperty(DIRECT_ADDRESS_S2_CLIENT)));
         clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_S1_CLIENT, env.getProperty(WAIT_TIMEOUT_S2_CLIENT, "10"))));
-        clientProperties.setRetryNumber(Integer.valueOf(env.getProperty(TRCRY_NUMBER_S1_CLIENT, env.getProperty(TRCRY_NUMBER_S2_CLIENT, "3"))));
+        clientProperties.setFailOverRetry(Integer.valueOf(env.getProperty(FAILOVER_TRCRY_NUMBER_S1_CLIENT, env.getProperty(FAILOVER_TRCRY_NUMBER_S2_CLIENT, "3"))));
 
         return clientProperties;
     }
@@ -90,6 +92,23 @@ public class PropertiesParse {
             custom.put(key_, v);
         });
         commonProperties.setCustom(custom);
+
+        // netty配置读取
+        Map<String, Object> nettyConfigMap = getPropertiesStartingWith(env, "mrpc.netty");
+
+        if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
+            NettyConfig nettyConfig = new NettyConfig();
+
+            int connTimeout = (Integer) nettyConfigMap.getOrDefault("mrpc.netty.connTimeout",
+                    nettyConfigMap.getOrDefault("mrpc.netty.conn-timeout", 10));
+
+            nettyConfig.setConnTimeout(connTimeout);
+
+            int backlog = (Integer) nettyConfigMap.getOrDefault("mrpc.netty.backlog", 1024);
+            nettyConfig.setBacklog(backlog);
+
+            commonProperties.setNetty(nettyConfig);
+        }
         return commonProperties;
     }
 

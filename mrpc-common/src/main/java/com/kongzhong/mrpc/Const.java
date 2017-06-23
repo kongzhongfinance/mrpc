@@ -8,7 +8,7 @@ package com.kongzhong.mrpc;
  */
 public interface Const {
 
-    String VERSION = "0.0.8-SNAPSHOT";
+    String VERSION = "0.0.7-SNAPSHOT";
 
     // http头信息请求id key
     String HEADER_REQUEST_ID = "requestId";
@@ -53,9 +53,9 @@ public interface Const {
     String WAIT_TIMEOUT_S1_CLIENT = "mrpc.client.wait-timeout";
     String WAIT_TIMEOUT_S2_CLIENT = "mrpc.client.waitTimeout";
 
-    // 客户端重试次数
-    String TRCRY_NUMBER_S1_CLIENT = "mrpc.client.retry-number";
-    String TRCRY_NUMBER_S2_CLIENT = "mrpc.client.retryNumber";
+    // 客户端FailOver重试次数
+    String FAILOVER_TRCRY_NUMBER_S1_CLIENT = "mrpc.client.failover-retry";
+    String FAILOVER_TRCRY_NUMBER_S2_CLIENT = "mrpc.client.failoverRetry";
 
     // 注册中心
     String REGSITRY_KEY = "mrpc.registry";

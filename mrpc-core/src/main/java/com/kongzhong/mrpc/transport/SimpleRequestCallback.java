@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.transport;
 
 import com.kongzhong.mrpc.client.cluster.Connections;
-import com.kongzhong.mrpc.config.ClientCommonConfig;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
@@ -46,7 +46,7 @@ public class SimpleRequestCallback implements Callable<Boolean> {
     private Set<String> referNames;
 
     public SimpleRequestCallback(Set<String> referNames, EventLoopGroup eventLoopGroup, SocketAddress serverAddress) {
-        this.isHttp = ClientCommonConfig.me().getTransport().equals(TransportEnum.HTTP);
+        this.isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
         this.referNames = referNames;
         this.eventLoopGroup = eventLoopGroup;
         this.serverAddress = serverAddress;

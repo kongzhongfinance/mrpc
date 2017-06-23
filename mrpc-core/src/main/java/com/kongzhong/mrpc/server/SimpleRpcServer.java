@@ -6,7 +6,7 @@ import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.config.ServerCommonConfig;
+import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
@@ -193,7 +193,7 @@ public abstract class SimpleRpcServer {
             String host = ipAddr[0];
             int port = Integer.parseInt(ipAddr[1]);
 
-            ServerCommonConfig.me().setElasticIp(elasticIp);
+            ServerConfig.me().setElasticIp(elasticIp);
             ChannelFuture future = bootstrap.bind(host, port).sync();
 
             //注册服务

@@ -24,14 +24,10 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
         builder.addPropertyValue("directAddress", directAddress);
-        builder.addPropertyValue("waitTimeout", waitTimeout);
-        builder.addPropertyValue("failOverRetry", failOverRetry);
+        builder.addPropertyValue("waitTimeout", Integer.valueOf(waitTimeout));
+        builder.addPropertyValue("failOverRetry", Integer.valueOf(failOverRetry));
 
         return builder.getBeanDefinition();
     }
 
-    @Override
-    protected boolean shouldGenerateId() {
-        return true;
-    }
 }

@@ -2,6 +2,8 @@ package com.kongzhong.mrpc.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * netty服务端配置
@@ -10,8 +12,13 @@ import lombok.Data;
  *         2017/4/28
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class NettyConfig {
+
+    // 客户端连接超时，单位/秒
+    private int connTimeout = 3;
 
     private int backlog;
     private boolean keepalive;

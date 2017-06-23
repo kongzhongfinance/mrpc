@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.springboot.client;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
@@ -58,16 +59,16 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         // 解析客户端配置
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
 
-        RpcClientProperties rpcClientProperties = PropertiesParse.getRpcClientProperties(configurableEnvironment);
+        RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
         CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
         this.customServiceMap = commonProperties.getCustom();
+        this.nettyConfig = commonProperties.getNetty();
 
-        super.appId = rpcClientProperties.getAppId();
-        super.transport = rpcClientProperties.getTransport();
-        super.serialize = rpcClientProperties.getSerialize();
-        super.directAddress = rpcClientProperties.getDirectAddress();
-        super.directAddress = rpcClientProperties.getDirectAddress();
-        super.failOverRetry = rpcClientProperties.getFailOverRetry();
+        super.appId = clientConfig.getAppId();
+        super.transport = clientConfig.getTransport();
+        super.serialize = clientConfig.getSerialize();
+        super.directAddress = clientConfig.getDirectAddress();
+        ClientConfig.me().setFailOverRetry(clientConfig.getFailOverRetry());
 
         // 注册中心
         if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {
@@ -78,7 +79,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             });
         }
 
-        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(rpcClientProperties.getDirectAddress())) {
+        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(clientConfig.getDirectAddress())) {
             throw new SystemException("Service discovery or direct must select one.");
         }
 

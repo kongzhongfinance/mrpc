@@ -5,7 +5,7 @@ import com.kongzhong.mrpc.annotation.Command;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
-import com.kongzhong.mrpc.config.ClientCommonConfig;
+import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.ClientInvocation;
@@ -48,14 +48,14 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
     private String appId;
 
     public SimpleClientProxy(List<RpcClientInteceptor> interceptors) {
-        this.appId = ClientCommonConfig.me().getAppId();
-        this.haStrategy = ClientCommonConfig.me().getHaStrategy();
+        this.appId = ClientConfig.me().getAppId();
+        this.haStrategy = ClientConfig.me().getHaStrategy();
 
         if (null == this.haStrategy) {
             throw new SystemException("HaStrategy not is null");
         }
 
-        LbStrategyEnum lbStrategy = ClientCommonConfig.me().getLbStrategy();
+        LbStrategyEnum lbStrategy = ClientConfig.me().getLbStrategy();
         if (null == lbStrategy) {
             throw new SystemException("LoadBalance strategy not is null.");
         }
@@ -100,7 +100,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     private int getWaitTimeout(Method method) {
         Command command = method.getAnnotation(Command.class);
-        int timeout = ClientCommonConfig.me().getWaitTimeout();
+        int timeout = ClientConfig.me().getWaitTimeout();
         if (null != command) {
             return command.waitTimeout();
         }

@@ -9,7 +9,7 @@
     <xsd:element name="registry">
         <xsd:complexType>
 
-            <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:attribute name="name" type="xsd:string" use="required" default="default">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 注册中心标识 ]]></xsd:documentation>
                 </xsd:annotation>
@@ -156,7 +156,7 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="registry" type="xsd:string" use="optional" default="default">
+            <xsd:attribute name="registry" type="xsd:string" use="optional">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 注册中心配置 ]]></xsd:documentation>
                 </xsd:annotation>
@@ -202,6 +202,43 @@
             <xsd:attribute name="registry" type="xsd:string" use="optional">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 服务注册中心 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="directed" type="xsd:boolean" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 是否是直连 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+        </xsd:complexType>
+    </xsd:element>
+
+    <!--netty配置-->
+    <xsd:element name="netty">
+        <xsd:complexType>
+
+            <xsd:attribute name="connTimeout" type="xsd:int" use="required" default="2">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 客户端连接超时 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="backlog" type="xsd:int" use="optional" default="1024">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ backlog ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="lowWaterMark" type="xsd:int" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ lowWaterMark ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="highWaterMark" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ highWaterMark ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
 

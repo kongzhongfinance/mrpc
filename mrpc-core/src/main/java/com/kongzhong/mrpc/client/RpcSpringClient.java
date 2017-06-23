@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
@@ -41,6 +42,8 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         if (CollectionUtils.isNotEmpty(inteceptorMap)) {
             inteceptorMap.values().forEach(super::addInterceptor);
         }
+
+        this.nettyConfig = ctx.getBean(NettyConfig.class);
 
         // 客户端引用
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);

@@ -18,18 +18,16 @@ public class ServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
         String address = element.getAttribute("address");
         String elasticIp = element.getAttribute("elasticIp");
         String registry = element.getAttribute("registry");
+        String directed = element.getAttribute("directed");
 
         builder.addPropertyValue("serviceName", serviceName);
         builder.addPropertyValue("beanName", ref);
         builder.addPropertyValue("address", address);
         builder.addPropertyValue("elasticIp", elasticIp);
         builder.addPropertyValue("registry", registry);
+        builder.addPropertyValue("directed", Boolean.valueOf(directed));
 
         return builder.getBeanDefinition();
     }
 
-    @Override
-    protected boolean shouldGenerateId() {
-        return true;
-    }
 }

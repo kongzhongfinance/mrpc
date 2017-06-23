@@ -20,6 +20,6 @@ public class ServiceBean {
     private String beanName;
     private String address;
     private String elasticIp;
-    private boolean direct;
+    private boolean directed;
 
 }
