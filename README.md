@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService{
 
 1. 客户端断线自动重连
 2. 允许跳过启动绑定服务
+3. 允许自定义异常
 
 #### 0.0.7-SNAPSHOT (2017/06/22)
 
