@@ -49,8 +49,6 @@ public class ServiceBeanProcessor implements BeanPostProcessor {
             log.error("Get bean target error", e);
         }
         rpcMapping.addServiceBean(realBean, beanName);
-        System.out.println("bean = " + bean);
-        System.out.println("realBean = " + realBean);
         return bean;
     }
 

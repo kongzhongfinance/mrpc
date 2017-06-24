@@ -108,7 +108,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     @Bean
     @Order(-1)
     public CommandLineRunner rpcDaemon() {
-        return (args) -> super.startServer();
+        return args -> super.startServer();
     }
 
     /**

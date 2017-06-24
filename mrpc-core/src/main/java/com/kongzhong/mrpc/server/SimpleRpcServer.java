@@ -412,6 +412,6 @@ public abstract class SimpleRpcServer {
                     log.error("Unregister service error", e);
                 }
             });
-        }));
+        }, "mrpc-destory-thread"));
     }
 }
