@@ -12,6 +12,7 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
+import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -99,7 +100,9 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             super.address = rpcServerProperties.getAddress();
             super.elasticIp = rpcServerProperties.getElasticIp();
             super.poolName = rpcServerProperties.getPoolName();
-            super.test = rpcServerProperties.getTest();
+
+            super.test = StringUtils.isNotEmpty(commonProperties.getTest()) ? commonProperties.getTest() : rpcServerProperties.getTest();
+
             super.transport = rpcServerProperties.getTransport();
             super.serialize = rpcServerProperties.getSerialize();
         };
