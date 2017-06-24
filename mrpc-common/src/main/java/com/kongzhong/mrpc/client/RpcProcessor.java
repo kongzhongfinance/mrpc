@@ -7,8 +7,8 @@ import com.kongzhong.mrpc.model.RpcRequest;
  *         20/06/2017
  */
 @FunctionalInterface
-public interface RpcInvoker {
+public interface RpcProcessor {
 
-    Object invoke(RpcRequest request) throws Exception;
+    Object processor(RpcRequest request) throws Exception;
 
 }

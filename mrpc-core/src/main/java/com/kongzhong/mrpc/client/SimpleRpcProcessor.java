@@ -10,16 +10,16 @@ import com.kongzhong.mrpc.transport.SimpleClientHandler;
  * @author biezhi
  *         2017/4/24
  */
-public class SimpleRpcInvoker<T> implements RpcInvoker {
+public class SimpleRpcProcessor<T> implements RpcProcessor {
 
     private SimpleClientHandler<T> clientHandler;
 
-    public SimpleRpcInvoker(SimpleClientHandler<T> clientHandler) {
+    public SimpleRpcProcessor(SimpleClientHandler<T> clientHandler) {
         this.clientHandler = clientHandler;
     }
 
     @Override
-    public Object invoke(RpcRequest request) throws Exception {
+    public Object processor(RpcRequest request) throws Exception {
         if (!clientHandler.getChannel().isActive()) {
             throw new RpcException(String.format("Client Channel %s unactive.", clientHandler.getChannel()));
         }

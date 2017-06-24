@@ -120,7 +120,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
-        HttpResponseCallback responseCallback = new HttpResponseCallback(rpcRequest, httpResponse, serviceBeanMap);
+        HttpResponseInvoker responseCallback = new HttpResponseInvoker(rpcRequest, httpResponse, serviceBeanMap);
         RpcSpringServer.submit(responseCallback, ctx);
     }
 

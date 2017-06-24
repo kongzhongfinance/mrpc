@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.client.cluster.ha;
 
-import com.kongzhong.mrpc.client.RpcInvoker;
+import com.kongzhong.mrpc.client.RpcProcessor;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.config.ClientConfig;
@@ -29,8 +29,8 @@ public class FailOverHaStrategy implements HaStrategy {
         String serviceName = request.getClassName();
         for (int i = 0; i <= rc; i++) {
             try {
-                RpcInvoker rpcInvoker = loadBalance.getInvoker(serviceName);
-                return rpcInvoker.invoke(request);
+                RpcProcessor rpcProcessor = loadBalance.getInvoker(serviceName);
+                return rpcProcessor.processor(request);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
                     throw (Exception) e.getCause();
@@ -46,7 +46,7 @@ public class FailOverHaStrategy implements HaStrategy {
                 }
             }
         }
-        throw new RpcException("FailOverHaStrategy.invoke should not come here!");
+        throw new RpcException("FailOverHaStrategy.processor should not come here!");
     }
 
 }

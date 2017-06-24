@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
-import com.kongzhong.mrpc.client.SimpleRpcInvoker;
+import com.kongzhong.mrpc.client.SimpleRpcProcessor;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
@@ -36,23 +36,23 @@ public class SimpleLoadBalance implements LoadBalance {
     }
 
     @Override
-    public SimpleRpcInvoker getInvoker(String serviceName) throws Exception {
+    public SimpleRpcProcessor getInvoker(String serviceName) throws Exception {
         try {
             List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
             if (handlers.size() == 1) {
-                return new SimpleRpcInvoker(handlers.get(0));
+                return new SimpleRpcProcessor(handlers.get(0));
             }
             if (handlers.size() == 0) {
                 throw new RpcException("Service [" + serviceName + "] not found.");
             }
             if (lbStrategy == LbStrategyEnum.ROUND) {
-                return new SimpleRpcInvoker(this.round(handlers));
+                return new SimpleRpcProcessor(this.round(handlers));
             }
             if (lbStrategy == LbStrategyEnum.RANDOM) {
-                return new SimpleRpcInvoker(this.random(handlers));
+                return new SimpleRpcProcessor(this.random(handlers));
             }
             if (lbStrategy == LbStrategyEnum.LAST) {
-                return new SimpleRpcInvoker(this.last(handlers));
+                return new SimpleRpcProcessor(this.last(handlers));
             }
         } catch (Exception e) {
             if (e instanceof RpcException) {

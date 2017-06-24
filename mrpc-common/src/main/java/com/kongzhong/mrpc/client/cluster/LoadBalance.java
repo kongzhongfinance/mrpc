@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.client.cluster;
 
-import com.kongzhong.mrpc.client.RpcInvoker;
+import com.kongzhong.mrpc.client.RpcProcessor;
 
 /**
  * 负载均衡接口
@@ -15,6 +15,6 @@ public interface LoadBalance {
      * @param serviceName
      * @return
      */
-    RpcInvoker getInvoker(String serviceName) throws Exception;
+    RpcProcessor getInvoker(String serviceName) throws Exception;
 
 }

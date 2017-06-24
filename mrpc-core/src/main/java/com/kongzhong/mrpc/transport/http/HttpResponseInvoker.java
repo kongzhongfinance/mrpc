@@ -4,7 +4,7 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.transport.SimpleResponseCallback;
+import com.kongzhong.mrpc.transport.AbstractResponseInvoker;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -19,11 +19,11 @@ import java.util.Map;
  * Http响应回调处理
  */
 @Slf4j
-public class HttpResponseCallback extends SimpleResponseCallback<FullHttpResponse> {
+public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpResponse> {
 
     private FullHttpResponse httpResponse;
 
-    public HttpResponseCallback(RpcRequest request, FullHttpResponse httpResponse, Map<String, ServiceBean> serviceBeanMap) {
+    public HttpResponseInvoker(RpcRequest request, FullHttpResponse httpResponse, Map<String, ServiceBean> serviceBeanMap) {
         super(request, null, serviceBeanMap);
         this.httpResponse = httpResponse;
     }
@@ -41,7 +41,7 @@ public class HttpResponseCallback extends SimpleResponseCallback<FullHttpRespons
             rpcResponse.setSuccess(true);
         } catch (Throwable e) {
             e = buildErrorResponse(e, rpcResponse);
-            log.error("Rpc method invoke error", e);
+            log.error("Rpc method processor error", e);
         } finally {
             RpcContext.remove();
             String body = JacksonSerialize.toJSONString(rpcResponse);

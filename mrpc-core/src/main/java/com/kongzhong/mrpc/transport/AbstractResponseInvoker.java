@@ -30,7 +30,7 @@ import static com.kongzhong.mrpc.Const.SERVER_INTERCEPTOR_PREFIX;
  * @param <T>
  */
 @Slf4j
-public abstract class SimpleResponseCallback<T> implements Callable<T> {
+public abstract class AbstractResponseInvoker<T> implements Callable<T> {
 
     protected Map<String, ServiceBean> serviceBeanMap;
     protected List<RpcServerInteceptor> interceptors;
@@ -39,7 +39,7 @@ public abstract class SimpleResponseCallback<T> implements Callable<T> {
     protected RpcResponse response;
     protected boolean hasInterceptors;
 
-    public SimpleResponseCallback(RpcRequest request, RpcResponse response, Map<String, ServiceBean> serviceBeanMap) {
+    public AbstractResponseInvoker(RpcRequest request, RpcResponse response, Map<String, ServiceBean> serviceBeanMap) {
         this.request = request;
         this.response = response;
         this.serviceBeanMap = serviceBeanMap;

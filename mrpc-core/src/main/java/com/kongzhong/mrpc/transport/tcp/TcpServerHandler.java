@@ -31,7 +31,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
         log.debug("Request body: \n{}", JacksonSerialize.toJSONString(request, true));
 
         RpcResponse response = new RpcResponse();
-        TcpResponseCallback tcpResponseCallback = new TcpResponseCallback(request, response, serviceBeanMap);
+        TcpResponseInvoker tcpResponseCallback = new TcpResponseInvoker(request, response, serviceBeanMap);
         //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池
         RpcSpringServer.submit(tcpResponseCallback, ctx, request, response);
     }
