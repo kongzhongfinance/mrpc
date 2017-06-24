@@ -190,7 +190,7 @@ public abstract class SimpleRpcServer {
 
             String[] ipAddr = address.split(":");
             if (null == ipAddr || ipAddr.length != 2) {
-                throw new SystemException("RPC server bind address error, please check your server address");
+                throw new SystemException("RPC server bind address error, please check your server address and port.");
             }
 
             //获取服务器IP地址和端口

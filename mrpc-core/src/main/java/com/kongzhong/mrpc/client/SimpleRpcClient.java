@@ -282,13 +282,14 @@ public abstract class SimpleRpcClient {
                 serviceDiscovery.discover();
             } else {
                 String directAddress = this.getDirectAddress(clientBean);
-                if (StringUtils.isNotEmpty(directAddress)) {
-                    log.debug("Service [{}] direct to [{}]", serviceName, directAddress);
-
-                    List<ClientBean> directUrlServices = directAddressList.getOrDefault(directAddress, new ArrayList<>());
-                    directUrlServices.add(clientBean);
-                    directAddressList.put(directAddress, directUrlServices);
+                if (StringUtils.isEmpty(directAddress)) {
+                    throw new SystemException("Service discovery or direct address must select one.");
                 }
+
+                log.debug("Service [{}] direct to [{}]", serviceName, directAddress);
+                List<ClientBean> directUrlServices = directAddressList.getOrDefault(directAddress, new ArrayList<>());
+                directUrlServices.add(clientBean);
+                directAddressList.put(directAddress, directUrlServices);
             }
             log.info("Bind rpc service [{}]", serviceName);
         } catch (Exception e) {

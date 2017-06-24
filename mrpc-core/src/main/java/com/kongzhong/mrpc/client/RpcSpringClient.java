@@ -39,10 +39,6 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
             registryBeanMap.values().forEach(registryBean -> serviceDiscoveryMap.put(registryBean.getName(), this.parseRegistry(registryBean)));
         }
 
-        if (serviceDiscoveryMap.isEmpty() && StringUtils.isEmpty(this.directAddress)) {
-            throw new SystemException("Service discovery or direct address must select one.");
-        }
-
         // 客户端拦截器
         Map<String, RpcClientInteceptor> inteceptorMap = ctx.getBeansOfType(RpcClientInteceptor.class);
         if (CollectionUtils.isNotEmpty(inteceptorMap)) {
