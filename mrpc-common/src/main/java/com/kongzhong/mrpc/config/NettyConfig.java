@@ -17,12 +17,6 @@ import lombok.ToString;
 @ToString
 public class NettyConfig {
 
-    // 客户端连接超时，单位/秒
-    private int connTimeout = 3;
-
-    // 客户端断线后重试次数
-    private int reconnCount = 10;
-
     private int backlog;
     private boolean keepalive;
 

@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.transport.netty.NettyClient;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -20,9 +21,11 @@ import io.netty.handler.codec.LengthFieldPrepender;
 public class TcpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private RpcSerialize rpcSerialize;
+    private NettyClient nettyClient;
 
-    public TcpClientChannelInitializer() {
+    public TcpClientChannelInitializer(NettyClient nettyClient) {
         this.rpcSerialize = ClientConfig.me().getRpcSerialize();
+        this.nettyClient = nettyClient;
     }
 
     @Override
@@ -32,6 +35,6 @@ public class TcpClientChannelInitializer extends ChannelInitializer<SocketChanne
                 .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, RpcSerialize.MESSAGE_LENGTH, 0, 0))
                 .addLast(new LengthFieldPrepender(4, false))
                 .addLast(new RpcDecoder(rpcSerialize, RpcResponse.class))
-                .addLast(new TcpClientHandler());
+                .addLast(new TcpClientHandler(nettyClient));
     }
 }

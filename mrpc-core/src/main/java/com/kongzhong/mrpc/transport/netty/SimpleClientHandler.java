@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.transport;
+package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
@@ -6,16 +6,20 @@ import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * 抽象客户端请求处理器
@@ -26,30 +30,34 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler<T> {
 
-    protected SocketAddress socketAddress;
-
     protected NettyConfig nettyConfig;
 
     @Getter
     protected volatile Channel channel;
 
+    protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
+
     @Getter
     @Setter
-    protected String serverAddress;
+    protected NettyClient nettyClient;
 
-    protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
+    private ScheduledFuture<Bootstrap> scheduledFuture;
+
+    public SimpleClientHandler(NettyClient nettyClient) {
+        this.nettyClient = nettyClient;
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
         this.channel = ctx.channel();
+        super.channelRegistered(ctx);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-        this.socketAddress = this.channel.remoteAddress();
         log.debug("Channel actived: {}", this.channel);
+        nettyClient.resetRetryCount();
+        super.channelActive(ctx);
     }
 
     /**
@@ -64,24 +72,13 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("Channel inactive: {}", ctx.channel());
+
+        // 断线重连
+        nettyClient.createBootstrap(ctx.channel().eventLoop());
+
         super.channelInactive(ctx);
-        log.debug("Channel inactive: {}", this.channel);
-        // 创建异步重连
-        final EventLoop eventLoopGroup = this.channel.eventLoop();
-
-
         Connections.me().remove(this);
-
-        // 创建异步重连
-//        final EventLoop eventLoopGroup = this.channel.eventLoop();
-//        Set<String> referNames = Sets.newHashSet();
-//        List<Class<?>> referers = ClientConfig.me().getReferers();
-//        if (null != referers && !referers.isEmpty()) {
-//            referers.forEach(type -> referNames.add(type.getName()));
-//        }
-//
-//        System.out.println("提交重连请求");
-//        LISTENING_EXECUTOR_SERVICE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, this.channel.remoteAddress()));
     }
 
     /**

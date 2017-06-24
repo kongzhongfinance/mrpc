@@ -4,7 +4,8 @@ import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.netty.NettyClient;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -26,6 +27,10 @@ import static com.kongzhong.mrpc.Const.*;
  */
 @Slf4j
 public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
+
+    public HttpClientHandler(NettyClient nettyClient) {
+        super(nettyClient);
+    }
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.

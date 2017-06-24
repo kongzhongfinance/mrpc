@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.client.cluster;
 
-import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import lombok.Data;
 import lombok.ToString;
 

@@ -22,6 +22,7 @@ import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Getter;
@@ -135,7 +136,8 @@ public abstract class SimpleRpcClient {
             }
         }
         if (StringUtils.isNotEmpty(directAddress)) {
-            this.directConnect(directAddress, rpcInterface);
+            // 同步直连
+            this.asyncDirectConnect(directAddress, rpcInterface);
         }
         return this.getProxyBean(rpcInterface);
     }
@@ -164,6 +166,7 @@ public abstract class SimpleRpcClient {
     }
 
     protected void init() throws RpcException {
+
         Connections connections = Connections.me();
         if (null == serialize) serialize = "kyro";
         if (null == transport) transport = "tcp";
@@ -212,8 +215,14 @@ public abstract class SimpleRpcClient {
         Connections.me().updateNodes(mappings);
     }
 
-    private void directConnect(String directAddress, Class<?> rpcInterface) {
-        Connections.me().updateNode(rpcInterface.getName(), directAddress);
+    /**
+     * 同步直连
+     *
+     * @param directAddress
+     * @param rpcInterface
+     */
+    private void asyncDirectConnect(String directAddress, Class<?> rpcInterface) {
+        Connections.me().asyncDirectConnect(rpcInterface.getName(), directAddress);
     }
 
     /**
@@ -222,11 +231,16 @@ public abstract class SimpleRpcClient {
      * @param interfaces 接口名
      */
     public void bindReferer(Class<?>... interfaces) {
-        if (null != interfaces) {
+        if (CollectionUtils.isNotEmpty(interfaces)) {
             Stream.of(interfaces).forEach(type -> referers.add(new ClientBean(type)));
         }
     }
 
+    /**
+     * 设置默认注册中心
+     *
+     * @param serviceDiscovery
+     */
     public void setDefaultDiscovery(ServiceDiscovery serviceDiscovery) {
         serviceDiscoveryMap.put("default", serviceDiscovery);
     }

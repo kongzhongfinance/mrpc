@@ -36,6 +36,17 @@ public class CollectionUtils {
     }
 
     /**
+     * 返回一个数组是否为空
+     *
+     * @param arr
+     * @param <T>
+     * @return
+     */
+    public static <T> boolean isNotEmpty(T[] arr) {
+        return null != arr && arr.length > 0;
+    }
+
+    /**
      * 返回一个map是否为空
      *
      * @param map

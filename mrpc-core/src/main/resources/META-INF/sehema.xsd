@@ -119,15 +119,27 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="waitTimeout" type="xsd:int" use="optional" default="10">
+            <xsd:attribute name="waitTimeout" type="xsd:int" use="optional" default="10000">
                 <xsd:annotation>
-                    <xsd:documentation><![CDATA[ 客户端调用等待超时，单位/秒 ]]></xsd:documentation>
+                    <xsd:documentation><![CDATA[ 客户端调用等待超时，单位/毫秒 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
 
             <xsd:attribute name="failOverRetry" type="xsd:int" use="optional" default="3">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ FailOver客户端重试次数 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="retryInterval" type="xsd:int" use="optional" default="3000">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 客户端重试间隔，单位/毫秒 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="retryCount" type="xsd:int" use="optional" default="10">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 客户端断线重连次数 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
 
@@ -162,9 +174,9 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="waitTimeout" type="xsd:int" use="optional" default="10">
+            <xsd:attribute name="waitTimeout" type="xsd:int" use="optional" default="10000">
                 <xsd:annotation>
-                    <xsd:documentation><![CDATA[ 客户端调用等待超时，单位/秒 ]]></xsd:documentation>
+                    <xsd:documentation><![CDATA[ 客户端调用等待超时，单位/毫秒 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
 

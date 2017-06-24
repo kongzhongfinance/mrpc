@@ -26,11 +26,20 @@ public class ClientConfig {
     private LbStrategyEnum lbStrategy;
     private TransportEnum transport;
 
-    // 客户端服务调用超时，单位/秒
-    private Integer waitTimeout = 10;
+    // 跳过服务绑定
+    private boolean skipBind;
+
+    // 客户端服务调用超时，单位/毫秒
+    private int waitTimeout = 10_000;
 
     // 快速失效重试次数
-    private Integer failOverRetry = 3;
+    private int failOverRetry = 3;
+
+    // 重试间隔，单位/毫秒 默认每3秒重连一次
+    private int retryInterval = 3000;
+
+    // 重试次数，默认10次
+    private int retryCount = 10;
 
     private static final class ClientCommonConfigHolder {
 

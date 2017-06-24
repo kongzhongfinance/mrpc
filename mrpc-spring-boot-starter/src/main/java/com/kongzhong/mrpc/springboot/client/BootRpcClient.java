@@ -48,6 +48,17 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         log.debug("BootRpcClient postProcessBeanFactory");
 
+        // 解析客户端配置
+        ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
+
+        RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
+        CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
+
+        if (clientConfig.isSkipBind()) {
+            log.info("RPC client skip bind service.");
+            return;
+        }
+
         // 读取Bean工厂的引用对象
         Referers referersObject = beanFactory.getBean(Referers.class);
         if (null == referersObject) {
@@ -62,11 +73,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             rpcClientInteceptorMap.values().forEach(super::addInterceptor);
         }
 
-        // 解析客户端配置
-        ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
-
-        RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
-        CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
         this.customServiceMap = commonProperties.getCustom();
         this.nettyConfig = commonProperties.getNetty();
 

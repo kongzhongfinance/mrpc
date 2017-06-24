@@ -32,10 +32,10 @@ public class RpcCallbackFuture {
         return this.get(request.getWaitTimeout());
     }
 
-    public Object get(int seconds) throws Exception {
+    public Object get(int millisconds) throws Exception {
         try {
             lock.lock();
-            finish.await(seconds, TimeUnit.SECONDS);
+            finish.await(millisconds, TimeUnit.MILLISECONDS);
             if (null == response) return null;
             if (!response.getSuccess()) {
                 Class<?> expType = ReflectUtils.from(response.getReturnType());

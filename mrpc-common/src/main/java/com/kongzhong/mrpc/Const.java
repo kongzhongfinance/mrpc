@@ -8,7 +8,7 @@ package com.kongzhong.mrpc;
  */
 public interface Const {
 
-    String VERSION = "0.0.7-SNAPSHOT";
+    String VERSION = "0.0.8-SNAPSHOT";
 
     // http头信息请求id key
     String HEADER_REQUEST_ID = "requestId";
@@ -57,13 +57,25 @@ public interface Const {
     String WAIT_TIMEOUT_STYLE2_CLIENT = "mrpc.client.waitTimeout";
 
     // 客户端FailOver重试次数
-    String FAILOVER_TRCRY_NUMBER_S1_CLIENT = "mrpc.client.failover-retry";
-    String FAILOVER_TRCRY_NUMBER_S2_CLIENT = "mrpc.client.failoverRetry";
+    String FAILOVER_TRCRY_NUMBER_STYLE1_CLIENT = "mrpc.client.failover-retry";
+    String FAILOVER_TRCRY_NUMBER_STYLE2_CLIENT = "mrpc.client.failoverRetry";
+
+    // 重试间隔，单位/毫秒
+    String RETRY_INTERVAL_STYLE1_CLIENT = "mrpc.client.retryInterval";
+    String RETRY_INTERVAL_STYLE2_CLIENT = "mrpc.client.retry-interval";
+
+    // 重试次数，默认10次
+    String RETRY_COUNT_STYLE1_CLIENT = "mrpc.client.retryCount";
+    String RETRY_COUNT_STYLE2_CLIENT = "mrpc.client.retry-count";
+
+    // 跳过服务绑定
+    String SKIP_BIND_SERVICE_STYLE1_CLIENT = "mrpc.client.skipBind";
+    String SKIP_BIND_SERVICE_STYLE2_CLIENT = "mrpc.client.skip-bind";
 
     // netty配置前缀
     String NETTY_CONFIG_PREFIX = "mrpc.netty";
 
-    // netty客户端连接超时时长，单位/秒
+    // netty客户端连接超时时长，单位/毫秒
     String NETTY_CONN_STYLE1_TIMEOUT = "mrpc.netty.connTimeout";
     String NETTY_CONN_STYLE2_TIMEOUT = "mrpc.netty.conn-timeout";
 

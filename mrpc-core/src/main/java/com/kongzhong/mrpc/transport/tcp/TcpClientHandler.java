@@ -3,7 +3,8 @@ package com.kongzhong.mrpc.transport.tcp;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.netty.NettyClient;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
+
+    public TcpClientHandler(NettyClient nettyClient) {
+        super(nettyClient);
+    }
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
