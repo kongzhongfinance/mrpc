@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
@@ -214,9 +213,7 @@ public abstract class SimpleRpcClient {
     }
 
     private void directConnect(String directAddress, Class<?> rpcInterface) {
-        Map<String, Set<String>> mappings = Maps.newHashMap();
-        mappings.put(directAddress, Sets.newHashSet(rpcInterface.getName()));
-        Connections.me().updateNodes(mappings);
+        Connections.me().updateNode(rpcInterface.getName(), directAddress);
     }
 
     /**

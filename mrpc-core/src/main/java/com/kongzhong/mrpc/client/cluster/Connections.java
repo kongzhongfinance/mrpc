@@ -4,22 +4,21 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
-import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.SimpleClientHandler;
 import com.kongzhong.mrpc.transport.SimpleRequestCallback;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -96,15 +95,37 @@ public class Connections {
         }
     }
 
-    private void connect(Set<String> referNames, String host, int port) {
-        //获取socket的完整地址
-        final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
-        LISTENING_EXECUTOR_SERVICE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, remoteAddr));
+    public void updateNode(String serviceName, String address) {
+        try {
+            lock.lock();
+            aliveServers.add(address);
+            String[] ipAddr = address.split(":");
+            //获取IP
+            String host = ipAddr[0];
+            //获取端口号
+            int port = Integer.parseInt(ipAddr[1]);
+            while (this.connect(Sets.newHashSet(serviceName), host, port).get()) {
+                sleep(200);
+                break;
+            }
+            handlerStatus.signal();
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("", e);
+        } finally {
+            lock.unlock();
+        }
     }
 
-    private void sleep(int seconds) {
+    private ListenableFuture<Boolean> connect(Set<String> referNames, String host, int port) {
+        //获取socket的完整地址
+        final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
+        log.debug("Client channel pool add services: {}/{}:{}", referNames, host, port);
+        return LISTENING_EXECUTOR_SERVICE.submit(new SimpleRequestCallback(referNames, eventLoopGroup, remoteAddr));
+    }
+
+    private void sleep(int milliscond) {
         try {
-            TimeUnit.SECONDS.sleep(seconds);
+            TimeUnit.MILLISECONDS.sleep(milliscond);
         } catch (Exception e) {
             log.error("", e);
         }
@@ -129,7 +150,8 @@ public class Connections {
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         lock.lock();
         try {
-            if (!mappings.containsKey(serviceName)) {
+            while (!mappings.containsKey(serviceName)) {
+                handlerStatus.await(2, TimeUnit.SECONDS);
                 return Collections.EMPTY_LIST;
             }
             return Lists.newArrayList(mappings.get(serviceName));
