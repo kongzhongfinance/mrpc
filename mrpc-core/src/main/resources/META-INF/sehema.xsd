@@ -40,7 +40,7 @@
     <xsd:element name="serverConfig">
         <xsd:complexType>
 
-            <xsd:attribute name="appId" type="xsd:string" use="required">
+            <xsd:attribute name="appId" type="xsd:string" use="optional" default="default">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ AppID ]]></xsd:documentation>
                 </xsd:annotation>
@@ -89,7 +89,7 @@
     <xsd:element name="clientConfig">
         <xsd:complexType>
 
-            <xsd:attribute name="appId" type="xsd:string" use="required">
+            <xsd:attribute name="appId" type="xsd:string" use="optional" default="default">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ AppID ]]></xsd:documentation>
                 </xsd:annotation>

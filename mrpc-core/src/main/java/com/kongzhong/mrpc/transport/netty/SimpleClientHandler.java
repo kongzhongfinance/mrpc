@@ -1,12 +1,12 @@
 package com.kongzhong.mrpc.transport.netty;
 
+import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -18,8 +18,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * 抽象客户端请求处理器
@@ -35,13 +33,11 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Getter
     protected volatile Channel channel;
 
-    protected Map<String, RpcCallbackFuture> mapCallBack = new ConcurrentHashMap<>();
-
     @Getter
     @Setter
     protected NettyClient nettyClient;
 
-    private ScheduledFuture<Bootstrap> scheduledFuture;
+    protected final Map<String, RpcCallbackFuture> callbackFutureMap = Maps.newConcurrentMap();
 
     public SimpleClientHandler(NettyClient nettyClient) {
         this.nettyClient = nettyClient;
@@ -108,9 +104,9 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     protected void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
         Channel channel = ctx.channel();
         String requestId = channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).get().toString();
-        RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
+        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
         if (rpcCallbackFuture != null) {
-            mapCallBack.remove(requestId);
+            callbackFutureMap.remove(requestId);
             rpcCallbackFuture.done(null);
         }
     }

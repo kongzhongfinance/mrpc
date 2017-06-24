@@ -4,9 +4,9 @@ import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
-import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
@@ -41,7 +41,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
     @Override
     public RpcCallbackFuture sendRequest(RpcRequest rpcRequest) {
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
-        mapCallBack.put(rpcRequest.getRequestId(), rpcCallbackFuture);
+        callbackFutureMap.put(rpcRequest.getRequestId(), rpcCallbackFuture);
 
         RequestBody requestBody = RequestBody.builder()
                 .requestId(rpcRequest.getRequestId())
@@ -49,15 +49,6 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                 .method(rpcRequest.getMethodName())
                 .parameters(Arrays.asList(rpcRequest.getParameters()))
                 .build();
-
-//        Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
-//        if (null != parameterTypes) {
-//            List<String> parameterTypesJSON = new ArrayList<>();
-//            for (Class<?> type : parameterTypes) {
-//                parameterTypesJSON.add(type.getName());
-//            }
-//            requestBody.setParameterTypes(parameterTypesJSON);
-//        }
 
         try {
             String sendBody = JacksonSerialize.toJSONString(requestBody);
@@ -106,9 +97,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                 rpcResponse.setResult(object);
             }
         }
-        RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
+
+        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
         if (rpcCallbackFuture != null) {
-            mapCallBack.remove(requestId);
+            callbackFutureMap.remove(requestId);
             rpcCallbackFuture.done(rpcResponse);
         }
     }

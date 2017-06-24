@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.spring.parser;
 
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.utils.StringUtils;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -20,15 +21,30 @@ public class ServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
         String elasticIp = element.getAttribute("elasticIp");
         String registry = element.getAttribute("registry");
 
-        builder.addPropertyValue("appId", appId);
         builder.addPropertyValue("serviceName", serviceName);
-        builder.addPropertyValue("beanName", beanName);
-        builder.addPropertyValue("address", address);
-        builder.addPropertyValue("elasticIp", elasticIp);
-        builder.addPropertyValue("registry", registry);
-        builder.addPropertyReference("bean", beanName);
-
+        if (StringUtils.isNotEmpty(appId)) {
+            builder.addPropertyValue("appId", appId);
+        }
+        if (StringUtils.isNotEmpty(beanName)) {
+            builder.addPropertyValue("beanName", beanName);
+        }
+        if (StringUtils.isNotEmpty(address)) {
+            builder.addPropertyValue("address", address);
+        }
+        if (StringUtils.isNotEmpty(elasticIp)) {
+            builder.addPropertyValue("elasticIp", elasticIp);
+        }
+        if (StringUtils.isNotEmpty(registry)) {
+            builder.addPropertyValue("registry", registry);
+        }
+        if (StringUtils.isNotEmpty(beanName)) {
+            builder.addPropertyReference("bean", beanName);
+        }
         return builder.getBeanDefinition();
     }
 
+    @Override
+    protected boolean shouldGenerateId() {
+        return true;
+    }
 }

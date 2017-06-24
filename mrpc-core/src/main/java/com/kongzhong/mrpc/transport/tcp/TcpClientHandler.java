@@ -30,7 +30,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     public RpcCallbackFuture sendRequest(RpcRequest request) {
 
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(request);
-        mapCallBack.put(request.getRequestId(), rpcCallbackFuture);
+        callbackFutureMap.put(request.getRequestId(), rpcCallbackFuture);
 
         log.debug("Request body: \n{}", JacksonSerialize.toJSONString(request, true));
 
@@ -45,9 +45,9 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
             log.debug("Response body: \n{}", JacksonSerialize.toJSONString(response, true));
         }
         String requestId = response.getRequestId();
-        RpcCallbackFuture rpcCallbackFuture = mapCallBack.get(requestId);
+        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
         if (rpcCallbackFuture != null) {
-            mapCallBack.remove(requestId);
+            callbackFutureMap.remove(requestId);
             rpcCallbackFuture.done(response);
         }
     }
