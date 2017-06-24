@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.springboot.config;
 
+import jdk.nashorn.internal.runtime.linker.Bootstrap;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,7 +35,7 @@ public class RpcClientProperties {
     private String serialize;
 
     // 跳过服务绑定
-    private boolean skipBind;
+    private Boolean skipBind;
 
     // 客户端连接超时时间，单位/毫秒 默认10秒
     private int waitTimeout = 10_000;

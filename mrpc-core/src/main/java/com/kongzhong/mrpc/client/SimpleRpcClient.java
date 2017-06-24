@@ -25,7 +25,6 @@ import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -77,13 +76,25 @@ public abstract class SimpleRpcClient {
     @Setter
     protected String haStrategy;
 
-    @Getter
+    // 跳过服务绑定
     @Setter
-    protected int waitTimeout;
+    protected Boolean skipBind = false;
 
-    @Getter
+    // 客户端服务调用超时，单位/毫秒
     @Setter
-    protected int failOverRetry;
+    protected int waitTimeout = 10_000;
+
+    // 快速失效重试次数
+    @Setter
+    protected int failOverRetry = 3;
+
+    // 重试间隔，单位/毫秒 默认每3秒重连一次
+    @Setter
+    protected int retryInterval = 3000;
+
+    // 重试次数，默认10次
+    @Setter
+    protected int retryCount = 10;
 
     /**
      * 服务注册实例
@@ -196,7 +207,13 @@ public abstract class SimpleRpcClient {
         ClientConfig.me().setRpcSerialize(rpcSerialize);
         ClientConfig.me().setHaStrategy(haStrategy);
         ClientConfig.me().setLbStrategy(lbStrategyEnum);
+        ClientConfig.me().setSkipBind(skipBind);
+        ClientConfig.me().setRetryInterval(retryInterval);
+        ClientConfig.me().setRetryCount(retryCount);
+        ClientConfig.me().setWaitTimeout(waitTimeout);
         ClientConfig.me().setTransport(transportEnum);
+
+        log.info("{}", ClientConfig.me());
         isInit = true;
     }
 
@@ -212,7 +229,7 @@ public abstract class SimpleRpcClient {
             Set<String> serviceNames = clientBeans.stream().map(clientBean -> clientBean.getServiceName()).collect(Collectors.toSet());
             mappings.put(directAddress, serviceNames);
         });
-        Connections.me().updateNodes(mappings);
+        Connections.me().asyncConnect(mappings);
     }
 
     /**

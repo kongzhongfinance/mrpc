@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.springboot.client;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
-import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -54,7 +53,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
         CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
 
-        if (clientConfig.isSkipBind()) {
+        if (clientConfig.getSkipBind()) {
             log.info("RPC client skip bind service.");
             return;
         }
@@ -80,7 +79,10 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.transport = clientConfig.getTransport();
         super.serialize = clientConfig.getSerialize();
         super.directAddress = clientConfig.getDirectAddress();
-        ClientConfig.me().setFailOverRetry(clientConfig.getFailOverRetry());
+        super.failOverRetry = clientConfig.getFailOverRetry();
+        super.retryCount = clientConfig.getRetryCount();
+        super.retryInterval = clientConfig.getRetryInterval();
+        super.waitTimeout = clientConfig.getWaitTimeout();
 
         // 注册中心
         if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {

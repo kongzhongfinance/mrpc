@@ -44,10 +44,6 @@ public class NettyClient {
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
 
-        if (retryCount.intValue() > ClientConfig.me().getRetryCount()) {
-            return null;
-        }
-
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)

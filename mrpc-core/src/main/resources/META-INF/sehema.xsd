@@ -143,6 +143,12 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="skipBind" type="xsd:boolean" use="optional" default="false">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 客户端是否跳过服务绑定 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
         </xsd:complexType>
     </xsd:element>
 

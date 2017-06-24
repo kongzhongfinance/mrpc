@@ -78,7 +78,7 @@ public class Connections {
      *
      * @param mappings
      */
-    public void updateNodes(Map<String, Set<String>> smapping) {
+    public void asyncConnect(Map<String, Set<String>> smapping) {
         try {
             lock.lock();
             smapping.forEach((key, serviceNames) -> {

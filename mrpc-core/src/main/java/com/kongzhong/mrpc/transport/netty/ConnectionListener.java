@@ -28,16 +28,17 @@ public class ConnectionListener implements ChannelFutureListener {
 
     @Override
     public void operationComplete(ChannelFuture future) throws Exception {
-
-        nettyClient.getRetryCount().add(1);
-
-        log.info("Reconnect {}, count = {}", nettyClient.getServerAddress(), nettyClient.getRetryCount().intValue());
-
         if (!future.isSuccess()) {
+            if (nettyClient.getRetryCount().intValue() >= ClientConfig.me().getRetryCount()) {
+                return;
+            }
+
+            nettyClient.getRetryCount().add(1);
+            log.info("Reconnect {}, count = {}", nettyClient.getServerAddress(), nettyClient.getRetryCount().intValue());
             final EventLoop loop = future.channel().eventLoop();
             loop.schedule(() -> nettyClient.createBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
         } else {
-            log.info("Reconnect {} success.", nettyClient.getServerAddress());
+            log.info("Connect {} success.", nettyClient.getServerAddress());
             Set<String> referNames = nettyClient.getReferNames();
             boolean isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
             if (CollectionUtils.isNotEmpty(referNames)) {

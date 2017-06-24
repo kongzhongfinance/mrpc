@@ -18,7 +18,10 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         String serialize = element.getAttribute("serialize");
         String directAddress = element.getAttribute("directAddress");
         String waitTimeout = element.getAttribute("waitTimeout");
+        String skipBind = element.getAttribute("skipBind");
         String failOverRetry = element.getAttribute("failOverRetry");
+        String retryCount = element.getAttribute("retryCount");
+        String retryInterval = element.getAttribute("retryInterval");
 
         builder.addPropertyValue("appId", appId);
         builder.addPropertyValue("transport", transport);
@@ -26,6 +29,9 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         builder.addPropertyValue("directAddress", directAddress);
         builder.addPropertyValue("waitTimeout", Integer.valueOf(waitTimeout));
         builder.addPropertyValue("failOverRetry", Integer.valueOf(failOverRetry));
+        builder.addPropertyValue("skipBind", Boolean.valueOf(skipBind));
+        builder.addPropertyValue("retryCount", Integer.valueOf(retryCount));
+        builder.addPropertyValue("retryInterval", Integer.valueOf(retryInterval));
 
         return builder.getBeanDefinition();
     }

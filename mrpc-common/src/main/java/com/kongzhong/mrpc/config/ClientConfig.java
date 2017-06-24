@@ -27,7 +27,7 @@ public class ClientConfig {
     private TransportEnum transport;
 
     // 跳过服务绑定
-    private boolean skipBind;
+    private Boolean skipBind;
 
     // 客户端服务调用超时，单位/毫秒
     private int waitTimeout = 10_000;
