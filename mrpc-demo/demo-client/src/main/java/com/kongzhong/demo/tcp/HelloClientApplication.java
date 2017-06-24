@@ -33,6 +33,6 @@ public class HelloClientApplication {
             TimeUnit.SECONDS.sleep(3);
         }
 
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }

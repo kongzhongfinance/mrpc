@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * All listeners registered at the {@link ZkClient} will be notified from this event thread.
  * This is to prevent dead-lock situations. The {@link ZkClient} pulls some information out of
  * the {@link org.apache.zookeeper.ZooKeeper} events to signal {@link ZkLock} conditions. Re-using the
- * {@link org.apache.zookeeper.ZooKeeper} event thread to also notify {@link ZkClient} listeners, would stop the
+ * {@link org.apache.zookeeper.ZooKeeper} event thread to also notify {@link ZkClient} listeners, would shutdown the
  * ZkClient from receiving events from {@link org.apache.zookeeper.ZooKeeper} as soon as one of the listeners blocks
  * (because it is waiting for something). {@link ZkClient} would then for instance not be able
  * to maintain it's connection state anymore.

@@ -29,6 +29,6 @@ public class ExceptionApplication {
             }
         }
 
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }

@@ -25,7 +25,7 @@ public class NoConstructorApplication {
 
         String msg = payService.pay("hello", new BigDecimal("20"));
         System.out.println(msg);
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 
 }

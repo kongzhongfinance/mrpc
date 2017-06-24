@@ -41,6 +41,6 @@ public class HttpClientApplication {
 
         System.out.println(userService.getPersons());
 
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }

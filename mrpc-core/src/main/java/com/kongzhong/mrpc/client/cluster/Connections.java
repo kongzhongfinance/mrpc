@@ -77,6 +77,8 @@ public class Connections {
     }
 
     /**
+     * 同步建立连接
+     * <p>
      * server:port -> serviceNames
      *
      * @param mappings
@@ -103,6 +105,8 @@ public class Connections {
     }
 
     /**
+     * 异步建立连接
+     *
      * @param serviceName
      * @param address
      */
@@ -153,6 +157,11 @@ public class Connections {
         new NettyClient(host, port).referers(referNames).createBootstrap(eventLoopGroup);
     }
 
+    /**
+     * 休眠
+     *
+     * @param milliscond
+     */
     private void sleep(int milliscond) {
         try {
             TimeUnit.MILLISECONDS.sleep(milliscond);
@@ -205,8 +214,9 @@ public class Connections {
     }
 
     public void shutdown() {
-        LISTENING_EXECUTOR_SERVICE.shutdown();
+        mappings.values().forEach(simpleClientHandler -> simpleClientHandler.close());
         eventLoopGroup.shutdownGracefully();
+        LISTENING_EXECUTOR_SERVICE.shutdown();
     }
 
 }

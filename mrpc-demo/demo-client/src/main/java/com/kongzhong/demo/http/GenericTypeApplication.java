@@ -27,6 +27,6 @@ public class GenericTypeApplication {
 
         userService.setPersons(peoples);
 
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }

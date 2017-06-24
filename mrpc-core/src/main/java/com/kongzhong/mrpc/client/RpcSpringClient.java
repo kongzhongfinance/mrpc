@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -72,6 +73,28 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         super.directConnect();
 
         log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
+    }
+
+    /***
+     * 动态代理,获得代理后的对象
+     *
+     * @param rpcInterface
+     * @param <T>
+     * @return
+     */
+    public <T> T getProxyReferer(Class<T> rpcInterface) {
+        if (!isInit) {
+            try {
+                super.init();
+            } catch (Exception e) {
+                log.error("RPC client init error", e);
+            }
+        }
+        if (null == ctx && StringUtils.isNotEmpty(directAddress)) {
+            // 同步直连
+            this.asyncDirectConnect(directAddress, rpcInterface);
+        }
+        return this.getProxyBean(rpcInterface);
     }
 
     @Override

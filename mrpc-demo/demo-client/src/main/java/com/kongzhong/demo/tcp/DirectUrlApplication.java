@@ -17,7 +17,7 @@ public class DirectUrlApplication {
         final UserService userService = rpcClient.getProxyReferer(UserService.class);
         String msg = userService.hello("direct url");
         System.out.println(msg);
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 
 }

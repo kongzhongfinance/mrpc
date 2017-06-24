@@ -17,6 +17,6 @@ public class PayClient {
 
         final PayService payService = rpcClient.getProxyReferer(PayService.class);
         System.out.println(payService.pay("pay call", new BigDecimal("2201.1")));
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }

@@ -87,8 +87,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .timestamp(System.currentTimeMillis())
                 .build();
 
-        log.debug("Client send request");
-
         if (!hasInterceptors) {
             return haStrategy.call(request, loadBalance);
         }

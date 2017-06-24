@@ -34,6 +34,9 @@ public class NettyClient {
     @Getter
     private LongAdder retryCount = new LongAdder();
 
+    @Getter
+    private boolean isRunning = true;
+
     public NettyClient(SocketAddress serverAddress) {
         this.serverAddress = serverAddress;
     }
@@ -71,6 +74,10 @@ public class NettyClient {
      */
     public void resetRetryCount() {
         retryCount = new LongAdder();
+    }
+
+    public void shutdown(){
+        isRunning = false;
     }
 
 }

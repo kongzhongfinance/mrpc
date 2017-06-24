@@ -28,6 +28,9 @@ public class ConnectionListener implements ChannelFutureListener {
 
     @Override
     public void operationComplete(ChannelFuture future) throws Exception {
+        if(!nettyClient.isRunning()){
+            return;
+        }
         if (!future.isSuccess()) {
             if (nettyClient.getRetryCount().intValue() >= ClientConfig.me().getRetryCount()) {
                 return;

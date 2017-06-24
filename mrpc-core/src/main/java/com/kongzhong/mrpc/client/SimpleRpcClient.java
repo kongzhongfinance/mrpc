@@ -131,28 +131,6 @@ public abstract class SimpleRpcClient {
 
     protected NettyConfig nettyConfig;
 
-    /***
-     * 动态代理,获得代理后的对象
-     *
-     * @param rpcInterface
-     * @param <T>
-     * @return
-     */
-    public <T> T getProxyReferer(Class<T> rpcInterface) {
-        if (!isInit) {
-            try {
-                this.init();
-            } catch (Exception e) {
-                log.error("RPC client init error", e);
-            }
-        }
-        if (StringUtils.isNotEmpty(directAddress)) {
-            // 同步直连
-            this.asyncDirectConnect(directAddress, rpcInterface);
-        }
-        return this.getProxyBean(rpcInterface);
-    }
-
     /**
      * 获取一个Class的代理对象
      *
@@ -214,6 +192,7 @@ public abstract class SimpleRpcClient {
         ClientConfig.me().setTransport(transportEnum);
 
         log.info("{}", ClientConfig.me());
+
         isInit = true;
     }
 
@@ -238,7 +217,7 @@ public abstract class SimpleRpcClient {
      * @param directAddress
      * @param rpcInterface
      */
-    private void asyncDirectConnect(String directAddress, Class<?> rpcInterface) {
+    protected void asyncDirectConnect(String directAddress, Class<?> rpcInterface) {
         Connections.me().asyncDirectConnect(rpcInterface.getName(), directAddress);
     }
 
@@ -373,8 +352,9 @@ public abstract class SimpleRpcClient {
     /**
      * 停止客户端，释放资源
      */
-    public void stop() {
+    public void shutdown() {
+        log.info("Stop mrpc client");
         Connections.me().shutdown();
+        serviceDiscoveryMap.values().forEach(serviceDiscovery -> serviceDiscovery.stop());
     }
-
 }

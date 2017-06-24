@@ -28,6 +28,6 @@ public class ExpClientApplication {
                 e.printStackTrace();
             }
         }
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }

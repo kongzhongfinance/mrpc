@@ -24,6 +24,6 @@ public class ClientInterceptorApplication {
         for (int i = 0; i < 10; i++) {
             System.out.println(userService.add(10, 20));
         }
-        rpcClient.stop();
+        rpcClient.shutdown();
     }
 }
