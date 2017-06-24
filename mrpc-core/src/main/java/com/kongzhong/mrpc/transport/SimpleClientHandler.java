@@ -3,13 +3,11 @@ package com.kongzhong.mrpc.transport;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.client.cluster.Connections;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.util.AttributeKey;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler<T> {
 
     protected SocketAddress socketAddress;
+
+    protected NettyConfig nettyConfig;
 
     @Getter
     protected volatile Channel channel;
@@ -65,8 +65,12 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        Connections.me().remove(this);
         log.debug("Channel inactive: {}", this.channel);
+        // 创建异步重连
+        final EventLoop eventLoopGroup = this.channel.eventLoop();
+
+
+        Connections.me().remove(this);
 
         // 创建异步重连
 //        final EventLoop eventLoopGroup = this.channel.eventLoop();

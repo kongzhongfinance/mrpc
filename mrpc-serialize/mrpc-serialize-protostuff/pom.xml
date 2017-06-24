@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-serialize-protostuff</artifactId>
-    <version>${parent.version}</version>
+    <version>${mrpc-serialize-protostuff.version}</version>
 
     <dependencies>
         <!-- Protostuff -->

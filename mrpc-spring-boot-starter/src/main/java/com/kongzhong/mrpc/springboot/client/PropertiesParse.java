@@ -8,6 +8,8 @@ import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -27,6 +29,7 @@ import static com.kongzhong.mrpc.Const.*;
  *         21/06/2017
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertiesParse {
 
     /**

@@ -11,7 +11,7 @@
 
     <artifactId>mrpc-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
-    <version>${parent.version}</version>
+    <version>${mrpc-starter.version}</version>
 
     <dependencies>
         <dependency>

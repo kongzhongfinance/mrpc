@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-registry-zk</artifactId>
-    <version>${parent.version}</version>
+    <version>0.0.7-SNAPSHOT</version>
 
     <dependencies>
 
