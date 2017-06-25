@@ -32,6 +32,7 @@ public interface Const {
     // 客户端传输协议
     String TRANSPORT_CLIENT = "mrpc.client.transport";
     String SERVER_TRANSPORT = "mrpc.server.transport";
+    String SERVER_ADDRESS = "mrpc.server.address";
 
     // 客户端appId
     String CLINET_APP_ID_STYLE1 = "mrpc.client.appId";
@@ -49,7 +50,7 @@ public interface Const {
     String HA_STRATEGY_STYLE2_CLIENT = "mrpc.client.haStrategy";
 
     // 客户端直连地址配置
-    String DIRECT_ADDRESS_STYLE1_CLIENT = "mrpc.client.directAdress";
+    String DIRECT_ADDRESS_STYLE1_CLIENT = "mrpc.client.directAddress";
     String DIRECT_ADDRESS_STYLE2_CLIENT = "mrpc.client.direct-address";
 
     // 客户端等待超时配置

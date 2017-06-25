@@ -55,13 +55,13 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
             this.nettyConfig = nettyConfigMap.values().stream().findFirst().get();
         }
 
+        super.init();
+
         // 客户端引用
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
 
         ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
         DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
-
-        super.init();
 
         if (CollectionUtils.isNotEmpty(clientBeanMap)) {
             clientBeanMap.values().forEach(clientBean -> super.initReferer(clientBean, dbf));

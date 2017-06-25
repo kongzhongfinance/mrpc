@@ -98,6 +98,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             // 初始化客户端引用服务
             referers.forEach(referer -> super.initReferer(referer, beanFactory));
 
+            super.directConnect();
+
             log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
 
         } catch (Exception e) {

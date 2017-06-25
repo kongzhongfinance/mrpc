@@ -10,6 +10,7 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
+import com.kongzhong.mrpc.springboot.client.ClientEnvironmentCondition;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.Order;
 
 import java.util.List;
@@ -41,8 +43,8 @@ import static com.kongzhong.mrpc.Const.*;
  * @author biezhi
  *         2017/5/13
  */
+@Conditional(ServerEnvironmentCondition.class)
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
-@ConditionalOnProperty(SERVER_TRANSPORT)
 @Slf4j
 public class RpcServerAutoConfigure extends SimpleRpcServer {
 
