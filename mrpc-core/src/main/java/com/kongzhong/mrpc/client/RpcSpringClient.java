@@ -2,12 +2,10 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.utils.CollectionUtils;
-import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -33,6 +31,12 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
+        if (super.skipBind) {
+            log.info("RPC client skip bind service.");
+            return;
+        }
+
         // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (CollectionUtils.isNotEmpty(registryBeanMap)) {

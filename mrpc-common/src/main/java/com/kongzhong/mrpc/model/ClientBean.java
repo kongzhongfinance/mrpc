@@ -18,7 +18,7 @@ public class ClientBean {
     private Class<?> serviceClass;
     private String registry;
     private String directAddress;
-    private int waitTimeout = 10;
+    private int waitTimeout = 10_000;
 
     public ClientBean(Class<?> serviceClass) {
         this(StringUtils.getSimpleClassName(serviceClass), serviceClass);

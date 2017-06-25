@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.transport;
+package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.model.ServiceBean;
 import io.netty.channel.ChannelHandlerContext;

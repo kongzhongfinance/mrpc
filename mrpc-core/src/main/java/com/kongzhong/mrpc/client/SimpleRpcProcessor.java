@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 
 /**
  * 服务执行器

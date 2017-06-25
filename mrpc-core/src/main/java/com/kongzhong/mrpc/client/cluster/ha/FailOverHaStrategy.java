@@ -40,7 +40,7 @@ public class FailOverHaStrategy implements HaStrategy {
                         throw e;
                     }
                     TimeUnit.MILLISECONDS.sleep(100);
-                    log.debug("Client retry [{}]", i + 1);
+                    log.debug("Failover retry [{}]", i + 1);
                 } else {
                     log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
                 }

@@ -5,13 +5,13 @@
     <parent>
         <artifactId>mrpc</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
-    <version>${parent.version}</version>
+    <version>${mrpc-starter.version}</version>
 
     <dependencies>
         <dependency>

@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.springboot.client;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
-import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -48,6 +47,17 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         log.debug("BootRpcClient postProcessBeanFactory");
 
+        // 解析客户端配置
+        ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
+
+        RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
+        CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
+
+        if (clientConfig.getSkipBind()) {
+            log.info("RPC client skip bind service.");
+            return;
+        }
+
         // 读取Bean工厂的引用对象
         Referers referersObject = beanFactory.getBean(Referers.class);
         if (null == referersObject) {
@@ -62,11 +72,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             rpcClientInteceptorMap.values().forEach(super::addInterceptor);
         }
 
-        // 解析客户端配置
-        ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
-
-        RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
-        CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
         this.customServiceMap = commonProperties.getCustom();
         this.nettyConfig = commonProperties.getNetty();
 
@@ -74,7 +79,10 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.transport = clientConfig.getTransport();
         super.serialize = clientConfig.getSerialize();
         super.directAddress = clientConfig.getDirectAddress();
-        ClientConfig.me().setFailOverRetry(clientConfig.getFailOverRetry());
+        super.failOverRetry = clientConfig.getFailOverRetry();
+        super.retryCount = clientConfig.getRetryCount();
+        super.retryInterval = clientConfig.getRetryInterval();
+        super.waitTimeout = clientConfig.getWaitTimeout();
 
         // 注册中心
         if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {

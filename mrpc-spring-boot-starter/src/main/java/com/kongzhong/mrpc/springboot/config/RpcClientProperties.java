@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.springboot.config;
 
+import jdk.nashorn.internal.runtime.linker.Bootstrap;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,10 +34,19 @@ public class RpcClientProperties {
     // 序列化组件，默认kyro
     private String serialize;
 
-    // 客户端连接超时时间，默认10秒
-    private int waitTimeout = 10;
+    // 跳过服务绑定
+    private Boolean skipBind;
+
+    // 客户端连接超时时间，单位/毫秒 默认10秒
+    private int waitTimeout = 10_000;
 
     // FailOver重试次数
     private int failOverRetry = 3;
+
+    // 重试间隔，单位/毫秒 默认每3秒重连一次
+    private int retryInterval = 3000;
+
+    // 重试次数，默认20次
+    private int retryCount = 10;
 
 }

@@ -21,7 +21,6 @@ public class RpcResponse implements Serializable {
     private Boolean success = false;
     private String returnType;
 
-    private String message;
     private String exception;
 
 }

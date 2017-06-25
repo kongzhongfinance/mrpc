@@ -5,7 +5,7 @@ import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.transport.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

@@ -39,7 +39,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     private void removeNode(ServiceBean serviceBean) {
         String appId = serviceBean.getAppId();
         String node = serviceBean.getServiceName();
-        String serverAddr = serviceBean.getAddress();
+        String serverAddr = StringUtils.isNotEmpty(serviceBean.getElasticIp()) ? serviceBean.getElasticIp() : serviceBean.getAddress();
 
         // node path = rootPath + appId + node + address
         String path = Constant.ZK_ROOT + "/" + appId + "/" + node + "/" + serverAddr;
@@ -64,9 +64,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         log.debug("Create node [{}]", path);
 
         String serviceNode = path + "/" + serverAddr;
-        if (!zkClient.exists(serviceNode)) {
-            zkClient.createEphemeral(serviceNode, "".getBytes());
-        }
+        zkClient.createEphemeral(serviceNode, "".getBytes());
     }
 
 }

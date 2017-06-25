@@ -284,7 +284,7 @@ public abstract class SimpleRpcServer {
 
     protected String getRegisterElasticIp(ServiceBean serviceBean) {
         String elasticIp = this.elasticIp;
-        if (null != serviceBean.getElasticIp()) {
+        if (StringUtils.isNotEmpty(serviceBean.getElasticIp())) {
             elasticIp = serviceBean.getElasticIp();
         }
         return elasticIp;

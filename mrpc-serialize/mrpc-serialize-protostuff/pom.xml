@@ -5,12 +5,12 @@
     <parent>
         <artifactId>mrpc-serialize</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-serialize-protostuff</artifactId>
-    <version>${parent.version}</version>
+    <version>${mrpc-serialize-protostuff.version}</version>
 
     <dependencies>
         <!-- Protostuff -->

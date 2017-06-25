@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
@@ -23,9 +22,9 @@ import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -77,13 +76,25 @@ public abstract class SimpleRpcClient {
     @Setter
     protected String haStrategy;
 
-    @Getter
+    // 跳过服务绑定
     @Setter
-    protected int waitTimeout;
+    protected Boolean skipBind = false;
 
-    @Getter
+    // 客户端服务调用超时，单位/毫秒
     @Setter
-    protected int failOverRetry;
+    protected int waitTimeout = 10_000;
+
+    // 快速失效重试次数
+    @Setter
+    protected int failOverRetry = 3;
+
+    // 重试间隔，单位/毫秒 默认每3秒重连一次
+    @Setter
+    protected int retryInterval = 3000;
+
+    // 重试次数，默认10次
+    @Setter
+    protected int retryCount = 10;
 
     /**
      * 服务注册实例
@@ -136,7 +147,8 @@ public abstract class SimpleRpcClient {
             }
         }
         if (StringUtils.isNotEmpty(directAddress)) {
-            this.directConnect(directAddress, rpcInterface);
+            // 同步直连
+            this.asyncDirectConnect(directAddress, rpcInterface);
         }
         return this.getProxyBean(rpcInterface);
     }
@@ -165,6 +177,7 @@ public abstract class SimpleRpcClient {
     }
 
     protected void init() throws RpcException {
+
         Connections connections = Connections.me();
         if (null == serialize) serialize = "kyro";
         if (null == transport) transport = "tcp";
@@ -194,7 +207,13 @@ public abstract class SimpleRpcClient {
         ClientConfig.me().setRpcSerialize(rpcSerialize);
         ClientConfig.me().setHaStrategy(haStrategy);
         ClientConfig.me().setLbStrategy(lbStrategyEnum);
+        ClientConfig.me().setSkipBind(skipBind);
+        ClientConfig.me().setRetryInterval(retryInterval);
+        ClientConfig.me().setRetryCount(retryCount);
+        ClientConfig.me().setWaitTimeout(waitTimeout);
         ClientConfig.me().setTransport(transportEnum);
+
+        log.info("{}", ClientConfig.me());
         isInit = true;
     }
 
@@ -210,13 +229,17 @@ public abstract class SimpleRpcClient {
             Set<String> serviceNames = clientBeans.stream().map(clientBean -> clientBean.getServiceName()).collect(Collectors.toSet());
             mappings.put(directAddress, serviceNames);
         });
-        Connections.me().updateNodes(mappings);
+        Connections.me().asyncConnect(mappings);
     }
 
-    private void directConnect(String directAddress, Class<?> rpcInterface) {
-        Map<String, Set<String>> mappings = Maps.newHashMap();
-        mappings.put(directAddress, Sets.newHashSet(rpcInterface.getName()));
-        Connections.me().updateNodes(mappings);
+    /**
+     * 同步直连
+     *
+     * @param directAddress
+     * @param rpcInterface
+     */
+    private void asyncDirectConnect(String directAddress, Class<?> rpcInterface) {
+        Connections.me().asyncDirectConnect(rpcInterface.getName(), directAddress);
     }
 
     /**
@@ -225,11 +248,16 @@ public abstract class SimpleRpcClient {
      * @param interfaces 接口名
      */
     public void bindReferer(Class<?>... interfaces) {
-        if (null != interfaces) {
+        if (CollectionUtils.isNotEmpty(interfaces)) {
             Stream.of(interfaces).forEach(type -> referers.add(new ClientBean(type)));
         }
     }
 
+    /**
+     * 设置默认注册中心
+     *
+     * @param serviceDiscovery
+     */
     public void setDefaultDiscovery(ServiceDiscovery serviceDiscovery) {
         serviceDiscoveryMap.put("default", serviceDiscovery);
     }

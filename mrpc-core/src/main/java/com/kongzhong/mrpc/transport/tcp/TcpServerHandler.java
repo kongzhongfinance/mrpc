@@ -7,7 +7,7 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.RpcSpringServer;
-import com.kongzhong.mrpc.transport.SimpleServerHandler;
+import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 

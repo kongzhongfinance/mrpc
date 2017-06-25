@@ -100,7 +100,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         });
 
         // update node list
-        Connections.me().updateNodes(mappings);
+        Connections.me().asyncConnect(mappings);
     }
 
     class ZkChildListener implements IZkChildListener {
