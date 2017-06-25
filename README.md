@@ -1,18 +1,20 @@
-# mrpc (v2)
+# mrpc 
+
+mrpc是一款简洁易用的分布式服务化治理框架。
 
 ## 特性
 
-- 调用透明
+- 调用透明,像调用本地方法一样使用RPC服务
 - 高性能
-- 支持分布式(服务注册和发现)
-- 集成Spring/SpringBoot
-- 支持TCP/HTTP通讯
-- 负载均衡策略
-- 容错处理(FailOver/FailFast)
+- 支持分布式,基于Zookeeper/Consul的服务注册和发现
+- 完美集成Spring/SpringBoot项目
+- 支持TCP/HTTP传输协议
+- 多种负载均衡策略
+- 集群下的容错处理(FailOver/FailFast)
 - 拦截器处理, 插件式扩展
 - 客户端断线重连，自动恢复
 - 动态注册/卸载服务
-- 秒级监控
+- 秒级监控，使用statsd-influxdb-grafana打点预览
 - 服务调用链查看
 
 ## 快速入门
