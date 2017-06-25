@@ -4,8 +4,8 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.transport.AbstractResponseInvoker;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.transport.AbstractResponseInvoker;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -46,7 +46,9 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             RpcContext.remove();
             String body = JacksonSerialize.toJSONString(rpcResponse);
             ByteBuf bbuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
+
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
             httpResponse.content().clear().writeBytes(bbuf);
             return httpResponse;
         }

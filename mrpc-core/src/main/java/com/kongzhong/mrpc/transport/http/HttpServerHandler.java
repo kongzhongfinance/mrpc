@@ -105,7 +105,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         // 解析请求
         RpcRequest rpcRequest = this.parseParams(ctx, requestBody, bean.getClass());
 
-        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.EMPTY_BUFFER);
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
         httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
         httpResponse.headers().set(HEADER_REQUEST_ID, requestBody.getRequestId());
         httpResponse.headers().set(HEADER_SERVICE_CLASS, requestBody.getService());
