@@ -20,6 +20,7 @@
         <module>mrpc-spring-boot-starter</module>
         <module>mrpc-admin</module>
         <module>mrpc-trace-zipkin</module>
+        <module>mrpc-interceptor-validator</module>
     </modules>
 
     <properties>
@@ -46,6 +47,7 @@
         <zookeeper.version>3.4.8</zookeeper.version>
         <jackson.version>2.7.0</jackson.version>
         <mrpc-metric.version>0.0.1-SNAPSHOT</mrpc-metric.version>
+        <mrpc-interceptor-validator.version>0.0.7-SNAPSHOT</mrpc-interceptor-validator.version>
     </properties>
 
     <dependencies>
@@ -93,6 +95,11 @@
                 <version>${mrpc-zk.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.kongzhong.mrpc</groupId>
+                <artifactId>mrpc-interceptor-validator</artifactId>
+                <version>${mrpc-interceptor-validator.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

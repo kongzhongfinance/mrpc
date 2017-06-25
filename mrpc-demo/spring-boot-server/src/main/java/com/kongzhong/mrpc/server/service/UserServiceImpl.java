@@ -102,5 +102,4 @@ public class UserServiceImpl implements UserService {
         result.setData(new Person("test1"));
         return result;
     }
-
 }

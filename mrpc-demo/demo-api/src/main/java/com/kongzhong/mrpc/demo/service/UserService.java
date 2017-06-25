@@ -4,7 +4,7 @@ import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.model.Result;
 import com.kongzhong.mrpc.demo.model.StatusEnum;
-import com.kongzhong.mrpc.utils.StringUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public interface UserService {
 
     Result<Person> getResult();
 
-    void setPersons(List<Person> persons);
+    void setPersons(@NotEmpty(message = "参数不能为空") List<Person> persons);
 
     Map toMap(Map<String, Integer> map);
 
