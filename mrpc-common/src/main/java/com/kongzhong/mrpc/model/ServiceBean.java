@@ -15,6 +15,7 @@ public class ServiceBean {
 
     private String appId;
     private String registry;
+    private String version;
     private String serviceName;
     private Object bean;
     private String beanName;

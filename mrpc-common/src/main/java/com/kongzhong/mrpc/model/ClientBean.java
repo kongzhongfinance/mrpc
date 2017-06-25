@@ -17,6 +17,7 @@ public class ClientBean {
     private String serviceName;
     private Class<?> serviceClass;
     private String registry;
+    private String version;
     private String directAddress;
     private int waitTimeout = 10_000;
 

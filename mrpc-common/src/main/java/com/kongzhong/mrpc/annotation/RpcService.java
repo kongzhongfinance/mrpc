@@ -17,11 +17,25 @@ import java.lang.annotation.Target;
 public @interface RpcService {
 
     /**
+     * 服务暴露出的名称，默认为Spring容器生成的名称
+     *
+     * @return
+     */
+    String name() default "";
+
+    /**
      * 服务实现的接口
      *
      * @return
      */
     Class<?> value() default NoInterface.class;
+
+    /**
+     * 当前服务版本
+     *
+     * @return
+     */
+    String version() default "";
 
     /**
      * 服务所属APPID（服务分组）

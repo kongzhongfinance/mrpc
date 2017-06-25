@@ -16,6 +16,7 @@ public class ServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
         String serviceName = element.getAttribute("interface");
         String appId = element.getAttribute("appId");
+        String version = element.getAttribute("version");
         String beanName = element.getAttribute("ref");
         String address = element.getAttribute("address");
         String elasticIp = element.getAttribute("elasticIp");
@@ -39,6 +40,9 @@ public class ServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
         }
         if (StringUtils.isNotEmpty(beanName)) {
             builder.addPropertyReference("bean", beanName);
+        }
+        if (StringUtils.isNotEmpty(version)) {
+            builder.addPropertyValue("version", version);
         }
         return builder.getBeanDefinition();
     }
