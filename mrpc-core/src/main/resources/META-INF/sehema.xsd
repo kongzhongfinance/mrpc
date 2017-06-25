@@ -82,6 +82,12 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="test" type="xsd:boolean" use="optional" default="false">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 是否是测试环境 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
         </xsd:complexType>
     </xsd:element>
 

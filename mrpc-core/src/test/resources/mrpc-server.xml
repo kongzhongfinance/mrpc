@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mrpc="http://mrpc.kongzhong.com/schema/mrpc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
+
+    <!-- 配置服务端口为5066 -->
+    <mrpc:serverConfig address="127.0.0.1:5066" test="true"/>
+
+    <bean id="demoService" class="com.kongzhong.mrpc.service.DemoService"/>
+
+    <!-- 暴露一个DemoService服务 -->
+    <mrpc:service interface="com.kongzhong.mrpc.service.DemoService" ref="demoService"/>
+
+</beans>

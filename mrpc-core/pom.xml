@@ -47,6 +47,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-serialize-kryo</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

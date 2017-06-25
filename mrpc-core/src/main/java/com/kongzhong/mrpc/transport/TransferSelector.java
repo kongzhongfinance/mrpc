@@ -31,10 +31,6 @@ public class TransferSelector {
      */
     public ChannelHandler getServerChannelHandler(String transport) throws RpcException {
 
-        if (null == rpcSerialize) {
-            throw new InitializeException("rpc server serialize is null.");
-        }
-
         TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
         if (null == transportEnum) {
             throw new InitializeException("transfer type [" + transport + "] error.");

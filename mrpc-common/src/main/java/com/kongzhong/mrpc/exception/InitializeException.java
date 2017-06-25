@@ -1,15 +1,12 @@
 package com.kongzhong.mrpc.exception;
 
 /**
- * 初始化异常
+ * RPC初始化异常
  *
  * @author biezhi
  *         2017/4/20
  */
-public class InitializeException extends RpcException {
-
-    public InitializeException() {
-    }
+public class InitializeException extends RuntimeException {
 
     public InitializeException(String message) {
         super(message);

@@ -9,6 +9,7 @@ import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.NoInterface;
@@ -166,6 +167,10 @@ public abstract class SimpleRpcServer {
         }
         if (serialize.equalsIgnoreCase("protostuff")) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
+        }
+
+        if (null == rpcSerialize) {
+            throw new InitializeException("rpc server serialize is null.");
         }
 
         transferSelector = new TransferSelector(rpcSerialize);

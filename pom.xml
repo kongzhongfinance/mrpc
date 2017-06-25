@@ -42,6 +42,7 @@
         <lombok.version>1.16.14</lombok.version>
         <netty.version>4.1.12.Final</netty.version>
         <spring.version>4.3.7.RELEASE</spring.version>
+        <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
         <guava.version>21.0</guava.version>
         <slf4j-api.version>1.7.24</slf4j-api.version>
         <zookeeper.version>3.4.8</zookeeper.version>
@@ -67,6 +68,14 @@
             <version>${slf4j-api.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
