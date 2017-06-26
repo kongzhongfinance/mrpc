@@ -203,9 +203,13 @@ public abstract class SimpleRpcServer {
 
             //注册服务
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+
+                String appId = this.getAppId(serviceBean);
                 String serviceName = serviceBean.getServiceName();
                 String address = this.getBindAddress(serviceBean);
                 String elasticIp = this.getRegisterElasticIp(serviceBean);
+                boolean usedRegistry = this.usedRegistry(serviceBean);
+
                 if (usedRegistry) {
                     // 查找该服务的注册中心
                     ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
@@ -259,6 +263,22 @@ public abstract class SimpleRpcServer {
         } else {
             future.channel().closeFuture().sync();
         }
+    }
+
+    /**
+     * 返回引用是否使用注册中心
+     *
+     * @param clientBean
+     * @return
+     */
+    protected boolean usedRegistry(ServiceBean serviceBean) {
+        if (StringUtils.isNotEmpty(serviceBean.getRegistry())) {
+            return true;
+        }
+        if (serviceRegistryMap.containsKey("default")) {
+            return true;
+        }
+        return false;
     }
 
     protected String getAppId(ServiceBean serviceBean) {
