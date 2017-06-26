@@ -14,6 +14,7 @@ import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.internal.SocketUtils;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -145,7 +146,7 @@ public class Connections {
         final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
         log.debug("Sync connect {}:{} {}", host, port, referNames);
 
-        SocketAddress socketAddress = new InetSocketAddress(host, port);
+        SocketAddress socketAddress = SocketUtils.socketAddress(host, port);
 
         return LISTENING_EXECUTOR_SERVICE.submit(() -> new NettyClient(nettyConfig, socketAddress).referers(referNames).createBootstrap(eventLoopGroup));
     }
@@ -162,7 +163,7 @@ public class Connections {
         final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
         log.debug("Async connect {}:{} {}", host, port, referNames);
 
-        SocketAddress socketAddress = new InetSocketAddress(host, port);
+        SocketAddress socketAddress = SocketUtils.socketAddress(host, port);
 
         new NettyClient(nettyConfig, socketAddress).referers(referNames).createBootstrap(eventLoopGroup);
     }
