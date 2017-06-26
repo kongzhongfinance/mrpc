@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mrpc</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,7 +14,6 @@
     <properties>
         <hibernate-validator.version>5.3.5.Final</hibernate-validator.version>
         <glassfish-el.version>3.0.0</glassfish-el.version>
-        <spring-context.version>4.3.6.RELEASE</spring-context.version>
     </properties>
 
     <dependencies>
@@ -39,7 +38,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring-context.version}</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         

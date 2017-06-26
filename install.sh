@@ -11,6 +11,9 @@ cd ..
 cd mrpc-registry-zk && mvn clean install -P snapshots -Dmaven.test.skip=true
 cd ..
 
+cd mrpc-interceptor-validator && mvn clean install -P snapshots -Dmaven.test.skip=true
+cd ..
+
 cd mrpc-metric-influxdb && mvn clean install -P snapshots -Dmaven.test.skip=true
 cd ..
 
