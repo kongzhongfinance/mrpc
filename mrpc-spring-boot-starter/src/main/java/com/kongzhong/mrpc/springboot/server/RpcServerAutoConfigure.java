@@ -91,7 +91,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
                     ServiceRegistry serviceRegistry = super.mapToRegistry(map);
                     serviceRegistryMap.put(registryName, serviceRegistry);
                     configurableBeanFactory.registerSingleton(MRPC_SERVER_REGISTRY_PREFIX + registryName, serviceRegistry);
-                    usedRegistry = true;
+                    super.usedRegistry = true;
                 });
             }
             if (null != commonProperties.getCustom()) {

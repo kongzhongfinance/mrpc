@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.server;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
-import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
@@ -12,14 +11,12 @@ import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -33,7 +30,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.AnnotationUtils;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Map;
@@ -229,7 +225,7 @@ public abstract class SimpleRpcServer {
                 }
             });
 
-            if (usedRegistry) {
+            if (this.usedRegistry) {
                 this.listenDestroy();
             }
 
@@ -406,7 +402,9 @@ public abstract class SimpleRpcServer {
      * 销毁资源,卸载服务
      */
     protected void listenDestroy() {
+        log.debug("RPC server backend listen destroy");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
                 String serviceName = serviceBean.getServiceName();
                 ServiceRegistry serviceRegistry = getRegistry(serviceBean);
@@ -417,6 +415,6 @@ public abstract class SimpleRpcServer {
                     log.error("Unregister service error", e);
                 }
             });
-        }, "mrpc-destory-thread"));
+        }));
     }
 }
