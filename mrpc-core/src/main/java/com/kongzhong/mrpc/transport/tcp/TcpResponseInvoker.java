@@ -4,7 +4,7 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.transport.AbstractResponseInvoker;
+import com.kongzhong.mrpc.server.AbstractResponseInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

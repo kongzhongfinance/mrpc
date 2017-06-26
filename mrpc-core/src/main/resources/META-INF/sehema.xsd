@@ -260,7 +260,7 @@
     <xsd:element name="netty">
         <xsd:complexType>
 
-            <xsd:attribute name="connTimeout" type="xsd:int" use="optional" default="2">
+            <xsd:attribute name="connTimeout" type="xsd:int" use="optional" default="3000">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 客户端连接超时 ]]></xsd:documentation>
                 </xsd:annotation>

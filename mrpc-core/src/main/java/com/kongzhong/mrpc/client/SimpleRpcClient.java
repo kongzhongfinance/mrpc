@@ -208,6 +208,9 @@ public abstract class SimpleRpcClient {
             Set<String> serviceNames = clientBeans.stream().map(clientBean -> clientBean.getServiceName()).collect(Collectors.toSet());
             mappings.put(directAddress, serviceNames);
         });
+        if (null != nettyConfig) {
+            Connections.me().setNettyConfig(nettyConfig);
+        }
         Connections.me().asyncConnect(mappings);
     }
 

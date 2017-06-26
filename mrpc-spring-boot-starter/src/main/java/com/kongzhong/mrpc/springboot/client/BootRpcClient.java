@@ -73,7 +73,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         }
 
         this.customServiceMap = commonProperties.getCustom();
-        this.nettyConfig = commonProperties.getNetty();
+        super.nettyConfig = commonProperties.getNetty();
 
         super.appId = clientConfig.getAppId();
         super.transport = clientConfig.getTransport();

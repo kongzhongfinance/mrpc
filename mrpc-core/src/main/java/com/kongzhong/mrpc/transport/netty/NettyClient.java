@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
@@ -11,7 +12,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Set;
 import java.util.concurrent.atomic.LongAdder;
@@ -37,12 +37,11 @@ public class NettyClient {
     @Getter
     private boolean isRunning = true;
 
-    public NettyClient(SocketAddress serverAddress) {
-        this.serverAddress = serverAddress;
-    }
+    private NettyConfig nettyConfig;
 
-    public NettyClient(String host, int port) {
-        this(new InetSocketAddress(host, port));
+    public NettyClient(NettyConfig nettyConfig, SocketAddress serverAddress) {
+        this.nettyConfig = nettyConfig;
+        this.serverAddress = serverAddress;
     }
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
@@ -50,6 +49,7 @@ public class NettyClient {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnTimeout())
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
         if (ClientConfig.me().getTransport().equals(TransportEnum.HTTP)) {
@@ -76,7 +76,7 @@ public class NettyClient {
         retryCount = new LongAdder();
     }
 
-    public void shutdown(){
+    public void shutdown() {
         isRunning = false;
     }
 

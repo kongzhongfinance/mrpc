@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import io.netty.bootstrap.Bootstrap;
@@ -16,9 +17,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +70,9 @@ public class Connections {
      * 当前存货的服务列表
      */
     private List<String> aliveServers = Lists.newCopyOnWriteArrayList();
+
+    @Setter
+    private NettyConfig nettyConfig = new NettyConfig();
 
     private static final class ConnectionsHolder {
         private static final Connections INSTANCE = new Connections();
@@ -139,7 +145,9 @@ public class Connections {
         final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
         log.debug("Sync connect {}:{} {}", host, port, referNames);
 
-        return LISTENING_EXECUTOR_SERVICE.submit(() -> new NettyClient(host, port).referers(referNames).createBootstrap(eventLoopGroup));
+        SocketAddress socketAddress = new InetSocketAddress(host, port);
+
+        return LISTENING_EXECUTOR_SERVICE.submit(() -> new NettyClient(nettyConfig, socketAddress).referers(referNames).createBootstrap(eventLoopGroup));
     }
 
     /**
@@ -154,7 +162,9 @@ public class Connections {
         final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
         log.debug("Async connect {}:{} {}", host, port, referNames);
 
-        new NettyClient(host, port).referers(referNames).createBootstrap(eventLoopGroup);
+        SocketAddress socketAddress = new InetSocketAddress(host, port);
+
+        new NettyClient(nettyConfig, socketAddress).referers(referNames).createBootstrap(eventLoopGroup);
     }
 
     /**
