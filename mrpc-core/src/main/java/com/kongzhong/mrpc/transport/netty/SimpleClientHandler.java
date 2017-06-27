@@ -70,12 +70,11 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (nettyClient.isRunning()) {
             log.debug("Channel inactive: {}", ctx.channel());
+            Connections.me().remove(this);
 
             // 断线重连
             nettyClient.createBootstrap(ctx.channel().eventLoop());
-
             super.channelInactive(ctx);
-            Connections.me().remove(this);
         }
 
     }

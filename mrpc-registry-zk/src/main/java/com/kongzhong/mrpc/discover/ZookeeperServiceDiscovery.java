@@ -115,13 +115,19 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         if (CollectionUtils.isEmpty(serviceList)) {
             log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", path);
         } else {
+
+            log.debug("Watch node changed: {}", serviceList);
+
             // { 127.0.0.1:5066 => [UserService, BatService] }
             Map<String, Set<String>> mappings = Maps.newHashMap();
-            Set<String> localServices = Connections.me().getMappings().keySet();
+            Set<String> dieServices = new HashSet<>();
+            Connections.me().getDieServices().values().forEach(value -> {
+                value.forEach(val -> dieServices.add(val));
+            });
 
             serviceList.forEach(service -> {
                 // 只更新本地缓存的服务列表
-                if (localServices.contains(service)) {
+                if (dieServices.contains(service)) {
                     Set<String> addressSet = this.discoveryService(service);
                     addressSet.forEach(address -> {
                         if (!mappings.containsKey(address)) {
@@ -132,6 +138,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                     });
                 }
             });
+
+            log.debug("Update node list: {}", mappings);
 
             // update node list
             Connections.me().asyncConnect(mappings);

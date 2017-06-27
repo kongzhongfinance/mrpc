@@ -1,8 +1,6 @@
 package com.kongzhong.mrpc.client.cluster;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
@@ -71,6 +69,11 @@ public class Connections {
      * 当前存活的服务列表
      */
     private List<String> aliveServers = Lists.newCopyOnWriteArrayList();
+
+    /**
+     * 挂掉的服务
+     */
+    private Map<String, Set<String>> dieServices = Maps.newHashMap();
 
     @Setter
     private NettyConfig nettyConfig = new NettyConfig();
@@ -161,9 +164,11 @@ public class Connections {
             lock.lock();
             if (mappings.containsKey(serviceName)) {
                 if (!mappings.get(serviceName).contains(handler)) {
+                    dieServices.remove(handler.getNettyClient().getAddress());
                     mappings.put(serviceName, handler);
                 }
             } else {
+                dieServices.remove(handler.getNettyClient().getAddress());
                 mappings.put(serviceName, handler);
             }
             handlerStatus.signal();
@@ -193,6 +198,12 @@ public class Connections {
      */
     public void remove(SimpleClientHandler handler) {
         if (mappings.values().size() > 0 && null != handler && mappings.values().contains(handler)) {
+
+            String address = handler.getNettyClient().getAddress();
+
+            // 添加挂掉的节点
+            dieServices.put(address, Sets.newHashSet(addressServices.get(address)));
+
             mappings.values().removeAll(Arrays.asList(handler));
             log.info("Remove client {}", handler.getChannel());
             aliveServers.remove(handler.getNettyClient().getServerAddress());
@@ -204,6 +215,7 @@ public class Connections {
         mappings.values().forEach(simpleClientHandler -> simpleClientHandler.close());
         mappings.clear();
         aliveServers.clear();
+        dieServices.clear();
         addressServices.clear();
         eventLoopGroup.shutdownGracefully();
         LISTENING_EXECUTOR_SERVICE.shutdown();

@@ -37,11 +37,13 @@ public class FailOverHaStrategy implements HaStrategy {
                     throw (Exception) e.getCause();
                 } else if (e instanceof ConnectException) {
                     if (i >= rc) {
+                        log.error("Connection error", e);
                         throw e;
                     }
                     TimeUnit.MILLISECONDS.sleep(100);
                     log.debug("Failover retry [{}]", i + 1);
                 } else {
+                    log.error("Failover call error", e);
                     throw e;
 //                    log.error("Failover call false for request:{}", request, e);
                 }

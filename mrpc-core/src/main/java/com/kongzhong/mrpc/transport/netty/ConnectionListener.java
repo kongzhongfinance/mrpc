@@ -11,6 +11,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoop;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +47,13 @@ public class ConnectionListener implements ChannelFutureListener {
 
             boolean isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
 
-            Set<String> referNames = new HashSet<>(Connections.me().getAddressServices().get(nettyClient.getAddress()));
+            Set<String> referNames = Connections.me().getDieServices().getOrDefault(nettyClient.getAddress(), new HashSet<>());
+
+            Collection<String> services = Connections.me().getAddressServices().get(nettyClient.getAddress());
+            if (CollectionUtils.isNotEmpty(services)) {
+                referNames.addAll(services);
+            }
+
             if (CollectionUtils.isNotEmpty(referNames)) {
                 //和服务器连接成功后, 获取MessageSendHandler对象
                 Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;

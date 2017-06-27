@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.exception;
  * @author biezhi
  *         2017/4/20
  */
-public class RpcException extends Exception {
+public class RpcException extends RuntimeException {
 
     public RpcException() {
     }
