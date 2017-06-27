@@ -116,16 +116,20 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         } else {
             // { 127.0.0.1:5066 => [UserService, BatService] }
             Map<String, Set<String>> mappings = Maps.newHashMap();
+            Set<String> localServices = Connections.me().getMappings().keySet();
 
             serviceList.forEach(service -> {
-                Set<String> addressSet = this.discoveryService(service);
-                addressSet.forEach(address -> {
-                    if (!mappings.containsKey(address)) {
-                        mappings.put(address, Sets.newHashSet(service));
-                    } else {
-                        mappings.get(address).add(service);
-                    }
-                });
+                // 只更新本地缓存的服务列表
+                if (localServices.contains(service)) {
+                    Set<String> addressSet = this.discoveryService(service);
+                    addressSet.forEach(address -> {
+                        if (!mappings.containsKey(address)) {
+                            mappings.put(address, Sets.newHashSet(service));
+                        } else {
+                            mappings.get(address).add(service);
+                        }
+                    });
+                }
             });
 
             // update node list
