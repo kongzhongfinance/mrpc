@@ -10,8 +10,8 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
-import com.kongzhong.mrpc.springboot.client.ClientEnvironmentCondition;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
+import com.kongzhong.mrpc.springboot.config.NettyProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.channel.ChannelFuture;
@@ -19,12 +19,12 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -35,7 +35,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.kongzhong.mrpc.Const.*;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
 /**
  * RPC服务端自动配置
@@ -44,7 +45,7 @@ import static com.kongzhong.mrpc.Const.*;
  *         2017/5/13
  */
 @Conditional(ServerEnvironmentCondition.class)
-@EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
+@EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class})
 @Slf4j
 public class RpcServerAutoConfigure extends SimpleRpcServer {
 
@@ -53,6 +54,9 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Autowired
     private RpcServerProperties rpcServerProperties;
+
+    @Autowired
+    private NettyProperties nettyProperties;
 
     @Autowired
     private ConfigurableBeanFactory configurableBeanFactory;
@@ -102,6 +106,9 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             super.address = rpcServerProperties.getAddress();
             super.elasticIp = rpcServerProperties.getElasticIp();
             super.poolName = rpcServerProperties.getPoolName();
+
+            // netty参数配置
+            BeanUtils.copyProperties(new NettyConfig(), nettyProperties);
 
             super.test = StringUtils.isNotEmpty(commonProperties.getTest()) ? commonProperties.getTest() : rpcServerProperties.getTest();
 

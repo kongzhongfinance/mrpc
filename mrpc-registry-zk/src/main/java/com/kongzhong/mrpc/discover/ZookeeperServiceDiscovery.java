@@ -69,6 +69,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         });
     }
 
+    @Override
     public void discover(@NonNull ClientBean clientBean) throws Exception {
         log.debug("Discovery {}", clientBean);
 

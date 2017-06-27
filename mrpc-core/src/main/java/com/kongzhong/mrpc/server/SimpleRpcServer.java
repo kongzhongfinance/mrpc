@@ -135,7 +135,7 @@ public abstract class SimpleRpcServer {
     /**
      * 服务端处理线程池
      */
-    protected static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+    protected static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
 
     /**
      * 启动RPC服务端
@@ -170,7 +170,7 @@ public abstract class SimpleRpcServer {
         }
 
         transferSelector = new TransferSelector(rpcSerialize);
-
+        LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(nettyConfig.getBusinessThreadCount(), -1));
     }
 
     private void bindRpcServer() {

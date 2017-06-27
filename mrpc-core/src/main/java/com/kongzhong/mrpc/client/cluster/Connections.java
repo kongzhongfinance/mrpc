@@ -119,6 +119,11 @@ public class Connections {
                 if (!aliveServers.contains(address)) {
                     aliveServers.add(address);
                     this.asyncConnect(address);
+                } else {
+                    mappings.values().stream()
+                            .filter(handler -> handler.getNettyClient().getAddress().equals(address))
+                            .findFirst()
+                            .ifPresent(handler -> mappings.put(serviceName, handler));
                 }
             });
             handlerStatus.signal();

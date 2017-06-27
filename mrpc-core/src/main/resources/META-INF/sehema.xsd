@@ -266,6 +266,12 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="businessThreadPoolSize" type="xsd:int" use="optional" default="16">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 业务线程池数 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
             <xsd:attribute name="backlog" type="xsd:int" use="optional" default="1024">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ backlog ]]></xsd:documentation>
