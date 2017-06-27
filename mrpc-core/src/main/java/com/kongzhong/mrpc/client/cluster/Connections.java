@@ -68,7 +68,7 @@ public class Connections {
     private Multimap<String, String> addressServices = HashMultimap.create();
 
     /**
-     * 当前存货的服务列表
+     * 当前存活的服务列表
      */
     private List<String> aliveServers = Lists.newCopyOnWriteArrayList();
 
