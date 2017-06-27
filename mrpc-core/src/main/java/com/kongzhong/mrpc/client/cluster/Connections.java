@@ -61,6 +61,10 @@ public class Connections {
      */
     private Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
 
+    /**
+     * 服务地址和服务名的绑定关系
+     * 127.0.0.1:5066 -> [com.kongzhong.service.UserService, com.kongzhong.service.PayService]
+     */
     private Multimap<String, String> addressServices = HashMultimap.create();
 
     /**
