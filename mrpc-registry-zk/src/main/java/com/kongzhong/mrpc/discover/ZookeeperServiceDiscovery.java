@@ -5,6 +5,7 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
@@ -116,7 +117,16 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             // { 127.0.0.1:5066 => [UserService, BatService] }
             Map<String, Set<String>> mappings = Maps.newHashMap();
 
-            serviceList.forEach(service -> mappings.put(service, this.discoveryService(service)));
+            serviceList.forEach(service -> {
+                Set<String> addressSet = this.discoveryService(service);
+                addressSet.forEach(address -> {
+                    if (!mappings.containsKey(address)) {
+                        mappings.put(address, Sets.newHashSet(service));
+                    } else {
+                        mappings.get(address).add(service);
+                    }
+                });
+            });
 
             // update node list
             Connections.me().asyncConnect(mappings);
