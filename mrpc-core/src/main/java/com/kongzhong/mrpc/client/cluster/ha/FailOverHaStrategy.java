@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.client.RpcProcessor;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -34,19 +35,19 @@ public class FailOverHaStrategy implements HaStrategy {
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
                     throw (Exception) e.getCause();
-                } else if (e instanceof RpcException) {
+                } else if (e instanceof ConnectException) {
                     if (i >= rc) {
-                        log.error("", e);
                         throw e;
                     }
                     TimeUnit.MILLISECONDS.sleep(100);
                     log.debug("Failover retry [{}]", i + 1);
                 } else {
-                    log.warn(String.format("FailOverHaStrategy Call false for request:%s error=%s", request, e.getMessage()));
+                    throw e;
+//                    log.error("Failover call false for request:{}", request, e);
                 }
             }
         }
-        throw new RpcException("FailOverHaStrategy.processor should not come here!");
+        throw new RpcException("Failover processor should not come here!");
     }
 
 }

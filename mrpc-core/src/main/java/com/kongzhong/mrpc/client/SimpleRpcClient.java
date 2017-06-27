@@ -150,6 +150,7 @@ public abstract class SimpleRpcClient {
      */
     protected ServiceDiscovery getDiscovery(ClientBean clientBean) {
         String registryName = StringUtils.isNotEmpty(clientBean.getRegistry()) ? clientBean.getRegistry() : "default";
+        clientBean.setRegistry(registryName);
         ServiceDiscovery serviceDiscovery = serviceDiscoveryMap.get(registryName);
         return serviceDiscovery;
     }
@@ -215,16 +216,6 @@ public abstract class SimpleRpcClient {
     }
 
     /**
-     * 同步直连
-     *
-     * @param directAddress
-     * @param rpcInterface
-     */
-    protected void asyncDirectConnect(String directAddress, Class<?> rpcInterface) {
-        Connections.me().asyncDirectConnect(rpcInterface.getName(), directAddress);
-    }
-
-    /**
      * 绑定多个客户端引用服务
      *
      * @param interfaces 接口名
@@ -284,12 +275,13 @@ public abstract class SimpleRpcClient {
             }
             boolean usedRegistry = this.usedRegistry(clientBean);
             if (usedRegistry) {
+
                 // 服务发现
                 ServiceDiscovery serviceDiscovery = this.getDiscovery(clientBean);
                 if (null == serviceDiscovery) {
                     throw new SystemException(String.format("Client referer [%s] not found registry [%s]", serviceName, clientBean.getRegistry()));
                 }
-                serviceDiscovery.discover();
+                serviceDiscovery.discover(clientBean);
             } else {
                 String directAddress = this.getDirectAddress(clientBean);
                 if (StringUtils.isEmpty(directAddress)) {
@@ -331,6 +323,7 @@ public abstract class SimpleRpcClient {
      */
     protected String getDirectAddress(ClientBean clientBean) {
         String directAddress = StringUtils.isNotEmpty(clientBean.getDirectAddress()) ? clientBean.getDirectAddress() : this.directAddress;
+        clientBean.setDirectAddress(directAddress);
         return directAddress;
     }
 

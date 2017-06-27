@@ -8,6 +8,9 @@ package com.kongzhong.mrpc.exception;
  */
 public class InitializeException extends RuntimeException {
 
+    public InitializeException() {
+    }
+
     public InitializeException(String message) {
         super(message);
     }

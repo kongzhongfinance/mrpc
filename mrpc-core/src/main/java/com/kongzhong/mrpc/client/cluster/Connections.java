@@ -3,26 +3,20 @@ package com.kongzhong.mrpc.client.cluster;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.util.internal.SocketUtils;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +61,8 @@ public class Connections {
      */
     private Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
 
+    private Multimap<String, String> addressServices = HashMultimap.create();
+
     /**
      * 当前存货的服务列表
      */
@@ -93,16 +89,32 @@ public class Connections {
     public void asyncConnect(Map<String, Set<String>> smapping) {
         try {
             lock.lock();
-            smapping.forEach((key, serviceNames) -> {
+            smapping.forEach((address, serviceNames) -> {
+                serviceNames.forEach(serviceName -> {
+                    addressServices.put(address, serviceName);
+                });
+
                 // 如果不存活则建立连接
-                if (!aliveServers.contains(key)) {
-                    aliveServers.add(key);
-                    String[] ipAddr = key.split(":");
-                    //获取IP
-                    String host = ipAddr[0];
-                    //获取端口号
-                    int port = Integer.parseInt(ipAddr[1]);
-                    this.asyncConnect(Sets.newHashSet(serviceNames), host, port);
+                if (!aliveServers.contains(address)) {
+                    aliveServers.add(address);
+                    this.asyncConnect(address);
+                }
+            });
+            handlerStatus.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void asyncDirectConnect(String serviceName, Set<String> addressSet) {
+        try {
+            lock.lock();
+            addressSet.forEach(address -> {
+                addressServices.put(address, serviceName);
+                // 如果不存活则建立连接
+                if (!aliveServers.contains(address)) {
+                    aliveServers.add(address);
+                    this.asyncConnect(address);
                 }
             });
             handlerStatus.signal();
@@ -112,60 +124,14 @@ public class Connections {
     }
 
     /**
-     * 异步建立连接
-     *
-     * @param serviceName
-     * @param address
-     */
-    public void asyncDirectConnect(String serviceName, String address) {
-        try {
-            lock.lock();
-            aliveServers.add(address);
-            String[] ipAddr = address.split(":");
-
-            String host = ipAddr[0];
-            int port = Integer.parseInt(ipAddr[1]);
-
-            this.asyncConnect(Sets.newHashSet(serviceName), host, port);
-            handlerStatus.signal();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * 异步建立连接
-     *
-     * @param referNames
-     * @param host
-     * @param port
-     * @return
-     */
-    private ListenableFuture<Bootstrap> syncConnect(Set<String> referNames, String host, int port) {
-        //获取socket的完整地址
-        final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
-        log.debug("Sync connect {}:{} {}", host, port, referNames);
-
-        SocketAddress socketAddress = SocketUtils.socketAddress(host, port);
-
-        return LISTENING_EXECUTOR_SERVICE.submit(() -> new NettyClient(nettyConfig, socketAddress).referers(referNames).createBootstrap(eventLoopGroup));
-    }
-
-    /**
      * 同步建立连接
      *
-     * @param referNames
-     * @param host
-     * @param port
+     * @param address
+     * @return
      */
-    private void asyncConnect(Set<String> referNames, String host, int port) {
-        //获取socket的完整地址
-        final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
-        log.debug("Async connect {}:{} {}", host, port, referNames);
-
-        SocketAddress socketAddress = SocketUtils.socketAddress(host, port);
-
-        new NettyClient(nettyConfig, socketAddress).referers(referNames).createBootstrap(eventLoopGroup);
+    private void asyncConnect(String address) {
+        log.debug("Async connect {}", address);
+        new NettyClient(nettyConfig, address).createBootstrap(eventLoopGroup);
     }
 
     /**
@@ -221,11 +187,15 @@ public class Connections {
             mappings.values().removeAll(Arrays.asList(handler));
             log.info("Remove client {}", handler.getChannel());
             aliveServers.remove(handler.getNettyClient().getServerAddress());
+            addressServices.removeAll(handler.getNettyClient().getAddress());
         }
     }
 
     public void shutdown() {
         mappings.values().forEach(simpleClientHandler -> simpleClientHandler.close());
+        mappings.clear();
+        aliveServers.clear();
+        addressServices.clear();
         eventLoopGroup.shutdownGracefully();
         LISTENING_EXECUTOR_SERVICE.shutdown();
     }

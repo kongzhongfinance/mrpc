@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.kongzhong.mrpc.client.cluster.Connections;
+import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class DefaultDiscovery implements ServiceDiscovery {
     }
 
     @Override
-    public void discover() {
+    public void discover(ClientBean clientBean) {
         try {
             String content = Files.toString(file, Charsets.UTF_8);
             if (StringUtils.isNotEmpty(content)) {
@@ -59,6 +60,7 @@ public class DefaultDiscovery implements ServiceDiscovery {
 
     @Override
     public void stop() {
+
     }
 
     private String read() {

@@ -9,10 +9,11 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
 
+    <mrpc:clientConfig appId="demo"/>
+
     <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"/>
 
-    <mrpc:serverConfig address="127.0.0.1:5068" appId="demo"/>
-
-    <context:component-scan base-package="com.kongzhong.mrpc.demo.service"/>
+    <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>
+    <mrpc:referer id="benchmarkService" interface="com.kongzhong.mrpc.demo.service.BenchmarkService"/>
 
 </beans>

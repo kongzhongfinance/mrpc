@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author biezhi
@@ -43,4 +44,12 @@ public interface UserService {
 
     StatusEnum testEnum(StatusEnum statusEnum);
 
+    default void testTimeout(int timeOut) {
+        try {
+            TimeUnit.SECONDS.sleep(timeOut);
+            System.out.println("执行完毕");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

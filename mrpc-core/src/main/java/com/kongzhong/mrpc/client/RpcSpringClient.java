@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.client;
 
+import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -92,7 +94,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         }
         if (null == ctx && StringUtils.isNotEmpty(directAddress)) {
             // 同步直连
-            this.asyncDirectConnect(directAddress, rpcInterface);
+            Connections.me().asyncDirectConnect(rpcInterface.getName(), Sets.newHashSet(directAddress));
         }
         return this.getProxyBean(rpcInterface);
     }

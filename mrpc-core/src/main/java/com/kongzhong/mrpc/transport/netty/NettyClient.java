@@ -10,13 +10,15 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.internal.SocketUtils;
 import lombok.Getter;
 
 import java.net.SocketAddress;
-import java.util.Set;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
+ * Netty Client
+ *
  * @author biezhi
  *         24/06/2017
  */
@@ -25,23 +27,25 @@ public class NettyClient {
     @Getter
     private SocketAddress serverAddress;
 
-    /**
-     * 客户端服务引用
-     */
     @Getter
-    private Set<String> referNames;
-
-    @Getter
-    private LongAdder retryCount = new LongAdder();
+    private String address;
 
     @Getter
     private boolean isRunning = true;
 
+    @Getter
+    private LongAdder retryCount = new LongAdder();
+
     private NettyConfig nettyConfig;
 
-    public NettyClient(NettyConfig nettyConfig, SocketAddress serverAddress) {
+    public NettyClient(NettyConfig nettyConfig, String address) {
         this.nettyConfig = nettyConfig;
-        this.serverAddress = serverAddress;
+        this.address = address;
+
+        String host = address.split(":")[0];
+        int port = Integer.valueOf(address.split(":")[1]);
+        this.serverAddress = SocketUtils.socketAddress(host, port);
+
     }
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
@@ -62,11 +66,6 @@ public class NettyClient {
         // 给结果绑定 Listener,
         channelFuture.addListener(new ConnectionListener(this));
         return bootstrap;
-    }
-
-    public NettyClient referers(Set<String> referNames) {
-        this.referNames = referNames;
-        return this;
     }
 
     /**

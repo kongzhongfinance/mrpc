@@ -87,6 +87,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         String serviceClass = httpResponse.headers().get(HEADER_SERVICE_CLASS);
         String methodName = httpResponse.headers().get(HEADER_METHOD_NAME);
 
+        if (StringUtils.isEmpty(requestId) || StringUtils.isEmpty(serviceClass) || StringUtils.isEmpty(methodName)) {
+            log.error("{}", body);
+        }
+
         RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
         if (rpcResponse.getSuccess()) {
             log.debug("Response body: \n{}", body);

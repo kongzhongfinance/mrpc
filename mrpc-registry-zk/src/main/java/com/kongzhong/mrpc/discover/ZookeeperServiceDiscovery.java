@@ -5,18 +5,20 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.Watcher;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,41 +68,59 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         });
     }
 
-    public void discover() throws Exception {
-        watchNode(zkClient);
-    }
+    public void discover(@NonNull ClientBean clientBean) throws Exception {
+        log.debug("Discovery {}", clientBean);
 
-    private void watchNode(final IZkClient zkClient) throws RpcException {
-        String appId = ClientConfig.me().getAppId();
-
-        List<String> serviceList = zkClient.getChildren(Constant.ZK_ROOT + "/" + appId);
-        if (CollectionUtils.isEmpty(serviceList)) {
-            throw new RpcException(String.format("Can not find any address node on path: %s/%s. please check your zookeeper services :)", Constant.ZK_ROOT, appId));
+        Set<String> addressSet = this.discoveryService(clientBean.getServiceName());
+        if (CollectionUtils.isEmpty(addressSet)) {
+            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", clientBean.getServiceName());
+        } else {
+            // update node list
+            Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
         }
 
-        // { 127.0.0.1:5066 => [UserService, BatService] }
-        Map<String, Set<String>> mappings = Maps.newHashMap();
-        serviceList.forEach(service -> {
-            String servicePath = Constant.ZK_ROOT + "/" + ClientConfig.me().getAppId() + "/" + service;
-            if (zkClient.exists(servicePath)) {
-                List<String> addresses = zkClient.getChildren(servicePath);
-                addresses.forEach(address -> {
-                    if (!mappings.containsKey(address)) {
-                        mappings.put(address, Sets.newHashSet(service));
-                    } else {
-                        mappings.get(address).add(service);
-                    }
-                });
-            }
+    }
 
-            if (!subRelate.containsKey(servicePath)) {
-                subRelate.put(servicePath, zkChildListener);
-                zkClient.subscribeChildChanges(servicePath, zkChildListener);
-            }
-        });
+    private Set<String> discoveryService(String serviceName) {
+        String appId = ClientConfig.me().getAppId();
+        String path = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
+        // 发现地址列表
+        Set<String> addressSet = new HashSet<>();
+        if (zkClient.exists(path)) {
+            List<String> addresses = zkClient.getChildren(path);
+            addresses.forEach(address -> {
+                addressSet.add(address);
+            });
+        }
+        if (!subRelate.containsKey(path)) {
+            subRelate.put(path, zkChildListener);
+            zkClient.subscribeChildChanges(path, zkChildListener);
+        }
+        return addressSet;
+    }
 
-        // update node list
-        Connections.me().asyncConnect(mappings);
+    /**
+     * 监听到服务变动
+     *
+     * @param zkClient
+     * @throws RpcException
+     */
+    private void watchNode(@NonNull final IZkClient zkClient) throws RpcException {
+        String appId = ClientConfig.me().getAppId();
+        String path = Constant.ZK_ROOT + "/" + appId;
+
+        List<String> serviceList = zkClient.getChildren(path);
+        if (CollectionUtils.isEmpty(serviceList)) {
+            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", path);
+        } else {
+            // { 127.0.0.1:5066 => [UserService, BatService] }
+            Map<String, Set<String>> mappings = Maps.newHashMap();
+
+            serviceList.forEach(service -> mappings.put(service, this.discoveryService(service)));
+
+            // update node list
+            Connections.me().asyncConnect(mappings);
+        }
     }
 
     class ZkChildListener implements IZkChildListener {

@@ -11,6 +11,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoop;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +29,7 @@ public class ConnectionListener implements ChannelFutureListener {
 
     @Override
     public void operationComplete(ChannelFuture future) throws Exception {
-        if(!nettyClient.isRunning()){
+        if (!nettyClient.isRunning()) {
             return;
         }
         if (!future.isSuccess()) {
@@ -42,8 +43,10 @@ public class ConnectionListener implements ChannelFutureListener {
             loop.schedule(() -> nettyClient.createBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
         } else {
             log.info("Connect {} success.", nettyClient.getServerAddress());
-            Set<String> referNames = nettyClient.getReferNames();
+
             boolean isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
+
+            Set<String> referNames = new HashSet<>(Connections.me().getAddressServices().get(nettyClient.getAddress()));
             if (CollectionUtils.isNotEmpty(referNames)) {
                 //和服务器连接成功后, 获取MessageSendHandler对象
                 Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
