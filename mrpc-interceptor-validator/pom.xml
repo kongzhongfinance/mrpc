@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-interceptor-validator</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <hibernate-validator.version>5.3.5.Final</hibernate-validator.version>
