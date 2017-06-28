@@ -218,7 +218,7 @@ public class Connections {
      */
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         int pos = 0;
-        while (!mappings.containsKey(serviceName) && pos < 14) {
+        while (!mappings.containsKey(serviceName) && pos < 4) {
             sleep(500);
             pos++;
         }
