@@ -1,26 +1,26 @@
 package com.kongzhong.mrpc.serialize;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.exception.SerializeException;
+import io.protostuff.LinkedBuffer;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.RuntimeSchema;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Protostuff序列化实现
- *
+ * <p>
  * Created by biezhi on 2016/11/6.
  */
 public class ProtostuffSerialize implements RpcSerialize {
 
-    private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Schema<?>> cachedSchema = Maps.newConcurrentMap();
 
-    private static Objenesis objenesis = new ObjenesisStd(true);
+    private static final Objenesis objenesis = new ObjenesisStd(true);
 
     /**
      * 序列化（对象 -> 字节数组）

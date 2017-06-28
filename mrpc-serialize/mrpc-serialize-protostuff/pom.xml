@@ -10,27 +10,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-serialize-protostuff</artifactId>
-    <version>${mrpc-serialize-protostuff.version}</version>
 
     <dependencies>
         <!-- Protostuff -->
         <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
+            <groupId>io.protostuff</groupId>
             <artifactId>protostuff-core</artifactId>
             <version>${protostuff.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
+            <groupId>io.protostuff</groupId>
             <artifactId>protostuff-runtime</artifactId>
             <version>${protostuff.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
             <version>${objenesis.version}</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

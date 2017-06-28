@@ -11,7 +11,6 @@
 
     <artifactId>mrpc-serialize</artifactId>
     <packaging>pom</packaging>
-    <version>${parent.version}</version>
 
     <modules>
         <module>mrpc-serialize-kryo</module>

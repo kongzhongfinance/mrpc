@@ -10,7 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-serialize-kryo</artifactId>
-    <version>${mrpc-serialize-kryo.version}</version>
 
     <dependencies>
         <!--kryo-->

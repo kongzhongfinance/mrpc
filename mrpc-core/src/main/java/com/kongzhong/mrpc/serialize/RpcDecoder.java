@@ -1,6 +1,5 @@
-package com.kongzhong.mrpc.codec;
+package com.kongzhong.mrpc.serialize;
 
-import com.kongzhong.mrpc.serialize.RpcSerialize;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
