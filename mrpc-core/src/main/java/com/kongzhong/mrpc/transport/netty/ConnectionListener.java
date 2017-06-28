@@ -55,10 +55,14 @@ public class ConnectionListener implements ChannelFutureListener {
             }
 
             if (CollectionUtils.isNotEmpty(referNames)) {
+
+                log.debug("Update connections mapping: {}", referNames);
+
                 //和服务器连接成功后, 获取MessageSendHandler对象
                 Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
                 SimpleClientHandler handler = future.channel().pipeline().get(clientHandler);
                 referNames.forEach(serviceName -> Connections.me().addRpcClientHandler(serviceName, handler));
+
             }
         }
     }

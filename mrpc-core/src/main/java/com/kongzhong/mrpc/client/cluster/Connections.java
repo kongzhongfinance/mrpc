@@ -57,7 +57,7 @@ public class Connections {
      * 服务和服务提供方客户端映射
      * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
-    private Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
+    private volatile Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
 
     /**
      * 服务地址和服务名的绑定关系
@@ -113,6 +113,12 @@ public class Connections {
         }
     }
 
+    /**
+     * 同步直连
+     *
+     * @param serviceName
+     * @param addressSet
+     */
     public void asyncDirectConnect(String serviceName, Set<String> addressSet) {
         try {
             lock.lock();
@@ -133,6 +139,30 @@ public class Connections {
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * 异步直连
+     *
+     * @param serviceName
+     * @param addressSet
+     */
+    public void syncDirectConnect(String serviceName, Set<String> addressSet) {
+        LISTENING_EXECUTOR_SERVICE.execute(() -> {
+            addressSet.forEach(address -> {
+                addressServices.put(address, serviceName);
+                // 如果不存活则建立连接
+                if (!aliveServers.contains(address)) {
+                    aliveServers.add(address);
+                    this.asyncConnect(address);
+                } else {
+                    mappings.values().stream()
+                            .filter(handler -> handler.getNettyClient().getAddress().equals(address))
+                            .findFirst()
+                            .ifPresent(handler -> mappings.put(serviceName, handler));
+                }
+            });
+        });
     }
 
     /**
@@ -162,6 +192,8 @@ public class Connections {
     public void addRpcClientHandler(String serviceName, SimpleClientHandler handler) {
         try {
             lock.lock();
+            log.debug("Add rpc client handler: {}, {}", serviceName, handler);
+
             if (mappings.containsKey(serviceName)) {
                 if (!mappings.get(serviceName).contains(handler)) {
                     dieServices.remove(handler.getNettyClient().getAddress());
@@ -177,18 +209,20 @@ public class Connections {
         }
     }
 
+    /**
+     * 根据服务获取连接
+     *
+     * @param serviceName
+     * @return
+     * @throws Exception
+     */
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
-        lock.lock();
-        try {
-            int pos = 0;
-            while (!mappings.containsKey(serviceName) && pos < 4) {
-                sleep(500);
-                pos++;
-            }
-            return Lists.newArrayList(mappings.get(serviceName));
-        } finally {
-            lock.unlock();
+        int pos = 0;
+        while (!mappings.containsKey(serviceName) && pos < 14) {
+            sleep(500);
+            pos++;
         }
+        return Lists.newArrayList(mappings.get(serviceName));
     }
 
     /**
