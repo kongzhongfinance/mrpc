@@ -1,8 +1,9 @@
 package com.kongzhong.mrpc.client.cluster;
 
-import com.google.common.collect.*;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
@@ -15,15 +16,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * 客户端连接管理
@@ -57,23 +60,8 @@ public class Connections {
      * 服务和服务提供方客户端映射
      * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
-    private volatile Multimap<String, SimpleClientHandler> mappings = HashMultimap.create();
+    private volatile Map<String, Set<SimpleClientHandler>> mappings = new ConcurrentHashMap<>();
 
-    /**
-     * 服务地址和服务名的绑定关系
-     * 127.0.0.1:5066 -> [com.kongzhong.service.UserService, com.kongzhong.service.PayService]
-     */
-    private Multimap<String, String> addressServices = HashMultimap.create();
-
-    /**
-     * 当前存活的服务列表
-     */
-    private List<String> aliveServers = Lists.newCopyOnWriteArrayList();
-
-    /**
-     * 挂掉的服务
-     */
-    private Map<String, Set<String>> dieServices = Maps.newHashMap();
 
     @Setter
     private NettyConfig nettyConfig = new NettyConfig();
@@ -97,15 +85,12 @@ public class Connections {
         try {
             lock.lock();
             smapping.forEach((address, serviceNames) -> {
-                serviceNames.forEach(serviceName -> {
-                    addressServices.put(address, serviceName);
-                });
-
-                // 如果不存活则建立连接
-                if (!aliveServers.contains(address)) {
-                    aliveServers.add(address);
+                // 如果尚未加入本地节点表，则添加
+                if (!LocalServiceNodeTable.containsNode(address)) {
+                    LocalServiceNodeTable.addNewNode(address);
                     this.asyncConnect(address);
                 }
+                LocalServiceNodeTable.addServices(address, serviceNames);
             });
             handlerStatus.signal();
         } finally {
@@ -123,17 +108,20 @@ public class Connections {
         try {
             lock.lock();
             addressSet.forEach(address -> {
-                addressServices.put(address, serviceName);
-                // 如果不存活则建立连接
-                if (!aliveServers.contains(address)) {
-                    aliveServers.add(address);
+                if (!LocalServiceNodeTable.containsNode(address)) {
+                    LocalServiceNodeTable.addNewNode(address);
                     this.asyncConnect(address);
-                } else {
+                }
+
+                if (LocalServiceNodeTable.isAlive(address)) {
+                    Set<SimpleClientHandler> serviceHandler = mappings.getOrDefault(serviceName, new HashSet<>());
                     mappings.values().stream()
+                            .flatMap(handlers -> handlers.stream())
                             .filter(handler -> handler.getNettyClient().getAddress().equals(address))
                             .findFirst()
-                            .ifPresent(handler -> mappings.put(serviceName, handler));
+                            .ifPresent(handler -> serviceHandler.add(handler));
                 }
+                LocalServiceNodeTable.addService(address, serviceName);
             });
             handlerStatus.signal();
         } finally {
@@ -142,26 +130,15 @@ public class Connections {
     }
 
     /**
-     * 异步直连
+     * 恢复连接
      *
-     * @param serviceName
-     * @param addressSet
+     * @param smapping
      */
-    public void syncDirectConnect(String serviceName, Set<String> addressSet) {
-        LISTENING_EXECUTOR_SERVICE.execute(() -> {
-            addressSet.forEach(address -> {
-                addressServices.put(address, serviceName);
-                // 如果不存活则建立连接
-                if (!aliveServers.contains(address)) {
-                    aliveServers.add(address);
-                    this.asyncConnect(address);
-                } else {
-                    mappings.values().stream()
-                            .filter(handler -> handler.getNettyClient().getAddress().equals(address))
-                            .findFirst()
-                            .ifPresent(handler -> mappings.put(serviceName, handler));
-                }
-            });
+    public void recoverConnect(Set<String> addresses) {
+        addresses.forEach(address -> {
+            // 设置当前节点状态为连接中
+            LocalServiceNodeTable.setNodeConnecting(address);
+            this.asyncConnect(address);
         });
     }
 
@@ -196,12 +173,18 @@ public class Connections {
 
             if (mappings.containsKey(serviceName)) {
                 if (!mappings.get(serviceName).contains(handler)) {
-                    dieServices.remove(handler.getNettyClient().getAddress());
-                    mappings.put(serviceName, handler);
+                    LocalServiceNodeTable.setNodeAlive(handler.getNettyClient().getAddress());
+
+                    Set<SimpleClientHandler> serviceHandler = mappings.getOrDefault(serviceName, new HashSet<>());
+                    serviceHandler.add(handler);
+                    mappings.put(serviceName, serviceHandler);
                 }
             } else {
-                dieServices.remove(handler.getNettyClient().getAddress());
-                mappings.put(serviceName, handler);
+                LocalServiceNodeTable.setNodeAlive(handler.getNettyClient().getAddress());
+
+                Set<SimpleClientHandler> serviceHandler = mappings.getOrDefault(serviceName, new HashSet<>());
+                serviceHandler.add(handler);
+                mappings.put(serviceName, serviceHandler);
             }
             handlerStatus.signal();
         } finally {
@@ -230,27 +213,36 @@ public class Connections {
      *
      * @param handler
      */
-    public void remove(SimpleClientHandler handler) {
-        if (mappings.values().size() > 0 && null != handler && mappings.values().contains(handler)) {
+    public void remove(SimpleClientHandler simpleClientHandler) {
 
-            String address = handler.getNettyClient().getAddress();
+        List<SimpleClientHandler> handlers = mappings.values().stream()
+                .flatMap(val -> val.stream())
+                .filter(handler -> handler.getNettyClient().getAddress().equals(simpleClientHandler.getNettyClient().getAddress()))
+                .collect(Collectors.toList());
 
-            // 添加挂掉的节点
-            dieServices.put(address, Sets.newHashSet(addressServices.get(address)));
+        if (null != handlers && handlers.size() > 0) {
+            handlers.forEach(handler -> {
+                String address = handler.getNettyClient().getAddress();
+                // 添加挂掉的节点
+                LocalServiceNodeTable.setNodeDead(address);
+            });
 
-            mappings.values().removeAll(Arrays.asList(handler));
-            log.info("Remove client {}", handler.getChannel());
-            aliveServers.remove(handler.getNettyClient().getServerAddress());
-            addressServices.removeAll(handler.getNettyClient().getAddress());
+            handlers.removeAll(Lists.newArrayList(simpleClientHandler));
         }
+
+        log.info("Remove client {}", simpleClientHandler.getChannel());
+
+
     }
 
     public void shutdown() {
-        mappings.values().forEach(simpleClientHandler -> simpleClientHandler.close());
+
+        mappings.values().stream()
+                .flatMap(val -> val.stream())
+                .forEach(handler -> handler.close());
+
         mappings.clear();
-        aliveServers.clear();
-        dieServices.clear();
-        addressServices.clear();
+        LocalServiceNodeTable.clear();
         eventLoopGroup.shutdownGracefully();
         LISTENING_EXECUTOR_SERVICE.shutdown();
     }

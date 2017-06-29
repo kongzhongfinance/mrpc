@@ -52,7 +52,6 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.debug("Channel actived: {}", this.channel);
-        nettyClient.resetRetryCount();
         super.channelActive(ctx);
     }
 
@@ -68,15 +67,15 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (nettyClient.isRunning()) {
-            log.debug("Channel inactive: {}", ctx.channel());
-            Connections.me().remove(this);
+        log.debug("Channel inactive: {}", ctx.channel());
+        Connections.me().remove(this);
 
+        if (nettyClient.isRunning()) {
             // 断线重连
             nettyClient.createBootstrap(ctx.channel().eventLoop());
-            super.channelInactive(ctx);
         }
 
+        super.channelInactive(ctx);
     }
 
     /**

@@ -12,6 +12,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.internal.SocketUtils;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
 import java.util.concurrent.atomic.LongAdder;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.LongAdder;
  * @author biezhi
  *         24/06/2017
  */
+@Slf4j
 public class NettyClient {
 
     @Getter
@@ -49,7 +51,6 @@ public class NettyClient {
     }
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
-
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)

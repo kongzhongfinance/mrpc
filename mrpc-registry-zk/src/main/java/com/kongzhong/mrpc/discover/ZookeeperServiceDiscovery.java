@@ -5,7 +5,7 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
@@ -23,6 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * Zookeeper服务发现
@@ -41,6 +44,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     private IZkChildListener zkChildListener = new ZkChildListener();
 
     private Map<String, IZkChildListener> subRelate = Maps.newConcurrentMap();
+
+    private Lock lock = new ReentrantLock();
 
     public ZookeeperServiceDiscovery(String zkAddr) {
         this.zkAddr = zkAddr;
@@ -108,41 +113,35 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
      * @throws RpcException
      */
     private void watchNode(@NonNull final IZkClient zkClient) throws RpcException {
-        String appId = ClientConfig.me().getAppId();
-        String path = Constant.ZK_ROOT + "/" + appId;
+        lock.lock();
+        try {
+            String appId = ClientConfig.me().getAppId();
+            String path = Constant.ZK_ROOT + "/" + appId;
 
-        List<String> serviceList = zkClient.getChildren(path);
-        if (CollectionUtils.isEmpty(serviceList)) {
-            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", path);
-        } else {
+            List<String> serviceList = zkClient.getChildren(path);
+            if (CollectionUtils.isEmpty(serviceList)) {
+                log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", path);
+            } else {
 
-            log.debug("Watch node changed: {}", serviceList);
+                log.debug("Watch node changed: {}", serviceList);
 
-            // { 127.0.0.1:5066 => [UserService, BatService] }
-            Map<String, Set<String>> mappings = Maps.newHashMap();
-            Set<String> dieServices = new HashSet<>();
-            Connections.me().getDieServices().values().forEach(value -> {
-                value.forEach(val -> dieServices.add(val));
-            });
+                serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
 
-            serviceList.forEach(service -> {
-                // 只更新本地缓存的服务列表
-                if (dieServices.contains(service)) {
-                    Set<String> addressSet = this.discoveryService(service);
-                    addressSet.forEach(address -> {
-                        if (!mappings.containsKey(address)) {
-                            mappings.put(address, Sets.newHashSet(service));
-                        } else {
-                            mappings.get(address).add(service);
-                        }
-                    });
+                log.debug("Dead service changed: {}", serviceList);
+
+                Set<String> address = serviceList.stream()
+                        .map(service -> this.discoveryService(service))
+                        .flatMap(val -> val.stream())
+                        .collect(Collectors.toSet());
+
+                // update node list
+                if (CollectionUtils.isNotEmpty(address)) {
+                    log.debug("Update node list: {}", address);
+                    Connections.me().recoverConnect(address);
                 }
-            });
-
-            log.debug("Update node list: {}", mappings);
-
-            // update node list
-            Connections.me().asyncConnect(mappings);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
