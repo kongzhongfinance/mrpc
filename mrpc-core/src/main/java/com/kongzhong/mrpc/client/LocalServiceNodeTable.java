@@ -1,10 +1,13 @@
 package com.kongzhong.mrpc.client;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.utils.CollectionUtils;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,12 @@ import java.util.stream.Collectors;
 public class LocalServiceNodeTable {
 
     private static final Set<ServiceNode> SERVICE_NODES = Sets.newConcurrentHashSet();
+
+    /**
+     * 服务和服务提供方客户端映射
+     * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
+     */
+    static Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
 
     /**
      * 获取所有服务节点
@@ -32,11 +41,24 @@ public class LocalServiceNodeTable {
      *
      * @return
      */
-    public static Set<String> getAliveNodes() {
+    public static Set<SimpleClientHandler> getAliveNodes() {
         return SERVICE_NODES.stream()
                 .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
-                .map(node -> node.getAddress())
+                .map(node -> node.getClientHandler())
                 .collect(Collectors.toSet());
+    }
+
+    public static List<SimpleClientHandler> getAliveNodes(String serviceName) {
+        Set<String> address = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
+        if (CollectionUtils.isEmpty(address)) {
+            return new ArrayList<>();
+        }
+
+        return SERVICE_NODES.stream()
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .filter(node -> address.contains(node.getAddress()))
+                .map(node -> node.getClientHandler())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -44,10 +66,10 @@ public class LocalServiceNodeTable {
      *
      * @return
      */
-    public static Set<String> getDeadNodes() {
+    public static Set<SimpleClientHandler> getDeadNodes() {
         return SERVICE_NODES.stream()
                 .filter(node -> node.getAliveState() == NodeAliveStateEnum.DEAD)
-                .map(node -> node.getAddress())
+                .map(node -> node.getClientHandler())
                 .collect(Collectors.toSet());
     }
 
@@ -82,10 +104,16 @@ public class LocalServiceNodeTable {
      * @param serviceName
      */
     public static void addService(String address, String serviceName) {
+        if (!LocalServiceNodeTable.containsNode(address)) {
+            LocalServiceNodeTable.addNewNode(address);
+        }
         updateNode(address, (node) -> node.getServices().add(serviceName));
     }
 
     public static void addServices(String address, Set<String> serviceNames) {
+        if (!LocalServiceNodeTable.containsNode(address)) {
+            LocalServiceNodeTable.addNewNode(address);
+        }
         updateNode(address, (node) -> node.getServices().addAll(serviceNames));
     }
 
@@ -95,7 +123,11 @@ public class LocalServiceNodeTable {
      * @param address
      */
     public static void setNodeDead(String address) {
-        updateNode(address, (node) -> node.setAliveState(NodeAliveStateEnum.DEAD));
+        updateNode(address, (node) -> {
+            node.setClientHandler(null);
+            node.setAliveState(NodeAliveStateEnum.DEAD);
+        });
+        SERVICE_MAPPINGS.values().removeAll(Lists.newArrayList(address));
     }
 
     /**
@@ -103,8 +135,12 @@ public class LocalServiceNodeTable {
      *
      * @param address
      */
-    public static void setNodeAlive(String address) {
-        updateNode(address, (node) -> node.setAliveState(NodeAliveStateEnum.ALIVE));
+    public static void setNodeAlive(SimpleClientHandler clientHandler) {
+        String address = clientHandler.getNettyClient().getAddress();
+        updateNode(address, (node) -> {
+            node.setClientHandler(clientHandler);
+            node.setAliveState(NodeAliveStateEnum.ALIVE);
+        });
     }
 
     /**
@@ -112,8 +148,8 @@ public class LocalServiceNodeTable {
      *
      * @param address
      */
-    public static void setNodeConnecting(String address) {
-        updateNode(address, (node) -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
+    public static void reConnected(String address) {
+        updateNode(address, node -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
     }
 
     /**
@@ -155,13 +191,31 @@ public class LocalServiceNodeTable {
         if (serviceNode.isPresent()) {
             return serviceNode.get().getAliveState() == NodeAliveStateEnum.DEAD;
         }
+        return true;
+    }
+
+    public static boolean isConnected(String address) {
+        Optional<ServiceNode> serviceNode = SERVICE_NODES.stream()
+                .filter(node -> node.getAddress().equals(address))
+                .findFirst();
+        if (serviceNode.isPresent()) {
+            return serviceNode.get().isConnected();
+        }
         return false;
     }
 
     /**
      * 清楚服务节点信息
      */
-    public static void clear() {
+    public static void shutdown() {
+        SERVICE_MAPPINGS.clear();
+        SERVICE_NODES.stream()
+                .map(node -> node.getClientHandler())
+                .forEach(handler -> {
+                    handler.getNettyClient().shutdown();
+                    handler.close();
+                });
+
         SERVICE_NODES.clear();
     }
 
@@ -183,4 +237,13 @@ public class LocalServiceNodeTable {
         return null;
     }
 
+    public static void setConnected(String address) {
+        updateNode(address, (node) -> node.setConnected(true));
+    }
+
+    public static void updateServiceNode(String serviceName, String address) {
+        Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, new HashSet<>());
+        serviceNodes.add(address);
+        SERVICE_MAPPINGS.put(serviceName, serviceNodes);
+    }
 }

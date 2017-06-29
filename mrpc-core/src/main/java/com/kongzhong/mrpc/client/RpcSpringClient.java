@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
-import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
 import com.kongzhong.mrpc.model.ClientBean;

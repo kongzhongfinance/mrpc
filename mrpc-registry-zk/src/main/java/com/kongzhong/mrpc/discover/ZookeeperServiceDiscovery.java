@@ -5,8 +5,8 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
-import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -85,7 +85,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             // update node list
             Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
         }
-
     }
 
     private Set<String> discoveryService(String serviceName) {

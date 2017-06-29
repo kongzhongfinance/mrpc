@@ -1,18 +1,15 @@
 package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
-import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
-import com.kongzhong.mrpc.utils.CollectionUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoop;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,26 +42,22 @@ public class ConnectionListener implements ChannelFutureListener {
             loop.schedule(() -> nettyClient.createBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
 
         } else {
+            if (LocalServiceNodeTable.isAlive(nettyClient.getAddress())) {
+                return;
+            }
+
             log.info("Connect {} success.", nettyClient.getServerAddress());
 
             nettyClient.resetRetryCount();
 
             boolean isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
 
+            //和服务器连接成功后, 获取MessageSendHandler对象
+            Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
+            SimpleClientHandler handler = future.channel().pipeline().get(clientHandler);
+
             // 设置节点状态为存活状态
-            LocalServiceNodeTable.setNodeAlive(nettyClient.getAddress());
-
-            Set<String> referNames = LocalServiceNodeTable.getNodeServices(nettyClient.getAddress());
-
-            if (CollectionUtils.isNotEmpty(referNames)) {
-                log.debug("Update connections mapping: {}", referNames);
-
-                //和服务器连接成功后, 获取MessageSendHandler对象
-                Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
-                SimpleClientHandler handler = future.channel().pipeline().get(clientHandler);
-                referNames.forEach(serviceName -> Connections.me().addRpcClientHandler(serviceName, handler));
-            }
-
+            LocalServiceNodeTable.setNodeAlive(handler);
         }
     }
 }

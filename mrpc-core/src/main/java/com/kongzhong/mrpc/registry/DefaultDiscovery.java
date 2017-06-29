@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.kongzhong.mrpc.client.cluster.Connections;
+import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.StringUtils;

@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import lombok.*;
 
 import java.util.Set;
@@ -20,7 +21,9 @@ import java.util.Set;
 public class ServiceNode {
 
     private String address;
+    private SimpleClientHandler clientHandler;
     private NodeAliveStateEnum aliveState;
+    private boolean connected;
     private Set<String> services = Sets.newHashSet();
 
 }

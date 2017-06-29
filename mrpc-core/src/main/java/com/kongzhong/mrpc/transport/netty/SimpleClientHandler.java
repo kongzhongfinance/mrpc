@@ -2,8 +2,8 @@ package com.kongzhong.mrpc.transport.netty;
 
 import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
-import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -67,8 +67,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Channel inactive: {}", ctx.channel());
-        Connections.me().remove(this);
+        log.debug("Channel inActive: {}", ctx.channel());
+        Connections.me().inActive(this.nettyClient.getAddress());
 
         if (nettyClient.isRunning()) {
             // 断线重连

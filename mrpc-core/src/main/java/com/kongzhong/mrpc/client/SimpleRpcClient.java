@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.Reflection;
-import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;

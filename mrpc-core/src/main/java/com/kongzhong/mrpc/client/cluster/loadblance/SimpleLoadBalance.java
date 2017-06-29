@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
+import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.SimpleRpcProcessor;
-import com.kongzhong.mrpc.client.cluster.Connections;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
