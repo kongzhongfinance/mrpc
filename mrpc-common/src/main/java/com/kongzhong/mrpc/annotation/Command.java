@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.annotation;
 
+import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -21,5 +22,12 @@ public @interface Command {
      * @return
      */
     int waitTimeout() default 10_000;
+
+    /**
+     * 高可用策略，默认为失效切换
+     *
+     * @return
+     */
+    HaStrategyEnum haStrategy() default HaStrategyEnum.FAILOVER;
 
 }

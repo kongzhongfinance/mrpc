@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-registry-zk</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
 

@@ -4,8 +4,10 @@ import com.google.common.reflect.AbstractInvocationHandler;
 import com.kongzhong.mrpc.annotation.Command;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
+import com.kongzhong.mrpc.client.cluster.ha.HighAvailableFactory;
 import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
 import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.ClientInvocation;
@@ -33,9 +35,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
     // 负载均衡器
     protected LoadBalance loadBalance;
 
-    // HA策略
-    protected HaStrategy haStrategy;
-
     // 是否有客户端拦截器
     protected boolean hasInterceptors;
 
@@ -49,11 +48,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
 
     public SimpleClientProxy(List<RpcClientInteceptor> interceptors) {
         this.appId = ClientConfig.me().getAppId();
-        this.haStrategy = ClientConfig.me().getHaStrategy();
-
-        if (null == this.haStrategy) {
-            throw new SystemException("HaStrategy not is null");
-        }
 
         LbStrategyEnum lbStrategy = ClientConfig.me().getLbStrategy();
         if (null == lbStrategy) {
@@ -87,6 +81,9 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .timestamp(System.currentTimeMillis())
                 .build();
 
+
+        HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHastrategy(method));
+
         if (!hasInterceptors) {
             return haStrategy.call(request, loadBalance);
         }
@@ -94,6 +91,15 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         Invocation invocation = new ClientInvocation(haStrategy, loadBalance, request, interceptors);
         Object result = invocation.next();
         return result;
+    }
+
+    private HaStrategyEnum getHastrategy(Method method) {
+        HaStrategyEnum haStrategyEnum = ClientConfig.me().getHaStrategy();
+        Command command = method.getAnnotation(Command.class);
+        if (null != command) {
+            haStrategyEnum = command.haStrategy();
+        }
+        return haStrategyEnum;
     }
 
     private int getWaitTimeout(Method method) {

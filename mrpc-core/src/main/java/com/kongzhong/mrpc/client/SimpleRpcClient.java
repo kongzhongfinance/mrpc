@@ -4,9 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.client.cluster.Connections;
-import com.kongzhong.mrpc.client.cluster.HaStrategy;
-import com.kongzhong.mrpc.client.cluster.ha.FailFastHaStrategy;
-import com.kongzhong.mrpc.client.cluster.ha.FailOverHaStrategy;
 import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
@@ -171,20 +168,12 @@ public abstract class SimpleRpcClient {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
         }
 
-        HaStrategy haStrategy = null;
-        if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILOVER.name())) {
-            haStrategy = new FailOverHaStrategy();
-        }
-        if (this.haStrategy.equalsIgnoreCase(HaStrategyEnum.FAILFAST.name())) {
-            haStrategy = new FailFastHaStrategy();
-        }
-
         LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
         TransportEnum transportEnum = TransportEnum.valueOf(this.transport.toUpperCase());
 
         ClientConfig.me().setAppId(appId);
         ClientConfig.me().setRpcSerialize(rpcSerialize);
-        ClientConfig.me().setHaStrategy(haStrategy);
+        ClientConfig.me().setHaStrategy(HaStrategyEnum.valueOf(this.haStrategy));
         ClientConfig.me().setLbStrategy(lbStrategyEnum);
         ClientConfig.me().setSkipBind(skipBind);
         ClientConfig.me().setRetryInterval(retryInterval);

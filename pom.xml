@@ -52,6 +52,7 @@
         <slf4j-api.version>1.7.24</slf4j-api.version>
         <zookeeper.version>3.4.8</zookeeper.version>
         <jackson.version>2.7.0</jackson.version>
+        <consul-api.version>1.2.3</consul-api.version>
     </properties>
 
     <dependencies>

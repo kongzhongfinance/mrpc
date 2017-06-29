@@ -41,15 +41,18 @@ public class RpcCallbackFuture {
         try {
             lock.lock();
             finish.await(millisconds, TimeUnit.MILLISECONDS);
+
+            long time = System.currentTimeMillis() - startTime;
+            if (time > millisconds) {
+                String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
+                log.warn(msg + ", {}ms", time);
+                throw new TimeoutException(msg);
+            }
+
             if (null == response) {
-                long time = System.currentTimeMillis() - startTime;
-                if (time > millisconds) {
-                    String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
-                    log.warn(msg + ", {}ms", time);
-                    throw new TimeoutException(msg);
-                }
                 return null;
             }
+
             if (!response.getSuccess()) {
                 Class<?> expType = ReflectUtils.from(response.getReturnType());
                 Exception exception = (Exception) JacksonSerialize.parseObject(response.getException(), expType);

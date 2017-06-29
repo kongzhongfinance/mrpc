@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.kongzhong.mrpc.exception.SerializeException;
+import lombok.NoArgsConstructor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +15,7 @@ import java.io.ByteArrayOutputStream;
  * @author biezhi
  *         2017/4/26
  */
+@NoArgsConstructor
 public class KyroSerialize implements RpcSerialize {
 
     private ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
