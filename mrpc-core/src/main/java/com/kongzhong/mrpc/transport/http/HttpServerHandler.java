@@ -107,9 +107,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
         httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
-        httpResponse.headers().set(HEADER_REQUEST_ID, requestBody.getRequestId());
-        httpResponse.headers().set(HEADER_SERVICE_CLASS, requestBody.getService());
-        httpResponse.headers().set(HEADER_METHOD_NAME, requestBody.getMethod());
+        httpResponse.headers().set(HEADER_REQUEST_ID, rpcRequest.getRequestId());
+        httpResponse.headers().set(HEADER_SERVICE_CLASS, rpcRequest.getClassName());
+        httpResponse.headers().set(HEADER_METHOD_NAME, rpcRequest.getMethodName());
         httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
         httpResponse.headers().set(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
         httpResponse.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
@@ -158,18 +158,17 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         // 构造请求
         String requestId = null != requestBody.getRequestId() ? requestBody.getRequestId() : StringUtils.getUUID();
-        return getRpcRequest(requestId, serviceName, method, args);
-    }
 
-    private RpcRequest getRpcRequest(String requestId, String serviceName, Method method, Object[] paramters) {
-        RpcRequest request = new RpcRequest();
-        request.setRequestId(requestId);
-        request.setClassName(serviceName);
-        request.setMethodName(method.getName());
-        request.setParameterTypes(method.getParameterTypes());
-        request.setReturnType(method.getReturnType());
-        request.setParameters(paramters);
-        return request;
+        RpcRequest rpcRequest = RpcRequest.builder()
+                .requestId(requestId)
+                .className(serviceName)
+                .methodName(method.getName())
+                .parameterTypes(method.getParameterTypes())
+                .returnType(method.getReturnType())
+                .parameters(args)
+                .build();
+
+        return rpcRequest;
     }
 
     /**

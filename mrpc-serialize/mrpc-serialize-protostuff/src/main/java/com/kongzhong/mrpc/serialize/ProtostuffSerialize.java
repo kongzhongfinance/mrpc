@@ -6,6 +6,7 @@ import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
+import lombok.NoArgsConstructor;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 
@@ -16,6 +17,7 @@ import java.util.Map;
  * <p>
  * Created by biezhi on 2016/11/6.
  */
+@NoArgsConstructor
 public class ProtostuffSerialize implements RpcSerialize {
 
     private static final Map<Class<?>, Schema<?>> cachedSchema = Maps.newConcurrentMap();
