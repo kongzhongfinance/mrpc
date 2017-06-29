@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.config;
 
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
+import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
@@ -21,7 +22,7 @@ import lombok.ToString;
 public class ClientConfig {
 
     private String appId;
-    private HaStrategy haStrategy;
+    private HaStrategyEnum haStrategy;
     private RpcSerialize rpcSerialize;
     private LbStrategyEnum lbStrategy;
     private TransportEnum transport;
