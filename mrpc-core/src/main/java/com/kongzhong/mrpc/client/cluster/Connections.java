@@ -171,21 +171,19 @@ public class Connections {
             lock.lock();
             log.debug("Add rpc client handler: {}, {}", serviceName, handler);
 
-            if (mappings.containsKey(serviceName)) {
-                if (!mappings.get(serviceName).contains(handler)) {
-                    LocalServiceNodeTable.setNodeAlive(handler.getNettyClient().getAddress());
+            LocalServiceNodeTable.setNodeAlive(handler.getNettyClient().getAddress());
 
-                    Set<SimpleClientHandler> serviceHandler = mappings.getOrDefault(serviceName, new HashSet<>());
-                    serviceHandler.add(handler);
-                    mappings.put(serviceName, serviceHandler);
+            Set<SimpleClientHandler> handlers = mappings.getOrDefault(serviceName, new HashSet<>());
+
+            if (mappings.containsKey(serviceName)) {
+                if (!handlers.contains(handler)) {
+                    LocalServiceNodeTable.setNodeAlive(handler.getNettyClient().getAddress());
+                    handlers.add(handler);
                 }
             } else {
-                LocalServiceNodeTable.setNodeAlive(handler.getNettyClient().getAddress());
-
-                Set<SimpleClientHandler> serviceHandler = mappings.getOrDefault(serviceName, new HashSet<>());
-                serviceHandler.add(handler);
-                mappings.put(serviceName, serviceHandler);
+                handlers.add(handler);
             }
+            mappings.put(serviceName, handlers);
             handlerStatus.signal();
         } finally {
             lock.unlock();
@@ -205,7 +203,7 @@ public class Connections {
             sleep(500);
             pos++;
         }
-        return Lists.newArrayList(mappings.get(serviceName));
+        return Lists.newArrayList(mappings.getOrDefault(serviceName, new HashSet<>()));
     }
 
     /**

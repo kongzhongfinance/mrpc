@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService{
 
 ### 更新日志
 
-#### 0.0.8-SNAPSHOT
+#### 0.0.9-SNAPSHOT
 
 1. 客户端断线自动重连
 2. 允许跳过启动绑定服务
