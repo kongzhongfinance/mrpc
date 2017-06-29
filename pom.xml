@@ -140,25 +140,35 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--<profiles>-->
+
+    <!--<profile>-->
+    <!--<id>dev</id>-->
+    <!--<build>-->
+    <!--<resources>-->
+    <!--<resource>-->
+    <!--<directory>src/main/java</directory>-->
+    <!--<filtering>false</filtering>-->
+    <!--</resource>-->
+    <!--<resource>-->
+    <!--<directory>src/main/resources</directory>-->
+    <!--<filtering>false</filtering>-->
+    <!--</resource>-->
+    <!--<resource>-->
+    <!--<directory>src/main/test</directory>-->
+    <!--<filtering>false</filtering>-->
+    <!--</resource>-->
+    <!--<resource>-->
+    <!--<directory>src/test/resources</directory>-->
+    <!--<filtering>false</filtering>-->
+    <!--</resource>-->
+    <!--</resources>-->
+    <!--</build>-->
+    <!--</profile>-->
+    <!--</profiles>-->
+
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/test</directory>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>src/test/resources</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
+
         <plugins>
             <!--  Compile  -->
             <plugin>

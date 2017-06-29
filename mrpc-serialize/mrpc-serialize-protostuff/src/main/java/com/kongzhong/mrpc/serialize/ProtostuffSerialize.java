@@ -17,12 +17,15 @@ import java.util.Map;
  * <p>
  * Created by biezhi on 2016/11/6.
  */
-@NoArgsConstructor
 public class ProtostuffSerialize implements RpcSerialize {
 
     private static final Map<Class<?>, Schema<?>> cachedSchema = Maps.newConcurrentMap();
 
     private static final Objenesis objenesis = new ObjenesisStd(true);
+
+    public ProtostuffSerialize() {
+
+    }
 
     /**
      * 序列化（对象 -> 字节数组）
