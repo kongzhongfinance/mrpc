@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.netty;
 
+import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
@@ -51,6 +52,11 @@ public class NettyClient {
     }
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
+
+        if (LocalServiceNodeTable.isAlive(this.getAddress())) {
+            return null;
+        }
+
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)

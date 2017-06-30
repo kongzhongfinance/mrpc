@@ -80,7 +80,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
         Set<String> addressSet = this.discoveryService(clientBean.getServiceName());
         if (CollectionUtils.isEmpty(addressSet)) {
-            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", clientBean.getServiceName());
+            System.out.println();
+            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", clientBean.getServiceName());
         } else {
             // update node list
             Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
@@ -117,7 +118,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
             List<String> serviceList = zkClient.getChildren(path);
             if (CollectionUtils.isEmpty(serviceList)) {
-                log.warn("Can not find any address node on path: {}. please check your zookeeper services :)", path);
+                System.out.println();
+                log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
             } else {
 
                 log.debug("Watch node changed: {}", serviceList);

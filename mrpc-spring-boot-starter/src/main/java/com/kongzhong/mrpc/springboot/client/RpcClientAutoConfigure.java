@@ -2,7 +2,9 @@ package com.kongzhong.mrpc.springboot.client;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
+import com.kongzhong.mrpc.springboot.config.JMXClientConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Conditional;
  */
 @Slf4j
 @Conditional(ClientEnvironmentCondition.class)
+@ImportAutoConfiguration(JMXClientConfig.class)
 public class RpcClientAutoConfigure {
 
     @Bean

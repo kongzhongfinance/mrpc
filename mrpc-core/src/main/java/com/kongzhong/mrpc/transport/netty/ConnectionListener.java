@@ -42,11 +42,8 @@ public class ConnectionListener implements ChannelFutureListener {
             loop.schedule(() -> nettyClient.createBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
 
         } else {
-            if (LocalServiceNodeTable.isAlive(nettyClient.getAddress())) {
-                return;
-            }
 
-            log.info("Connect {} success.", nettyClient.getServerAddress());
+            log.info("Connect {} success.", future.channel());
 
             nettyClient.resetRetryCount();
 

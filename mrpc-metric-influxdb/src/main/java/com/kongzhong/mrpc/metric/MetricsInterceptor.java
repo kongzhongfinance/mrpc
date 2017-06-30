@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.metric;
 
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcContext;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  *         2017/4/24
  */
 @Slf4j
-public class MetricsInterceptor implements RpcServerInteceptor {
+public class MetricsInterceptor implements RpcServerInterceptor {
 
     private MetricsClient metricsClient;
     private MetricsUtils metricsUtils;

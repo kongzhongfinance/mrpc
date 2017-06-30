@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.interceptor;
  * @author biezhi
  *         2017/4/20
  */
-public interface RpcServerInteceptor extends RpcInteceptor {
+public interface RpcServerInterceptor extends RpcInterceptor {
 
     Object execute(ServerInvocation invocation) throws Exception;
 

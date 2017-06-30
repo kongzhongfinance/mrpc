@@ -21,12 +21,12 @@ public class ServerInvocation implements Invocation {
     private Object[] parameters;
 
     //拦截器
-    private List<RpcServerInteceptor> interceptors;
+    private List<RpcServerInterceptor> interceptors;
 
     //当前Interceptor索引值，初始值：-1，范围：0-interceptors.size()-1
     private int currentIndex = -1;
 
-    public ServerInvocation(FastMethod fastMethod, Object target, Object[] parameters, RpcRequest request, List<RpcServerInteceptor> interceptors) {
+    public ServerInvocation(FastMethod fastMethod, Object target, Object[] parameters, RpcRequest request, List<RpcServerInterceptor> interceptors) {
         this.fastMethod = fastMethod;
         this.target = target;
         this.request = request;
@@ -49,7 +49,7 @@ public class ServerInvocation implements Invocation {
                 throw e;
             }
         } else {
-            RpcInteceptor interceptor = this.interceptors.get(++this.currentIndex);
+            RpcInterceptor interceptor = this.interceptors.get(++this.currentIndex);
             return interceptor.execute(this);
         }
     }

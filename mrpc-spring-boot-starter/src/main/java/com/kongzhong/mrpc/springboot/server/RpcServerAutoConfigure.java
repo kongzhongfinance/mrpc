@@ -11,6 +11,7 @@ import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
+import com.kongzhong.mrpc.springboot.config.JMXServerConfig;
 import com.kongzhong.mrpc.springboot.config.NettyProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +48,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
  */
 @Conditional(ServerEnvironmentCondition.class)
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class})
+@ImportAutoConfiguration(JMXServerConfig.class)
 @Slf4j
 @ToString(callSuper = true, exclude = {"commonProperties", "rpcServerProperties", "nettyProperties", "configurableBeanFactory", "customServiceMap"})
 public class RpcServerAutoConfigure extends SimpleRpcServer {
@@ -99,12 +102,15 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             super.poolName = rpcServerProperties.getPoolName();
 
             // netty参数配置
-            BeanUtils.copyProperties(new NettyConfig(), nettyProperties);
+            super.nettyConfig = new NettyConfig();
+            BeanUtils.copyProperties(nettyProperties, super.nettyConfig);
 
             super.test = StringUtils.isNotEmpty(commonProperties.getTest()) ? commonProperties.getTest() : rpcServerProperties.getTest();
 
             super.transport = rpcServerProperties.getTransport();
             super.serialize = rpcServerProperties.getSerialize();
+
+            configurableBeanFactory.registerSingleton("rpcMapping", rpcMapping);
         };
     }
 

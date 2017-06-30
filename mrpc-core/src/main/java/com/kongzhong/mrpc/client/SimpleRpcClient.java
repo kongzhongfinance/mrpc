@@ -12,7 +12,7 @@ import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
@@ -122,7 +122,7 @@ public abstract class SimpleRpcClient {
     /**
      * 客户端拦截器列表
      */
-    protected List<RpcClientInteceptor> rpcClientInteceptors = Lists.newArrayList();
+    protected List<RpcClientInterceptor> rpcClientInteceptors = Lists.newArrayList();
 
     protected NettyConfig nettyConfig;
 
@@ -134,7 +134,7 @@ public abstract class SimpleRpcClient {
      * @return
      */
     protected <T> T getProxyBean(Class<T> rpcInterface) {
-        return (T) Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>(rpcClientInteceptors));
+        return Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>(rpcClientInteceptors));
     }
 
     /**
@@ -152,7 +152,6 @@ public abstract class SimpleRpcClient {
 
     protected void init() throws RpcException {
 
-        Connections connections = Connections.me();
         if (null == serialize) serialize = "kyro";
         if (null == transport) transport = "tcp";
         if (null == lbStrategy) lbStrategy = LbStrategyEnum.ROUND.name();
@@ -225,9 +224,9 @@ public abstract class SimpleRpcClient {
      *
      * @param inteceptor
      */
-    public void addInterceptor(RpcClientInteceptor inteceptor) {
+    public void addInterceptor(RpcClientInterceptor inteceptor) {
         if (null == inteceptor) {
-            throw new IllegalArgumentException("RpcClientInteceptor not is null");
+            throw new IllegalArgumentException("RpcClientInterceptor not is null");
         }
         log.info("Add interceptor [{}]", inteceptor.toString());
         this.rpcClientInteceptors.add(inteceptor);

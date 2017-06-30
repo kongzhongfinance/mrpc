@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -33,9 +33,9 @@ public class ServiceBeanProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> service = bean.getClass();
-        boolean hasInterface = ReflectUtils.hasInterface(service, RpcServerInteceptor.class);
+        boolean hasInterface = ReflectUtils.hasInterface(service, RpcServerInterceptor.class);
         if (hasInterface) {
-            rpcMapping.addInterceptor((RpcServerInteceptor) bean);
+            rpcMapping.addInterceptor((RpcServerInterceptor) bean);
         }
 
         RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);

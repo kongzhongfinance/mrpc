@@ -4,7 +4,7 @@ import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
@@ -21,8 +21,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
-
-import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
 /**
  * RPC服务端Spring实现
@@ -55,7 +53,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
         if (StringUtils.isNotEmpty(this.interceptors)) {
             String[] inters = this.interceptors.split(",");
             for (String interceptorName : inters) {
-                RpcServerInteceptor rpcServerInteceptor = (RpcServerInteceptor) ctx.getBean(interceptorName);
+                RpcServerInterceptor rpcServerInteceptor = (RpcServerInterceptor) ctx.getBean(interceptorName);
                 rpcMapping.addInterceptor(rpcServerInteceptor);
             }
         }

@@ -3,14 +3,13 @@ package com.kongzhong.mrpc.server;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ import static com.kongzhong.mrpc.Const.SERVER_INTERCEPTOR_PREFIX;
 public abstract class AbstractResponseInvoker<T> implements Callable<T> {
 
     protected Map<String, ServiceBean> serviceBeanMap;
-    protected List<RpcServerInteceptor> interceptors;
+    protected List<RpcServerInterceptor> interceptors;
     protected InterceptorChain interceptorChain = new InterceptorChain();
     protected RpcRequest request;
     protected RpcResponse response;
@@ -44,12 +43,12 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
         this.request = request;
         this.response = response;
         this.serviceBeanMap = serviceBeanMap;
-        this.interceptors = RpcMapping.me().getInteceptors();
+        this.interceptors = RpcMapping.me().getServerInterceptors();
         if (CollectionUtils.isNotEmpty(interceptors)) {
             hasInterceptors = true;
             int pos = interceptors.size();
-            for (RpcServerInteceptor rpcInteceptor : interceptors) {
-                interceptorChain.addLast(SERVER_INTERCEPTOR_PREFIX + (pos--), rpcInteceptor);
+            for (RpcServerInterceptor interceptor : interceptors) {
+                interceptorChain.addLast(SERVER_INTERCEPTOR_PREFIX + (pos--), interceptor);
             }
         }
     }

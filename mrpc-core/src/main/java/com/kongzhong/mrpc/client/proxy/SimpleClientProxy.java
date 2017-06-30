@@ -13,7 +13,7 @@ import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.ClientInvocation;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,14 +39,14 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
     protected boolean hasInterceptors;
 
     // 客户端拦截器列表
-    protected List<RpcClientInteceptor> interceptors;
+    protected List<RpcClientInterceptor> interceptors;
 
     // 拦截器链
     protected InterceptorChain interceptorChain = new InterceptorChain();
 
     private String appId;
 
-    public SimpleClientProxy(List<RpcClientInteceptor> interceptors) {
+    public SimpleClientProxy(List<RpcClientInterceptor> interceptors) {
         this.appId = ClientConfig.me().getAppId();
 
         LbStrategyEnum lbStrategy = ClientConfig.me().getLbStrategy();
@@ -61,7 +61,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
             hasInterceptors = true;
             int pos = interceptors.size();
             log.info("Add interceptors {}", interceptors.toString());
-            for (RpcClientInteceptor rpcInteceptor : interceptors) {
+            for (RpcClientInterceptor rpcInteceptor : interceptors) {
                 interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcInteceptor);
             }
         }
@@ -82,7 +82,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .build();
 
 
-        HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHastrategy(method));
+        HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHaStrategy(method));
 
         if (!hasInterceptors) {
             return haStrategy.call(request, loadBalance);
@@ -93,7 +93,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         return result;
     }
 
-    private HaStrategyEnum getHastrategy(Method method) {
+    private HaStrategyEnum getHaStrategy(Method method) {
         HaStrategyEnum haStrategyEnum = ClientConfig.me().getHaStrategy();
         Command command = method.getAnnotation(Command.class);
         if (null != command) {

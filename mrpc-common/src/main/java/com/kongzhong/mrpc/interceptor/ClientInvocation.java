@@ -21,12 +21,12 @@ public class ClientInvocation implements Invocation {
     private LoadBalance loadBalance;
 
     //拦截器
-    private List<RpcClientInteceptor> interceptors;
+    private List<RpcClientInterceptor> interceptors;
 
     //当前Interceptor索引值，初始值：-1，范围：0-interceptors.size()-1
     private int currentIndex = -1;
 
-    public ClientInvocation(HaStrategy haStrategy, LoadBalance loadBalance, RpcRequest request, List<RpcClientInteceptor> interceptors) {
+    public ClientInvocation(HaStrategy haStrategy, LoadBalance loadBalance, RpcRequest request, List<RpcClientInterceptor> interceptors) {
         this.haStrategy = haStrategy;
         this.loadBalance = loadBalance;
         this.request = request;
@@ -48,7 +48,7 @@ public class ClientInvocation implements Invocation {
                 throw e;
             }
         } else {
-            RpcInteceptor interceptor = this.interceptors.get(++this.currentIndex);
+            RpcInterceptor interceptor = this.interceptors.get(++this.currentIndex);
             return interceptor.execute(this);
         }
     }

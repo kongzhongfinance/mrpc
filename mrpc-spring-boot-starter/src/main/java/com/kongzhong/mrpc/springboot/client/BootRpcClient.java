@@ -4,7 +4,7 @@ import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
 import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
@@ -66,7 +66,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.clientBeans = referersObject.getReferers();
 
         // 客户端拦截器
-        Map<String, RpcClientInteceptor> rpcClientInteceptorMap = beanFactory.getBeansOfType(RpcClientInteceptor.class);
+        Map<String, RpcClientInterceptor> rpcClientInteceptorMap = beanFactory.getBeansOfType(RpcClientInterceptor.class);
         if (null != rpcClientInteceptorMap) {
             rpcClientInteceptorMap.values().forEach(super::addInterceptor);
         }

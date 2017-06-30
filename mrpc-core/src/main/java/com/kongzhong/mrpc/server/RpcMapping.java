@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
@@ -13,9 +13,12 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * RPC映射关系存储
@@ -26,10 +29,11 @@ import java.util.Map;
 @Data
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@ManagedResource(description = "服务映射表")
 public class RpcMapping {
 
     private Map<String, ServiceBean> serviceBeanMap = Maps.newConcurrentMap();
-    private List<RpcServerInteceptor> inteceptors = Lists.newArrayList();
+    private List<RpcServerInterceptor> serverInterceptors = Lists.newArrayList();
 
     /**
      * 添加一个服务Bean
@@ -86,14 +90,14 @@ public class RpcMapping {
     /**
      * 添加一个服务端拦截器
      *
-     * @param rpcServerInteceptor
+     * @param rpcServerInterceptor
      */
-    public void addInterceptor(RpcServerInteceptor rpcServerInteceptor) {
-        if (null == rpcServerInteceptor) {
-            throw new SystemException("RpcServerInteceptor bean not is null");
+    public void addInterceptor(RpcServerInterceptor rpcServerInterceptor) {
+        if (null == rpcServerInterceptor) {
+            throw new SystemException("RpcServerInterceptor bean not is null");
         }
-        log.info("add interceptor [{}]", rpcServerInteceptor);
-        this.inteceptors.add(rpcServerInteceptor);
+        log.info("Add server interceptor [{}]", rpcServerInterceptor);
+        this.serverInterceptors.add(rpcServerInterceptor);
     }
 
     /**
@@ -101,12 +105,12 @@ public class RpcMapping {
      *
      * @param rpcServerInteceptors
      */
-    public void addInterceptors(List<RpcServerInteceptor> rpcServerInteceptors) {
+    public void addInterceptors(List<RpcServerInterceptor> rpcServerInteceptors) {
         if (null == rpcServerInteceptors) {
-            throw new SystemException("RpcServerInteceptors bean not is null");
+            throw new SystemException("RpcServerInterceptor bean not is null");
         }
-        log.info("add interceptors {}", rpcServerInteceptors.toString());
-        this.inteceptors.addAll(rpcServerInteceptors);
+        log.info("Add server interceptors {}", rpcServerInteceptors.toString());
+        this.serverInterceptors.addAll(rpcServerInteceptors);
     }
 
     private static final class RpcMappingHolder {
@@ -115,6 +119,13 @@ public class RpcMapping {
 
     public static RpcMapping me() {
         return RpcMappingHolder.INSTANCE;
+    }
+
+    @ManagedOperation
+    public List<String> getServices() {
+        return serviceBeanMap.values().stream()
+                .map(serviceBean -> serviceBean.getServiceName())
+                .collect(Collectors.toList());
     }
 
 }

@@ -3,7 +3,7 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.utils.CollectionUtils;
@@ -48,7 +48,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         }
 
         // 客户端拦截器
-        Map<String, RpcClientInteceptor> inteceptorMap = ctx.getBeansOfType(RpcClientInteceptor.class);
+        Map<String, RpcClientInterceptor> inteceptorMap = ctx.getBeansOfType(RpcClientInterceptor.class);
         if (CollectionUtils.isNotEmpty(inteceptorMap)) {
             inteceptorMap.values().forEach(super::addInterceptor);
         }
