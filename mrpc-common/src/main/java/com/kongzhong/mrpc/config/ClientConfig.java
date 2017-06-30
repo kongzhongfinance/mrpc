@@ -22,10 +22,10 @@ import lombok.ToString;
 public class ClientConfig {
 
     private String appId;
-    private HaStrategyEnum haStrategy;
+    private HaStrategyEnum haStrategy = HaStrategyEnum.FAILOVER;
     private RpcSerialize rpcSerialize;
-    private LbStrategyEnum lbStrategy;
-    private TransportEnum transport;
+    private LbStrategyEnum lbStrategy = LbStrategyEnum.RANDOM;
+    private TransportEnum transport = TransportEnum.TCP;
 
     // 跳过服务绑定
     private Boolean skipBind;

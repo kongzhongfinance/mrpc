@@ -169,10 +169,11 @@ public abstract class SimpleRpcClient {
 
         LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
         TransportEnum transportEnum = TransportEnum.valueOf(this.transport.toUpperCase());
+        HaStrategyEnum haStrategyEnum = HaStrategyEnum.valueOf(this.haStrategy.toUpperCase());
 
         ClientConfig.me().setAppId(appId);
         ClientConfig.me().setRpcSerialize(rpcSerialize);
-        ClientConfig.me().setHaStrategy(HaStrategyEnum.valueOf(this.haStrategy));
+        ClientConfig.me().setHaStrategy(haStrategyEnum);
         ClientConfig.me().setLbStrategy(lbStrategyEnum);
         ClientConfig.me().setSkipBind(skipBind);
         ClientConfig.me().setRetryInterval(retryInterval);

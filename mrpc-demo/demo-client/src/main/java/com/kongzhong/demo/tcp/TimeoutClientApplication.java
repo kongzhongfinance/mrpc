@@ -25,11 +25,12 @@ public class TimeoutClientApplication {
         try {
             userService.testTimeout(3);
         } catch (Exception e) {
-            System.out.println(e.getClass());
-            System.out.println(e.getCause().getClass());
-            if (e instanceof TimeoutException) {
-                System.out.println("超时了");
-            }
+            e.printStackTrace();
+//            System.out.println(e.getClass());
+//            System.out.println(e.getCause().getClass());
+//            if (e instanceof TimeoutException) {
+//                System.out.println("超时了");
+//            }
         }
 
         System.out.println("停止");
