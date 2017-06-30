@@ -15,6 +15,8 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
+import java.nio.charset.Charset;
+
 /**
  * Tcp服务端ChannelInitializer
  */

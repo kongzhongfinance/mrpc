@@ -22,44 +22,43 @@ public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
         LOCAL_SERVICES.add(service);
     }
 
+    private static final String PREFIX = "# ";
+
+    private static final String START_BANNER =
+            "\r\n" +
+                    "==============================================\r\n" +
+                    "  Welcome to use the kongzhong finance mrpc \r\n" +
+                    "==============================================\r\n" +
+                    "  service : show current node service list\r\n" +
+                    "  quit    : exit telnet application\r\n" +
+                    "==============================================\r\n" +
+                    "\r\n" + PREFIX;
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // Send greeting for a new connection.
-        ctx.write("\r\n");
-        ctx.write("===============================\r\n");
-        ctx.write("🌝    欢迎使用空中金融 mrpc \r\n");
-        ctx.write("===============================\r\n");
-        ctx.write("service\t: 显示当前节点服务列表\r\n");
-        ctx.write("quit\t: 退出该死的telnet程序\r\n");
-        ctx.write("===============================\r\n");
-        ctx.write("🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥\r\n\r\n");
-        ctx.write("\uD83D\uDC49 ");
+        ctx.write(START_BANNER);
         ctx.flush();
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, String request) throws Exception {
         // Generate and write a response.
-        StringBuffer response = new StringBuffer("\uD83D\uDC49  ");
+        String response = PREFIX;
         boolean close = false;
 
         if (request.isEmpty()) {
-            response = new StringBuffer("大佬按下了回车\r\n");
-            response.append("\uD83D\uDC49  ");
-        } else if ("quit".equals(request.toLowerCase())) {
-            response = new StringBuffer("大佬再见 👋\r\n");
+        } else if ("quit".equals(request.toLowerCase()) || "q".equals(request.toLowerCase())) {
+            response = "\r\nBye";
             close = true;
         } else {
             switch (request) {
                 case "service":
-
                     String list = LOCAL_SERVICES.stream()
                             .map(val -> "- " + val + "\r\n")
                             .collect(Collectors.joining());
 
-                    response = new StringBuffer("\r\n");
-                    response.append(list).append("\r\n");
-                    response.append("\uD83D\uDC49  ");
+                    response = "\r\n" + list + "\r\n" + PREFIX;
                     break;
                 default:
                     break;
