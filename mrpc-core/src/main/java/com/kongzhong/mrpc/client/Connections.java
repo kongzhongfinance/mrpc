@@ -69,10 +69,10 @@ public class Connections {
      *
      * @param mappings
      */
-    public void asyncConnect(Map<String, Set<String>> smapping) {
+    public void asyncConnect(Map<String, Set<String>> mappings) {
         try {
             lock.lock();
-            smapping.forEach((address, serviceNames) -> {
+            mappings.forEach((address, serviceNames) -> {
                 LocalServiceNodeTable.addServices(address, serviceNames);
                 serviceNames.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
                 if (!LocalServiceNodeTable.isConnected(address)) {
@@ -110,7 +110,7 @@ public class Connections {
     /**
      * 恢复连接
      *
-     * @param smapping
+     * @param addresses
      */
     public void recoverConnect(Set<String> addresses) {
         addresses.forEach(address -> {
@@ -174,7 +174,7 @@ public class Connections {
     /**
      * 客户端移除一个失效的连接
      *
-     * @param handler
+     * @param address
      */
     public void inActive(String address) {
         // 添加挂掉的节点

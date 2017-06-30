@@ -69,7 +69,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         }
 
         // 初始化引用
-        referers.forEach(referer -> super.initReferer(referer, dbf));
+        clientBeans.forEach(referer -> super.initReferer(referer, dbf));
 
         super.directConnect();
 

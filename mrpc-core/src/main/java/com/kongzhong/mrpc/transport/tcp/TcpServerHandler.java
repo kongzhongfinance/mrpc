@@ -46,7 +46,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
      * 错误处理
      *
      * @param ctx
-     * @param status
+     * @param cause
      */
     private void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
         RpcResponse response = new RpcResponse();

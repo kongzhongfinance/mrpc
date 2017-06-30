@@ -64,7 +64,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             return;
         }
 
-        super.referers = referersObject.getReferers();
+        super.clientBeans = referersObject.getReferers();
 
         // 客户端拦截器
         Map<String, RpcClientInteceptor> rpcClientInteceptorMap = beanFactory.getBeansOfType(RpcClientInteceptor.class);
@@ -96,7 +96,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         try {
             super.init();
             // 初始化客户端引用服务
-            referers.forEach(referer -> super.initReferer(referer, beanFactory));
+            clientBeans.forEach(referer -> super.initReferer(referer, beanFactory));
 
             super.directConnect();
 

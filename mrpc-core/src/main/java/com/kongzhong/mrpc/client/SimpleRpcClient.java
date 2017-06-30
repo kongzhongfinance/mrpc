@@ -18,7 +18,6 @@ import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
@@ -118,12 +117,12 @@ public abstract class SimpleRpcClient {
      * 引用类名
      */
     @Setter
-    protected List<ClientBean> referers = Lists.newArrayList();
+    protected List<ClientBean> clientBeans = Lists.newArrayList();
 
     /**
      * 客户端拦截器列表
      */
-    protected List<RpcClientInteceptor> inteceptors = Lists.newArrayList();
+    protected List<RpcClientInteceptor> rpcClientInteceptors = Lists.newArrayList();
 
     protected NettyConfig nettyConfig;
 
@@ -135,13 +134,13 @@ public abstract class SimpleRpcClient {
      * @return
      */
     protected <T> T getProxyBean(Class<T> rpcInterface) {
-        return (T) Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>(inteceptors));
+        return (T) Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>(rpcClientInteceptors));
     }
 
     /**
      * 获取服务使用的注册中心
      *
-     * @param serviceBean
+     * @param clientBean
      * @return
      */
     protected ServiceDiscovery getDiscovery(ClientBean clientBean) {
@@ -188,9 +187,6 @@ public abstract class SimpleRpcClient {
 
     /**
      * 直连
-     *
-     * @param directUrl
-     * @param rpcInterface
      */
     protected void directConnect() {
         Map<String, Set<String>> mappings = Maps.newHashMap();
@@ -202,17 +198,6 @@ public abstract class SimpleRpcClient {
             Connections.me().setNettyConfig(nettyConfig);
         }
         Connections.me().asyncConnect(mappings);
-    }
-
-    /**
-     * 绑定多个客户端引用服务
-     *
-     * @param interfaces 接口名
-     */
-    public void bindReferer(Class<?>... interfaces) {
-        if (CollectionUtils.isNotEmpty(interfaces)) {
-            Stream.of(interfaces).forEach(type -> referers.add(new ClientBean(type)));
-        }
     }
 
     /**
@@ -231,7 +216,7 @@ public abstract class SimpleRpcClient {
      */
     public void bindReferer(String... interfaces) {
         if (null != interfaces) {
-            Stream.of(interfaces).forEach(type -> referers.add(new ClientBean(ReflectUtils.from(type))));
+            Stream.of(interfaces).forEach(type -> clientBeans.add(new ClientBean(ReflectUtils.from(type))));
         }
     }
 
@@ -245,7 +230,7 @@ public abstract class SimpleRpcClient {
             throw new IllegalArgumentException("RpcClientInteceptor not is null");
         }
         log.info("Add interceptor [{}]", inteceptor.toString());
-        this.inteceptors.add(inteceptor);
+        this.rpcClientInteceptors.add(inteceptor);
     }
 
     /**

@@ -94,9 +94,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         Set<String> addressSet = new HashSet<>();
         if (zkClient.exists(path)) {
             List<String> addresses = zkClient.getChildren(path);
-            addresses.forEach(address -> {
-                addressSet.add(address);
-            });
+            addresses.forEach(addressSet::add);
         }
         if (!subRelate.containsKey(path)) {
             subRelate.put(path, zkChildListener);

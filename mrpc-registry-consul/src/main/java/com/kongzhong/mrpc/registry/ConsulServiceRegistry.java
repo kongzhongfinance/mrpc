@@ -34,7 +34,7 @@ public class ConsulServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void unregister(ServiceBean serviceBean) throws RpcException {
+    public void unRegister(ServiceBean serviceBean) throws RpcException {
 
     }
 

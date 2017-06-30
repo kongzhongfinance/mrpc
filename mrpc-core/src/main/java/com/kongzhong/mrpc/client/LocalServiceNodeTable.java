@@ -27,27 +27,6 @@ public class LocalServiceNodeTable {
      */
     static Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
 
-    /**
-     * 获取所有服务节点
-     *
-     * @return
-     */
-    public static Set<ServiceNode> getServiceNodes() {
-        return SERVICE_NODES;
-    }
-
-    /**
-     * 获取所有存活的节点
-     *
-     * @return
-     */
-    public static Set<SimpleClientHandler> getAliveNodes() {
-        return SERVICE_NODES.stream()
-                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
-                .map(node -> node.getClientHandler())
-                .collect(Collectors.toSet());
-    }
-
     public static List<SimpleClientHandler> getAliveNodes(String serviceName) {
         Set<String> address = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
         if (CollectionUtils.isEmpty(address)) {
@@ -56,22 +35,11 @@ public class LocalServiceNodeTable {
 
         return SERVICE_NODES.stream()
                 .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
-                .filter(node -> address.contains(node.getAddress()))
+                .filter(node -> address.contains(node.getServerAddress()))
                 .map(node -> node.getClientHandler())
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 获取所有挂掉的节点
-     *
-     * @return
-     */
-    public static Set<SimpleClientHandler> getDeadNodes() {
-        return SERVICE_NODES.stream()
-                .filter(node -> node.getAliveState() == NodeAliveStateEnum.DEAD)
-                .map(node -> node.getClientHandler())
-                .collect(Collectors.toSet());
-    }
 
     /**
      * 获取所有挂掉的服务
@@ -88,11 +56,11 @@ public class LocalServiceNodeTable {
     /**
      * 添加一个服务节点
      *
-     * @param serviceNode
+     * @param serverAddress
      */
-    public static void addNewNode(String address) {
+    public static void addNewNode(String serverAddress) {
         ServiceNode serviceNode = new ServiceNode();
-        serviceNode.setAddress(address);
+        serviceNode.setServerAddress(serverAddress);
         serviceNode.setAliveState(NodeAliveStateEnum.CONNECTING);
         SERVICE_NODES.add(serviceNode);
     }
@@ -100,40 +68,40 @@ public class LocalServiceNodeTable {
     /**
      * 像address添加一个服务
      *
-     * @param address
+     * @param serverAddress
      * @param serviceName
      */
-    public static void addService(String address, String serviceName) {
-        if (!LocalServiceNodeTable.containsNode(address)) {
-            LocalServiceNodeTable.addNewNode(address);
+    public static void addService(String serverAddress, String serviceName) {
+        if (!LocalServiceNodeTable.containsNode(serverAddress)) {
+            LocalServiceNodeTable.addNewNode(serverAddress);
         }
-        updateNode(address, (node) -> node.getServices().add(serviceName));
+        updateNode(serverAddress, (node) -> node.getServices().add(serviceName));
     }
 
-    public static void addServices(String address, Set<String> serviceNames) {
-        if (!LocalServiceNodeTable.containsNode(address)) {
-            LocalServiceNodeTable.addNewNode(address);
+    public static void addServices(String serverAddress, Set<String> serviceNames) {
+        if (!LocalServiceNodeTable.containsNode(serverAddress)) {
+            LocalServiceNodeTable.addNewNode(serverAddress);
         }
-        updateNode(address, (node) -> node.getServices().addAll(serviceNames));
+        updateNode(serverAddress, (node) -> node.getServices().addAll(serviceNames));
     }
 
     /**
      * 更新节点存活状态为挂掉
      *
-     * @param address
+     * @param serverAddress
      */
-    public static void setNodeDead(String address) {
-        updateNode(address, (node) -> {
+    public static void setNodeDead(String serverAddress) {
+        updateNode(serverAddress, (node) -> {
             node.setClientHandler(null);
             node.setAliveState(NodeAliveStateEnum.DEAD);
         });
-        SERVICE_MAPPINGS.values().removeAll(Lists.newArrayList(address));
+        SERVICE_MAPPINGS.values().removeAll(Lists.newArrayList(serverAddress));
     }
 
     /**
      * 更新节点存活状态为存活
      *
-     * @param address
+     * @param clientHandler
      */
     public static void setNodeAlive(SimpleClientHandler clientHandler) {
         String address = clientHandler.getNettyClient().getAddress();
@@ -146,20 +114,20 @@ public class LocalServiceNodeTable {
     /**
      * 更新节点状态为连接中
      *
-     * @param address
+     * @param serverAddress
      */
-    public static void reConnected(String address) {
-        updateNode(address, node -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
+    public static void reConnected(String serverAddress) {
+        updateNode(serverAddress, node -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
     }
 
     /**
      * 更新节点
      *
-     * @param address
+     * @param serverAddress
      * @param consumer
      */
-    public static void updateNode(String address, Consumer<? super ServiceNode> consumer) {
-        findServiceNode(address).ifPresent(consumer);
+    public static void updateNode(String serverAddress, Consumer<? super ServiceNode> consumer) {
+        findServiceNode(serverAddress).ifPresent(consumer);
     }
 
     /**
@@ -170,7 +138,7 @@ public class LocalServiceNodeTable {
      */
     public static boolean isAlive(String address) {
         Optional<ServiceNode> serviceNode = SERVICE_NODES.stream()
-                .filter(node -> node.getAddress().equals(address))
+                .filter(node -> node.getServerAddress().equals(address))
                 .findFirst();
         if (serviceNode.isPresent()) {
             return serviceNode.get().getAliveState() == NodeAliveStateEnum.ALIVE;
@@ -178,25 +146,9 @@ public class LocalServiceNodeTable {
         return false;
     }
 
-    /**
-     * 判断节点是否挂掉
-     *
-     * @param address
-     * @return
-     */
-    public static boolean isDead(String address) {
-        Optional<ServiceNode> serviceNode = SERVICE_NODES.stream()
-                .filter(node -> node.getAddress().equals(address))
-                .findFirst();
-        if (serviceNode.isPresent()) {
-            return serviceNode.get().getAliveState() == NodeAliveStateEnum.DEAD;
-        }
-        return true;
-    }
-
     public static boolean isConnected(String address) {
         Optional<ServiceNode> serviceNode = SERVICE_NODES.stream()
-                .filter(node -> node.getAddress().equals(address))
+                .filter(node -> node.getServerAddress().equals(address))
                 .findFirst();
         if (serviceNode.isPresent()) {
             return serviceNode.get().isConnected();
@@ -219,31 +171,23 @@ public class LocalServiceNodeTable {
         SERVICE_NODES.clear();
     }
 
-    public static boolean containsNode(String address) {
-        return findServiceNode(address).isPresent();
+    public static boolean containsNode(String serverAddress) {
+        return findServiceNode(serverAddress).isPresent();
     }
 
     private static Optional<ServiceNode> findServiceNode(String address) {
         return SERVICE_NODES.stream()
-                .filter(node -> node.getAddress().equals(address))
+                .filter(node -> node.getServerAddress().equals(address))
                 .findFirst();
     }
 
-    public static Set<String> getNodeServices(String address) {
-        Optional<ServiceNode> serviceNode = findServiceNode(address);
-        if (serviceNode.isPresent()) {
-            return serviceNode.get().getServices();
-        }
-        return null;
+    public static void setConnected(String serverAddress) {
+        updateNode(serverAddress, (node) -> node.setConnected(true));
     }
 
-    public static void setConnected(String address) {
-        updateNode(address, (node) -> node.setConnected(true));
-    }
-
-    public static void updateServiceNode(String serviceName, String address) {
+    public static void updateServiceNode(String serviceName, String serverAddress) {
         Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, new HashSet<>());
-        serviceNodes.add(address);
+        serviceNodes.add(serverAddress);
         SERVICE_MAPPINGS.put(serviceName, serviceNodes);
     }
 }

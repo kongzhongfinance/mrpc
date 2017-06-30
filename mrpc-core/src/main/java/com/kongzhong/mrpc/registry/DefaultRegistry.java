@@ -62,7 +62,7 @@ public class DefaultRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void unregister(ServiceBean serviceBean) {
+    public void unRegister(ServiceBean serviceBean) {
         try {
             String data = serviceBean.getServiceName();
             if (file.exists() && file.isFile()) {
@@ -83,7 +83,7 @@ public class DefaultRegistry implements ServiceRegistry {
                 }
             }
         } catch (Exception e) {
-            log.error("unregister fail", e);
+            log.error("unRegister fail", e);
         }
     }
 

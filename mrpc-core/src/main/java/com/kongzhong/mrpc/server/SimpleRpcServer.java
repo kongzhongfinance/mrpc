@@ -18,6 +18,7 @@ import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.transport.netty.TelnetServerHandler;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -222,6 +223,7 @@ public abstract class SimpleRpcServer {
                         log.error("Service register error", e);
                     }
                 }
+                TelnetServerHandler.addService(serviceName);
                 if (StringUtils.isNotEmpty(elasticIp)) {
                     log.info("Register => [{}] - [{}]/[{}]", serviceName, address, elasticIp);
                 } else {
@@ -268,7 +270,7 @@ public abstract class SimpleRpcServer {
     /**
      * 返回引用是否使用注册中心
      *
-     * @param clientBean
+     * @param serviceBean
      * @return
      */
     protected boolean usedRegistry(ServiceBean serviceBean) {
@@ -429,7 +431,7 @@ public abstract class SimpleRpcServer {
                 String serviceName = serviceBean.getServiceName();
                 ServiceRegistry serviceRegistry = getRegistry(serviceBean);
                 try {
-                    serviceRegistry.unregister(serviceBean);
+                    serviceRegistry.unRegister(serviceBean);
                     log.debug("Unregister service => [{}]", serviceName);
                 } catch (Exception e) {
                     log.error("Unregister service error", e);

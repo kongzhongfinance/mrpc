@@ -20,7 +20,7 @@ public class RpcClientAutoConfigure {
     @ConditionalOnBean(value = Referers.class)
     public BootRpcClient bootRpcClient() {
 
-        log.debug("Initializing rpc client referers");
+        log.debug("Initializing rpc client clientBeans");
         return new BootRpcClient();
     }
 
