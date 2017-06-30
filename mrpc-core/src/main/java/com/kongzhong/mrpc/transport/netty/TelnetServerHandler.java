@@ -1,13 +1,12 @@
 package com.kongzhong.mrpc.transport.netty;
 
+import com.kongzhong.mrpc.server.RpcMapping;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -16,49 +15,67 @@ import java.util.stream.Collectors;
 @Sharable
 public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
 
-    private static final Set<String> LOCAL_SERVICES = new HashSet<>();
-
-    public static void addService(String service) {
-        LOCAL_SERVICES.add(service);
-    }
-
+    /**
+     * terminal前缀
+     */
     private static final String PREFIX = "# ";
 
+    /**
+     * 服务端配置信息
+     */
+    private static String serverConfig = "";
+
+    /**
+     * 连接到服务端banner
+     */
     private static final String START_BANNER =
             "\r\n" +
                     "==============================================\r\n" +
                     "  Welcome to use the kongzhong finance mrpc \r\n" +
                     "==============================================\r\n" +
                     "  service : show current node service list\r\n" +
+                    "  config  : show current node start config\r\n" +
                     "  quit    : exit telnet application\r\n" +
                     "==============================================\r\n" +
                     "\r\n" + PREFIX;
 
+    public static void setServerConfig(String config) {
+        serverConfig = config;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        // Send greeting for a new connection.
-        ctx.write(START_BANNER);
-        ctx.flush();
+        ctx.writeAndFlush(START_BANNER);
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, String request) throws Exception {
         // Generate and write a response.
-        String response = PREFIX;
+        StringBuffer response = new StringBuffer(PREFIX);
         boolean close = false;
 
         if (request.isEmpty()) {
         } else if ("quit".equals(request.toLowerCase()) || "q".equals(request.toLowerCase())) {
-            response = "\r\nBye";
+            response.append("\r\nBye\r\n");
             close = true;
         } else {
             switch (request) {
                 case "service":
-                    String list = LOCAL_SERVICES.stream()
+
+                    String list = RpcMapping.me().getServiceBeanMap().values().stream()
+                            .map(bean -> bean.getServiceName())
                             .map(val -> "- " + val + "\r\n")
                             .collect(Collectors.joining());
 
-                    response = "\r\n" + list + "\r\n" + PREFIX;
+                    response.append("\r\n");
+                    response.append(list);
+                    response.append("\r\n");
+                    response.append(PREFIX);
+                    break;
+                case "config":
+                    response.append(serverConfig);
+                    response.append("\r\n");
+                    response.append(PREFIX);
                     break;
                 default:
                     break;
@@ -68,7 +85,6 @@ public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
         // We do not need to write a ChannelBuffer here.
         // We know the encoder inserted at TelnetPipelineFactory will do the conversion.
         ChannelFuture future = ctx.write(response);
-
         // Close the connection after sending 'Have a good day!'
         // if the client has sent 'bye'.
         if (close) {

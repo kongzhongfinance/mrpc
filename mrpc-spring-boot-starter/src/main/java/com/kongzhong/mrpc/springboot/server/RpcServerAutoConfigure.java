@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
@@ -18,6 +17,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpResponse;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.Order;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -47,6 +46,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 @Conditional(ServerEnvironmentCondition.class)
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class})
 @Slf4j
+@ToString(callSuper = true, exclude = {"commonProperties", "rpcServerProperties", "nettyProperties", "configurableBeanFactory", "customServiceMap"})
 public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Autowired
@@ -65,16 +65,6 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      * 自定义服务配置
      */
     private Map<String, Map<String, String>> customServiceMap = Maps.newHashMap();
-
-    /**
-     * 拦截器列表, 默认添加性能监控拦截器
-     */
-    private List<RpcServerInteceptor> interceptorList;
-
-    /**
-     * netty服务端配置
-     */
-    private NettyConfig nettyConfig;
 
     private static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 

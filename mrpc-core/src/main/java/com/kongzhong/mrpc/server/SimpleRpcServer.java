@@ -30,6 +30,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.spi.SelectorProvider;
@@ -48,6 +49,7 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
  */
 @Slf4j
 @NoArgsConstructor
+@ToString(exclude = {"rpcMapping", "transferSelector"})
 public abstract class SimpleRpcServer {
 
     /**
@@ -223,7 +225,6 @@ public abstract class SimpleRpcServer {
                         log.error("Service register error", e);
                     }
                 }
-                TelnetServerHandler.addService(serviceName);
                 if (StringUtils.isNotEmpty(elasticIp)) {
                     log.info("Register => [{}] - [{}]/[{}]", serviceName, address, elasticIp);
                 } else {
@@ -236,6 +237,8 @@ public abstract class SimpleRpcServer {
             }
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
+
+            TelnetServerHandler.setServerConfig(this.toString());
 
             this.channelSync(future);
 

@@ -12,6 +12,7 @@ import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,6 +32,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 @Slf4j
 @Data
 @NoArgsConstructor
+@ToString(callSuper = true, exclude = {"transferSelector"})
 public class RpcSpringServer extends SimpleRpcServer implements ApplicationContextAware, InitializingBean {
 
     /**
