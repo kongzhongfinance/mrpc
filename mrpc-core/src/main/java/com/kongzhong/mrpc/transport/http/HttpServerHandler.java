@@ -41,13 +41,29 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        super.channelReadComplete(ctx);
+        ctx.flush();
+    }
+
+    @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
 
         String uri = httpRequest.uri();
-        HttpHeaders headers = httpRequest.headers();
-
         QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
         String path = queryDecoder.path();
+
+        if ("/status".equals(path)) {
+            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
+            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
+            ctx.writeAndFlush(httpResponse);
+            return;
+        }
 
         if (!"/rpc".equals(path)) {
             this.sendError(ctx, RpcRet.error("bad request."));
@@ -66,7 +82,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         log.debug("Request body: \n{}", body);
 
-        RequestBody requestBody = null;
+        RequestBody requestBody;
         try {
             requestBody = JacksonSerialize.parseObject(body, RequestBody.class);
         } catch (Exception e) {
@@ -77,8 +93,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         String serviceName = requestBody.getService();
         String methodName = requestBody.getMethod();
-        String version = requestBody.getVersion();
-        List<Object> argJSON = requestBody.getParameters();
 
         if (StringUtils.isEmpty(serviceName)) {
             this.sendError(ctx, RpcRet.notFound("[service] not is null."));
@@ -116,7 +130,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         httpResponse.headers().set(HttpHeaders.Names.PRAGMA, "no-cache");
         httpResponse.headers().set(HttpHeaders.Names.EXPIRES, "-1");
 
-        if (HttpHeaders.isKeepAlive(httpRequest)) {
+        if (HttpUtil.isKeepAlive(httpRequest)) {
             httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
@@ -129,7 +143,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
      *
      * @param ctx
      * @param requestBody
-     * @param bean
+     * @param type
      * @return
      * @throws NoSuchMethodException
      */
@@ -175,7 +189,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
      * 错误处理
      *
      * @param ctx
-     * @param status
+     * @param ret
      */
     private void sendError(ChannelHandlerContext ctx, RpcRet ret) throws SerializeException {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));

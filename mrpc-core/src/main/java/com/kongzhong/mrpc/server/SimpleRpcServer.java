@@ -18,7 +18,6 @@ import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
-import com.kongzhong.mrpc.transport.netty.TelnetServerHandler;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -237,8 +236,6 @@ public abstract class SimpleRpcServer {
             }
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
-
-            TelnetServerHandler.setServerConfig(this.toString());
 
             this.channelSync(future);
 

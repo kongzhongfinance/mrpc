@@ -3,7 +3,10 @@ package com.kongzhong.mrpc.transport.http;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponseDecoder;
 
 /**
  * http客户端ChannelInitializer

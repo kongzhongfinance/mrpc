@@ -45,7 +45,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        log.debug("BootRpcClient postProcessBeanFactory");
 
         // 解析客户端配置
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);

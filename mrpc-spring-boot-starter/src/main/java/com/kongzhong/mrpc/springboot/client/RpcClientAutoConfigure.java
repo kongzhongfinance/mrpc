@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.springboot.client;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -19,8 +20,7 @@ public class RpcClientAutoConfigure {
     @Bean
     @ConditionalOnBean(value = Referers.class)
     public BootRpcClient bootRpcClient() {
-
-        log.debug("Initializing rpc client clientBeans");
+        System.out.println(Const.BANNER);
         return new BootRpcClient();
     }
 

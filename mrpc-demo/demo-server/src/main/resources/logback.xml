@@ -13,7 +13,7 @@
 
     <logger name="com.kongzhong.mrpc" level="debug"/>
 
-    <root level="INFO">
+    <root level="debug">
         <appender-ref ref="CONSOLE"/>
     </root>
 

@@ -34,6 +34,8 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        System.out.println(Const.BANNER);
+
         if (super.skipBind) {
             log.info("RPC client skip bind service.");
             return;

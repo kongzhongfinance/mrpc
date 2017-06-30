@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.server;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.SystemException;
@@ -43,6 +44,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        System.out.println(Const.BANNER);
 
         // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);

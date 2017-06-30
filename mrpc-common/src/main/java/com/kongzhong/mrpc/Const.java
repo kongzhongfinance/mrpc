@@ -10,6 +10,15 @@ public interface Const {
 
     String VERSION = "0.0.9-SNAPSHOT";
 
+    String BANNER = "\n" +
+            "\t    __  _______  ____  ______\n" +
+            "\t   /  |/  / __ \\/ __ \\/ ____/\n" +
+            "\t  / /|_/ / /_/ / /_/ / /     \n" +
+            "\t / /  / / _, _/ ____/ /___   \n" +
+            "\t/_/  /_/_/ |_/_/    \\____/   \n" +
+            "                             " +
+            "\n\t:: mrpc :: (" + Const.VERSION + ")\n";
+
     // http头信息请求id key
     String HEADER_REQUEST_ID = "requestId";
 

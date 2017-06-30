@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.springboot.server;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -70,7 +71,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Bean
     public ServiceBeanProcessor initBean() {
-        log.debug("Initializing rpc service bean");
+        System.out.println(Const.BANNER);
         return new ServiceBeanProcessor(rpcMapping);
     }
 
