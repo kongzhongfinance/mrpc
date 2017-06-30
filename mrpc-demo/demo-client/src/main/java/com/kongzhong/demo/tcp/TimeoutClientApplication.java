@@ -17,20 +17,15 @@ public class TimeoutClientApplication {
         RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setDirectAddress("127.0.0.1:5066");
         rpcClient.setWaitTimeout(1000);
-        rpcClient.setHaStrategy("failfast");
+//        rpcClient.setHaStrategy("failfast");
 
         final UserService userService = rpcClient.getProxyReferer(UserService.class);
         TimeUnit.SECONDS.sleep(2);
 
         try {
-            userService.testTimeout(3);
+            userService.testTimeout(3_000);
         } catch (Exception e) {
             e.printStackTrace();
-//            System.out.println(e.getClass());
-//            System.out.println(e.getCause().getClass());
-//            if (e instanceof TimeoutException) {
-//                System.out.println("超时了");
-//            }
         }
 
         System.out.println("停止");

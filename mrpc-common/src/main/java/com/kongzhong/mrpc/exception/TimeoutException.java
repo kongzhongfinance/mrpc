@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.exception;
  * @author biezhi
  *         2017/4/20
  */
-public class TimeoutException extends ConnectException {
+public class TimeoutException extends RpcException {
 
     public TimeoutException() {
     }
