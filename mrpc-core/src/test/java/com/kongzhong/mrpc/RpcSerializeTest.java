@@ -3,7 +3,6 @@ package com.kongzhong.mrpc;
 import com.kongzhong.mrpc.model.Bar;
 import com.kongzhong.mrpc.model.Foo;
 import com.kongzhong.mrpc.serialize.KyroSerialize;
-import com.kongzhong.mrpc.serialize.ProtostuffSerialize;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public class RpcSerializeTest {
         assertThat(foo, is(x));
     }
 
-    @Test
+    /*@Test
     public void testProtostuffSerialize() throws Exception {
         rpcSerialize = new ProtostuffSerialize();
 
@@ -48,7 +47,7 @@ public class RpcSerializeTest {
         Foo x = rpcSerialize.deserialize(data, Foo.class);
         System.out.println(x);
         assertThat(foo, is(x));
-    }
+    }*/
 
     private Foo createFooInstance() {
         Foo foo;

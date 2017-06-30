@@ -29,7 +29,7 @@ public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
         ctx.write("===============================\r\n");
         ctx.write("🌝    欢迎使用空中金融 mrpc \r\n");
         ctx.write("===============================\r\n");
-        ctx.write("service: 显示当前节点服务列表\r\n");
+        ctx.write("service\t: 显示当前节点服务列表\r\n");
         ctx.write("quit\t: 退出该死的telnet程序\r\n");
         ctx.write("===============================\r\n");
         ctx.write("🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥 🐥\r\n\r\n");
