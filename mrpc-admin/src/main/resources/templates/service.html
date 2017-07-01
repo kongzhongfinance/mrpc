@@ -1,0 +1,52 @@
+#include('./header.html',{active:'service', title:'服务管理'})
+<link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.css" rel="stylesheet">
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">服务管理</h4>
+    </div>
+
+    <div class="row">
+        <table id="request"
+               class="table table-striped table-bordered dataTable no-footer"
+               width="95%"
+               data-cache="false"
+               data-show-refresh="true"
+               data-sort-order="desc"
+               data-search="true"
+               data-toggle="table"
+               data-id-field="id"
+               data-url="/admin/api/services.json"
+               data-side-pagination="server"
+               data-pagination="true"
+               data-show-columns="true"
+               data-search-on-enter-key="true"
+               data-pagination-loop="false"
+               data-pagination-pre-text="上一页"
+               data-pagination-next-text="下一页">
+            <thead>
+            <tr>
+                <th data-field="serviceName">服务名</th>
+                <th data-field="appId">AppId</th>
+                <th data-field="address">绑定地址</th>
+                <th data-field="registry">注册中心</th>
+                <th data-field="invokeCount">调用次数</th>
+                <th data-field="successCount">成功次数</th>
+                <th data-field="errorCount">失败次数</th>
+                <th data-field="timeoutCount">超时次数</th>
+                <th data-field="alive">存活状态</th>
+            </tr>
+            </thead>
+        </table>
+    </div> <!-- End Row -->
+
+</div>
+#include('./footer.html')
+<!-- Datatables-->
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.js"></script>
+
+<script>
+
+</script>
+</body>
+</html>

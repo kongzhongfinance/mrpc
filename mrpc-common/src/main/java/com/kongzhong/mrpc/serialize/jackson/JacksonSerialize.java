@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.serialize.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -110,4 +111,12 @@ public class JacksonSerialize {
         return null;
     }
 
+    public static <T> T parseObject(String json, TypeReference<T> typeReference) {
+        try {
+            return mapper.readValue(json, typeReference);
+        } catch (Exception e) {
+            log.error("Json parse to object error", e);
+            return null;
+        }
+    }
 }

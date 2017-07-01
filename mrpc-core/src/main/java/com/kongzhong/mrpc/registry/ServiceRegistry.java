@@ -16,7 +16,7 @@ public interface ServiceRegistry {
      * @param serviceBean
      * @throws RpcException
      */
-    void register(ServiceBean serviceBean) throws RpcException;
+    boolean register(ServiceBean serviceBean) throws RpcException;
 
     /**
      * 卸载一个服务

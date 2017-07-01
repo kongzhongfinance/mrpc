@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.exception.TimeoutException;
+import com.kongzhong.mrpc.mbean.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
@@ -37,15 +38,16 @@ public class RpcCallbackFuture {
         return this.get(request.getWaitTimeout());
     }
 
-    public Object get(int millisconds) throws Exception {
+    public Object get(int milliseconds) throws Exception {
         try {
             lock.lock();
-            finish.await(millisconds, TimeUnit.MILLISECONDS);
+            finish.await(milliseconds, TimeUnit.MILLISECONDS);
 
             long time = System.currentTimeMillis() - startTime;
-            if (time > millisconds) {
+            if (time > milliseconds) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
                 log.warn(msg + ", {}ms", time);
+                ServiceStatusTable.me().addTimeoutInvoke(request.getClassName());
                 throw new TimeoutException(msg);
             }
 

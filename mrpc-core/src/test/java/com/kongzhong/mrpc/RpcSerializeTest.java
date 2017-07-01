@@ -42,9 +42,9 @@ public class RpcSerializeTest {
 
         Foo foo = createFooInstance();
 
-        byte[] data = rpcSerialize.serialize(foo);
+        byte[] rows = rpcSerialize.serialize(foo);
 
-        Foo x = rpcSerialize.deserialize(data, Foo.class);
+        Foo x = rpcSerialize.deserialize(rows, Foo.class);
         System.out.println(x);
         assertThat(foo, is(x));
     }*/

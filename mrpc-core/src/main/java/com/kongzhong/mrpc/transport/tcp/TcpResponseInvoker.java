@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.tcp;
 
+import com.kongzhong.mrpc.mbean.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -28,10 +29,12 @@ public class TcpResponseInvoker extends AbstractResponseInvoker<Boolean> {
             Object result = super.invokeMethod(request);
             response.setResult(result);
             response.setSuccess(true);
+            ServiceStatusTable.me().addSuccessInvoke(request.getClassName());
             return Boolean.TRUE;
         } catch (Throwable e) {
             e = this.buildErrorResponse(e, response);
             log.error("Rpc method processor error", e);
+            ServiceStatusTable.me().addErrorInvoke(request.getClassName());
             return Boolean.TRUE;
         } finally {
             RpcContext.remove();

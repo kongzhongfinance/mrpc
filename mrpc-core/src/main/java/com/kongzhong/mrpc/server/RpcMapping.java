@@ -14,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 @Data
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@ManagedResource(description = "服务映射表")
 public class RpcMapping {
 
     private Map<String, ServiceBean> serviceBeanMap = Maps.newConcurrentMap();

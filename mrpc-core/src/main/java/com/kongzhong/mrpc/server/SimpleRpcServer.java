@@ -11,6 +11,7 @@ import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
+import com.kongzhong.mrpc.mbean.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
@@ -207,19 +208,22 @@ public abstract class SimpleRpcServer {
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
 
                 String appId = this.getAppId(serviceBean);
-                String serviceName = serviceBean.getServiceName();
                 String address = this.getBindAddress(serviceBean);
                 String elasticIp = this.getRegisterElasticIp(serviceBean);
                 boolean usedRegistry = this.usedRegistry(serviceBean);
+                String serviceName = serviceBean.getServiceName();
 
                 if (usedRegistry) {
                     // 查找该服务的注册中心
                     ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
                     try {
+                        serviceBean.setRegistry(this.getRegistryName(serviceBean));
                         serviceBean.setAppId(appId);
                         serviceBean.setAddress(address);
                         serviceBean.setElasticIp(elasticIp);
                         serviceRegistry.register(serviceBean);
+
+                        ServiceStatusTable.me().createServiceStatus(serviceBean);
                     } catch (RpcException e) {
                         log.error("Service register error", e);
                     }
@@ -320,8 +324,11 @@ public abstract class SimpleRpcServer {
      * @return
      */
     protected ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        String registryName = StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : "default";
-        return serviceRegistryMap.get(registryName);
+        return serviceRegistryMap.get(getRegistryName(serviceBean));
+    }
+
+    protected String getRegistryName(ServiceBean serviceBean) {
+        return StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : "default";
     }
 
     /**
@@ -409,13 +416,18 @@ public abstract class SimpleRpcServer {
                 throw new SystemException("Zookeeper connect address not is empty");
             }
             log.info("RPC server connect zookeeper address: {}", zkAddr);
-            try {
-                Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
-                ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
-                return serviceRegistry;
-            } catch (Exception e) {
-                log.error("", e);
-            }
+            return this.getZookeeperServiceRegistry(zkAddr);
+        }
+        return null;
+    }
+
+    protected ServiceRegistry getZookeeperServiceRegistry(String zkAddr) {
+        try {
+            Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
+            ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
+            return serviceRegistry;
+        } catch (Exception e) {
+            log.error("", e);
         }
         return null;
     }

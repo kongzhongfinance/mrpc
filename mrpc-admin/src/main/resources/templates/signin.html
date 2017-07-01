@@ -67,11 +67,9 @@
         <div class="panel-body">
             <form class="form-horizontal m-t-20" method="post" action="/signin" id="loginForm">
 
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-
-                #if(null != message)
+                #if(null != error)
                 <p class="">
-                    ${message}
+                    ${error}
                 </p>
                 #end
 
@@ -91,10 +89,8 @@
 
                 <div class="form-group">
                     <div class="col-xs-12">
-                        <div class="checkbox checkbox-danger">
-                            <input id="checkbox-signup" name="remember-me" type="checkbox">
-                            <label for="checkbox-signup">记住我</label>
-                        </div>
+                        <input class=" input-lg input-border" name="jmxUrl" type="text" required=""
+                               placeholder="请输入JMX URL">
                     </div>
                 </div>
 

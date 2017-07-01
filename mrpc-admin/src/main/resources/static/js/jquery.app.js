@@ -96,8 +96,8 @@
         var Portlet = function () {
             this.$body = $("body"),
                 this.$portletIdentifier = ".portlet",
-                this.$portletCloser = '.portlet a[data-toggle="remove"]',
-                this.$portletRefresher = '.portlet a[data-toggle="reload"]'
+                this.$portletCloser = '.portlet a[rows-toggle="remove"]',
+                this.$portletRefresher = '.portlet a[rows-toggle="reload"]'
         };
 
         //on init
@@ -147,12 +147,12 @@
 
         //initializing tooltip
         MoltranApp.prototype.initTooltipPlugin = function () {
-            $.fn.tooltip && $('[data-toggle="tooltip"]').tooltip()
+            $.fn.tooltip && $('[rows-toggle="tooltip"]').tooltip()
         },
 
             //initializing popover
             MoltranApp.prototype.initPopoverPlugin = function () {
-                $.fn.popover && $('[data-toggle="popover"]').popover()
+                $.fn.popover && $('[rows-toggle="popover"]').popover()
             },
 
             //initializing nicescroll
@@ -167,7 +167,7 @@
                 // resizefunc.push("changeptype");
 
                 $('.animate-number').each(function () {
-                    $(this).animateNumbers($(this).attr("data-value"), true, parseInt($(this).attr("data-duration")));
+                    $(this).animateNumbers($(this).attr("rows-value"), true, parseInt($(this).attr("rows-duration")));
                 });
 
                 //RUN RESIZE ITEMS

@@ -28,9 +28,9 @@ public class ConsulServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void register(ServiceBean serviceBean) throws RpcException {
+    public boolean register(ServiceBean serviceBean) throws RpcException {
 
-
+        return false;
     }
 
     @Override

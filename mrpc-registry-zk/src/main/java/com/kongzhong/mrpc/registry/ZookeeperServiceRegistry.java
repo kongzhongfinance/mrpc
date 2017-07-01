@@ -20,12 +20,13 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void register(ServiceBean serviceBean) throws RpcException {
+    public boolean register(ServiceBean serviceBean) throws RpcException {
         if (null == serviceBean) {
             throw new RpcException("Service bean not is null");
         }
         removeNode(serviceBean);
         createNode(serviceBean);
+        return true;
     }
 
     @Override

@@ -11,7 +11,6 @@ import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
-import com.kongzhong.mrpc.springboot.config.JMXServerConfig;
 import com.kongzhong.mrpc.springboot.config.NettyProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -48,7 +47,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
  */
 @Conditional(ServerEnvironmentCondition.class)
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class})
-@ImportAutoConfiguration(JMXServerConfig.class)
+@ImportAutoConfiguration(JMXServerAutoConfigure.class)
 @Slf4j
 @ToString(callSuper = true, exclude = {"commonProperties", "rpcServerProperties", "nettyProperties", "configurableBeanFactory", "customServiceMap"})
 public class RpcServerAutoConfigure extends SimpleRpcServer {

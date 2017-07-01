@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.kongzhong.mrpc.mbean.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -39,17 +40,19 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
             rpcResponse.setSuccess(true);
+            ServiceStatusTable.me().addSuccessInvoke(request.getClassName());
         } catch (Throwable e) {
             e = buildErrorResponse(e, rpcResponse);
             log.error("Rpc method processor error", e);
+            ServiceStatusTable.me().addErrorInvoke(request.getClassName());
         } finally {
             RpcContext.remove();
             String body = JacksonSerialize.toJSONString(rpcResponse);
-            ByteBuf bbuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
+            ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
 
-            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, byteBuf.readableBytes());
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
-            httpResponse.content().clear().writeBytes(bbuf);
+            httpResponse.content().clear().writeBytes(byteBuf);
             return httpResponse;
         }
     }

@@ -174,7 +174,7 @@ public class ZkClient implements Watcher, IZkClient {
             listeners.add(listener);
         }
         watchForData(path);
-        LOG.debug("Subscribed data changes for " + path);
+        LOG.debug("Subscribed rows changes for " + path);
     }
 
     public void unsubscribeDataChanges(String path, IZkDataListener dataListener) {

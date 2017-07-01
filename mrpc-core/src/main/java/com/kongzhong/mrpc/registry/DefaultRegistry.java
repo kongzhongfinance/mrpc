@@ -42,7 +42,7 @@ public class DefaultRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void register(ServiceBean serviceBean) {
+    public boolean register(ServiceBean serviceBean) {
         try {
             String data = serviceBean.getServiceName();
             String address = serviceBean.getAddress();
@@ -56,8 +56,10 @@ public class DefaultRegistry implements ServiceRegistry {
             }
             array.add(this.getReg(address, data));
             Files.write(JacksonSerialize.toJSONString(array), file, Charsets.UTF_8);
+            return true;
         } catch (Exception e) {
             log.error("register fail", e);
+            return false;
         }
     }
 

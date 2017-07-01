@@ -44,13 +44,12 @@ public class ClientConfig {
     // 重试次数，默认10次
     private int retryCount = 10;
 
-    private static final class ClientCommonConfigHolder {
-
+    private static final class ClientConfigHolder {
         private static final ClientConfig INSTANCE = new ClientConfig();
     }
 
     public static ClientConfig me() {
-        return ClientCommonConfigHolder.INSTANCE;
+        return ClientConfigHolder.INSTANCE;
     }
 
     @ManagedAttribute(description = "获取客户端方法调用超时")

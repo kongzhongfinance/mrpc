@@ -106,13 +106,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
             String zkAddr = registryBean.getAddress();
             log.info("RPC server connect zookeeper address: {}", zkAddr);
-            try {
-                Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
-                ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
-                return serviceRegistry;
-            } catch (Exception e) {
-                log.error("", e);
-            }
+            return super.getZookeeperServiceRegistry(zkAddr);
         }
         return null;
     }

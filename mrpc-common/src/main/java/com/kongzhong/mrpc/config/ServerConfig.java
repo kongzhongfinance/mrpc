@@ -23,12 +23,12 @@ public class ServerConfig {
     private RpcSerialize rpcSerialize;
     private TransportEnum transport;
 
-    private static final class ClientCommonConfigHolder {
+    private static final class ServerConfigHolder {
         private static final ServerConfig INSTANCE = new ServerConfig();
     }
 
     public static ServerConfig me() {
-        return ClientCommonConfigHolder.INSTANCE;
+        return ServerConfigHolder.INSTANCE;
     }
 
 }

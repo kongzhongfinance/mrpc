@@ -29,11 +29,10 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
         log.debug("Request body: \n{}", JacksonSerialize.toJSONString(request, true));
-
         RpcResponse response = new RpcResponse();
-        TcpResponseInvoker tcpResponseCallback = new TcpResponseInvoker(request, response, serviceBeanMap);
+        TcpResponseInvoker tcpResponseInvoker = new TcpResponseInvoker(request, response, serviceBeanMap);
         //非阻塞nio线程，复杂的业务逻辑丢给专门的线程池
-        RpcSpringServer.submit(tcpResponseCallback, ctx, request, response);
+        RpcSpringServer.submit(tcpResponseInvoker, ctx, request, response);
     }
 
     @Override
