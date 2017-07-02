@@ -35,7 +35,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
      *
-     * @param request
+     * @param rpcRequest
      * @return
      */
     @Override

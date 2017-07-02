@@ -12,6 +12,5 @@ public class LoginModel {
 
     private String username;
     private String password;
-    private String jmxUrl;
 
 }

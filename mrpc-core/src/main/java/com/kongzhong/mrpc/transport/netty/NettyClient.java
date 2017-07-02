@@ -8,11 +8,14 @@ import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.internal.SocketUtils;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -41,6 +44,9 @@ public class NettyClient {
 
     private NettyConfig nettyConfig;
 
+    @Setter
+    private TransportEnum transport = ClientConfig.me().getTransport();
+
     public NettyClient(NettyConfig nettyConfig, String address) {
         this.nettyConfig = nettyConfig;
         this.address = address;
@@ -52,6 +58,10 @@ public class NettyClient {
     }
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
+        return createBootstrap(eventLoopGroup, new ConnectionListener(this));
+    }
+
+    public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup, ChannelFutureListener futureListener) {
 
         if (LocalServiceNodeTable.isAlive(this.getAddress())) {
             return null;
@@ -63,7 +73,7 @@ public class NettyClient {
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnTimeout())
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
-        if (ClientConfig.me().getTransport().equals(TransportEnum.HTTP)) {
+        if (this.transport.equals(TransportEnum.HTTP)) {
             bootstrap.handler(new HttpClientChannelInitializer(this));
         } else {
             bootstrap.handler(new TcpClientChannelInitializer(this));
@@ -71,7 +81,7 @@ public class NettyClient {
         // 和服务端建立连接,然后异步获取运行结果
         ChannelFuture channelFuture = bootstrap.connect(serverAddress);
         // 给结果绑定 Listener,
-        channelFuture.addListener(new ConnectionListener(this));
+        channelFuture.addListener(futureListener);
         return bootstrap;
     }
 

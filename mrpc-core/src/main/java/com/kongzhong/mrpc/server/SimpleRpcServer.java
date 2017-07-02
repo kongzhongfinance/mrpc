@@ -5,21 +5,24 @@ import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
+import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
+import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.mbean.ServiceStatusTable;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import com.kongzhong.mrpc.utils.HttpRequest;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
@@ -35,9 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
@@ -136,9 +137,18 @@ public abstract class SimpleRpcServer {
     protected NettyConfig nettyConfig;
 
     /**
+     * 后台配置
+     */
+    @Getter
+    @Setter
+    protected AdminConfig adminConfig;
+
+    /**
      * 服务端处理线程池
      */
     protected static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
+
+    private ScheduledFuture adminSchedule;
 
     /**
      * 启动RPC服务端
@@ -181,8 +191,8 @@ public abstract class SimpleRpcServer {
         ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
         int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
-        EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup(parallel, threadRpcFactory, SelectorProvider.provider());
+        EventLoopGroup boss = new NioEventLoopGroup(1);
+        EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -258,6 +268,41 @@ public abstract class SimpleRpcServer {
      * @throws InterruptedException
      */
     private void channelSync(ChannelFuture future) throws InterruptedException {
+
+        if (null != adminConfig && adminConfig.isEnabled()) {
+
+            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> {
+                String url = adminConfig.getUrl() + "/api/service";
+                ServiceNodePayload serviceNodePayload = ServiceNodePayload.builder()
+                        .address(this.address)
+                        .appId(this.appId)
+                        .availAble(NodeAliveStateEnum.ALIVE)
+                        .transport(TransportEnum.valueOf(this.transport.toUpperCase()))
+                        .services(ServiceStatusTable.me().getServiceStatus())
+                        .build();
+
+                String body = JacksonSerialize.toJSONString(serviceNodePayload);
+                log.debug("Request URL\t: {}", url);
+                log.debug("Send body\t\t: {}", body);
+
+                try {
+                    int code = HttpRequest.post(url)
+                            .contentType("application/json;charset=utf-8")
+                            .connectTimeout(10_000)
+                            .readTimeout(5000)
+                            .basic(adminConfig.getUsername(), adminConfig.getPassword())
+                            .send(body).code();
+
+                    log.debug("Response code: {}", code);
+                } catch (HttpRequest.HttpRequestException e) {
+                    log.debug("连接失败");
+                } catch (Exception e) {
+                    log.error("Send error", e);
+                    cancelAdminSchedule(true);
+                }
+            }, 100, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
+        }
+
         if ("true".equals(this.test)) {
             new Thread(() -> {
                 try {
@@ -269,6 +314,10 @@ public abstract class SimpleRpcServer {
         } else {
             future.channel().closeFuture().sync();
         }
+    }
+
+    private void cancelAdminSchedule(boolean mayInterruptIfRunning) {
+        adminSchedule.cancel(mayInterruptIfRunning);
     }
 
     /**

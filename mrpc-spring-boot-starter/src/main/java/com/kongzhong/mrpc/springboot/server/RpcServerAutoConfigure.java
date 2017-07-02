@@ -4,12 +4,14 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
+import com.kongzhong.mrpc.springboot.config.AdminProperties;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.NettyProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
@@ -25,7 +27,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +47,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
  *         2017/5/13
  */
 @Conditional(ServerEnvironmentCondition.class)
-@EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class})
-@ImportAutoConfiguration(JMXServerAutoConfigure.class)
+@EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class, AdminProperties.class})
 @Slf4j
 @ToString(callSuper = true, exclude = {"commonProperties", "rpcServerProperties", "nettyProperties", "configurableBeanFactory", "customServiceMap"})
 public class RpcServerAutoConfigure extends SimpleRpcServer {
@@ -60,6 +60,9 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Autowired
     private NettyProperties nettyProperties;
+
+    @Autowired
+    private AdminProperties adminProperties;
 
     @Autowired
     private ConfigurableBeanFactory configurableBeanFactory;
@@ -102,7 +105,10 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
             // netty参数配置
             super.nettyConfig = new NettyConfig();
+            super.adminConfig = new AdminConfig();
+
             BeanUtils.copyProperties(nettyProperties, super.nettyConfig);
+            BeanUtils.copyProperties(adminProperties, super.adminConfig);
 
             super.test = StringUtils.isNotEmpty(commonProperties.getTest()) ? commonProperties.getTest() : rpcServerProperties.getTest();
 

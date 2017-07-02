@@ -20,6 +20,18 @@
         </dependency>
 
         <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-core</artifactId>
+            <version>${mrpc-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

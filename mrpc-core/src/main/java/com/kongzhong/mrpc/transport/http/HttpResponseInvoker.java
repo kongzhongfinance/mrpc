@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.transport.http;
 
-import com.kongzhong.mrpc.mbean.ServiceStatusTable;
+import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -15,6 +15,10 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+
+import static com.kongzhong.mrpc.Const.HEADER_METHOD_NAME;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_SERVICE_CLASS;
 
 /**
  * Http响应回调处理
@@ -50,9 +54,8 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             String body = JacksonSerialize.toJSONString(rpcResponse);
             ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
 
-            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, byteBuf.readableBytes());
-            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
             httpResponse.content().clear().writeBytes(byteBuf);
+            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
             return httpResponse;
         }
     }

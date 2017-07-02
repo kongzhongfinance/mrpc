@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.exception.TimeoutException;
-import com.kongzhong.mrpc.mbean.ServiceStatusTable;
+import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
@@ -27,11 +27,10 @@ public class RpcCallbackFuture {
     private RpcResponse response;
     private Lock lock = new ReentrantLock();
     private Condition finish = lock.newCondition();
-    private long startTime;
+    private long startTime = System.currentTimeMillis();
 
     public RpcCallbackFuture(RpcRequest request) {
         this.request = request;
-        this.startTime = System.currentTimeMillis();
     }
 
     public Object get() throws Exception {

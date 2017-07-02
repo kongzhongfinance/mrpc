@@ -62,6 +62,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
             ctx.writeAndFlush(httpResponse);
+
             return;
         }
 

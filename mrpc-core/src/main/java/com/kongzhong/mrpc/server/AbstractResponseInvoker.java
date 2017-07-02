@@ -11,13 +11,11 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.CollectionUtils;
-import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -82,8 +80,6 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
             String methodName = request.getMethodName();
             Class<?>[] parameterTypes = request.getParameterTypes();
             Object[] parameters = request.getParameters();
-
-            Method method = ReflectUtils.method(serviceClass, methodName, parameterTypes);
 
             FastClass serviceFastClass = FastClass.create(serviceClass);
             FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);

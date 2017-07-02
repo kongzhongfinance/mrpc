@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.admin.controller;
 
-import com.kongzhong.mrpc.admin.config.RpcAdminConst;
 import com.kongzhong.mrpc.admin.config.RpcAdminProperties;
 import com.kongzhong.mrpc.admin.model.LoginModel;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 import static com.kongzhong.mrpc.admin.config.RpcAdminConst.LOGIN_COOKIE_KEY;
 import static com.kongzhong.mrpc.admin.config.RpcAdminConst.LOGIN_SESSION_KEY;
@@ -40,13 +36,6 @@ public class AuthController {
     @RequestMapping("logout")
     public String logout(HttpSession session) {
         session.removeAttribute(LOGIN_SESSION_KEY);
-        try {
-            if (null != RpcAdminConst.jmxConnector) {
-                RpcAdminConst.jmxConnector.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return "redirect:/signin";
     }
 
@@ -65,26 +54,10 @@ public class AuthController {
             return "signin";
         }
 
-        if (!connectJmx(loginModel.getJmxUrl())) {
-            model.addAttribute("error", "JMX连接失败");
-            return "signin";
-        }
-
         session.setAttribute(LOGIN_SESSION_KEY, loginModel);
         response.addCookie(new Cookie(LOGIN_COOKIE_KEY, loginModel.getUsername()));
 
         return "redirect:/admin";
     }
 
-    private boolean connectJmx(String url) {
-        try {
-            JMXServiceURL serviceUrl = new JMXServiceURL(url);
-            RpcAdminConst.jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
-            RpcAdminConst.mBeanServerConnection = RpcAdminConst.jmxConnector.getMBeanServerConnection();
-            return true;
-        } catch (Exception e) {
-            log.error("JMX连接失败", e);
-            return false;
-        }
-    }
 }

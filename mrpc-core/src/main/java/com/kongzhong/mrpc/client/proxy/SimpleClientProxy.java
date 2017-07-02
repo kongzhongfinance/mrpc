@@ -61,8 +61,8 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
             hasInterceptors = true;
             int pos = interceptors.size();
             log.info("Add interceptors {}", interceptors.toString());
-            for (RpcClientInterceptor rpcInteceptor : interceptors) {
-                interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcInteceptor);
+            for (RpcClientInterceptor rpcClientInterceptor : interceptors) {
+                interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcClientInterceptor);
             }
         }
     }
@@ -80,7 +80,6 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .waitTimeout(this.getWaitTimeout(method))
                 .timestamp(System.currentTimeMillis())
                 .build();
-
 
         HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHaStrategy(method));
 

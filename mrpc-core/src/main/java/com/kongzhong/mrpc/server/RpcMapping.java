@@ -13,11 +13,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * RPC映射关系存储
@@ -53,11 +51,11 @@ public class RpcMapping {
             String elasticIp = rpcService.elasticIp();
 
             if (NoInterface.class.getName().equals(serviceName)) {
-                Class<?>[] intes = realBean.getClass().getInterfaces();
-                if (null == intes || intes.length != 1) {
+                Class<?>[] interfaces = realBean.getClass().getInterfaces();
+                if (null == interfaces || interfaces.length != 1) {
                     serviceName = realBean.getClass().getName();
                 } else {
-                    serviceName = intes[0].getName();
+                    serviceName = interfaces[0].getName();
                 }
             }
 
@@ -117,13 +115,6 @@ public class RpcMapping {
 
     public static RpcMapping me() {
         return RpcMappingHolder.INSTANCE;
-    }
-
-    @ManagedOperation
-    public List<String> getServices() {
-        return serviceBeanMap.values().stream()
-                .map(serviceBean -> serviceBean.getServiceName())
-                .collect(Collectors.toList());
     }
 
 }

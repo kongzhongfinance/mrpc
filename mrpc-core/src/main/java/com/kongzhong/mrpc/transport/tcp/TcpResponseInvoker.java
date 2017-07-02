@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.transport.tcp;
 
-import com.kongzhong.mrpc.mbean.ServiceStatusTable;
+import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;

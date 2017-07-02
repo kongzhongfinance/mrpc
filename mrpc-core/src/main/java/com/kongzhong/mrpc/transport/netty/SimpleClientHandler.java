@@ -104,7 +104,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
      * 错误处理
      *
      * @param ctx
-     * @param status
+     * @param cause
      */
     protected void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
         Channel channel = ctx.channel();

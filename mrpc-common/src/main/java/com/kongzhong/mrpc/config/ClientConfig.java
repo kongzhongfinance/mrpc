@@ -8,8 +8,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * 客户端公共配置
@@ -18,9 +16,8 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  *         20/06/2017
  */
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @ToString(callSuper = true)
-@ManagedResource(description = "客户端配置")
 public class ClientConfig {
 
     private String appId;
@@ -50,36 +47,6 @@ public class ClientConfig {
 
     public static ClientConfig me() {
         return ClientConfigHolder.INSTANCE;
-    }
-
-    @ManagedAttribute(description = "获取客户端方法调用超时")
-    public int getWaitTimeout() {
-        return waitTimeout;
-    }
-
-    @ManagedAttribute(description = "设置客户端方法调用超时", defaultValue = "10000")
-    public void setWaitTimeout(int waitTimeout) {
-        this.waitTimeout = waitTimeout;
-    }
-
-    @ManagedAttribute(description = "获取客户端断线重连次数")
-    public int getRetryCount() {
-        return retryCount;
-    }
-
-    @ManagedAttribute(description = "设置客户端断线重连次数", defaultValue = "10")
-    public void setRetryCount(int retryCount) {
-        this.retryCount = retryCount;
-    }
-
-    @ManagedAttribute(description = "获取客户端断线重连间隔")
-    public int getRetryInterval() {
-        return retryInterval;
-    }
-
-    @ManagedAttribute(description = "设置客户端断线重连间隔", defaultValue = "3000")
-    public void setRetryInterval(int retryInterval) {
-        this.retryInterval = retryInterval;
     }
 
 }
