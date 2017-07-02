@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author biezhi
  *         2017/4/19
  */
-public class HelloClientApplication {
+public class ClientIdelApplication {
 
     public static void main(String[] args) throws Exception {
 
@@ -18,22 +18,12 @@ public class HelloClientApplication {
         rpcClient.setDirectAddress("127.0.0.1:5066");
 
         final UserService userService = rpcClient.getProxyReferer(UserService.class);
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(10);
 
         System.out.println(userService);
 
         StatusEnum statusEnum = userService.testEnum(StatusEnum.SUCCESS);
         System.out.println(statusEnum);
-
-        System.out.println(userService.getPersons().get(0).getClass());
-
-        System.out.println(userService.getResult().getData().getClass());
-
-        int pos = 1;
-        while (pos < 10_0000) {
-            System.out.println(userService.add(10, pos++));
-            TimeUnit.SECONDS.sleep(3);
-        }
 
         rpcClient.shutdown();
     }

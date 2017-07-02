@@ -1,15 +1,24 @@
 package com.kongzhong.mrpc.common.thread;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 自定义的线程池
  */
 public class RpcThreadPool {
+
+    private static BlockingQueue<Runnable> createBlockingQueue(int queues) {
+        BlockingQueueType queueType = BlockingQueueType.fromString("LinkedBlockingQueue");
+        switch (queueType) {
+            case LINKED_BLOCKING_QUEUE:
+                return new LinkedBlockingQueue<>();
+            case ARRAY_BLOCKING_QUEUE:
+                return new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors() * queues);
+            case SYNCHRONOUS_QUEUE:
+                return new SynchronousQueue<>();
+        }
+        return null;
+    }
 
     /**
      * @param threads 固定数量线程的线程池

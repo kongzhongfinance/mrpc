@@ -1,10 +1,10 @@
 package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.server.RpcMapping;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -14,14 +14,13 @@ import java.util.Map;
  * @author biezhi
  *         2017/4/21
  */
+@Slf4j
 public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler<T> {
-
-    public static final Logger log = LoggerFactory.getLogger(SimpleServerHandler.class);
 
     protected Map<String, ServiceBean> serviceBeanMap;
 
-    public SimpleServerHandler(Map<String, ServiceBean> serviceBeanMap) {
-        this.serviceBeanMap = serviceBeanMap;
+    public SimpleServerHandler() {
+        this.serviceBeanMap = RpcMapping.me().getServiceBeanMap();
     }
 
     public abstract void channelRead0(ChannelHandlerContext ctx, T msg) throws Exception;

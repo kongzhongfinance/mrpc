@@ -8,11 +8,9 @@ import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.internal.SocketUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,11 +56,6 @@ public class NettyClient {
     }
 
     public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
-        return createBootstrap(eventLoopGroup, new ConnectionListener(this));
-    }
-
-    public Bootstrap createBootstrap(EventLoopGroup eventLoopGroup, ChannelFutureListener futureListener) {
-
         if (LocalServiceNodeTable.isAlive(this.getAddress())) {
             return null;
         }
@@ -81,7 +74,7 @@ public class NettyClient {
         // 和服务端建立连接,然后异步获取运行结果
         ChannelFuture channelFuture = bootstrap.connect(serverAddress);
         // 给结果绑定 Listener,
-        channelFuture.addListener(futureListener);
+        channelFuture.addListener(new ConnectionListener(this));
         return bootstrap;
     }
 

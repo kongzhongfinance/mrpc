@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
 
 import static com.kongzhong.mrpc.Const.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
@@ -36,8 +35,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Slf4j
 public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
-    public HttpServerHandler(Map<String, ServiceBean> serviceBeanMap) {
-        super(serviceBeanMap);
+    public HttpServerHandler() {
+        super();
     }
 
     @Override
@@ -62,7 +61,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
             ctx.writeAndFlush(httpResponse);
-
             return;
         }
 

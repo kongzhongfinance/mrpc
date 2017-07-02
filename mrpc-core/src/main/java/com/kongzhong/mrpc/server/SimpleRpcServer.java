@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.server;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
-import com.kongzhong.mrpc.common.thread.NamedThreadFactory;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
@@ -11,7 +10,6 @@ import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
@@ -36,9 +34,11 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.channels.spi.SelectorProvider;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
@@ -179,7 +179,7 @@ public abstract class SimpleRpcServer {
         }
 
         if (null == rpcSerialize) {
-            throw new InitializeException("rpc server serialize is null.");
+            throw new InitializeException("RPC server serialize is null.");
         }
 
         transferSelector = new TransferSelector(rpcSerialize);
@@ -188,8 +188,8 @@ public abstract class SimpleRpcServer {
 
     private void bindRpcServer() {
 
-        ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
-        int parallel = Runtime.getRuntime().availableProcessors() * 2;
+//        ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
+//        int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
         EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();

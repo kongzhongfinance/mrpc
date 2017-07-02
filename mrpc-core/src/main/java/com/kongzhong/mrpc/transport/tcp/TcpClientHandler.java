@@ -3,9 +3,9 @@ package com.kongzhong.mrpc.transport.tcp;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
-import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +50,12 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
             callbackFutureMap.remove(requestId);
             rpcCallbackFuture.done(response);
         }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        super.userEventTriggered(ctx, evt);
+        System.out.println("userEventTriggered");
     }
 
     @Override
