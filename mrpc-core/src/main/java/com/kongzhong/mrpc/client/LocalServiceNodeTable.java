@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  */
 public class LocalServiceNodeTable {
 
+    // 本地节点服务表
     private static final Set<ServiceNode> SERVICE_NODES = Sets.newConcurrentHashSet();
 
     /**
@@ -78,6 +79,12 @@ public class LocalServiceNodeTable {
         updateNode(serverAddress, (node) -> node.getServices().add(serviceName));
     }
 
+    /**
+     * 给节点添加服务列表
+     *
+     * @param serverAddress
+     * @param serviceNames
+     */
     public static void addServices(String serverAddress, Set<String> serviceNames) {
         if (!LocalServiceNodeTable.containsNode(serverAddress)) {
             LocalServiceNodeTable.addNewNode(serverAddress);
@@ -146,6 +153,12 @@ public class LocalServiceNodeTable {
         return false;
     }
 
+    /**
+     * 判断服务是否已经成功连接
+     *
+     * @param address
+     * @return
+     */
     public static boolean isConnected(String address) {
         Optional<ServiceNode> serviceNode = SERVICE_NODES.stream()
                 .filter(node -> node.getServerAddress().equals(address))
@@ -171,20 +184,43 @@ public class LocalServiceNodeTable {
         SERVICE_NODES.clear();
     }
 
+    /**
+     * 判断是否存在该节点
+     *
+     * @param serverAddress
+     * @return
+     */
     public static boolean containsNode(String serverAddress) {
         return findServiceNode(serverAddress).isPresent();
     }
 
+    /**
+     * 根据服务地址查找节点详情
+     *
+     * @param address
+     * @return
+     */
     private static Optional<ServiceNode> findServiceNode(String address) {
         return SERVICE_NODES.stream()
                 .filter(node -> node.getServerAddress().equals(address))
                 .findFirst();
     }
 
+    /**
+     * 设置服务已连接
+     *
+     * @param serverAddress
+     */
     public static void setConnected(String serverAddress) {
         updateNode(serverAddress, (node) -> node.setConnected(true));
     }
 
+    /**
+     * 更新服务节点
+     *
+     * @param serviceName
+     * @param serverAddress
+     */
     public static void updateServiceNode(String serviceName, String serverAddress) {
         Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, new HashSet<>());
         serviceNodes.add(serverAddress);
