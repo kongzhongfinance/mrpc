@@ -53,6 +53,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
 
+        super.channelRead0(ctx, httpRequest);
+
         String uri = httpRequest.uri();
         QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
         String path = queryDecoder.path();

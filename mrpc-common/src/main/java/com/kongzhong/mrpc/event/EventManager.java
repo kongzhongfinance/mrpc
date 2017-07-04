@@ -14,11 +14,11 @@ import java.util.stream.Stream;
  * <p>
  * Created by biezhi on 03/07/2017.
  */
-public final class EventManager {
+public class EventManager {
 
     private Map<EventType, List<EventListener>> listenerMap;
 
-    public EventManager() {
+    private EventManager() {
         this.listenerMap = Stream.of(EventType.values()).collect(Collectors.toMap(v -> v, v -> new LinkedList<>()));
     }
 
@@ -29,6 +29,14 @@ public final class EventManager {
     public void fireEvent(EventType type, RpcContext rpcContext) {
         listenerMap.get(type).stream()
                 .forEach(listener -> listener.trigger(rpcContext));
+    }
+
+    private static final class EventManagerHolder {
+        private static final EventManager INSTANCE = new EventManager();
+    }
+
+    public static EventManager me() {
+        return EventManagerHolder.INSTANCE;
     }
 
 }

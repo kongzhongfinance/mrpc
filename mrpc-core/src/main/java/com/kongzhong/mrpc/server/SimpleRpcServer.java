@@ -7,9 +7,11 @@ import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
+import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
@@ -185,6 +187,9 @@ public abstract class SimpleRpcServer {
 
     private void bindRpcServer() {
 
+        // 服务启动时
+        EventManager.me().fireEvent(EventType.SERVER_STARTING, RpcContext.get());
+
 //        ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
 //        int parallel = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -251,6 +256,8 @@ public abstract class SimpleRpcServer {
                 } else {
                     log.info("Register => [{}] - [{}]", serviceName, address);
                 }
+                // 服务注册后
+                EventManager.me().fireEvent(EventType.SERVER_SERVICE_REGISTER, RpcContext.get());
             });
 
             if (this.usedRegistry) {
@@ -258,6 +265,9 @@ public abstract class SimpleRpcServer {
             }
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
+
+            // 服务启动后
+            EventManager.me().fireEvent(EventType.SERVER_STARTED, RpcContext.get());
 
             this.channelSync(future);
 
@@ -432,6 +442,9 @@ public abstract class SimpleRpcServer {
         Futures.addCallback(listenableFuture, new FutureCallback<FullHttpResponse>() {
             @Override
             public void onSuccess(FullHttpResponse response) {
+                // 服务端响应前
+                EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, RpcContext.get());
+
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     /**

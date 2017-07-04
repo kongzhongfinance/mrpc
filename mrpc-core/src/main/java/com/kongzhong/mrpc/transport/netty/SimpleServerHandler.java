@@ -1,5 +1,8 @@
 package com.kongzhong.mrpc.transport.netty;
 
+import com.kongzhong.mrpc.enums.EventType;
+import com.kongzhong.mrpc.event.EventManager;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcMapping;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,7 +26,17 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
         this.serviceBeanMap = RpcMapping.me().getServiceBeanMap();
     }
 
-    public abstract void channelRead0(ChannelHandlerContext ctx, T msg) throws Exception;
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+        // 客户端建立连接
+        EventManager.me().fireEvent(EventType.SERVER_CLIENT_CONNECTED, RpcContext.get());
+    }
+
+    public void channelRead0(ChannelHandlerContext ctx, T msg) throws Exception {
+        // 服务端接收到请求
+        EventManager.me().fireEvent(EventType.SERVER_ACCEPT, RpcContext.get());
+    }
 
     public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
 }

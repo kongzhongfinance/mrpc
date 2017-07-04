@@ -25,6 +25,9 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
+
+        super.channelRead0(ctx, request);
+
         log.debug("Request body: \n{}", JacksonSerialize.toJSONString(request, true));
 
         RpcResponse response = new RpcResponse();
