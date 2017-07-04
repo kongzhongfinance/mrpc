@@ -1,7 +1,8 @@
-package com.kongzhong.mrpc.interceptor;
+package com.kongzhong.mrpc.client.invoke;
 
-import com.kongzhong.mrpc.client.cluster.HaStrategy;
-import com.kongzhong.mrpc.client.cluster.LoadBalance;
+import com.kongzhong.mrpc.interceptor.Invocation;
+import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
+import com.kongzhong.mrpc.interceptor.RpcInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import lombok.Data;
 
@@ -16,33 +17,29 @@ import java.util.List;
 @Data
 public class ClientInvocation implements Invocation {
 
-    private RpcRequest request;
-    private HaStrategy haStrategy;
-    private LoadBalance loadBalance;
-
     //拦截器
     private List<RpcClientInterceptor> interceptors;
 
     //当前Interceptor索引值，初始值：-1，范围：0-interceptors.size()-1
     private int currentIndex = -1;
 
-    public ClientInvocation(HaStrategy haStrategy, LoadBalance loadBalance, RpcRequest request, List<RpcClientInterceptor> interceptors) {
-        this.haStrategy = haStrategy;
-        this.loadBalance = loadBalance;
-        this.request = request;
+    private RpcInvoker rpcInvoker;
+
+    public ClientInvocation(RpcInvoker rpcInvoker, List<RpcClientInterceptor> interceptors) {
+        this.rpcInvoker = rpcInvoker;
         this.interceptors = interceptors;
     }
 
     @Override
     public RpcRequest rpcRequest() {
-        return request;
+        return rpcInvoker.getRequest();
     }
 
     @Override
     public Object next() throws Exception {
         if (this.currentIndex == this.interceptors.size() - 1) {
             try {
-                return haStrategy.call(request, loadBalance);
+                return rpcInvoker.invoke();
             } catch (Exception e) {
                 if (e instanceof InvocationTargetException) throw (Exception) e.getCause();
                 throw e;

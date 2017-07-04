@@ -7,7 +7,7 @@ package com.kongzhong.mrpc.interceptor;
  *         2017/4/20
  */
 @FunctionalInterface
-interface RpcInterceptor {
+public interface RpcInterceptor {
 
     Object execute(Invocation invocation) throws Exception;
 

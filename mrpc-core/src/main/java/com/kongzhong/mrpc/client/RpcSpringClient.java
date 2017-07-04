@@ -3,7 +3,7 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
+import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
 import com.kongzhong.mrpc.utils.CollectionUtils;

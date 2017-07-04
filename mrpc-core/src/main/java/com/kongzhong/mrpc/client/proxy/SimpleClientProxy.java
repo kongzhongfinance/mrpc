@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.client.proxy;
 
 import com.google.common.reflect.AbstractInvocationHandler;
 import com.kongzhong.mrpc.annotation.Command;
+import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.ha.HighAvailableFactory;
@@ -10,10 +11,10 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.interceptor.ClientInvocation;
+import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
+import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -82,12 +83,12 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
                 .build();
 
         HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHaStrategy(method));
-
         if (!hasInterceptors) {
             return haStrategy.call(request, loadBalance);
         }
 
-        Invocation invocation = new ClientInvocation(haStrategy, loadBalance, request, interceptors);
+        RpcInvoker rpcInvoker = new RpcInvoker(request, null);
+        Invocation invocation = new ClientInvocation(rpcInvoker, interceptors);
         Object result = invocation.next();
         return result;
     }

@@ -1,11 +1,11 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.Connections;
-import com.kongzhong.mrpc.client.SimpleRpcProcessor;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -33,34 +33,6 @@ public class SimpleLoadBalance implements LoadBalance {
 
     public SimpleLoadBalance(LbStrategyEnum lbStrategyEnum) {
         this.lbStrategy = lbStrategyEnum;
-    }
-
-    @Override
-    public SimpleRpcProcessor getInvoker(String serviceName) throws Exception {
-        try {
-            List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
-            if (handlers.size() == 1) {
-                return new SimpleRpcProcessor(handlers.get(0));
-            }
-            if (handlers.size() == 0) {
-                throw new RpcException("Service [" + serviceName + "] not found.");
-            }
-            if (lbStrategy == LbStrategyEnum.ROUND) {
-                return new SimpleRpcProcessor(this.round(handlers));
-            }
-            if (lbStrategy == LbStrategyEnum.RANDOM) {
-                return new SimpleRpcProcessor(this.random(handlers));
-            }
-            if (lbStrategy == LbStrategyEnum.LAST) {
-                return new SimpleRpcProcessor(this.last(handlers));
-            }
-        } catch (Exception e) {
-            if (e instanceof RpcException) {
-                throw e;
-            }
-            throw new RpcException(e);
-        }
-        return null;
     }
 
     /**
@@ -105,5 +77,24 @@ public class SimpleLoadBalance implements LoadBalance {
         return connections.get(connections.size() - 1);
     }
 
-
+    @Override
+    public SimpleChannelInboundHandler next(String serviceName) throws Exception {
+        List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
+        if (handlers.size() == 1) {
+            return handlers.get(0);
+        }
+        if (handlers.size() == 0) {
+            throw new RpcException("Service [" + serviceName + "] not found.");
+        }
+        if (lbStrategy == LbStrategyEnum.ROUND) {
+            return this.round(handlers);
+        }
+        if (lbStrategy == LbStrategyEnum.RANDOM) {
+            return this.random(handlers);
+        }
+        if (lbStrategy == LbStrategyEnum.LAST) {
+            return this.last(handlers);
+        }
+        return null;
+    }
 }

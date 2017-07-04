@@ -1,26 +1,21 @@
-package com.kongzhong.mrpc.client;
+package com.kongzhong.mrpc.client.invoke;
 
+import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.exception.ConnectException;
-import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import lombok.AllArgsConstructor;
 
 /**
- * 服务执行器
- *
- * @author biezhi
- *         2017/4/24
+ * Created by biezhi on 04/07/2017.
  */
-public class SimpleRpcProcessor<T> implements RpcProcessor {
+@AllArgsConstructor
+public class RpcInvoker {
 
-    private SimpleClientHandler<T> clientHandler;
+    private RpcRequest request;
+    private SimpleClientHandler clientHandler;
 
-    public SimpleRpcProcessor(SimpleClientHandler<T> clientHandler) {
-        this.clientHandler = clientHandler;
-    }
-
-    @Override
-    public Object processor(RpcRequest request) throws Exception {
+    public Object invoke() throws Exception {
         if (!clientHandler.getChannel().isActive()) {
             throw new ConnectException(String.format("Client Channel %s unactive.", clientHandler.getChannel()));
         }
@@ -28,4 +23,7 @@ public class SimpleRpcProcessor<T> implements RpcProcessor {
         return rpcCallbackFuture.get();
     }
 
+    public RpcRequest getRequest() {
+        return request;
+    }
 }
