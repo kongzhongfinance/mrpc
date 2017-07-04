@@ -19,10 +19,7 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
-import com.kongzhong.mrpc.utils.CollectionUtils;
-import com.kongzhong.mrpc.utils.HttpRequest;
-import com.kongzhong.mrpc.utils.ReflectUtils;
-import com.kongzhong.mrpc.utils.StringUtils;
+import com.kongzhong.mrpc.utils.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -203,14 +200,25 @@ public abstract class SimpleRpcServer {
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
 
             String[] ipAddr = address.split(":");
-            if (null == ipAddr || ipAddr.length != 2) {
+            if (null == ipAddr) {
                 throw new SystemException("RPC server bind address error, please check your server address and port.");
             }
 
-            //获取服务器IP地址和端口
-            String host = ipAddr[0];
-            int port = Integer.parseInt(ipAddr[1]);
+            String host = null;
+            int port = -1;
 
+            if (ipAddr.length == 1) {
+                host = NetUtils.getLocalAddress().getHostAddress();
+                port = Integer.valueOf(ipAddr[0]);
+                this.address = host + ':' + port;
+            }
+
+            if (ipAddr.length == 2) {
+                host = ipAddr[0];
+                port = Integer.parseInt(ipAddr[1]);
+            }
+
+            //获取服务器IP地址和端口
             ServerConfig.me().setElasticIp(elasticIp);
             ChannelFuture future = bootstrap.bind(host, port).sync();
 
