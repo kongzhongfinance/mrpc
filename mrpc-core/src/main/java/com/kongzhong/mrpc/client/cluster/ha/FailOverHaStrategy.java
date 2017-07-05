@@ -33,7 +33,7 @@ public class FailOverHaStrategy implements HaStrategy {
             try {
                 SimpleClientHandler clientHandler = (SimpleClientHandler) loadBalance.next(serviceName);
                 RpcInvoker rpcInvoker = new RpcInvoker(request, clientHandler);
-                rpcInvoker.invoke();
+                return rpcInvoker.invoke();
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
                     throw (Exception) e.getCause();
