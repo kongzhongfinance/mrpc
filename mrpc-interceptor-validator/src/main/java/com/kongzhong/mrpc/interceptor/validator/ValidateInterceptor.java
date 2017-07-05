@@ -1,9 +1,9 @@
 package com.kongzhong.mrpc.interceptor.validator;
 
 
-import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
-import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.interceptor.validator.exception.ValidateException;
+import com.kongzhong.mrpc.interceptors.RpcServerInterceptor;
+import com.kongzhong.mrpc.interceptors.ServerInvocation;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.ConstraintViolation;

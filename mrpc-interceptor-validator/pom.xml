@@ -18,9 +18,10 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-common</artifactId>
+            <artifactId>mrpc-core</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -42,6 +43,6 @@
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
     </dependencies>
 </project>

@@ -1,5 +1,7 @@
-package com.kongzhong.mrpc.interceptor;
+package com.kongzhong.mrpc.interceptors;
 
+import com.kongzhong.mrpc.interceptor.Invocation;
+import com.kongzhong.mrpc.interceptor.RpcInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import lombok.Data;
 import org.springframework.cglib.reflect.FastMethod;
@@ -32,11 +34,6 @@ public class ServerInvocation implements Invocation {
         this.request = request;
         this.parameters = parameters;
         this.interceptors = interceptors;
-    }
-
-    @Override
-    public RpcRequest rpcRequest() {
-        return request;
     }
 
     @Override

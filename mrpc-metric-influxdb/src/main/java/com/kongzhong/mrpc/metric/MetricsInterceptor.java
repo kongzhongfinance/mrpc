@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.metric;
 
-import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
-import com.kongzhong.mrpc.interceptor.ServerInvocation;
+import com.kongzhong.mrpc.interceptors.RpcServerInterceptor;
+import com.kongzhong.mrpc.interceptors.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcContext;
 import lombok.extern.slf4j.Slf4j;
 

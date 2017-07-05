@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.kongzhong.mrpc.annotation.RpcService;
-import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
+import com.kongzhong.mrpc.interceptors.RpcServerInterceptor;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;

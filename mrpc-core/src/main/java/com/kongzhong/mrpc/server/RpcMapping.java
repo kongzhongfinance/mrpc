@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
+import com.kongzhong.mrpc.interceptors.RpcServerInterceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;

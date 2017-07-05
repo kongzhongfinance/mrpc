@@ -1,9 +1,8 @@
 package com.kongzhong.mrpc.client.invoke;
 
 import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
 import com.kongzhong.mrpc.interceptor.RpcInterceptor;
-import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
 import lombok.Data;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,11 +27,6 @@ public class ClientInvocation implements Invocation {
     public ClientInvocation(RpcInvoker rpcInvoker, List<RpcClientInterceptor> interceptors) {
         this.rpcInvoker = rpcInvoker;
         this.interceptors = interceptors;
-    }
-
-    @Override
-    public RpcRequest rpcRequest() {
-        return rpcInvoker.getRequest();
     }
 
     @Override
