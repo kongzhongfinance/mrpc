@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.client.cluster;
 
-import io.netty.channel.SimpleChannelInboundHandler;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 
 /**
  * 负载均衡接口
@@ -15,6 +15,6 @@ public interface LoadBalance {
      * @param serviceName
      * @return
      */
-    SimpleChannelInboundHandler next(String serviceName) throws Exception;
+    SimpleClientHandler next(String serviceName) throws Exception;
 
 }

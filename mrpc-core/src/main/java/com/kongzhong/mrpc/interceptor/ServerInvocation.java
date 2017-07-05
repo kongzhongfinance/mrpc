@@ -1,7 +1,5 @@
-package com.kongzhong.mrpc.interceptors;
+package com.kongzhong.mrpc.interceptor;
 
-import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import lombok.Data;
 import org.springframework.cglib.reflect.FastMethod;
@@ -25,7 +23,7 @@ public class ServerInvocation implements Invocation {
     //拦截器
     private List<RpcServerInterceptor> interceptors;
 
-    //当前Interceptor索引值，初始值：-1，范围：0-interceptors.size()-1
+    //当前Interceptor索引值，初始值：-1，范围：0-interceptor.size()-1
     private int currentIndex = -1;
 
     public ServerInvocation(FastMethod fastMethod, Object target, Object[] parameters, RpcRequest request, List<RpcServerInterceptor> interceptors) {

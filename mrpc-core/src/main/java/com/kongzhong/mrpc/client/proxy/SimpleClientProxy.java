@@ -2,19 +2,19 @@ package com.kongzhong.mrpc.client.proxy;
 
 import com.google.common.reflect.AbstractInvocationHandler;
 import com.kongzhong.mrpc.annotation.Command;
-import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.ha.HighAvailableFactory;
 import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
+import com.kongzhong.mrpc.client.invoke.ClientInvocation;
+import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
-import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         if (null != interceptors && !interceptors.isEmpty()) {
             hasInterceptors = true;
             int pos = interceptors.size();
-            log.info("Add interceptors {}", interceptors.toString());
+            log.info("Add interceptor {}", interceptors.toString());
             for (RpcClientInterceptor rpcClientInterceptor : interceptors) {
                 interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcClientInterceptor);
             }
@@ -87,12 +87,18 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
             return haStrategy.call(request, loadBalance);
         }
 
-        RpcInvoker rpcInvoker = new RpcInvoker(request, null);
+        RpcInvoker rpcInvoker = new RpcInvoker(request, loadBalance.next(request.getClassName()));
         Invocation invocation = new ClientInvocation(rpcInvoker, interceptors);
         Object result = invocation.next();
         return result;
     }
 
+    /**
+     * 获取该方法的高可用策略
+     *
+     * @param method
+     * @return
+     */
     private HaStrategyEnum getHaStrategy(Method method) {
         HaStrategyEnum haStrategyEnum = ClientConfig.me().getHaStrategy();
         Command command = method.getAnnotation(Command.class);
@@ -102,6 +108,12 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         return haStrategyEnum;
     }
 
+    /**
+     * 获取该方法的调用超时
+     *
+     * @param method
+     * @return
+     */
     private int getWaitTimeout(Method method) {
         Command command = method.getAnnotation(Command.class);
         int timeout = ClientConfig.me().getWaitTimeout();

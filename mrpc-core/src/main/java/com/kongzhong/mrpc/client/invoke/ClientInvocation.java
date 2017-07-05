@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client.invoke;
 
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcInterceptor;
-import com.kongzhong.mrpc.interceptors.RpcClientInterceptor;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import lombok.Data;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +19,7 @@ public class ClientInvocation implements Invocation {
     //拦截器
     private List<RpcClientInterceptor> interceptors;
 
-    //当前Interceptor索引值，初始值：-1，范围：0-interceptors.size()-1
+    //当前Interceptor索引值，初始值：-1，范围：0-interceptor.size()-1
     private int currentIndex = -1;
 
     private RpcInvoker rpcInvoker;

@@ -5,12 +5,10 @@ import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
-import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -21,7 +19,6 @@ import java.util.concurrent.atomic.LongAdder;
 @Slf4j
 public class SimpleLoadBalance implements LoadBalance {
 
-    private AtomicInteger posInt = new AtomicInteger(0);
     private Random random = new Random();
 
     private LbStrategyEnum lbStrategy;
@@ -42,13 +39,13 @@ public class SimpleLoadBalance implements LoadBalance {
      * @return
      */
     private SimpleClientHandler round(List<SimpleClientHandler> connections) {
-        int pos = posInt.get();
+        int pos = posLong.intValue();
         if (pos >= connections.size()) {
-            posInt.set(0);
-            pos = posInt.get();
+            posLong = new LongAdder();
+            pos = posLong.intValue();
         }
         SimpleClientHandler connection = connections.get(pos);
-        posInt.addAndGet(1);
+        posLong.add(1);
         return connection;
     }
 
@@ -78,7 +75,7 @@ public class SimpleLoadBalance implements LoadBalance {
     }
 
     @Override
-    public SimpleChannelInboundHandler next(String serviceName) throws Exception {
+    public SimpleClientHandler next(String serviceName) throws Exception {
         List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
         if (handlers.size() == 1) {
             return handlers.get(0);

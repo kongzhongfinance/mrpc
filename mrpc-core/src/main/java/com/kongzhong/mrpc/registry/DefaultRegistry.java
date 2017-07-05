@@ -5,7 +5,6 @@ import com.google.common.io.Files;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.StringUtils;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -21,12 +20,15 @@ import java.util.Map;
  *         2017/4/27
  */
 @Slf4j
-@NoArgsConstructor
 public class DefaultRegistry implements ServiceRegistry {
 
     public static final String DEFAULT_SWAP_NAME = "mrpc_registry_swap.lock";
 
     private File file = new File(DEFAULT_SWAP_NAME);
+
+    public DefaultRegistry() {
+        this(false);
+    }
 
     public DefaultRegistry(boolean append) {
         try {

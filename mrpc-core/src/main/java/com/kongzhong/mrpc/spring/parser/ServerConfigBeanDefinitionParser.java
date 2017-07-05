@@ -18,7 +18,7 @@ public class ServerConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         String elasticIp = element.getAttribute("elasticIp");
         String transport = element.getAttribute("transport");
         String serialize = element.getAttribute("serialize");
-        String interceptors = element.getAttribute("interceptors");
+        String interceptors = element.getAttribute("interceptor");
         String test = element.getAttribute("test");
 
         builder.addPropertyValue("appId", appId);
@@ -26,7 +26,7 @@ public class ServerConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         builder.addPropertyValue("elasticIp", elasticIp);
         builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
-        builder.addPropertyValue("interceptors", interceptors);
+        builder.addPropertyValue("interceptor", interceptors);
         builder.addPropertyValue("test", test);
 
         return builder.getBeanDefinition();

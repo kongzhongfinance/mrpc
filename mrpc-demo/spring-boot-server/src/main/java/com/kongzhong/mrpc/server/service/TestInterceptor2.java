@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.server.service;
 
-import com.kongzhong.mrpc.interceptors.RpcServerInterceptor;
-import com.kongzhong.mrpc.interceptors.ServerInvocation;
+import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
+import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;

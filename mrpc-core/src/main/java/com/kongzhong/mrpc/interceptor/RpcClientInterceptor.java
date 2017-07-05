@@ -1,8 +1,6 @@
-package com.kongzhong.mrpc.interceptors;
+package com.kongzhong.mrpc.interceptor;
 
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
-import com.kongzhong.mrpc.interceptor.Invocation;
-import com.kongzhong.mrpc.interceptor.RpcInterceptor;
 
 /**
  * RPC服务端请求拦截器
