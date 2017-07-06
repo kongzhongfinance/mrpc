@@ -5,10 +5,13 @@ import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.model.ClientBean;
+import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -31,6 +34,55 @@ public class SimpleLoadBalance implements LoadBalance {
 
     public SimpleLoadBalance(LbStrategyEnum lbStrategyEnum) {
         this.lbStrategy = lbStrategyEnum;
+    }
+
+    private LongAdder immediatelyDiscoverCount = new LongAdder();
+
+    public static Map<String, ServiceDiscovery> serviceDiscoveryMap;
+
+    @Override
+    public SimpleClientHandler next(String serviceName) throws Exception {
+        List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
+        if (handlers.size() == 1) {
+            immediatelyDiscoverCount = new LongAdder();
+            return handlers.get(0);
+        }
+        if (handlers.size() == 0) {
+
+            if (immediatelyDiscoverCount.intValue() < 3) {
+
+                log.warn("Service [{}] not found, begin immediately discovery.", serviceName);
+
+                // 马上服务发现
+                this.immediatelyDiscovery(serviceName);
+                immediatelyDiscoverCount.add(1);
+                return this.next(serviceName);
+            }
+
+            log.info("Local service mappings: {}", LocalServiceNodeTable.SERVICE_MAPPINGS);
+            throw new RpcException("Service [" + serviceName + "] not found.");
+        }
+        if (lbStrategy == LbStrategyEnum.ROUND) {
+            return this.round(handlers);
+        }
+        if (lbStrategy == LbStrategyEnum.RANDOM) {
+            return this.random(handlers);
+        }
+        if (lbStrategy == LbStrategyEnum.LAST) {
+            return this.last(handlers);
+        }
+        return null;
+    }
+
+    private void immediatelyDiscovery(String serviceName) {
+        ClientBean clientBean = new ClientBean();
+        clientBean.setServiceName(serviceName);
+        try {
+            ServiceDiscovery serviceDiscovery = serviceDiscoveryMap.get("default");
+            serviceDiscovery.discover(clientBean);
+        } catch (Exception e) {
+            log.error("Service discovery error", e);
+        }
     }
 
     /**
@@ -75,25 +127,4 @@ public class SimpleLoadBalance implements LoadBalance {
         return connections.get(connections.size() - 1);
     }
 
-    @Override
-    public SimpleClientHandler next(String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
-        if (handlers.size() == 1) {
-            return handlers.get(0);
-        }
-        if (handlers.size() == 0) {
-            log.info("Local service mappings: {}", LocalServiceNodeTable.SERVICE_MAPPINGS);
-            throw new RpcException("Service [" + serviceName + "] not found.");
-        }
-        if (lbStrategy == LbStrategyEnum.ROUND) {
-            return this.round(handlers);
-        }
-        if (lbStrategy == LbStrategyEnum.RANDOM) {
-            return this.random(handlers);
-        }
-        if (lbStrategy == LbStrategyEnum.LAST) {
-            return this.last(handlers);
-        }
-        return null;
-    }
 }

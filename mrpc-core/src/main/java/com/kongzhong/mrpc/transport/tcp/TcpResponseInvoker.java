@@ -33,7 +33,7 @@ public class TcpResponseInvoker extends AbstractResponseInvoker<Boolean> {
             return Boolean.TRUE;
         } catch (Throwable e) {
             e = this.buildErrorResponse(e, response);
-            log.error("Rpc method processor error", e);
+            log.error("Service method invoke error", e);
             ServiceStatusTable.me().addErrorInvoke(request.getClassName());
             return Boolean.TRUE;
         } finally {

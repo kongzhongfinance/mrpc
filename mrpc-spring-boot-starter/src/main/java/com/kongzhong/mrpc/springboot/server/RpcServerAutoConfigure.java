@@ -1,13 +1,9 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
-import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
@@ -16,10 +12,6 @@ import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.NettyProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.utils.StringUtils;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpResponse;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -34,10 +26,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.Order;
 
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
 /**
@@ -71,8 +60,6 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      * 自定义服务配置
      */
     private Map<String, Map<String, String>> customServiceMap = Maps.newHashMap();
-
-    private static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
 
     @Bean
     public ServiceBeanProcessor initBean() {

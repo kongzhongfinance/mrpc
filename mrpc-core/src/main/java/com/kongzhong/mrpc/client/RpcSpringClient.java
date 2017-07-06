@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -74,6 +75,8 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         clientBeans.forEach(referer -> super.initReferer(referer, dbf));
 
         super.directConnect();
+
+        SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
 
         log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
     }

@@ -47,7 +47,7 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             ServiceStatusTable.me().addSuccessInvoke(request.getClassName());
         } catch (Throwable e) {
             e = buildErrorResponse(e, rpcResponse);
-            log.error("Rpc method processor error", e);
+            log.error("Service method invoke error", e);
             ServiceStatusTable.me().addErrorInvoke(request.getClassName());
         } finally {
             RpcContext.remove();

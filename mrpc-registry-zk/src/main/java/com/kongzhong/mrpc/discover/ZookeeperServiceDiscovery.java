@@ -9,6 +9,7 @@ import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
@@ -77,8 +78,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
         Set<String> addressSet = this.discoveryService(clientBean.getServiceName());
         if (CollectionUtils.isEmpty(addressSet)) {
-            System.out.println();
-            log.warn("Can not find any address node on service: {}. please check your zookeeper services :)\n", clientBean.getServiceName());
+            String msg = String.format("Can not find any address node on service: [%s]. please check your zookeeper services :)", clientBean.getServiceName());
+            throw new SystemException(msg);
         } else {
             // update node list
             Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
