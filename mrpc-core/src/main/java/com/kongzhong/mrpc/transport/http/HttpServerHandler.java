@@ -81,11 +81,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        log.debug("Server receive body: \n{}", body);
-
         RequestBody requestBody;
         try {
             requestBody = JacksonSerialize.parseObject(body, RequestBody.class);
+            log.debug("Server receive body: \n{}", JacksonSerialize.toJSONString(requestBody, true));
         } catch (Exception e) {
             log.error("Server receive body parse error", e);
             this.sendError(ctx, RpcRet.error("Unable to identify the requested format."));
