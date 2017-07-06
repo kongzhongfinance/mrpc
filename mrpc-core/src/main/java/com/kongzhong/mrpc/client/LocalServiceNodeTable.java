@@ -26,7 +26,7 @@ public class LocalServiceNodeTable {
      * 服务和服务提供方客户端映射
      * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
-    static Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
+    public static Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
 
     public static List<SimpleClientHandler> getAliveNodes(String serviceName) {
         Set<String> address = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
@@ -41,6 +41,17 @@ public class LocalServiceNodeTable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 获取所有存活的服务列表
+     *
+     * @return
+     */
+    public static Set<String> getAliveServices() {
+        return SERVICE_NODES.stream()
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .flatMap(node -> node.getServices().stream())
+                .collect(Collectors.toSet());
+    }
 
     /**
      * 获取所有挂掉的服务
@@ -76,7 +87,7 @@ public class LocalServiceNodeTable {
         if (!LocalServiceNodeTable.containsNode(serverAddress)) {
             LocalServiceNodeTable.addNewNode(serverAddress);
         }
-        updateNode(serverAddress, (node) -> node.getServices().add(serviceName));
+        updateNode(serverAddress, node -> node.getServices().add(serviceName));
     }
 
     /**
@@ -89,7 +100,7 @@ public class LocalServiceNodeTable {
         if (!LocalServiceNodeTable.containsNode(serverAddress)) {
             LocalServiceNodeTable.addNewNode(serverAddress);
         }
-        updateNode(serverAddress, (node) -> node.getServices().addAll(serviceNames));
+        updateNode(serverAddress, node -> node.getServices().addAll(serviceNames));
     }
 
     /**
@@ -212,7 +223,7 @@ public class LocalServiceNodeTable {
      * @param serverAddress
      */
     public static void setConnected(String serverAddress) {
-        updateNode(serverAddress, (node) -> node.setConnected(true));
+        updateNode(serverAddress, node -> node.setConnected(true));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.Connections;
+import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
@@ -81,6 +82,7 @@ public class SimpleLoadBalance implements LoadBalance {
             return handlers.get(0);
         }
         if (handlers.size() == 0) {
+            log.info("Local service mappings: {}", LocalServiceNodeTable.SERVICE_MAPPINGS);
             throw new RpcException("Service [" + serviceName + "] not found.");
         }
         if (lbStrategy == LbStrategyEnum.ROUND) {

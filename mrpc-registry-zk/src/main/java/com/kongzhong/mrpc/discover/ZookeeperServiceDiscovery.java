@@ -19,10 +19,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.Watcher;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -81,7 +78,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         Set<String> addressSet = this.discoveryService(clientBean.getServiceName());
         if (CollectionUtils.isEmpty(addressSet)) {
             System.out.println();
-            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", clientBean.getServiceName());
+            log.warn("Can not find any address node on service: {}. please check your zookeeper services :)\n", clientBean.getServiceName());
         } else {
             // update node list
             Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
@@ -122,15 +119,16 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
             } else {
 
-                log.debug("Watch node changed: {}", serviceList);
+//                log.debug("Watch node changed: {}", serviceList);
 
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
 
                 log.debug("Dead service changed: {}", serviceList);
+                log.debug("Alive services: {}", LocalServiceNodeTable.getAliveServices());
 
                 Set<String> address = serviceList.stream()
                         .map(service -> this.discoveryService(service))
-                        .flatMap(val -> val.stream())
+                        .flatMap(Collection::stream)
                         .collect(Collectors.toSet());
 
                 // update node list
