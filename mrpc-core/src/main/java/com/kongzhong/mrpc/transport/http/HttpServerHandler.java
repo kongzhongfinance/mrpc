@@ -81,13 +81,13 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        log.debug("Request body: \n{}", body);
+        log.debug("Server receive body: \n{}", body);
 
         RequestBody requestBody;
         try {
             requestBody = JacksonSerialize.parseObject(body, RequestBody.class);
         } catch (Exception e) {
-            log.error("Request body parse error", e);
+            log.error("Server receive body parse error", e);
             this.sendError(ctx, RpcRet.error("Unable to identify the requested format."));
             return;
         }
@@ -200,7 +200,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Server handler error", cause);
+        log.error("Server receive body error", cause);
         this.sendError(ctx, RpcRet.error(Throwables.getStackTraceAsString(cause)));
     }
 }

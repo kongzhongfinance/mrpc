@@ -21,6 +21,7 @@
         <module>mrpc-admin</module>
         <module>mrpc-trace-zipkin</module>
         <module>mrpc-interceptor-validator</module>
+        <module>mrpc-trace</module>
     </modules>
 
     <properties>

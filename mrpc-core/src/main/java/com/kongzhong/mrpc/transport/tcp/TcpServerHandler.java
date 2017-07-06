@@ -28,7 +28,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
         super.channelRead0(ctx, request);
 
-        log.debug("Request body: \n{}", JacksonSerialize.toJSONString(request, true));
+        log.debug("Server receive body: \n{}", JacksonSerialize.toJSONString(request, true));
 
         RpcResponse response = new RpcResponse();
         TcpResponseInvoker tcpResponseInvoker = new TcpResponseInvoker(request, response, serviceBeanMap);
@@ -38,7 +38,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Server accept error", cause);
+        log.error("Server receive body error", cause);
         this.sendError(ctx, cause);
     }
 
