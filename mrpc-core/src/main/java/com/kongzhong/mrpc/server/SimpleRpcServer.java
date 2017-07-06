@@ -423,7 +423,7 @@ public abstract class SimpleRpcServer {
                      * @throws Exception
                      */
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Request id [{}] success.", request.getRequestId());
+                        log.debug("Server execute [{}] success.", request.getRequestId());
                     }
                 });
             }
@@ -454,7 +454,7 @@ public abstract class SimpleRpcServer {
                      */
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Request id [{}] success.", response.headers().get(HEADER_REQUEST_ID));
+                        log.debug("Server execute [{}] success.", response.headers().get(HEADER_REQUEST_ID));
                     }
 
                 });

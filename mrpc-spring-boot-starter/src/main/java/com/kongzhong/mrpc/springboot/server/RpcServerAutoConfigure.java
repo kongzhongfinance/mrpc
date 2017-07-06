@@ -198,7 +198,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
                      * @throws Exception
                      */
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Request id [{}] success.", request.getRequestId());
+                        log.debug("Server execute [{}] success.", request.getRequestId());
                     }
                 });
             }
@@ -226,7 +226,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
                      */
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Request id [{}] success.", response.headers().get(HEADER_REQUEST_ID));
+                        log.debug("Server execute [{}] success.", response.headers().get(HEADER_REQUEST_ID));
                     }
 
                 });
