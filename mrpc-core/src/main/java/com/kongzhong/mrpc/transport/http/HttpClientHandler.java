@@ -93,7 +93,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
         RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
         if (rpcResponse.getSuccess()) {
-            log.debug("Client receive body: \n{}", body);
+            log.debug("Client receive body: \n{}", JacksonSerialize.toJSONString(rpcResponse, true));
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
                 Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);
