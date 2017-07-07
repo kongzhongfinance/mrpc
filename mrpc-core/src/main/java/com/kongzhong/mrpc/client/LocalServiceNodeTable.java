@@ -237,4 +237,18 @@ public class LocalServiceNodeTable {
         serviceNodes.add(serverAddress);
         SERVICE_MAPPINGS.put(serviceName, serviceNodes);
     }
+
+    /**
+     * 返回本地注册表是否存在服务
+     *
+     * @param serviceName
+     * @return
+     */
+    public static boolean exists(String serviceName) {
+        return SERVICE_NODES.stream()
+                .map(ServiceNode::getServices)
+                .flatMap(Collection::stream)
+                .filter(localServiceName -> localServiceName.equals(serviceName))
+                .count() > 0;
+    }
 }

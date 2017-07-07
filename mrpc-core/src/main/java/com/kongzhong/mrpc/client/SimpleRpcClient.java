@@ -196,7 +196,7 @@ public abstract class SimpleRpcClient {
         if (null != nettyConfig) {
             Connections.me().setNettyConfig(nettyConfig);
         }
-        Connections.me().asyncConnect(mappings);
+        Connections.me().syncConnect(mappings);
     }
 
     /**

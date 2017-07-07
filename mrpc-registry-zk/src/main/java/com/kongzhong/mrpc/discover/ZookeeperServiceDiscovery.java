@@ -78,11 +78,20 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
         Set<String> addressSet = this.discoveryService(clientBean.getServiceName());
         if (CollectionUtils.isEmpty(addressSet)) {
-            String msg = String.format("Can not find any address node on service: [%s]. please check your zookeeper services :)", clientBean.getServiceName());
-            throw new SystemException(msg);
+            System.out.println();
+
+            log.warn("Can not find any address node on service: [{}]. please check your zookeeper services :)", clientBean.getServiceName());
+
+            // 发现不到的服务添加到本地服务缓存表，并设置为挂掉状态
+            if (!LocalServiceNodeTable.exists(clientBean.getServiceName())) {
+                LocalServiceNodeTable.addService("NO_SEVER", clientBean.getServiceName());
+                LocalServiceNodeTable.setNodeDead("NO_SEVER");
+                log.warn("Add local dead service [{}]\n", clientBean.getServiceName());
+            }
+
         } else {
             // update node list
-            Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
+            Connections.me().syncDirectConnect(clientBean.getServiceName(), addressSet);
         }
     }
 
@@ -119,8 +128,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 System.out.println();
                 log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
             } else {
-
-//                log.debug("Watch node changed: {}", serviceList);
 
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
 

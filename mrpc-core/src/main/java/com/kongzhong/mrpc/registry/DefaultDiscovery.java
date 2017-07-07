@@ -51,7 +51,7 @@ public class DefaultDiscovery implements ServiceDiscovery {
                         mappings.get(address).add(serviceName);
                     }
                 }
-                Connections.me().asyncConnect(mappings);
+                Connections.me().syncConnect(mappings);
             }
         } catch (Exception e) {
             log.error("discover fail", e);

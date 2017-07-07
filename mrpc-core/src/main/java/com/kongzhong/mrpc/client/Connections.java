@@ -69,14 +69,14 @@ public class Connections {
      *
      * @param mappings
      */
-    public void asyncConnect(Map<String, Set<String>> mappings) {
+    public void syncConnect(Map<String, Set<String>> mappings) {
         try {
             lock.lock();
             mappings.forEach((address, serviceNames) -> {
                 LocalServiceNodeTable.addServices(address, serviceNames);
                 serviceNames.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
                 if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.asyncConnect(address);
+                    this.syncConnect(address);
                 }
             });
             handlerStatus.signal();
@@ -91,14 +91,14 @@ public class Connections {
      * @param serviceName
      * @param addressSet
      */
-    public void asyncDirectConnect(String serviceName, Set<String> addressSet) {
+    public void syncDirectConnect(String serviceName, Set<String> addressSet) {
         try {
             lock.lock();
             addressSet.forEach(address -> {
                 LocalServiceNodeTable.addService(address, serviceName);
                 LocalServiceNodeTable.updateServiceNode(serviceName, address);
                 if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.asyncConnect(address);
+                    this.syncConnect(address);
                 }
             });
             handlerStatus.signal();
@@ -115,7 +115,7 @@ public class Connections {
     public void recoverConnect(Set<String> addresses) {
         addresses.forEach(address -> {
             LocalServiceNodeTable.reConnected(address);
-            this.asyncConnect(address);
+            this.syncConnect(address);
         });
     }
 
@@ -125,8 +125,8 @@ public class Connections {
      * @param address
      * @return
      */
-    private void asyncConnect(String address) {
-        log.debug("Async connect {}", address);
+    private void syncConnect(String address) {
+        log.debug("Sync connect {}", address);
         LocalServiceNodeTable.setConnected(address);
         new NettyClient(nettyConfig, address).createBootstrap(eventLoopGroup);
     }
