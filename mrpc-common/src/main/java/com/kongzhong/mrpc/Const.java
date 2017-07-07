@@ -110,4 +110,5 @@ public interface Const {
     // 客户端服务发现bean前缀
     String MRPC_CLIENT_DISCOVERY_PREFIX = "mrpc-client-discovery-";
 
+    String EMPTY_SERVER = "empty_server";
 }

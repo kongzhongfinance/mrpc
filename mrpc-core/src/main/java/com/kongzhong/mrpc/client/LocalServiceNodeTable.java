@@ -3,9 +3,11 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
  * @author biezhi
  *         29/06/2017
  */
+@Slf4j
 public class LocalServiceNodeTable {
 
     // 本地节点服务表
@@ -29,16 +32,19 @@ public class LocalServiceNodeTable {
     public static Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
 
     public static List<SimpleClientHandler> getAliveNodes(String serviceName) {
-        Set<String> address = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
-        if (CollectionUtils.isEmpty(address)) {
+        Set<String> addresses = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
+        if (CollectionUtils.isEmpty(addresses)) {
             return new ArrayList<>();
         }
 
-        return SERVICE_NODES.stream()
-                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
-                .filter(node -> address.contains(node.getServerAddress()))
-                .map(node -> node.getClientHandler())
-                .collect(Collectors.toList());
+        List<SimpleClientHandler> clientHandlers = new ArrayList<>();
+
+        addresses.forEach(address -> SERVICE_NODES.stream()
+                .filter(node -> address.equals(node.getServerAddress()) && node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .findFirst()
+                .ifPresent(node -> clientHandlers.add(node.getClientHandler())));
+
+        return clientHandlers;
     }
 
     /**
@@ -90,6 +96,12 @@ public class LocalServiceNodeTable {
         updateNode(serverAddress, node -> node.getServices().add(serviceName));
     }
 
+    public static void addIfNotPresent(String serverAddress) {
+        if (!LocalServiceNodeTable.containsNode(serverAddress)) {
+            LocalServiceNodeTable.addNewNode(serverAddress);
+        }
+    }
+
     /**
      * 给节点添加服务列表
      *
@@ -127,6 +139,8 @@ public class LocalServiceNodeTable {
             node.setClientHandler(clientHandler);
             node.setAliveState(NodeAliveStateEnum.ALIVE);
         });
+        log.info("SERVICE_NODES: {}", SERVICE_NODES);
+        log.info("SERVICE_MAPPINGS: {}", SERVICE_MAPPINGS);
     }
 
     /**
@@ -236,6 +250,20 @@ public class LocalServiceNodeTable {
         Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, new HashSet<>());
         serviceNodes.add(serverAddress);
         SERVICE_MAPPINGS.put(serviceName, serviceNodes);
+
+        SERVICE_NODES.stream()
+                .filter(serviceNode -> serviceNode.getServerAddress().equals(serverAddress))
+                .findFirst()
+                .ifPresent(serviceNode -> {
+                    if (!serviceNode.getServices().contains(serviceName)) {
+                        serviceNode.getServices().add(serviceName);
+                    }
+                });
+
+        SERVICE_NODES.stream()
+                .filter(serviceNode -> serviceNode.getServerAddress().equals(Const.EMPTY_SERVER))
+                .findFirst()
+                .ifPresent(serviceNode -> serviceNode.getServices().remove(serviceName));
     }
 
     /**
@@ -251,4 +279,5 @@ public class LocalServiceNodeTable {
                 .filter(localServiceName -> localServiceName.equals(serviceName))
                 .count() > 0;
     }
+
 }

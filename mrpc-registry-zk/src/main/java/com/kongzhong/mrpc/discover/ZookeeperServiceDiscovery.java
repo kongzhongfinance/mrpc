@@ -5,6 +5,7 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
@@ -84,8 +85,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
             // 发现不到的服务添加到本地服务缓存表，并设置为挂掉状态
             if (!LocalServiceNodeTable.exists(clientBean.getServiceName())) {
-                LocalServiceNodeTable.addService("NO_SEVER", clientBean.getServiceName());
-                LocalServiceNodeTable.setNodeDead("NO_SEVER");
+                LocalServiceNodeTable.addService(Const.EMPTY_SERVER, clientBean.getServiceName());
+                LocalServiceNodeTable.setNodeDead(Const.EMPTY_SERVER);
                 log.warn("Add local dead service [{}]\n", clientBean.getServiceName());
             }
 
@@ -142,7 +143,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 // update node list
                 if (CollectionUtils.isNotEmpty(address)) {
                     log.debug("Update node list: {}", address);
-                    Connections.me().recoverConnect(address);
+                    Connections.me().recoverConnect(new HashSet<>(serviceList), address);
                 }
             }
         } finally {

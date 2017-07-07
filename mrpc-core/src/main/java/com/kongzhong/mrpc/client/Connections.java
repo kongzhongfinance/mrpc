@@ -110,11 +110,15 @@ public class Connections {
     /**
      * 恢复连接
      *
+     * @param services
      * @param addresses
      */
-    public void recoverConnect(Set<String> addresses) {
+    public void recoverConnect(Set<String> services, Set<String> addresses) {
+        // 把services绑定的服务修改为addresses
         addresses.forEach(address -> {
+            LocalServiceNodeTable.addIfNotPresent(address);
             LocalServiceNodeTable.reConnected(address);
+            services.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
             this.syncConnect(address);
         });
     }
@@ -141,17 +145,6 @@ public class Connections {
             TimeUnit.MILLISECONDS.sleep(milliscond);
         } catch (Exception e) {
             log.error("", e);
-        }
-    }
-
-    public void addRpcClientHandler(String serviceName, SimpleClientHandler handler) {
-        try {
-            lock.lock();
-            log.debug("Add rpc client handler: {}, {}", serviceName, handler);
-            LocalServiceNodeTable.setNodeAlive(handler);
-            handlerStatus.signal();
-        } finally {
-            lock.unlock();
         }
     }
 
