@@ -10,7 +10,6 @@ import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;

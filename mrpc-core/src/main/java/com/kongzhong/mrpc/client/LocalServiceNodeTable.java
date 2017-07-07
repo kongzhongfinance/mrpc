@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.CollectionUtils;
@@ -139,8 +138,6 @@ public class LocalServiceNodeTable {
             node.setClientHandler(clientHandler);
             node.setAliveState(NodeAliveStateEnum.ALIVE);
         });
-        log.info("SERVICE_NODES: {}", SERVICE_NODES);
-        log.info("SERVICE_MAPPINGS: {}", SERVICE_MAPPINGS);
     }
 
     /**
@@ -260,10 +257,10 @@ public class LocalServiceNodeTable {
                     }
                 });
 
-        SERVICE_NODES.stream()
-                .filter(serviceNode -> serviceNode.getServerAddress().equals(Const.EMPTY_SERVER))
-                .findFirst()
-                .ifPresent(serviceNode -> serviceNode.getServices().remove(serviceName));
+//        SERVICE_NODES.stream()
+//                .filter(serviceNode -> serviceNode.getServerAddress().equals(Const.EMPTY_SERVER))
+//                .findFirst()
+//                .ifPresent(serviceNode -> serviceNode.getServices().remove(serviceName));
     }
 
     /**
