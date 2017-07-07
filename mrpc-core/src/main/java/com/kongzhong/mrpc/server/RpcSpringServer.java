@@ -42,7 +42,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        System.out.println(Const.BANNER);
+        System.out.println(Const.SERVER_BANNER);
 
         // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);

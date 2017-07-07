@@ -103,7 +103,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
             SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
 
-            log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
+            log.info("Bind services finished");
 
         } catch (Exception e) {
             log.error("RPC client init error", e);

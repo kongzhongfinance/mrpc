@@ -35,7 +35,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        System.out.println(Const.BANNER);
+        System.out.println(Const.CLIENT_BANNER);
 
         if (super.skipBind) {
             log.info("RPC client skip bind service.");
@@ -78,7 +78,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
 
         SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
 
-        log.info("Bind services finished, mrpc version [{}]", Const.VERSION);
+        log.info("Bind services finished.");
     }
 
     /***

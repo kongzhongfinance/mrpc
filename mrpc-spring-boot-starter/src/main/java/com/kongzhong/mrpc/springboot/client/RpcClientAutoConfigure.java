@@ -20,7 +20,7 @@ public class RpcClientAutoConfigure {
     @Bean
     @ConditionalOnBean(value = Referers.class)
     public BootRpcClient bootRpcClient() {
-        System.out.println(Const.BANNER);
+        System.out.println(Const.CLIENT_BANNER);
         return new BootRpcClient();
     }
 

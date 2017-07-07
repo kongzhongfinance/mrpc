@@ -63,7 +63,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Bean
     public ServiceBeanProcessor initBean() {
-        System.out.println(Const.BANNER);
+        System.out.println(Const.SERVER_BANNER);
         return new ServiceBeanProcessor(rpcMapping);
     }
 
