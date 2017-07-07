@@ -13,15 +13,12 @@
         <module>mrpc-common</module>
         <module>mrpc-core</module>
         <module>mrpc-registry-zk</module>
-        <module>mrpc-registry-consul</module>
         <module>mrpc-demo</module>
         <module>mrpc-serialize</module>
         <module>mrpc-metric-influxdb</module>
         <module>mrpc-spring-boot-starter</module>
         <module>mrpc-admin</module>
-        <module>mrpc-trace-zipkin</module>
         <module>mrpc-interceptor-validator</module>
-        <module>mrpc-trace</module>
     </modules>
 
     <properties>
