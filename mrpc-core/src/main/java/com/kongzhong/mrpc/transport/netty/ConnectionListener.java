@@ -5,6 +5,7 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
+import com.kongzhong.mrpc.utils.HttpRequest;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoop;
@@ -55,6 +56,23 @@ public class ConnectionListener implements ChannelFutureListener {
 
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
+            if (isHttp) {
+                future.channel().eventLoop().scheduleAtFixedRate(() -> {
+                    try {
+                        long start = System.currentTimeMillis();
+                        int code = HttpRequest.get("http://" + nettyClient.getAddress() + "/status")
+                                .connectTimeout(10_000)
+                                .readTimeout(5000)
+                                .code();
+                        if (code == 200) {
+                            log.info("Rpc send ping for {}  after 0ms", future.channel(), (System.currentTimeMillis() - start));
+                        }
+                    } catch (Exception e) {
+                        log.error("Rpc send ping error", e);
+                    }
+                }, 0, 10, TimeUnit.SECONDS);
+            }
         }
     }
+
 }

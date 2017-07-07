@@ -322,8 +322,8 @@ public abstract class SimpleRpcClient {
      * 停止客户端，释放资源
      */
     public void shutdown() {
-        log.info("Stop mrpc client");
-        Connections.me().shutdown();
-        serviceDiscoveryMap.values().forEach(serviceDiscovery -> serviceDiscovery.stop());
+//        log.info("Stop mrpc client");
+//        Connections.me().shutdown();
+//        serviceDiscoveryMap.values().forEach(serviceDiscovery -> serviceDiscovery.stop());
     }
 }

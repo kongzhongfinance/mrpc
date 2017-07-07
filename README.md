@@ -48,8 +48,9 @@ public class UserServiceImpl implements UserService{
 
 1. 重新本地服务缓存实现
 2. 添加服务端定时推送数据到 `admin`
-3. 支持自动发现本地IP
+3. 支持自动发现本地`IP`
 4. 支持无序启动服务
+5. 添加客户端定时 `ping` 功能
 
 #### 0.0.8-SNAPSHOT
 

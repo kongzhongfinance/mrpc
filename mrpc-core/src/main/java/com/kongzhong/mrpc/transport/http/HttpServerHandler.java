@@ -60,6 +60,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         String path = queryDecoder.path();
 
         if ("/status".equals(path)) {
+            log.info("Rpc receive ping for {}", ctx.channel());
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
             ctx.writeAndFlush(httpResponse);
