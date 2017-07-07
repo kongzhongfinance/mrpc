@@ -83,6 +83,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.retryCount = clientConfig.getRetryCount();
         super.retryInterval = clientConfig.getRetryInterval();
         super.waitTimeout = clientConfig.getWaitTimeout();
+        super.pingInterval = clientConfig.getPingInterval();
 
         // 注册中心
         if (CollectionUtils.isNotEmpty(commonProperties.getRegistry())) {

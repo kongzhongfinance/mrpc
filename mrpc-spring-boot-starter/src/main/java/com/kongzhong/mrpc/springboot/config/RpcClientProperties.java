@@ -40,6 +40,9 @@ public class RpcClientProperties {
     // 客户端连接超时时间，单位/毫秒 默认10秒
     private int waitTimeout = 10_000;
 
+    // 客户端ping间隔
+    private int pingInterval = -1;
+
     // FailOver重试次数
     private int failOverRetry = 3;
 

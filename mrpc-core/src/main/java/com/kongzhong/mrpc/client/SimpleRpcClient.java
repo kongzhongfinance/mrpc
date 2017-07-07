@@ -71,25 +71,41 @@ public abstract class SimpleRpcClient {
     @Setter
     protected String haStrategy;
 
-    // 跳过服务绑定
+    /**
+     * 跳过服务绑定
+     */
     @Setter
     protected Boolean skipBind = false;
 
-    // 客户端服务调用超时，单位/毫秒
+    /**
+     * 客户端服务调用超时，单位/毫秒
+     */
     @Setter
     protected int waitTimeout = 10_000;
 
-    // 快速失效重试次数
+    /**
+     * 快速失效重试次数
+     */
     @Setter
     protected int failOverRetry = 3;
 
-    // 重试间隔，单位/毫秒 默认每3秒重连一次
+    /**
+     * 客户端断线重连间隔，单位/毫秒 默认每3秒重连一次
+     */
     @Setter
     protected int retryInterval = 3000;
 
-    // 重试次数，默认10次
+    /**
+     * 客户端断线重连次数，默认10次
+     */
     @Setter
     protected int retryCount = 10;
+
+    /**
+     * 客户端ping间隔
+     */
+    @Setter
+    protected int pingInterval = -1;
 
     /**
      * 服务注册实例
@@ -177,6 +193,7 @@ public abstract class SimpleRpcClient {
         ClientConfig.me().setRetryInterval(retryInterval);
         ClientConfig.me().setRetryCount(retryCount);
         ClientConfig.me().setWaitTimeout(waitTimeout);
+        ClientConfig.me().setPingInterval(pingInterval);
         ClientConfig.me().setTransport(transportEnum);
 
         log.info("{}", ClientConfig.me());

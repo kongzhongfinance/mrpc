@@ -59,6 +59,8 @@ public class PropertiesParse {
 
         clientProperties.setWaitTimeout(Integer.valueOf(env.getProperty(WAIT_TIMEOUT_STYLE1_CLIENT, env.getProperty(WAIT_TIMEOUT_STYLE2_CLIENT, "10000"))));
 
+        clientProperties.setPingInterval(Integer.valueOf(env.getProperty(PING_INTERVAL_STYLE1_CLIENT, env.getProperty(PING_INTERVAL_STYLE2_CLIENT, "-1"))));
+
         clientProperties.setFailOverRetry(Integer.valueOf(env.getProperty(FAILOVER_TRCRY_NUMBER_STYLE1_CLIENT, env.getProperty(FAILOVER_TRCRY_NUMBER_STYLE2_CLIENT, "3"))));
 
         clientProperties.setSkipBind(Boolean.valueOf(env.getProperty(SKIP_BIND_SERVICE_STYLE1_CLIENT, env.getProperty(SKIP_BIND_SERVICE_STYLE2_CLIENT, Boolean.FALSE.toString()))));

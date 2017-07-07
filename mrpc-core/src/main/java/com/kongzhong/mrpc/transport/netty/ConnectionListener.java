@@ -56,7 +56,7 @@ public class ConnectionListener implements ChannelFutureListener {
 
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
-            if (isHttp) {
+            if (isHttp && ClientConfig.me().getPingInterval() > 0) {
                 future.channel().eventLoop().scheduleAtFixedRate(() -> {
                     try {
                         long start = System.currentTimeMillis();
@@ -65,12 +65,12 @@ public class ConnectionListener implements ChannelFutureListener {
                                 .readTimeout(5000)
                                 .code();
                         if (code == 200) {
-                            log.info("Rpc send ping for {}  after 0ms", future.channel(), (System.currentTimeMillis() - start));
+                            log.info("Rpc send ping for {} after 0ms", future.channel(), (System.currentTimeMillis() - start));
                         }
                     } catch (Exception e) {
-                        log.error("Rpc send ping error", e);
+                        log.warn("Rpc send ping error: {}", e.getMessage());
                     }
-                }, 0, 10, TimeUnit.SECONDS);
+                }, 0, ClientConfig.me().getPingInterval(), TimeUnit.MILLISECONDS);
             }
         }
     }

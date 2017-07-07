@@ -66,6 +66,10 @@ public interface Const {
     String WAIT_TIMEOUT_STYLE1_CLIENT = "mrpc.client.wait-timeout";
     String WAIT_TIMEOUT_STYLE2_CLIENT = "mrpc.client.waitTimeout";
 
+    // 客户端定时ping服务端间隔
+    String PING_INTERVAL_STYLE1_CLIENT = "mrpc.client.pingInterval";
+    String PING_INTERVAL_STYLE2_CLIENT = "mrpc.client.ping-interval";
+
     // 客户端FailOver重试次数
     String FAILOVER_TRCRY_NUMBER_STYLE1_CLIENT = "mrpc.client.failover-retry";
     String FAILOVER_TRCRY_NUMBER_STYLE2_CLIENT = "mrpc.client.failoverRetry";

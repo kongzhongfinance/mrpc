@@ -6,7 +6,7 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
 
-    <mrpc:clientConfig appId="demo" transport="http"/>
+    <mrpc:clientConfig appId="demo" transport="http" pingInterval="10000"/>
 
     <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181"/>
 

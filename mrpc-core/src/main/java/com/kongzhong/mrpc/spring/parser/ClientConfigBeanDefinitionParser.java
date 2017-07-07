@@ -22,6 +22,7 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         String failOverRetry = element.getAttribute("failOverRetry");
         String retryCount = element.getAttribute("retryCount");
         String retryInterval = element.getAttribute("retryInterval");
+        String pingInterval = element.getAttribute("pingInterval");
 
         builder.addPropertyValue("appId", appId);
         builder.addPropertyValue("transport", transport);
@@ -32,6 +33,7 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         builder.addPropertyValue("skipBind", Boolean.valueOf(skipBind));
         builder.addPropertyValue("retryCount", Integer.valueOf(retryCount));
         builder.addPropertyValue("retryInterval", Integer.valueOf(retryInterval));
+        builder.addPropertyValue("pingInterval", Integer.valueOf(pingInterval));
 
         return builder.getBeanDefinition();
     }
