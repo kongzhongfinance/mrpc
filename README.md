@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService{
 1. 重新本地服务缓存实现
 2. 添加服务端定时推送数据到 `admin`
 3. 支持自动发现本地IP
-4. 支持接口多实现指定名称使用
+4. 支持无序启动服务
 
 #### 0.0.8-SNAPSHOT
 
