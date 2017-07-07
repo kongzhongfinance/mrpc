@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.springboot.client;
 import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
@@ -53,7 +54,7 @@ public class PropertiesParse {
 
         clientProperties.setLbStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT, LbStrategyEnum.ROUND.name())));
 
-        clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT)));
+        clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT, HaStrategyEnum.FAILOVER.name())));
 
         clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_STYLE1_CLIENT, env.getProperty(DIRECT_ADDRESS_STYLE2_CLIENT)));
 
