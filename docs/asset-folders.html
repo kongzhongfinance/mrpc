@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>资源文件夹 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/docs/asset-folders.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/docs/asset-folders.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+</head>
+<body class="">
+  <div id="container">
+    
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/mrpc" id="logo">mrpc</a>
+    </h1>
+    <nav id="main-nav">
+      <ul>
+        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/pages/contribute.html" class="main-nav-link">参与贡献</a></li>
+        <li class="main-nav-item">
+          <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link">GitHub</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select">
+        
+          <option data-page-lang="zh-cn" value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    
+    <div id="search-btn-wrap" class="main-nav-item">
+      <input type="text" class="st-default-search-input">
+    </div>
+    
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">资源文件夹</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/docs/asset-folders.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
+              </header>
+              
+              <div>
+                <strong class="sidebar-title">目录</strong>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章资源文件夹"><span class="toc-text">文章资源文件夹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#相对路径引用的标签插件"><span class="toc-text">相对路径引用的标签插件</span></a></li></ol>
+              </div>
+              <div class="article-content" itemprop="articleBody" data-swiftype-index="true">
+                <p>资源（Asset）代表 <code>source</code> 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 <code>source/images</code> 文件夹中。然后通过类似于 <code>![](/images/image.jpg)</code> 的方法访问它们。</p>
+<h2 id="文章资源文件夹" class="article-heading"><a href="#文章资源文件夹" class="headerlink" title="文章资源文件夹"></a>文章资源文件夹<a class="article-anchor" href="#文章资源文件夹" aria-hidden="true"></a></h2><p>对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 <code>config.yml</code> 文件中的 <code>post_asset_folder</code> 选项设为 <code>true</code> 来打开。</p>
+<figure class="highlight yaml"><figcaption><span>_config.yml</span></figcaption><table><tr><td class="code"><pre><div class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></div></pre></td></tr></table></figure>
+<p>当资源文件管理功能打开后，Hexo将会在你每一次通过 <code>hexo new [layout] &lt;title&gt;</code> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。</p>
+<h2 id="相对路径引用的标签插件" class="article-heading"><a href="#相对路径引用的标签插件" class="headerlink" title="相对路径引用的标签插件"></a>相对路径引用的标签插件<a class="article-anchor" href="#相对路径引用的标签插件" aria-hidden="true"></a></h2><p>通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在Hexo 2时代，社区创建了很多插件来解决这个问题。但是，随着Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&#123;% asset_path slug %&#125;</div><div class="line">&#123;% asset_img slug [title] %&#125;</div><div class="line">&#123;% asset_link slug [title] %&#125;</div></pre></td></tr></table></figure>
+<p>比如说：当你打开文章资源文件夹功能后，你把一个 <code>example.jpg</code> 图片放在了你的资源文件夹中，如果通过使用相对路径的常规 markdown 语法 <code>![](/example.jpg)</code> ，它将 <em>不会</em> 出现在首页上。（但是它会在文章中按你期待的方式工作）</p>
+<p>正确的引用图片方式是使用下列的标签插件而不是 markdown ：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&#123;% asset_img example.jpg This is an example image %&#125;</div></pre></td></tr></table></figure>
+<p>通过这种方式，图片将会同时出现在文章和主页以及归档页中。</p>
+
+
+                
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-08T11:19:57.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
+                <a href="index.html" class="article-footer-next" title="概述"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"><strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link">概述</a><a href="architecture-design.html" class="sidebar-link">框架设计</a><strong class="sidebar-title">快速开始</strong><a href="deployment-env.html" class="sidebar-link">开发环境</a><a href="helloworld-spring.html" class="sidebar-link">Spring</a><a href="helloworld-springboot.html" class="sidebar-link">SpringBoot</a><strong class="sidebar-title">注册中心</strong><a href="zookeeper.html" class="sidebar-link">Zookeeper</a><strong class="sidebar-title">进阶使用</strong><a href="client-config.html" class="sidebar-link">客户端配置</a><a href="server-config.html" class="sidebar-link">服务端配置</a><a href="interceptor.html" class="sidebar-link">拦截器</a><strong class="sidebar-title">其他</strong><a href="faq.html" class="sidebar-link">常见问题</a></div>
+</aside>
+    </div>
+  </div>
+</div>
+  </div>
+  <footer id="footer">
+  <div class="wrapper">
+    <div class="inner">
+      <div class="friend-links">
+        
+        <a href="https://jr.kongzhong.com" target="_blank">空中金融</a>
+        
+        <a href="http://www.kongzhong.com" target="_blank">空中网</a>
+        
+        <a href="https://github.com" target="_blank">Github</a>
+        
+        <a href="mailto:zhuye@kongzhong.com" target="_blank">加入我们</a>
+        
+      </div>
+      <div id="footer-copyright">
+        &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+        Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+      </div>
+      <div id="footer-links">
+        <a href="http://weibo.com/" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+        <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <a href="https://twitter.com/" class="footer-link" target="_blank"><i class="fa fa-twitter"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/pages/contribute.html" class="mobile-nav-link">参与贡献</a></li>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link">概述</a><a href="architecture-design.html" class="mobile-nav-link">框架设计</a><strong class="mobile-nav-title">快速开始</strong><a href="deployment-env.html" class="mobile-nav-link">开发环境</a><a href="helloworld-spring.html" class="mobile-nav-link">Spring</a><a href="helloworld-springboot.html" class="mobile-nav-link">SpringBoot</a><strong class="mobile-nav-title">注册中心</strong><a href="zookeeper.html" class="mobile-nav-link">Zookeeper</a><strong class="mobile-nav-title">进阶使用</strong><a href="client-config.html" class="mobile-nav-link">客户端配置</a><a href="server-config.html" class="mobile-nav-link">服务端配置</a><a href="interceptor.html" class="mobile-nav-link">拦截器</a><strong class="mobile-nav-title">其他</strong><a href="faq.html" class="mobile-nav-link">常见问题</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="//cdn.jsdelivr.net/retinajs/1.1.0/retina.min.js" async></script>
+
+<script src="/mrpc/js/tab.js"></script>
+</body>
+</html>

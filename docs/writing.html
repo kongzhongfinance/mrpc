@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>写作 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/docs/writing.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/docs/writing.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+</head>
+<body class="">
+  <div id="container">
+    
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/mrpc" id="logo">mrpc</a>
+    </h1>
+    <nav id="main-nav">
+      <ul>
+        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/pages/contribute.html" class="main-nav-link">参与贡献</a></li>
+        <li class="main-nav-item">
+          <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link">GitHub</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select">
+        
+          <option data-page-lang="zh-cn" value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    
+    <div id="search-btn-wrap" class="main-nav-item">
+      <input type="text" class="st-default-search-input">
+    </div>
+    
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">写作</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/docs/writing.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
+              </header>
+              
+              <div>
+                <strong class="sidebar-title">目录</strong>
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#布局（Layout）"><span class="toc-text">布局（Layout）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#文件名称"><span class="toc-text">文件名称</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#草稿"><span class="toc-text">草稿</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模版（Scaffold）"><span class="toc-text">模版（Scaffold）</span></a>
+              </div>
+              <div class="article-content" itemprop="articleBody" data-swiftype-index="true">
+                <p>你可以执行下列命令来创建一篇新文章。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo new [layout] &lt;title&gt;</div></pre></td></tr></table></figure>
+<p>您可以在命令中指定文章的布局（layout），默认为 <code>post</code>，可以通过修改 <code>_config.yml</code> 中的 <code>default_layout</code> 参数来指定默认布局。</p>
+<h3 id="布局（Layout）" class="article-heading"><a href="#布局（Layout）" class="headerlink" title="布局（Layout）"></a>布局（Layout）<a class="article-anchor" href="#布局（Layout）" aria-hidden="true"></a></h3><p>Hexo 有三种默认布局：<code>post</code>、<code>page</code> 和 <code>draft</code>，它们分别对应不同的路径，而您自定义的其他布局和 <code>post</code> 相同，都将储存到 <code>source/_posts</code> 文件夹。</p>
+<table>
+<thead>
+<tr>
+<th>布局</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>post</code></td>
+<td><code>source/_posts</code></td>
+</tr>
+<tr>
+<td><code>page</code></td>
+<td><code>source</code></td>
+</tr>
+<tr>
+<td><code>draft</code></td>
+<td><code>source/_drafts</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="note tip"><strong class="note-title">不要处理我的文章</strong><p>如果你不想你的文章被处理，你可以将 Front-Matter 中的<code>layout:</code> 设为 <code>false</code> 。</p>
+</blockquote>
+<h3 id="文件名称" class="article-heading"><a href="#文件名称" class="headerlink" title="文件名称"></a>文件名称<a class="article-anchor" href="#文件名称" aria-hidden="true"></a></h3><p>Hexo 默认以标题做为文件名称，但您可编辑 <code>new_post_name</code> 参数来改变默认的文件名称，举例来说，设为 <code>:year-:month-:day-:title.md</code> 可让您更方便的通过日期来管理文章。</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:title</code></td>
+<td>标题（小写，空格将会被替换为短杠）</td>
+</tr>
+<tr>
+<td><code>:year</code></td>
+<td>建立的年份，比如， <code>2015</code></td>
+</tr>
+<tr>
+<td><code>:month</code></td>
+<td>建立的月份（有前导零），比如， <code>04</code></td>
+</tr>
+<tr>
+<td><code>:i_month</code></td>
+<td>建立的月份（无前导零），比如， <code>4</code></td>
+</tr>
+<tr>
+<td><code>:day</code></td>
+<td>建立的日期（有前导零），比如， <code>07</code></td>
+</tr>
+<tr>
+<td><code>:i_day</code></td>
+<td>建立的日期（无前导零），比如， <code>7</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="草稿" class="article-heading"><a href="#草稿" class="headerlink" title="草稿"></a>草稿<a class="article-anchor" href="#草稿" aria-hidden="true"></a></h3><p>刚刚提到了 Hexo 的一种特殊布局：<code>draft</code>，这种布局在建立时会被保存到 <code>source/_drafts</code> 文件夹，您可通过 <code>publish</code> 命令将草稿移动到 <code>source/_posts</code> 文件夹，该命令的使用方式与 <code>new</code> 十分类似，您也可在命令中指定 <code>layout</code> 来指定布局。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo publish [layout] &lt;title&gt;</div></pre></td></tr></table></figure>
+<p>草稿默认不会显示在页面中，您可在执行时加上 <code>--draft</code> 参数，或是把 <code>render_drafts</code> 参数设为 <code>true</code> 来预览草稿。</p>
+<h2 id="模版（Scaffold）" class="article-heading"><a href="#模版（Scaffold）" class="headerlink" title="模版（Scaffold）"></a>模版（Scaffold）<a class="article-anchor" href="#模版（Scaffold）" aria-hidden="true"></a></h2><p>在新建文章时，Hexo 会根据 <code>scaffolds</code> 文件夹内相对应的文件来建立文件，例如：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo new photo <span class="string">"My Gallery"</span></div></pre></td></tr></table></figure>
+<p>在执行这行指令时，Hexo 会尝试在 <code>scaffolds</code> 文件夹中寻找 <code>photo.md</code>，并根据其内容建立文章，以下是您可以在模版中使用的变量：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layout</code></td>
+<td>布局</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>标题</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>文件建立日期</td>
+</tr>
+</tbody>
+</table>
+
+
+                
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-08T11:19:57.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
+                <a href="index.html" class="article-footer-next" title="概述"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"><strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link">概述</a><a href="architecture-design.html" class="sidebar-link">框架设计</a><strong class="sidebar-title">快速开始</strong><a href="deployment-env.html" class="sidebar-link">开发环境</a><a href="helloworld-spring.html" class="sidebar-link">Spring</a><a href="helloworld-springboot.html" class="sidebar-link">SpringBoot</a><strong class="sidebar-title">注册中心</strong><a href="zookeeper.html" class="sidebar-link">Zookeeper</a><strong class="sidebar-title">进阶使用</strong><a href="client-config.html" class="sidebar-link">客户端配置</a><a href="server-config.html" class="sidebar-link">服务端配置</a><a href="interceptor.html" class="sidebar-link">拦截器</a><strong class="sidebar-title">其他</strong><a href="faq.html" class="sidebar-link">常见问题</a></div>
+</aside>
+    </div>
+  </div>
+</div>
+  </div>
+  <footer id="footer">
+  <div class="wrapper">
+    <div class="inner">
+      <div class="friend-links">
+        
+        <a href="https://jr.kongzhong.com" target="_blank">空中金融</a>
+        
+        <a href="http://www.kongzhong.com" target="_blank">空中网</a>
+        
+        <a href="https://github.com" target="_blank">Github</a>
+        
+        <a href="mailto:zhuye@kongzhong.com" target="_blank">加入我们</a>
+        
+      </div>
+      <div id="footer-copyright">
+        &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+        Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+      </div>
+      <div id="footer-links">
+        <a href="http://weibo.com/" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+        <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <a href="https://twitter.com/" class="footer-link" target="_blank"><i class="fa fa-twitter"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/pages/contribute.html" class="mobile-nav-link">参与贡献</a></li>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link">概述</a><a href="architecture-design.html" class="mobile-nav-link">框架设计</a><strong class="mobile-nav-title">快速开始</strong><a href="deployment-env.html" class="mobile-nav-link">开发环境</a><a href="helloworld-spring.html" class="mobile-nav-link">Spring</a><a href="helloworld-springboot.html" class="mobile-nav-link">SpringBoot</a><strong class="mobile-nav-title">注册中心</strong><a href="zookeeper.html" class="mobile-nav-link">Zookeeper</a><strong class="mobile-nav-title">进阶使用</strong><a href="client-config.html" class="mobile-nav-link">客户端配置</a><a href="server-config.html" class="mobile-nav-link">服务端配置</a><a href="interceptor.html" class="mobile-nav-link">拦截器</a><strong class="mobile-nav-title">其他</strong><a href="faq.html" class="mobile-nav-link">常见问题</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="//cdn.jsdelivr.net/retinajs/1.1.0/retina.min.js" async></script>
+
+<script src="/mrpc/js/tab.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>mrpc - 轻量级、分布式服务治理框架</title>
+  <subtitle>使用netty,spring,kyro,zookeeper搭建的高可用rpc服务框架</subtitle>
+  <link href="/mrpc/atom.xml" rel="self"/>
+  
+  <link href="https://kongzhongfinance.github.io/mrpc/"/>
+  <updated>2017-07-08T11:41:26.000Z</updated>
+  <id>https://kongzhongfinance.github.io/mrpc/</id>
+  
+  <author>
+    <name>biezhi</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mrpc 0.0.9-SNAPSHOT</title>
+    <link href="https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/"/>
+    <id>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</id>
+    <published>2017-07-06T16:00:00.000Z</published>
+    <updated>2017-07-08T11:41:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<ol>
+<li>重新本地服务缓存实现</li>
+<li>添加服务端定时推送数据到 <code>admin</code></li>
+<li>支持自动发现本地<code>IP</code></li>
+<li>支持无序启动服务</li>
+<li>添加客户端定时 <code>ping</code> 功能</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ol&gt;
+&lt;li&gt;重新本地服务缓存实现&lt;/li&gt;
+&lt;li&gt;添加服务端定时推送数据到 &lt;code&gt;admin&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持自动发现本地&lt;code&gt;IP&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持无序启动服务&lt;/li&gt;
+&lt;li&gt;添加客户端定时 &lt;code&gt;ping&lt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>mrpc 0.0.8-SNAPSHOT</title>
+    <link href="https://kongzhongfinance.github.io/mrpc/news/2017/06/29/mrpc-0.0.8-snapshot/"/>
+    <id>https://kongzhongfinance.github.io/mrpc/news/2017/06/29/mrpc-0.0.8-snapshot/</id>
+    <published>2017-06-28T16:00:00.000Z</published>
+    <updated>2017-07-08T11:41:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<ol>
+<li>客户端断线自动重连</li>
+<li>允许跳过启动绑定服务</li>
+<li>允许自定义异常</li>
+<li>支持方法级别的高可用策略配置</li>
+<li>修复本地服务缓存bug</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ol&gt;
+&lt;li&gt;客户端断线自动重连&lt;/li&gt;
+&lt;li&gt;允许跳过启动绑定服务&lt;/li&gt;
+&lt;li&gt;允许自定义异常&lt;/li&gt;
+&lt;li&gt;支持方法级别的高可用策略配置&lt;/li&gt;
+&lt;li&gt;修复本地服务缓存bug&lt;/li&gt;
+&lt;/ol&gt;
+
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>mrpc 0.0.7-SNAPSHOT</title>
+    <link href="https://kongzhongfinance.github.io/mrpc/news/2017/06/22/mrpc-0.0.7-snapshot/"/>
+    <id>https://kongzhongfinance.github.io/mrpc/news/2017/06/22/mrpc-0.0.7-snapshot/</id>
+    <published>2017-06-21T16:00:00.000Z</published>
+    <updated>2017-07-08T11:41:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<ol>
+<li>增加多注册中心配置</li>
+<li>增加单个服务更小粒度配置</li>
+<li>增加直连服务选项</li>
+<li>修复方法泛型入参/返回值</li>
+<li>客户端增加拦截器</li>
+<li>增加 <code>mrpc</code> sehema 配置项</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ol&gt;
+&lt;li&gt;增加多注册中心配置&lt;/li&gt;
+&lt;li&gt;增加单个服务更小粒度配置&lt;/li&gt;
+&lt;li&gt;增加直连服务选项&lt;/li&gt;
+&lt;li&gt;修复方法泛型入参/返回值&lt;/li&gt;
+&lt;li&gt;客户端增加拦截器&lt;/li&gt;
+&lt;li&gt;增加 &lt;code&gt;mrpc&lt;/code&gt; sehema 配置项&lt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
