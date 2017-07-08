@@ -37,6 +37,13 @@
   </url>
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/api/console.html</loc>
+    
+    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/api/deployer.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
@@ -45,13 +52,6 @@
   
   <url>
     <loc>https://kongzhongfinance.github.io/mrpc/api/events.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/api/console.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -93,14 +93,14 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/api/posts.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/api/migrator.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/api/migrator.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/api/posts.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -114,7 +114,21 @@
   </url>
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/api/renderer.html</loc>
+    
+    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/api/rendering.html</loc>
+    
+    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/api/router.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -142,7 +156,7 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/api/renderer.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/writing.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -156,20 +170,6 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/themes.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/asset-folders.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/configuration.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
@@ -177,14 +177,14 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/data-files.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/contributing.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/contributing.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/data-files.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -212,13 +212,6 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/index.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/helpers.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
@@ -226,7 +219,7 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/migration.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/index.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -240,6 +233,13 @@
   </url>
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/migration.html</loc>
+    
+    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/permalinks.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
@@ -247,14 +247,14 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/server.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/plugins.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/plugins.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/server.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
@@ -282,6 +282,13 @@
   </url>
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/themes.html</loc>
+    
+    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/troubleshooting.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
@@ -296,14 +303,7 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/writing.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/api/router.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/asset-folders.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
