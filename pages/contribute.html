@@ -2,15 +2,15 @@
 <html lang="zh-cn">
 <head prefix="og: http://ogp.me/ns#">
   <meta charset="utf-8">
-  <title>事件 | mrpc - 轻量级、分布式服务治理框架</title>
+  <title>参与贡献 | mrpc - 轻量级、分布式服务治理框架</title>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/api/events.html">
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/pages/contribute.html">
   <!-- Alternative links -->
   
     
-      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/api/events.html">
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/pages/contribute.html">
     
   
   <!-- Icon -->
@@ -49,7 +49,7 @@
     </h1>
     <nav id="main-nav">
       <ul>
-        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs/" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news/" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/contribute/" class="main-nav-link">参与贡献</a></li>
+        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/pages/contribute.html" class="main-nav-link">参与贡献</a></li>
         <li class="main-nav-item">
           <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link">GitHub</a>
         </li>
@@ -83,50 +83,22 @@
           <div class="article">
             <div class="inner">
               <header class="article-header">
-                <h1 class="article-title" itemprop="name">事件</h1>
-                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/api/events.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
+                <h1 class="article-title" itemprop="name">参与贡献</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/pages/contribute.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
               </header>
               
               <div>
                 <strong class="sidebar-title">目录</strong>
-                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#deployBefore"><span class="toc-text">deployBefore</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deployAfter"><span class="toc-text">deployAfter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#exit"><span class="toc-text">exit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#generateBefore"><span class="toc-text">generateBefore</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#generateAfter"><span class="toc-text">generateAfter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#new"><span class="toc-text">new</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#processBefore"><span class="toc-text">processBefore</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#processAfter"><span class="toc-text">processAfter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ready"><span class="toc-text">ready</span></a></li></ol>
+                
               </div>
               <div class="article-content" itemprop="articleBody" data-swiftype-index="true">
-                <p>Hexo 继承了 <a href="http://nodejs.org/api/events.html" target="_blank" rel="external">EventEmitter</a>，您可以用 <code>on</code> 方法监听 Hexo 所发布的事件，也可以使用 <code>emit</code> 方法对 Hexo 发布事件，更详细的说明请参阅 Node.js 的 API。</p>
-<h3 id="deployBefore" class="article-heading"><a href="#deployBefore" class="headerlink" title="deployBefore"></a>deployBefore<a class="article-anchor" href="#deployBefore" aria-hidden="true"></a></h3><p>在部署完成前发布。</p>
-<h3 id="deployAfter" class="article-heading"><a href="#deployAfter" class="headerlink" title="deployAfter"></a>deployAfter<a class="article-anchor" href="#deployAfter" aria-hidden="true"></a></h3><p>在部署成功后发布。</p>
-<h3 id="exit" class="article-heading"><a href="#exit" class="headerlink" title="exit"></a>exit<a class="article-anchor" href="#exit" aria-hidden="true"></a></h3><p>在 Hexo 结束前发布。</p>
-<h3 id="generateBefore" class="article-heading"><a href="#generateBefore" class="headerlink" title="generateBefore"></a>generateBefore<a class="article-anchor" href="#generateBefore" aria-hidden="true"></a></h3><p>在静态文件生成前发布。</p>
-<h3 id="generateAfter" class="article-heading"><a href="#generateAfter" class="headerlink" title="generateAfter"></a>generateAfter<a class="article-anchor" href="#generateAfter" aria-hidden="true"></a></h3><p>在静态文件生成后发布。</p>
-<h3 id="new" class="article-heading"><a href="#new" class="headerlink" title="new"></a>new<a class="article-anchor" href="#new" aria-hidden="true"></a></h3><p>在文章文件建立后发布。该事件返回文章参数。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.on(<span class="string">'new'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">post</span>)</span>&#123;</div><div class="line">  <span class="comment">// </span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th>资料</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>post.path</code></td>
-<td>文章文件的完整路径</td>
-</tr>
-<tr>
-<td><code>post.content</code></td>
-<td>文章文件的内容</td>
-</tr>
-</tbody>
-</table>
-<h3 id="processBefore" class="article-heading"><a href="#processBefore" class="headerlink" title="processBefore"></a>processBefore<a class="article-anchor" href="#processBefore" aria-hidden="true"></a></h3><p>在处理原始文件前发布。此事件会返回一个地址，代表 Box（Box）的根目录。</p>
-<h3 id="processAfter" class="article-heading"><a href="#processAfter" class="headerlink" title="processAfter"></a>processAfter<a class="article-anchor" href="#processAfter" aria-hidden="true"></a></h3><p>在原始文件处理后发布。此事件会返回一个地址，代表 Box（Box）的根目录。</p>
-<h3 id="ready" class="article-heading"><a href="#ready" class="headerlink" title="ready"></a>ready<a class="article-anchor" href="#ready" aria-hidden="true"></a></h3><p>在初始化完成后发布。</p>
+                <p>参与。</p>
 
 
                 <div class="donate-btn text-center"><a href="/donate.html" target="_blank">page.donate</a></div>
               </div>
               <footer class="article-footer">
-                <time class="article-footer-updated" datetime="2017-07-08T11:19:57.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
+                <time class="article-footer-updated" datetime="2017-07-08T13:31:40.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
                 
               </footer>
               
@@ -174,7 +146,7 @@
   <nav id="mobile-nav">
   <div id="mobile-nav-inner">
     <ul id="mobile-nav-list">
-      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs/" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news/" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/contribute/" class="mobile-nav-link">参与贡献</a></li>
+      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/pages/contribute.html" class="mobile-nav-link">参与贡献</a></li>
       <li class="mobile-nav-item">
         <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
       </li>
