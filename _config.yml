@@ -1,0 +1,31 @@
+# Site
+title: mrpc - 轻量级、分布式服务治理框架
+subtitle: 使用netty,spring,kyro,zookeeper搭建的高可用rpc服务框架
+description:
+author: biezhi
+language: zh-cn
+timezone: PRC
+
+# URL
+## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
+url: https://kongzhongfinance.github.io/mrpc
+root: /mrpc
+
+permalink: news/:year/:month/:day/:title/
+archive_dir: news
+code_dir: downloads/code
+new_post_name: :year-:month-:day-:title.md # File name of new posts
+post_asset_folder: true
+highlight:
+  enable: true
+  line_number: false
+per_page: 0
+
+github: kongzhongfinance/mrpc
+
+theme: navy
+deploy:
+  type: git
+  repo: https://github.com/kongzhongfinance/mrpc
+  branch: gh-pages
+

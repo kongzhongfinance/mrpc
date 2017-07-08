@@ -1,0 +1,30 @@
+.nav.nav-tabs
+    display:block
+    border-bottom: 1px solid #eee
+    li
+        margin-bottom:-1px
+        display: inline-block
+        position: relative
+
+        > a
+            margin-right: 2px
+            line-height: 1.5
+            display: block;
+            padding: 10px 15px;
+            border: 1px solid transparent
+            cursor: default
+            &:hover
+                border-color: #eee
+        &.active > a
+              &,
+              &:hover,
+              &:focus
+                color: #333
+                background-color: #eee
+                border: 1px solid #eee
+                border-bottom-color: transparent
+.tab-content
+  .tab-pane
+    display: none
+  .active
+    display: block
