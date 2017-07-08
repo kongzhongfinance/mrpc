@@ -1,6 +1,6 @@
 title: Hello World（Spring版本）
 --------------------
-## API
+## 1. API
 
 首先定义一个API接口
 
@@ -10,9 +10,9 @@ public interface UserService{
 }
 ```
 
-## 服务端
+## 2. 服务端
 
-### 添加依赖
+### 2.1 添加依赖
 
 ```xml
 <!-- 引入接口定义 -->
@@ -56,7 +56,7 @@ public interface UserService{
 </dependency>
 ```
 
-### 服务实现
+### 2.2 服务实现
 
 `mrpc` 支持注解的方式和 `xml` 配置方式将服务暴露出去
 
@@ -126,7 +126,7 @@ public class UserServiceImpl implments UserService{
 </beans>
 ```
 
-### 启动服务端
+### 2.3 启动服务端
 
 编写一个 `Java` 类启动服务端:
 
@@ -156,9 +156,9 @@ public class HelloWorldApplication {
 2017-07-08 22:10:14.964 [main] INFO  c.k.mrpc.server.SimpleRpcServer | Publish services finished, mrpc version [0.0.9-SNAPSHOT]
 ```
 
-## 客户端
+## 3. 客户端
 
-### 添加依赖
+### 3.1 添加依赖
 
 ```xml
 <!-- 引入接口定义 -->
@@ -202,7 +202,7 @@ public class HelloWorldApplication {
 </dependency>
 ```
 
-### 客户端调用
+### 3.2 客户端调用
 
 #### 硬编码
 
@@ -215,7 +215,7 @@ String result = userService.hello("jack");
 System.out.println(result);
 ```
 
-#### 配置文件
+#### 3.3 配置文件
 
 ```java
 ApplicationContext ctx = new ClassPathXmlApplicationContext("mrpc-client.xml");
@@ -255,7 +255,7 @@ public class SpringClientApplication {
 }
 ```
 
-### 在控制器中使用
+### 3.4 在控制器中使用
 
 ```java
 @RestController
