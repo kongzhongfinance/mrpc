@@ -91,7 +91,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
         } else {
             // update node list
-            Connections.me().asyncDirectConnect(clientBean.getServiceName(), addressSet);
+            Connections.me().syncDirectConnect(clientBean.getServiceName(), addressSet);
         }
     }
 

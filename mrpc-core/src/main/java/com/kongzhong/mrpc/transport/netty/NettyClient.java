@@ -12,7 +12,6 @@ import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
 import com.kongzhong.mrpc.utils.HttpRequest;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -54,6 +53,11 @@ public class NettyClient {
     @Setter
     private TransportEnum transport = ClientConfig.me().getTransport();
 
+    /**
+     * Channel调度map
+     */
+    private static final Map<Channel, ScheduledFuture> scheduledFutureMap = new HashMap<>();
+
     public NettyClient(NettyConfig nettyConfig, String address) {
         this.nettyConfig = nettyConfig;
         this.address = address;
@@ -62,6 +66,21 @@ public class NettyClient {
         int port = Integer.valueOf(address.split(":")[1]);
         this.serverAddress = SocketUtils.socketAddress(host, port);
 
+    }
+
+    private Bootstrap createBootstrap(EventLoopGroup eventLoopGroup) {
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(eventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnTimeout())
+                .option(ChannelOption.SO_KEEPALIVE, true);
+
+        if (this.transport.equals(TransportEnum.HTTP)) {
+            bootstrap.handler(new HttpClientChannelInitializer(this));
+        } else {
+            bootstrap.handler(new TcpClientChannelInitializer(this));
+        }
+        return bootstrap;
     }
 
     /**
@@ -75,17 +94,7 @@ public class NettyClient {
             return null;
         }
 
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(eventLoopGroup)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnTimeout())
-                .option(ChannelOption.SO_KEEPALIVE, true);
-
-        if (this.transport.equals(TransportEnum.HTTP)) {
-            bootstrap.handler(new HttpClientChannelInitializer(this));
-        } else {
-            bootstrap.handler(new TcpClientChannelInitializer(this));
-        }
+        Bootstrap bootstrap = this.createBootstrap(eventLoopGroup);
         // 和服务端建立连接,然后异步获取运行结果
         try {
             Channel channel = bootstrap.connect(serverAddress).sync().channel();
@@ -105,25 +114,7 @@ public class NettyClient {
             LocalServiceNodeTable.setNodeAlive(handler);
 
             if (isHttp && ClientConfig.me().getPingInterval() > 0) {
-                ScheduledFuture scheduledFuture = channel.eventLoop().scheduleAtFixedRate(() -> {
-                    try {
-                        if (!channel.isActive()) {
-                            closeSchedule(channel);
-                            return;
-                        }
-                        long start = System.currentTimeMillis();
-                        int code = HttpRequest.get("http://" + this.getAddress() + "/status")
-                                .connectTimeout(10_000)
-                                .readTimeout(5000)
-                                .code();
-                        if (code == 200) {
-                            log.info("Rpc send ping for {} after 0ms", channel, (System.currentTimeMillis() - start));
-                        }
-                    } catch (Exception e) {
-                        log.warn("Rpc send ping error: {}", e.getMessage());
-                    }
-                }, 0, ClientConfig.me().getPingInterval(), TimeUnit.MILLISECONDS);
-                scheduledFutureMap.put(channel, scheduledFuture);
+                enabledPing(channel);
             }
             return channel;
         } catch (Exception e) {
@@ -131,30 +122,46 @@ public class NettyClient {
         }
     }
 
-    public Bootstrap asyncCreateBootstrap(EventLoopGroup eventLoopGroup) {
+    /**
+     * 异步创建Channel
+     *
+     * @param eventLoopGroup
+     */
+    public void asyncCreateChannel(EventLoopGroup eventLoopGroup) {
         if (LocalServiceNodeTable.isAlive(this.getAddress())) {
-            return null;
+            return;
         }
-
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(eventLoopGroup)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnTimeout())
-                .option(ChannelOption.SO_KEEPALIVE, true);
-
-        if (this.transport.equals(TransportEnum.HTTP)) {
-            bootstrap.handler(new HttpClientChannelInitializer(this));
-        } else {
-            bootstrap.handler(new TcpClientChannelInitializer(this));
-        }
+        Bootstrap bootstrap = this.createBootstrap(eventLoopGroup);
         // 和服务端建立连接,然后异步获取运行结果
-        ChannelFuture channelFuture = bootstrap.connect(serverAddress);
-        // 给结果绑定 Listener,
-        channelFuture.addListener(new ConnectionListener(this));
-        return bootstrap;
+        bootstrap.connect(serverAddress).addListener(new ConnectionListener(this));
     }
 
-    private static final Map<Channel, ScheduledFuture> scheduledFutureMap = new HashMap<>();
+    /**
+     * 开启客户端PING
+     *
+     * @param channel
+     */
+    void enabledPing(Channel channel) {
+        ScheduledFuture scheduledFuture = channel.eventLoop().scheduleAtFixedRate(() -> {
+            try {
+                if (!channel.isActive()) {
+                    closeSchedule(channel);
+                    return;
+                }
+                long start = System.currentTimeMillis();
+                int code = HttpRequest.get("http://" + this.getAddress() + "/status")
+                        .connectTimeout(10_000)
+                        .readTimeout(5000)
+                        .code();
+                if (code == 200) {
+                    log.debug("Rpc send ping for {} after 0ms", channel, (System.currentTimeMillis() - start));
+                }
+            } catch (Exception e) {
+                log.warn("Rpc send ping error: {}", e.getMessage());
+            }
+        }, 0, ClientConfig.me().getPingInterval(), TimeUnit.MILLISECONDS);
+        scheduledFutureMap.put(channel, scheduledFuture);
+    }
 
     private void closeSchedule(Channel channel) {
         scheduledFutureMap.get(channel).cancel(true);

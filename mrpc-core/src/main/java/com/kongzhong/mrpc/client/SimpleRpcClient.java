@@ -202,7 +202,7 @@ public abstract class SimpleRpcClient {
     }
 
     /**
-     * 异步直连
+     * 同步直连
      */
     protected void directConnect() {
         Map<String, Set<String>> mappings = Maps.newHashMap();
@@ -213,7 +213,7 @@ public abstract class SimpleRpcClient {
         if (null != nettyConfig) {
             Connections.me().setNettyConfig(nettyConfig);
         }
-        Connections.me().asyncConnect(mappings);
+        Connections.me().syncConnect(mappings);
     }
 
     /**

@@ -75,7 +75,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         ctx.channel().close().sync();
 //        if (nettyClient.isRunning()) {
 //            // 断线重连
-//            nettyClient.asyncCreateBootstrap(ctx.channel().eventLoop());
+//            nettyClient.asyncCreateChannel(ctx.channel().eventLoop());
 //        }
 //        super.channelInactive(ctx);
     }

@@ -2,20 +2,23 @@ package com.kongzhong.mrpc.client.proxy;
 
 import com.google.common.reflect.AbstractInvocationHandler;
 import com.kongzhong.mrpc.annotation.Command;
+import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.client.cluster.ha.HighAvailableFactory;
-import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
+import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalanceFactory;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
+import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,7 +59,7 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
         }
 
         this.interceptors = interceptors;
-        this.loadBalance = new SimpleLoadBalance(lbStrategy);
+        this.loadBalance = LoadBalanceFactory.getLoadBalance(lbStrategy);
 
         if (null != interceptors && !interceptors.isEmpty()) {
             hasInterceptors = true;
@@ -87,7 +90,13 @@ public class SimpleClientProxy<T> extends AbstractInvocationHandler {
             return haStrategy.call(request, loadBalance);
         }
 
-        RpcInvoker rpcInvoker = new RpcInvoker(request, loadBalance.next(request.getClassName()));
+        SimpleClientHandler clientHandler = loadBalance.next(request.getClassName());
+        if (null == clientHandler) {
+            log.warn("Local service mappings: {}", LocalServiceNodeTable.SERVICE_MAPPINGS);
+            throw new RpcException("Service [" + request.getClassName() + "] not found.");
+        }
+
+        RpcInvoker rpcInvoker = new RpcInvoker(request, clientHandler);
         Invocation invocation = new ClientInvocation(rpcInvoker, interceptors);
         Object result = invocation.next();
         return result;

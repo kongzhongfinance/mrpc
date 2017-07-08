@@ -42,6 +42,7 @@ public class RpcCallbackFuture {
             lock.lock();
             finish.await(milliseconds, TimeUnit.MILLISECONDS);
 
+            // 客户端调用超时
             long time = System.currentTimeMillis() - startTime;
             if (time > milliseconds) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());

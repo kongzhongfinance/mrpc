@@ -1,9 +1,7 @@
 package com.kongzhong.mrpc.springboot.client;
 
-import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
-import com.kongzhong.mrpc.client.cluster.loadblance.SimpleLoadBalance;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
@@ -101,7 +99,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
             super.directConnect();
 
-            SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
+//            SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
 
             log.info("Bind services finished");
 

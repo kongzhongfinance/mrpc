@@ -16,22 +16,21 @@ import java.util.Random;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 软负载简单实现
+ * 软负载简单实现(已过时)
  * <p>
  * Created by biezhi on 2016/12/30.
  */
 @Slf4j
+@Deprecated
 public class SimpleLoadBalance implements LoadBalance {
 
     private Random random = new Random();
 
     private LbStrategyEnum lbStrategy;
 
-    /**
-     * 性能优于AtomicInteger（JDK8出现）
-     */
-    private LongAdder posLong = new LongAdder();
+    private LongAdder index = new LongAdder();
 
+    @Deprecated
     public SimpleLoadBalance(LbStrategyEnum lbStrategyEnum) {
         this.lbStrategy = lbStrategyEnum;
     }
@@ -40,6 +39,7 @@ public class SimpleLoadBalance implements LoadBalance {
 
     public static Map<String, ServiceDiscovery> serviceDiscoveryMap;
 
+    @Deprecated
     @Override
     public SimpleClientHandler next(String serviceName) throws Exception {
         List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
@@ -74,6 +74,7 @@ public class SimpleLoadBalance implements LoadBalance {
         return null;
     }
 
+    @Deprecated
     private void immediatelyDiscovery(String serviceName) {
         ClientBean clientBean = new ClientBean();
         clientBean.setServiceName(serviceName);
@@ -91,14 +92,15 @@ public class SimpleLoadBalance implements LoadBalance {
      * @param connections
      * @return
      */
+    @Deprecated
     private SimpleClientHandler round(List<SimpleClientHandler> connections) {
-        int pos = posLong.intValue();
+        int pos = index.intValue();
         if (pos >= connections.size()) {
-            posLong = new LongAdder();
-            pos = posLong.intValue();
+            index = new LongAdder();
+            pos = index.intValue();
         }
         SimpleClientHandler connection = connections.get(pos);
-        posLong.add(1);
+        index.add(1);
         return connection;
     }
 
@@ -108,6 +110,7 @@ public class SimpleLoadBalance implements LoadBalance {
      * @param connections
      * @return
      */
+    @Deprecated
     private SimpleClientHandler random(List<SimpleClientHandler> connections) {
         int randomPos = 0;
         int max = connections.size();
@@ -123,6 +126,7 @@ public class SimpleLoadBalance implements LoadBalance {
      * @param connections
      * @return
      */
+    @Deprecated
     private SimpleClientHandler last(List<SimpleClientHandler> connections) {
         return connections.get(connections.size() - 1);
     }

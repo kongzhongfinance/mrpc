@@ -5,16 +5,11 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
-import com.kongzhong.mrpc.utils.HttpRequest;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoop;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,7 +39,7 @@ public class ConnectionListener implements ChannelFutureListener {
             nettyClient.getRetryCount().add(1);
             log.info("Reconnect {}, count = {}", nettyClient.getServerAddress(), nettyClient.getRetryCount().intValue());
             final EventLoop loop = future.channel().eventLoop();
-            loop.schedule(() -> nettyClient.asyncCreateBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
+            loop.schedule(() -> nettyClient.asyncCreateChannel(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
 
         } else {
 
@@ -64,35 +59,11 @@ public class ConnectionListener implements ChannelFutureListener {
 
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
-            if (isHttp && ClientConfig.me().getPingInterval() > 0) {
 
-                ScheduledFuture scheduledFuture = future.channel().eventLoop().scheduleAtFixedRate(() -> {
-                    try {
-                        if (!future.channel().isActive()) {
-                            closeSchedule(future.channel());
-                            return;
-                        }
-                        long start = System.currentTimeMillis();
-                        int code = HttpRequest.get("http://" + nettyClient.getAddress() + "/status")
-                                .connectTimeout(10_000)
-                                .readTimeout(5000)
-                                .code();
-                        if (code == 200) {
-                            log.info("Rpc send ping for {} after 0ms", future.channel(), (System.currentTimeMillis() - start));
-                        }
-                    } catch (Exception e) {
-                        log.warn("Rpc send ping error: {}", e.getMessage());
-                    }
-                }, 0, ClientConfig.me().getPingInterval(), TimeUnit.MILLISECONDS);
-                scheduledFutureMap.put(future.channel(), scheduledFuture);
+            if (isHttp && ClientConfig.me().getPingInterval() > 0) {
+                nettyClient.enabledPing(future.channel());
             }
         }
-    }
-
-    private Map<Channel, ScheduledFuture> scheduledFutureMap = new HashMap<>();
-
-    private void closeSchedule(Channel channel) {
-        scheduledFutureMap.get(channel).cancel(true);
     }
 
 }
