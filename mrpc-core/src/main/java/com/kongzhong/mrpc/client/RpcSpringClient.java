@@ -98,7 +98,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         }
         if (null == ctx && StringUtils.isNotEmpty(directAddress)) {
             // 同步直连
-            Connections.me().syncDirectConnect(rpcInterface.getName(), Sets.newHashSet(directAddress));
+            Connections.me().syncDirectConnect(Sets.newHashSet(rpcInterface.getName()), Sets.newHashSet(directAddress));
         }
         return this.getProxyBean(rpcInterface);
     }

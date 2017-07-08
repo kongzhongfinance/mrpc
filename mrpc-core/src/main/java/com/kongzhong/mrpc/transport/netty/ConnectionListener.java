@@ -44,7 +44,7 @@ public class ConnectionListener implements ChannelFutureListener {
             nettyClient.getRetryCount().add(1);
             log.info("Reconnect {}, count = {}", nettyClient.getServerAddress(), nettyClient.getRetryCount().intValue());
             final EventLoop loop = future.channel().eventLoop();
-            loop.schedule(() -> nettyClient.createBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
+            loop.schedule(() -> nettyClient.asyncCreateBootstrap(loop), ClientConfig.me().getRetryInterval(), TimeUnit.MILLISECONDS);
 
         } else {
 

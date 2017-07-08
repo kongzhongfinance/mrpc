@@ -18,7 +18,7 @@ public class HelloClientApplication {
         rpcClient.setDirectAddress("127.0.0.1:5066");
 
         final UserService userService = rpcClient.getProxyReferer(UserService.class);
-        TimeUnit.SECONDS.sleep(2);
+//        TimeUnit.SECONDS.sleep(2);
 
         System.out.println(userService);
 

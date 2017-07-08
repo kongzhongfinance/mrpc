@@ -63,16 +63,37 @@ public class Connections {
     }
 
     /**
-     * 同步建立连接
+     * 异步建立连接
      * <p>
      * server:port -> serviceNames
      *
      * @param mappings
      */
-    public void syncConnect(Map<String, Set<String>> mappings) {
+    public void asyncConnect(Map<String, Set<String>> mappings) {
         try {
             lock.lock();
             mappings.forEach((address, serviceNames) -> {
+                LocalServiceNodeTable.addServices(address, serviceNames);
+                serviceNames.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
+                if (!LocalServiceNodeTable.isConnected(address)) {
+                    this.asyncConnect(address);
+                }
+            });
+            handlerStatus.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 同步直连
+     *
+     * @param addressSet
+     */
+    public void syncDirectConnect(Set<String> serviceNames, Set<String> addressSet) {
+        try {
+            lock.lock();
+            addressSet.forEach(address -> {
                 LocalServiceNodeTable.addServices(address, serviceNames);
                 serviceNames.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
                 if (!LocalServiceNodeTable.isConnected(address)) {
@@ -86,19 +107,19 @@ public class Connections {
     }
 
     /**
-     * 同步直连
+     * 异步直连
      *
      * @param serviceName
      * @param addressSet
      */
-    public void syncDirectConnect(String serviceName, Set<String> addressSet) {
+    public void asyncDirectConnect(String serviceName, Set<String> addressSet) {
         try {
             lock.lock();
             addressSet.forEach(address -> {
                 LocalServiceNodeTable.addService(address, serviceName);
                 LocalServiceNodeTable.updateServiceNode(serviceName, address);
                 if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.syncConnect(address);
+                    this.asyncConnect(address);
                 }
             });
             handlerStatus.signal();
@@ -119,7 +140,7 @@ public class Connections {
             LocalServiceNodeTable.addIfNotPresent(address);
             LocalServiceNodeTable.reConnected(address);
             services.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
-            this.syncConnect(address);
+            this.asyncConnect(address);
         });
     }
 
@@ -132,7 +153,19 @@ public class Connections {
     private void syncConnect(String address) {
         log.debug("Sync connect {}", address);
         LocalServiceNodeTable.setConnected(address);
-        new NettyClient(nettyConfig, address).createBootstrap(eventLoopGroup);
+        new NettyClient(nettyConfig, address).syncCreateChannel(eventLoopGroup);
+    }
+
+    /**
+     * 异步建立连接
+     *
+     * @param address
+     * @return
+     */
+    private void asyncConnect(String address) {
+        log.debug("Async connect {}", address);
+        LocalServiceNodeTable.setConnected(address);
+        new NettyClient(nettyConfig, address).asyncCreateBootstrap(eventLoopGroup);
     }
 
     /**
