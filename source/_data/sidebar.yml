@@ -1,16 +1,16 @@
 docs:
   getting_started:
     overview: index.html
-    architecture: architecture_design.html
-    deployment_env: deployment_env.html
+    architecture: architecture-design.html
   quick_start:
-    helloworld_spring: helloworld_spring.html
-    helloworld_springboot: helloworld_springboot.html
+    deployment_env: deployment-env.html
+    helloworld_spring: helloworld-spring.html
+    helloworld_springboot: helloworld-springboot.html
   registry:
       zookeeper: zookeeper.html
   advance_rpc:
-      client_config: client_config.html
-      server_config: server_config.html
+      client_config: client-config.html
+      server_config: server-config.html
       interceptor: interceptor.html
 
   other:

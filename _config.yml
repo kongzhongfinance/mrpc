@@ -7,13 +7,12 @@ language: zh-cn
 timezone: PRC
 
 # URL
-## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://kongzhongfinance.github.io/mrpc
 root: /mrpc
 
 permalink: news/:year/:month/:day/:title/
 archive_dir: news
-code_dir: downloads/code
+
 new_post_name: :year-:month-:day-:title.md # File name of new posts
 post_asset_folder: true
 highlight:
