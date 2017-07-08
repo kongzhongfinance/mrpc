@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>贡献 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/docs/contributing.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/docs/contributing.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+</head>
+<body class="">
+  <div id="container">
+    
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/mrpc" id="logo">mrpc</a>
+    </h1>
+    <nav id="main-nav">
+      <ul>
+        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs/" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news/" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/contribute/" class="main-nav-link">参与贡献</a></li>
+        <li class="main-nav-item">
+          <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link">GitHub</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select">
+        
+          <option data-page-lang="zh-cn" value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    
+    <div id="search-btn-wrap" class="main-nav-item">
+      <input type="text" class="st-default-search-input">
+    </div>
+    
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">贡献</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/docs/contributing.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
+              </header>
+              
+              <div>
+                <strong class="sidebar-title">目录</strong>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开发"><span class="toc-text">开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#开始之前"><span class="toc-text">开始之前</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工作流程"><span class="toc-text">工作流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事项"><span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更新文档"><span class="toc-text">更新文档</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#工作流程-1"><span class="toc-text">工作流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#翻译"><span class="toc-text">翻译</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#反馈问题"><span class="toc-text">反馈问题</span></a></li></ol>
+              </div>
+              <div class="article-content" itemprop="articleBody" data-swiftype-index="true">
+                <h2 id="开发" class="article-heading"><a href="#开发" class="headerlink" title="开发"></a>开发<a class="article-anchor" href="#开发" aria-hidden="true"></a></h2><p>我们非常欢迎您加入 Hexo 的开发，这份文件将帮助您了解开发流程。</p>
+<h3 id="开始之前" class="article-heading"><a href="#开始之前" class="headerlink" title="开始之前"></a>开始之前<a class="article-anchor" href="#开始之前" aria-hidden="true"></a></h3><p>请遵守以下准则：</p>
+<ul>
+<li>遵守 <a href="https://google.github.io/styleguide/jsguide.html" target="_blank" rel="external">Google JavaScript 代码风格</a>。</li>
+<li>使用 2 个空格缩排。</li>
+<li>不要把逗号放在最前面。</li>
+</ul>
+<h3 id="工作流程" class="article-heading"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程<a class="article-anchor" href="#工作流程" aria-hidden="true"></a></h3><ol>
+<li>Fork <a href="https://github.com/hexojs/hexo" target="_blank" rel="external">hexojs/hexo</a></li>
+<li><p>把库（repository）复制到电脑上，并安装所依赖的插件。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">$ git clone https://github.com/&lt;username&gt;/hexo.git</div><div class="line">$ cd hexo</div><div class="line">$ npm install</div><div class="line">$ git submodule update --init</div></pre></td></tr></table></figure>
+</li>
+<li><p>新增一个功能分支。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">$ git checkout -b new_feature</div></pre></td></tr></table></figure>
+</li>
+<li><p>开始开发。</p>
+</li>
+<li><p>推送（push）分支。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">$ git push origin new_feature</div></pre></td></tr></table></figure>
+</li>
+<li><p>建立一个新的合并申请（pull request）并描述变动。</p>
+</li>
+</ol>
+<h3 id="注意事项" class="article-heading"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项<a class="article-anchor" href="#注意事项" aria-hidden="true"></a></h3><ul>
+<li>不要修改 <code>package.json</code> 的版本号。</li>
+<li><p>只有在测试通过的情况下您的合并申请才会被批准，在提交前别忘了进行测试。</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">$ npm test</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="更新文档" class="article-heading"><a href="#更新文档" class="headerlink" title="更新文档"></a>更新文档<a class="article-anchor" href="#更新文档" aria-hidden="true"></a></h2><p>Hexo 文档开放源代码，您可以在 <a href="https://github.com/hexojs/site" target="_blank" rel="external">hexojs/site</a> 找到源代码。</p>
+<h3 id="工作流程-1" class="article-heading"><a href="#工作流程-1" class="headerlink" title="工作流程"></a>工作流程<a class="article-anchor" href="#工作流程-1" aria-hidden="true"></a></h3><ol>
+<li>Fork <a href="https://github.com/hexojs/site" target="_blank" rel="external">hexojs/site</a></li>
+<li><p>把库（repository）复制到电脑上，并安装所依赖的插件。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">$ git clone https://github.com/&lt;username&gt;/site.git</div><div class="line">$ cd site</div><div class="line">$ npm install</div></pre></td></tr></table></figure>
+</li>
+<li><p>开始编辑文件，您可以通过服务器预览变动。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+</li>
+<li><p>推送（push）分支。</p>
+</li>
+<li>建立一个新的合并申请（pull request）并描述变动。</li>
+</ol>
+<h3 id="翻译" class="article-heading"><a href="#翻译" class="headerlink" title="翻译"></a>翻译<a class="article-anchor" href="#翻译" aria-hidden="true"></a></h3><ol>
+<li>在 <code>source</code> 资料夹中建立一个新的语言资料夹（全小写）。</li>
+<li>把 <code>source</code> 资料夹中相关的文件（Markdown 和模板文件）复制到新的语言资料夹中。</li>
+<li>在 <code>source/_data/language.yml</code> 中新增语言。</li>
+<li>将 <code>en.yml</code> 复制到 <code>themes/navy/languages</code>中并命名为语言名称（全小写）。</li>
+</ol>
+<h2 id="反馈问题" class="article-heading"><a href="#反馈问题" class="headerlink" title="反馈问题"></a>反馈问题<a class="article-anchor" href="#反馈问题" aria-hidden="true"></a></h2><p>当您在使用 Hexo 时遇到问题，您可以尝试在 <a href="troubleshooting.html">问题解答</a> 中寻找解答，或是在 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a> 或 <a href="https://groups.google.com/group/hexo" target="_blank" rel="external">Google Group</a> 上提问。如果你没有找答案，请在 Github 报告它。</p>
+<ol>
+<li>在 <a href="commands.html#调试模式">调试模式</a> 中重现问题。</li>
+<li>运行 <code>hexo version</code> 并检查版本信息。</li>
+<li>把调试信息和版本信息都贴到 GitHub。</li>
+</ol>
+
+
+                <div class="donate-btn text-center"><a href="/donate.html" target="_blank">page.donate</a></div>
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-08T11:19:57.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
+                <a href="index.html" class="article-footer-next" title="概述"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"><strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link">概述</a><a href="architecture_design.html" class="sidebar-link">框架设计</a><a href="deployment_env.html" class="sidebar-link">开发环境</a><strong class="sidebar-title">快速开始</strong><a href="helloworld_spring.html" class="sidebar-link">Spring</a><a href="helloworld_springboot.html" class="sidebar-link">SpringBoot</a><strong class="sidebar-title">注册中心</strong><a href="zookeeper.html" class="sidebar-link">Zookeeper</a><strong class="sidebar-title">进阶使用</strong><a href="client_config.html" class="sidebar-link">客户端配置</a><a href="server_config.html" class="sidebar-link">服务端配置</a><a href="interceptor.html" class="sidebar-link">拦截器</a><strong class="sidebar-title">其他</strong><a href="faq.html" class="sidebar-link">常见问题</a></div>
+</aside>
+    </div>
+  </div>
+</div>
+  </div>
+  <footer id="footer">
+  <div class="wrapper">
+    <div class="inner">
+      <div class="friend-links">
+        
+        <a href="https://jr.kongzhong.com" target="_blank">空中金融</a>
+        
+        <a href="http://www.kongzhong.com" target="_blank">空中网</a>
+        
+        <a href="https://github.com" target="_blank">Github</a>
+        
+        <a href="mailto:zhuye@kongzhong.com" target="_blank">加入我们</a>
+        
+      </div>
+      <div id="footer-copyright">
+        &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+        Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+      </div>
+      <div id="footer-links">
+        <a href="http://weibo.com/" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+        <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <a href="https://twitter.com/" class="footer-link" target="_blank"><i class="fa fa-twitter"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs/" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news/" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/contribute/" class="mobile-nav-link">参与贡献</a></li>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link">概述</a><a href="architecture_design.html" class="mobile-nav-link">框架设计</a><a href="deployment_env.html" class="mobile-nav-link">开发环境</a><strong class="mobile-nav-title">快速开始</strong><a href="helloworld_spring.html" class="mobile-nav-link">Spring</a><a href="helloworld_springboot.html" class="mobile-nav-link">SpringBoot</a><strong class="mobile-nav-title">注册中心</strong><a href="zookeeper.html" class="mobile-nav-link">Zookeeper</a><strong class="mobile-nav-title">进阶使用</strong><a href="client_config.html" class="mobile-nav-link">客户端配置</a><a href="server_config.html" class="mobile-nav-link">服务端配置</a><a href="interceptor.html" class="mobile-nav-link">拦截器</a><strong class="mobile-nav-title">其他</strong><a href="faq.html" class="mobile-nav-link">常见问题</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="//cdn.jsdelivr.net/retinajs/1.1.0/retina.min.js" async></script>
+
+<script src="/mrpc/js/tab.js"></script>
+</body>
+</html>

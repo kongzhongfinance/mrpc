@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>渲染 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/api/rendering.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/api/rendering.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+</head>
+<body class="">
+  <div id="container">
+    
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/mrpc" id="logo">mrpc</a>
+    </h1>
+    <nav id="main-nav">
+      <ul>
+        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs/" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news/" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/contribute/" class="main-nav-link">参与贡献</a></li>
+        <li class="main-nav-item">
+          <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link">GitHub</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select">
+        
+          <option data-page-lang="zh-cn" value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    
+    <div id="search-btn-wrap" class="main-nav-item">
+      <input type="text" class="st-default-search-input">
+    </div>
+    
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">渲染</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/api/rendering.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
+              </header>
+              
+              <div>
+                <strong class="sidebar-title">目录</strong>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#渲染字符串"><span class="toc-text">渲染字符串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#渲染文件"><span class="toc-text">渲染文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#渲染选项"><span class="toc-text">渲染选项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#after-render-过滤器"><span class="toc-text">after_render 过滤器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检查文件是否可被渲染"><span class="toc-text">检查文件是否可被渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#获取文件的输出扩展名"><span class="toc-text">获取文件的输出扩展名</span></a></li></ol>
+              </div>
+              <div class="article-content" itemprop="articleBody" data-swiftype-index="true">
+                <p>在 Hexo 中，有两个方法可用于渲染文件或字符串，分别是非同步的 <code>hexo.render.render</code> 和同步的 <code>hexo.render.renderSync</code>，这两个方法的使用方式十分类似，因此以下仅以非同步的 <code>hexo.render.render</code> 为例。</p>
+<h2 id="渲染字符串" class="article-heading"><a href="#渲染字符串" class="headerlink" title="渲染字符串"></a>渲染字符串<a class="article-anchor" href="#渲染字符串" aria-hidden="true"></a></h2><p>在渲染字符串时，您必须指定 <code>engine</code>，如此一来 Hexo 才知道该使用哪个渲染引擎来渲染。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.render.render(&#123;<span class="attr">text</span>: <span class="string">'example'</span>, <span class="attr">engine</span>: <span class="string">'swig'</span>&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="渲染文件" class="article-heading"><a href="#渲染文件" class="headerlink" title="渲染文件"></a>渲染文件<a class="article-anchor" href="#渲染文件" aria-hidden="true"></a></h2><p>在渲染文件时，您无须指定 <code>engine</code>，Hexo 会自动根据扩展名猜测所要使用的渲染引擎，当然您也可以使用 <code>engine</code> 指定。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.render.render(&#123;<span class="attr">path</span>: <span class="string">'path/to/file.swig'</span>&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="渲染选项" class="article-heading"><a href="#渲染选项" class="headerlink" title="渲染选项"></a>渲染选项<a class="article-anchor" href="#渲染选项" aria-hidden="true"></a></h2><p>在渲染时，您可以向第二个参数中传入参数。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.render.render(&#123;<span class="attr">text</span>: <span class="string">''</span>&#125;, &#123;<span class="attr">foo</span>: <span class="string">'foo'</span>&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="after-render-过滤器" class="article-heading"><a href="#after-render-过滤器" class="headerlink" title="after_render 过滤器"></a>after_render 过滤器<a class="article-anchor" href="#after-render-过滤器" aria-hidden="true"></a></h2><p>在渲染完成后，Hexo 会自动执行相对应的 <code>after_render</code> 过滤器，举例来说，我们可以通过这个功能实现 JavaScript 的压缩。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> UglifyJS = <span class="built_in">require</span>(<span class="string">'uglify-js'</span>);</div><div class="line"></div><div class="line">hexo.extend.filter.register(<span class="string">'after_render:js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">str, data</span>)</span>&#123;</div><div class="line">  <span class="keyword">var</span> result = UglifyJS.minify(str);</div><div class="line">  <span class="keyword">return</span> result.code;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="检查文件是否可被渲染" class="article-heading"><a href="#检查文件是否可被渲染" class="headerlink" title="检查文件是否可被渲染"></a>检查文件是否可被渲染<a class="article-anchor" href="#检查文件是否可被渲染" aria-hidden="true"></a></h2><p>您可以通过 <code>isRenderable</code> 或 <code>isRenderableSync</code> 两个方法检查文件路径是否可以被渲染，只有在相对应的渲染器（renderer）已注册的情况下才会返回 true。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.render.isRenderable(<span class="string">'layout.swig'</span>) <span class="comment">// true</span></div><div class="line">hexo.render.isRenderable(<span class="string">'image.png'</span>) <span class="comment">// false</span></div></pre></td></tr></table></figure>
+<h2 id="获取文件的输出扩展名" class="article-heading"><a href="#获取文件的输出扩展名" class="headerlink" title="获取文件的输出扩展名"></a>获取文件的输出扩展名<a class="article-anchor" href="#获取文件的输出扩展名" aria-hidden="true"></a></h2><p>您可以通过 <code>getOutput</code> 方法取得文件路径输出后的扩展名，如果文件无法渲染，则会返回空字符串。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.render.getOutput(<span class="string">'layout.swig'</span>) <span class="comment">// html</span></div><div class="line">hexo.render.getOutput(<span class="string">'image.png'</span>) <span class="comment">// '''</span></div></pre></td></tr></table></figure>
+
+                <div class="donate-btn text-center"><a href="/donate.html" target="_blank">page.donate</a></div>
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-08T11:19:57.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
+                
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"></div>
+</aside>
+    </div>
+  </div>
+</div>
+  </div>
+  <footer id="footer">
+  <div class="wrapper">
+    <div class="inner">
+      <div class="friend-links">
+        
+        <a href="https://jr.kongzhong.com" target="_blank">空中金融</a>
+        
+        <a href="http://www.kongzhong.com" target="_blank">空中网</a>
+        
+        <a href="https://github.com" target="_blank">Github</a>
+        
+        <a href="mailto:zhuye@kongzhong.com" target="_blank">加入我们</a>
+        
+      </div>
+      <div id="footer-copyright">
+        &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+        Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+      </div>
+      <div id="footer-links">
+        <a href="http://weibo.com/" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+        <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <a href="https://twitter.com/" class="footer-link" target="_blank"><i class="fa fa-twitter"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs/" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news/" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/contribute/" class="mobile-nav-link">参与贡献</a></li>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="//cdn.jsdelivr.net/retinajs/1.1.0/retina.min.js" async></script>
+
+<script src="/mrpc/js/tab.js"></script>
+</body>
+</html>

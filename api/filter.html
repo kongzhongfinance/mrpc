@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>过滤器（Filter） | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/api/filter.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/api/filter.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+</head>
+<body class="">
+  <div id="container">
+    
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/mrpc" id="logo">mrpc</a>
+    </h1>
+    <nav id="main-nav">
+      <ul>
+        <li class="main-nav-item"><a href="/mrpc/" class="main-nav-link">首页</a></li><li class="main-nav-item"><a href="/mrpc/docs/" class="main-nav-link">使用指南</a></li><li class="main-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">提交工单</a></li><li class="main-nav-item"><a href="/mrpc/news/" class="main-nav-link">更新日志</a></li><li class="main-nav-item"><a href="/mrpc/contribute/" class="main-nav-link">参与贡献</a></li>
+        <li class="main-nav-item">
+          <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link">GitHub</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select">
+        
+          <option data-page-lang="zh-cn" value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    
+    <div id="search-btn-wrap" class="main-nav-item">
+      <input type="text" class="st-default-search-input">
+    </div>
+    
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">过滤器（Filter）</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/api/filter.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i> 改进本文</a>
+              </header>
+              
+              <div>
+                <strong class="sidebar-title">目录</strong>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行过滤器"><span class="toc-text">执行过滤器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#移除过滤器"><span class="toc-text">移除过滤器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过滤器列表"><span class="toc-text">过滤器列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#before-post-render"><span class="toc-text">before_post_render</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#after-post-render"><span class="toc-text">after_post_render</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#before-exit"><span class="toc-text">before_exit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#before-generate"><span class="toc-text">before_generate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#after-generate"><span class="toc-text">after_generate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#template-locals"><span class="toc-text">template_locals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#after-init"><span class="toc-text">after_init</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#new-post-path"><span class="toc-text">new_post_path</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#post-permalink"><span class="toc-text">post_permalink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#after-render"><span class="toc-text">after_render</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#server-middleware"><span class="toc-text">server_middleware</span></a></li></ol></li></ol>
+              </div>
+              <div class="article-content" itemprop="articleBody" data-swiftype-index="true">
+                <p>过滤器用于修改特定文件，Hexo 将这些文件依序传给过滤器，而过滤器可以针对文件进行修改，这个概念借鉴自 <a href="http://codex.wordpress.org/Plugin_API#Filters" target="_blank" rel="external">WordPress</a>。</p>
+<h2 id="概要" class="article-heading"><a href="#概要" class="headerlink" title="概要"></a>概要<a class="article-anchor" href="#概要" aria-hidden="true"></a></h2><figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(type, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">&#125;, priority);</div></pre></td></tr></table></figure>
+<p>您可以指定过滤器的优先级 <code>priority</code>，<code>priority</code> 值越低，过滤器会越早执行，默认的 <code>priority</code> 是 10。</p>
+<h2 id="执行过滤器" class="article-heading"><a href="#执行过滤器" class="headerlink" title="执行过滤器"></a>执行过滤器<a class="article-anchor" href="#执行过滤器" aria-hidden="true"></a></h2><figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.exec(type, data, options);</div><div class="line">hexo.extend.filter.execSync(type, data, options);</div></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>context</code></td>
+<td>Context</td>
+</tr>
+<tr>
+<td><code>args</code></td>
+<td>参数。必须为数组。</td>
+</tr>
+</tbody>
+</table>
+<p><code>data</code> 会作为第一个参数传入每个过滤器，而您可以在过滤器中通过返回值改变下一个过滤器中的 <code>data</code>，如果什么都没有返回的话则会保持原本的 <code>data</code>。您还可以使用 <code>args</code> 指定过滤器的其他参数。举例来说：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'test'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data, arg1, arg2</span>)</span>&#123;</div><div class="line">  <span class="comment">// data === 'some data'</span></div><div class="line">  <span class="comment">// arg1 === 'foo'</span></div><div class="line">  <span class="comment">// arg2 === 'bar'</span></div><div class="line">  </div><div class="line">  <span class="keyword">return</span> <span class="string">'something'</span>;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">hexo.extend.filter.register(<span class="string">'test'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data, arg1, arg2</span>)</span>&#123;</div><div class="line">  <span class="comment">// data === 'something'</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line">hexo.extend.filter.exec(<span class="string">'test'</span>, <span class="string">'some data'</span>, &#123;</div><div class="line">  <span class="attr">args</span>: [<span class="string">'foo'</span>, <span class="string">'bar'</span>]</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>您也可以使用以下方法来执行过滤器：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.execFilter(type, data, options);</div><div class="line">hexo.execFilterSync(type, data, options);</div></pre></td></tr></table></figure>
+<h2 id="移除过滤器" class="article-heading"><a href="#移除过滤器" class="headerlink" title="移除过滤器"></a>移除过滤器<a class="article-anchor" href="#移除过滤器" aria-hidden="true"></a></h2><figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.unregister(type, filter);</div></pre></td></tr></table></figure>
+<h2 id="过滤器列表" class="article-heading"><a href="#过滤器列表" class="headerlink" title="过滤器列表"></a>过滤器列表<a class="article-anchor" href="#过滤器列表" aria-hidden="true"></a></h2><p>以下是 Hexo 所使用的过滤器。</p>
+<h3 id="before-post-render" class="article-heading"><a href="#before-post-render" class="headerlink" title="before_post_render"></a>before_post_render<a class="article-anchor" href="#before-post-render" aria-hidden="true"></a></h3><p>在文章开始渲染前执行。您可以参考 <a href="posts.html#渲染">文章渲染</a> 以了解执行顺序。</p>
+<p>举例来说，把标题转为小写：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'before_post_render'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</div><div class="line">  data.title = data.title.toLowerCase();</div><div class="line">  <span class="keyword">return</span> data;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="after-post-render" class="article-heading"><a href="#after-post-render" class="headerlink" title="after_post_render"></a>after_post_render<a class="article-anchor" href="#after-post-render" aria-hidden="true"></a></h3><p>在文章渲染完成后执行。您可以参考 <a href="posts.html#渲染">文章渲染</a> 以了解执行顺序。</p>
+<p>举例来说，把 <code>@username</code> 取代为 Twitter 的开发者链接。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'after_post_render'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</div><div class="line">  data.content = data.content.replace(<span class="regexp">/@(\d+)/</span>, <span class="string">'&lt;a href="http://twitter.com/$1"&gt;#$1&lt;/a&gt;'</span>);</div><div class="line">  <span class="keyword">return</span> data;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="before-exit" class="article-heading"><a href="#before-exit" class="headerlink" title="before_exit"></a>before_exit<a class="article-anchor" href="#before-exit" aria-hidden="true"></a></h3><p>在 Hexo 即将结束时执行，也就是在 <code>hexo.exit</code> 被调用后执行。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'before_exit'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="before-generate" class="article-heading"><a href="#before-generate" class="headerlink" title="before_generate"></a>before_generate<a class="article-anchor" href="#before-generate" aria-hidden="true"></a></h3><p>在生成器解析前执行。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'before_generate'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="after-generate" class="article-heading"><a href="#after-generate" class="headerlink" title="after_generate"></a>after_generate<a class="article-anchor" href="#after-generate" aria-hidden="true"></a></h3><p>在生成器解析后执行。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'after_generate'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="template-locals" class="article-heading"><a href="#template-locals" class="headerlink" title="template_locals"></a>template_locals<a class="article-anchor" href="#template-locals" aria-hidden="true"></a></h3><p>修改模板的 <a href="../docs/variables.html">局部变量</a>。</p>
+<p>举例来说，在模板的局部变量中新增当前时间：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'template_locals'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">locals</span>)</span>&#123;</div><div class="line">  locals.now = <span class="built_in">Date</span>.now();</div><div class="line">  <span class="keyword">return</span> locals;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="after-init" class="article-heading"><a href="#after-init" class="headerlink" title="after_init"></a>after_init<a class="article-anchor" href="#after-init" aria-hidden="true"></a></h3><p>在 Hexo 初始化完成后执行，也就是在 <code>hexo.init</code> 执行完成后执行。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'after_init'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="new-post-path" class="article-heading"><a href="#new-post-path" class="headerlink" title="new_post_path"></a>new_post_path<a class="article-anchor" href="#new-post-path" aria-hidden="true"></a></h3><p>用来决定新建文章的路径，在建立文章时执行。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'new_post_path'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data, replace</span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="post-permalink" class="article-heading"><a href="#post-permalink" class="headerlink" title="post_permalink"></a>post_permalink<a class="article-anchor" href="#post-permalink" aria-hidden="true"></a></h3><p>用来决定文章的永久链接。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'post_permalink'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="after-render" class="article-heading"><a href="#after-render" class="headerlink" title="after_render"></a>after_render<a class="article-anchor" href="#after-render" aria-hidden="true"></a></h3><p>在渲染后执行，您可以参考 <a href="rendering.html#after_render_过滤器">渲染</a> 以了解更多信息。</p>
+<h3 id="server-middleware" class="article-heading"><a href="#server-middleware" class="headerlink" title="server_middleware"></a>server_middleware<a class="article-anchor" href="#server-middleware" aria-hidden="true"></a></h3><p>新增服务器的 Middleware。<code>app</code> 是一个 <a href="https://github.com/senchalabs/connect" target="_blank" rel="external">Connect</a> 实例。</p>
+<p>举例来说，在响应头中新增 <code>X-Powered-By: Hexo</code>。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><div class="line">hexo.extend.filter.register(<span class="string">'server_middleware'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">app</span>)</span>&#123;</div><div class="line">  app.use(<span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>)</span>&#123;</div><div class="line">    res.setHeader(<span class="string">'X-Powered-By'</span>, <span class="string">'Hexo'</span>);</div><div class="line">    next();</div><div class="line">  &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+
+
+                <div class="donate-btn text-center"><a href="/donate.html" target="_blank">page.donate</a></div>
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-08T11:19:57.000Z" itemprop="dateModified">上次更新：2017-07-08</time>
+                
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"></div>
+</aside>
+    </div>
+  </div>
+</div>
+  </div>
+  <footer id="footer">
+  <div class="wrapper">
+    <div class="inner">
+      <div class="friend-links">
+        
+        <a href="https://jr.kongzhong.com" target="_blank">空中金融</a>
+        
+        <a href="http://www.kongzhong.com" target="_blank">空中网</a>
+        
+        <a href="https://github.com" target="_blank">Github</a>
+        
+        <a href="mailto:zhuye@kongzhong.com" target="_blank">加入我们</a>
+        
+      </div>
+      <div id="footer-copyright">
+        &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+        Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+      </div>
+      <div id="footer-links">
+        <a href="http://weibo.com/" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+        <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <a href="https://twitter.com/" class="footer-link" target="_blank"><i class="fa fa-twitter"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="/mrpc/" class="mobile-nav-link">首页</a></li><li class="mobile-nav-item"><a href="/mrpc/docs/" class="mobile-nav-link">使用指南</a></li><li class="mobile-nav-item"><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">提交工单</a></li><li class="mobile-nav-item"><a href="/mrpc/news/" class="mobile-nav-link">更新日志</a></li><li class="mobile-nav-item"><a href="/mrpc/contribute/" class="mobile-nav-link">参与贡献</a></li>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="//cdn.jsdelivr.net/retinajs/1.1.0/retina.min.js" async></script>
+
+<script src="/mrpc/js/tab.js"></script>
+</body>
+</html>
