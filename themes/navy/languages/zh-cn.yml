@@ -30,9 +30,13 @@ sidebar:
     advance_rpc: 进阶使用
     client_config: 客户端配置
     server_config: 服务端配置
-    interceptor: 拦截器
+    interceptor: 拦截器机制
+    exception: 异常捕获
     rpc_admin: 管理后台
     config_admin: 配置
-
+    view_nodes: 节点查看
+    extensions: 扩展插件
+    metric_influxdb: Metrics打点
+    service_validator: 服务端参数校验
     other: 其他
     faq: 常见问题
