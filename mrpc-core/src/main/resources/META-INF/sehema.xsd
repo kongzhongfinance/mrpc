@@ -125,6 +125,18 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="haStrategy" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 高可用策略 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="lbStrategy" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 负载均衡策略 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
             <xsd:attribute name="waitTimeout" type="xsd:int" use="optional" default="10000">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 客户端调用等待超时，单位/毫秒 ]]></xsd:documentation>
