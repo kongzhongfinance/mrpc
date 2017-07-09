@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/client-config.html</loc>
+    
+    <lastmod>2017-07-09T07:33:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/zookeeper.html</loc>
     
     <lastmod>2017-07-09T05:54:04.000Z</lastmod>
@@ -58,62 +65,6 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/permalinks.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/data-files.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/deployment.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/front-matter.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/generating.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/contributing.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/commands.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/asset-folders.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/index.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
@@ -121,98 +72,7 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/internationalization.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/migration.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/configuration.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/plugins.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/server.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/setup.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/tag-plugins.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/templates.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/themes.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/troubleshooting.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/variables.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/writing.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/index.html</loc>
-    
-    <lastmod>2017-07-08T11:19:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/helpers.html</loc>
     
     <lastmod>2017-07-08T11:19:57.000Z</lastmod>
     
