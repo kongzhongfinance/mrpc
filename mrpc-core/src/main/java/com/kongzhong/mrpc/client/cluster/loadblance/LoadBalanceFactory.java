@@ -1,15 +1,11 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
-import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-
-import java.util.List;
 
 /**
  * Created by biezhi on 09/07/2017.
@@ -17,9 +13,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoadBalanceFactory {
 
-    private static final LoadBalance roundRobinLoadBalance = new RoundRobinLoadBalance();
+    private static final LoadBalance roundRobinLoadBalance = new RoundRobinStrategy();
 
-    private static final LoadBalance randomLoadBalance = new RandomLoadBalance();
+    private static final LoadBalance randomLoadBalance = new RandomStrategy();
 
     public static LoadBalance getLoadBalance(@NonNull LbStrategyEnum lbStrategyEnum) {
         switch (lbStrategyEnum) {

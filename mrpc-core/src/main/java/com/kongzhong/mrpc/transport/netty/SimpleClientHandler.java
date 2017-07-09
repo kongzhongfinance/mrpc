@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 抽象客户端请求处理器
@@ -39,6 +40,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Getter
     @Setter
     protected NettyClient nettyClient;
+
+    protected LongAdder hits = new LongAdder();
 
     protected final Map<String, RpcCallbackFuture> callbackFutureMap = Maps.newConcurrentMap();
 
@@ -78,6 +81,17 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 //            nettyClient.asyncCreateChannel(ctx.channel().eventLoop());
 //        }
 //        super.channelInactive(ctx);
+    }
+
+    /**
+     * 添加一次调用
+     */
+    public void addHit() {
+        hits.add(1);
+    }
+
+    public Long getHits() {
+        return hits.longValue();
     }
 
     /**
