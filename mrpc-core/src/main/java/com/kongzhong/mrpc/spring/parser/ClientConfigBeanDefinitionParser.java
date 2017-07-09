@@ -17,6 +17,8 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         String transport = element.getAttribute("transport");
         String serialize = element.getAttribute("serialize");
         String directAddress = element.getAttribute("directAddress");
+        String haStrategy = element.getAttribute("haStrategy");
+        String lbStrategy = element.getAttribute("lbStrategy");
         String waitTimeout = element.getAttribute("waitTimeout");
         String skipBind = element.getAttribute("skipBind");
         String failOverRetry = element.getAttribute("failOverRetry");
@@ -28,6 +30,8 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
         builder.addPropertyValue("directAddress", directAddress);
+        builder.addPropertyValue("haStrategy", haStrategy);
+        builder.addPropertyValue("lbStrategy", lbStrategy);
         builder.addPropertyValue("waitTimeout", Integer.valueOf(waitTimeout));
         builder.addPropertyValue("failOverRetry", Integer.valueOf(failOverRetry));
         builder.addPropertyValue("skipBind", Boolean.valueOf(skipBind));
