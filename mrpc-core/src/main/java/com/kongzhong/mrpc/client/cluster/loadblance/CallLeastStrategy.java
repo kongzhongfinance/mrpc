@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.client.cluster.loadblance;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class CallLeastStrategy implements LoadBalance {
     public SimpleClientHandler next(String serviceName) throws Exception {
         List<SimpleClientHandler> handlers = handlers(serviceName);
         return handlers.stream()
-                .sorted((h1, h2) -> Long.compare(h2.getHits(), h1.getHits()))
+                .sorted(Comparator.comparingLong(SimpleClientHandler::getHits))
                 .findFirst().get();
     }
 
