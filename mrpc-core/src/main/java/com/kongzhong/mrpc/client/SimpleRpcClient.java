@@ -279,9 +279,12 @@ public abstract class SimpleRpcClient {
                 }
 
                 log.debug("Service [{}] direct to [{}]", serviceName, directAddress);
-                List<ClientBean> directUrlServices = directAddressList.getOrDefault(directAddress, new ArrayList<>());
-                directUrlServices.add(clientBean);
-                directAddressList.put(directAddress, directUrlServices);
+
+                Stream.of(directAddress.split(":")).forEach(address -> {
+                    List<ClientBean> directUrlServices = directAddressList.getOrDefault(address, new ArrayList<>());
+                    directUrlServices.add(clientBean);
+                    directAddressList.put(address, directUrlServices);
+                });
             }
             log.info("Bind rpc service [{}]", serviceName);
         } catch (Exception e) {
