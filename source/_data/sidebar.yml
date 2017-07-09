@@ -9,9 +9,10 @@ docs:
   registry:
       zookeeper: zookeeper.html
   advance_rpc:
-      client_config: client-config.html
-      server_config: server-config.html
-      interceptor: interceptor.html
-
+    client_config: client-config.html
+    server_config: server-config.html
+    interceptor: interceptor.html
+  rpc_admin:
+    config_admin: enabled-admin.html
   other:
       faq: faq.html

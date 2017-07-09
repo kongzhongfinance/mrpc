@@ -31,27 +31,8 @@ sidebar:
     client_config: 客户端配置
     server_config: 服务端配置
     interceptor: 拦截器
+    rpc_admin: 管理后台
+    config_admin: 配置
 
     other: 其他
     faq: 常见问题
-
-    writing: 写作
-    front_matter: Front-matter
-    tag_plugins: 标签插件
-    asset_folders: 资源文件夹
-    data_files: 数据文件夹
-    server: 服务器
-    generating: 生成器
-    deployment: 部署
-    customization: 自定义
-    permalinks: 永久链接
-    themes: 主题
-    structure: 结构
-    templates: 模版
-    variables: 变量
-    helpers: 辅助函数
-    internationalization: 国际化 (i18n)
-    plugins: 插件
-    miscellaneous: 其他
-    troubleshooting: 问题解答
-    contributing: 贡献
