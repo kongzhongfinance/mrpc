@@ -10,7 +10,7 @@ public enum LbStrategyEnum {
 
     ROUND("轮询"),
     RANDOM("随机"),
-    LAST("最新节点");
+    CALLLEAST("最少调用");
 
     private final String desc;
 
