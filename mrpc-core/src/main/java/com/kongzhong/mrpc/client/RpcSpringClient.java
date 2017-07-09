@@ -75,8 +75,6 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
 
         super.directConnect();
 
-//        SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
-
         log.info("Bind services finished.");
     }
 
@@ -96,8 +94,9 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
             }
         }
         if (null == ctx && StringUtils.isNotEmpty(directAddress)) {
+            String[] directAddressArr = directAddress.split(",");
             // 同步直连
-            Connections.me().syncDirectConnect(Sets.newHashSet(rpcInterface.getName()), Sets.newHashSet(directAddress));
+            Connections.me().syncDirectConnect(Sets.newHashSet(rpcInterface.getName()), Sets.newHashSet(directAddressArr));
         }
         return this.getProxyBean(rpcInterface);
     }

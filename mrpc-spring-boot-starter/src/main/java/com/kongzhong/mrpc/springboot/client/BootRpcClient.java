@@ -99,8 +99,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
             super.directConnect();
 
-//            SimpleLoadBalance.serviceDiscoveryMap = super.serviceDiscoveryMap;
-
             log.info("Bind services finished");
 
         } catch (Exception e) {
