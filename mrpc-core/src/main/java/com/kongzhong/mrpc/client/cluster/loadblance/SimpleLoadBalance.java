@@ -68,9 +68,6 @@ public class SimpleLoadBalance implements LoadBalance {
         if (lbStrategy == LbStrategyEnum.RANDOM) {
             return this.random(handlers);
         }
-        if (lbStrategy == LbStrategyEnum.LAST) {
-            return this.last(handlers);
-        }
         return null;
     }
 

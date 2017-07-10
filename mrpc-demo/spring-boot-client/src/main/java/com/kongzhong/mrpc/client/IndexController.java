@@ -19,13 +19,13 @@ public class IndexController {
     @Resource
     private UserService userService;
 
-    @GetMapping("/")
-    public String index(String name, Optional<Integer> timeout) {
+    @GetMapping("/hello")
+    public String index(String msg, Optional<Integer> timeout) {
         if (timeout.isPresent()) {
             userService.testTimeout(timeout.get());
             return "ok";
         }
-        return userService.hello(name);
+        return userService.hello(msg);
     }
 
 }

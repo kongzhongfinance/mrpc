@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.demo.exception.BizException;
+import com.kongzhong.mrpc.demo.exception.NoArgException;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.model.Result;
 import com.kongzhong.mrpc.demo.model.StatusEnum;
@@ -40,6 +41,9 @@ public interface UserService {
 
     void testBizExp(Integer num) throws BizException;
 
+    default void testNoArgException() {
+        throw new NoArgException(22, "没有构造函数的异常");
+    }
     void testNormalExp() throws Exception;
 
     StatusEnum testEnum(StatusEnum statusEnum);

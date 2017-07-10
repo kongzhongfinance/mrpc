@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.server;
 
+import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
@@ -9,7 +10,6 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
@@ -110,8 +110,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
     protected Throwable buildErrorResponse(Throwable t, RpcResponse response) throws IllegalAccessException {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
 
-        String exception = JacksonSerialize.toJSONString(t);
-        response.setReturnType(t.getClass().getName());
+        String exception = Throwables.getStackTraceAsString(t);
         response.setException(exception);
         response.setSuccess(false);
         return t;

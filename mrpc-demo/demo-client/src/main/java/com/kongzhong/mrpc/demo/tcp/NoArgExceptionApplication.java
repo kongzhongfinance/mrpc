@@ -1,30 +1,30 @@
-package com.kongzhong.mrpc.demo.http;
+package com.kongzhong.mrpc.demo.tcp;
 
 import com.kongzhong.mrpc.client.RpcSpringClient;
+import com.kongzhong.mrpc.demo.service.NoImplService;
 import com.kongzhong.mrpc.demo.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 没有构造函数的异常测试
+ *
  * @author biezhi
- *         2017/4/19
+ *         2017/6/12
  */
-@Slf4j
-public class ExceptionApplication {
+public class NoArgExceptionApplication {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
+
         RpcSpringClient rpcClient = new RpcSpringClient();
-        rpcClient.setTransport("http");
         rpcClient.setDirectAddress("127.0.0.1:5066");
+        rpcClient.setTransport("http");
 
         UserService userService = rpcClient.getProxyReferer(UserService.class);
-
         try {
-            // userService.testNormalExp();
-            userService.testBizExp(2333);
+            userService.testNoArgException();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         rpcClient.shutdown();
     }
+
 }

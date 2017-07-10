@@ -1,12 +1,10 @@
 package com.kongzhong.mrpc.client;
 
-import com.kongzhong.mrpc.exception.ServiceException;
+import com.kongzhong.mrpc.exception.RpcServiceException;
 import com.kongzhong.mrpc.exception.TimeoutException;
-import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.model.ServiceStatusTable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -42,6 +40,10 @@ public class RpcCallbackFuture {
             lock.lock();
             finish.await(milliseconds, TimeUnit.MILLISECONDS);
 
+            if (null != response && response.getSuccess()) {
+                return response;
+            }
+
             // 客户端调用超时
             long time = System.currentTimeMillis() - startTime;
             if (time > milliseconds) {
@@ -51,16 +53,10 @@ public class RpcCallbackFuture {
                 throw new TimeoutException(msg);
             }
 
-            if (null == response) {
-                return null;
+            if (null != response && !response.getSuccess()) {
+                throw new RpcServiceException(response.getException());
             }
-
-            if (!response.getSuccess()) {
-                Class<?> expType = ReflectUtils.from(response.getReturnType());
-                Exception exception = (Exception) JacksonSerialize.parseObject(response.getException(), expType);
-                throw new ServiceException(exception);
-            }
-            return response.getResult();
+            return null;
         } finally {
             lock.unlock();
         }

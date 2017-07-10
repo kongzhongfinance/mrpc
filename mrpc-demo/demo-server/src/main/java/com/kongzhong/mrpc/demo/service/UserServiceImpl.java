@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String hello(String name) {
-        return "Hello, " + name;
+        return "rpc => " + name;
     }
 
     @Override

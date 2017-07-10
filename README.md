@@ -44,6 +44,11 @@ public class UserServiceImpl implements UserService{
 
 ### 更新日志
 
+#### 0.1.0-SNAPSHOT
+
+1. 简化异常处理
+2. 添加最少连接负载策略
+
 #### 0.0.9-SNAPSHOT
 
 1. 重新本地服务缓存实现

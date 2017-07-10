@@ -256,11 +256,6 @@ public class LocalServiceNodeTable {
                         serviceNode.getServices().add(serviceName);
                     }
                 });
-
-//        SERVICE_NODES.stream()
-//                .filter(serviceNode -> serviceNode.getServerAddress().equals(Const.EMPTY_SERVER))
-//                .findFirst()
-//                .ifPresent(serviceNode -> serviceNode.getServices().remove(serviceName));
     }
 
     /**
