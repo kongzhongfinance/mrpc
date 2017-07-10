@@ -105,9 +105,8 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
      * @param t
      * @param response
      * @return
-     * @throws IllegalAccessException
      */
-    protected Throwable buildErrorResponse(Throwable t, RpcResponse response) throws IllegalAccessException {
+    protected Throwable buildErrorResponse(Throwable t, RpcResponse response) {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
 
         String exception = Throwables.getStackTraceAsString(t);
