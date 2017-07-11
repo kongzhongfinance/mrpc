@@ -41,7 +41,7 @@ public class RpcCallbackFuture {
             finish.await(milliseconds, TimeUnit.MILLISECONDS);
 
             if (null != response && response.getSuccess()) {
-                return response;
+                return response.getResult();
             }
 
             // 客户端调用超时
