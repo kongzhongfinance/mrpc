@@ -4,7 +4,6 @@ import com.kongzhong.mrpc.exception.RpcServiceException;
 import com.kongzhong.mrpc.exception.TimeoutException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.model.ServiceStatusTable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -49,7 +48,6 @@ public class RpcCallbackFuture {
             if (time > milliseconds) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
                 log.warn(msg + ", {}ms", time);
-                ServiceStatusTable.me().addTimeoutInvoke(request.getClassName());
                 throw new TimeoutException(msg);
             }
 

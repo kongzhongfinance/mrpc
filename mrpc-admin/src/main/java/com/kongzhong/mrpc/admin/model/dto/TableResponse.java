@@ -1,4 +1,4 @@
-package com.kongzhong.mrpc.admin.model;
+package com.kongzhong.mrpc.admin.model.dto;
 
 import lombok.Data;
 

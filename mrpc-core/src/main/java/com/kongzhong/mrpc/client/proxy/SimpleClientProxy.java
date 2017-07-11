@@ -34,7 +34,7 @@ import static com.kongzhong.mrpc.Const.CLIENT_INTERCEPTOR_PREFIX;
  *         2017/4/28
  */
 @Slf4j
-public class SimpleClientProxy<T> extends AbstractInvocationHandler {
+public class SimpleClientProxy extends AbstractInvocationHandler {
 
     // 负载均衡器
     protected LoadBalance loadBalance;

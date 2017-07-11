@@ -150,7 +150,7 @@ public abstract class SimpleRpcClient {
      * @return
      */
     protected <T> T getProxyBean(Class<T> rpcInterface) {
-        return Reflection.newProxy(rpcInterface, new SimpleClientProxy<T>(rpcClientInteceptors));
+        return Reflection.newProxy(rpcInterface, new SimpleClientProxy(rpcClientInteceptors));
     }
 
     /**

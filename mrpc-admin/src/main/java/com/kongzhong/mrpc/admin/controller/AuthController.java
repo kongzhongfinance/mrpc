@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.admin.controller;
 
 import com.kongzhong.mrpc.admin.config.RpcAdminProperties;
-import com.kongzhong.mrpc.admin.model.LoginModel;
+import com.kongzhong.mrpc.admin.model.dto.LoginModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

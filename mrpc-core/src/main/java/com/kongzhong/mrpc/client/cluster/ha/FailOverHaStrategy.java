@@ -23,7 +23,7 @@ public class FailOverHaStrategy implements HaStrategy {
 
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
-        int rc = ClientConfig.me().getFailOverRetry();
+        int rc    = ClientConfig.me().getFailOverRetry();
         int nodes = loadBalance.handlers(request.getClassName()).size();
         if (nodes == 1 || rc < 0) {
             rc = 0;
@@ -32,9 +32,7 @@ public class FailOverHaStrategy implements HaStrategy {
             try {
                 return invoke(request, loadBalance);
             } catch (Exception e) {
-                if (e instanceof RpcServiceException || e instanceof SystemException) {
-                    throw e;
-                } else if (e instanceof ConnectException) {
+                if (e instanceof ConnectException) {
                     log.debug("{}", e.getMessage());
                     if (i >= rc) {
                         log.error("Connection error", e);
@@ -43,7 +41,11 @@ public class FailOverHaStrategy implements HaStrategy {
                     TimeUnit.MILLISECONDS.sleep(100);
                     log.debug("Failover retry [{}]", i + 1);
                 } else {
-                    throw new SystemException(e);
+                    if (e instanceof RpcServiceException || e instanceof RpcException) {
+                        throw e;
+                    } else {
+                        throw new SystemException(e);
+                    }
                 }
             }
         }
