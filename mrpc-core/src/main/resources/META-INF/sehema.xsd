@@ -125,13 +125,13 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="haStrategy" type="xsd:string" use="optional">
+            <xsd:attribute name="haStrategy" type="xsd:string" use="optional" default="failover">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 高可用策略 ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="lbStrategy" type="xsd:string" use="optional">
+            <xsd:attribute name="lbStrategy" type="xsd:string" use="optional" default="round">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 负载均衡策略 ]]></xsd:documentation>
                 </xsd:annotation>

@@ -280,7 +280,7 @@ public abstract class SimpleRpcClient {
 
                 log.debug("Service [{}] direct to [{}]", serviceName, directAddress);
 
-                Stream.of(directAddress.split(":")).forEach(address -> {
+                Stream.of(directAddress.split(",")).forEach(address -> {
                     List<ClientBean> directUrlServices = directAddressList.getOrDefault(address, new ArrayList<>());
                     directUrlServices.add(clientBean);
                     directAddressList.put(address, directUrlServices);

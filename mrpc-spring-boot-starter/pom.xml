@@ -17,6 +17,11 @@
         <!--mrpc-->
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-common</artifactId>
+            <version>${mrpc-common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-core</artifactId>
             <version>${mrpc-core.version}</version>
         </dependency>
