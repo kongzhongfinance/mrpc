@@ -214,7 +214,7 @@ public abstract class SimpleRpcServer {
 
             if (ipAddr.length == 1) {
                 host = NetUtils.getLocalAddress().getHostAddress();
-                port = Integer.valueOf(ipAddr[0]);
+                port = Integer.parseInt(ipAddr[0]);
                 this.address = host + ':' + port;
             }
 

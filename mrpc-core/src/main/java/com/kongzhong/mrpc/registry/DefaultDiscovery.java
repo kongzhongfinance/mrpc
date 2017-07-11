@@ -10,11 +10,10 @@ import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 默认服务发现
@@ -61,22 +60,6 @@ public class DefaultDiscovery implements ServiceDiscovery {
     @Override
     public void stop() {
 
-    }
-
-    private String read() {
-        try {
-            BufferedReader bf = new BufferedReader(new FileReader(DEFAULT_SWAP_NAME));
-            return bf.readLine();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static String read(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, "utf-8"))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
-        }
     }
 
 }

@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
-    public TcpServerHandler() {
+    TcpServerHandler() {
         super();
     }
 
@@ -45,8 +45,8 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
     /**
      * 错误处理
      *
-     * @param ctx
-     * @param cause
+     * @param ctx   ChannelHandlerContext
+     * @param cause Throwable
      */
     private void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
         RpcResponse response = new RpcResponse();

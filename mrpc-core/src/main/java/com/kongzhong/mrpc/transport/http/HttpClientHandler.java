@@ -28,15 +28,15 @@ import static com.kongzhong.mrpc.Const.*;
 @Slf4j
 public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
-    public HttpClientHandler(NettyClient nettyClient) {
+    HttpClientHandler(NettyClient nettyClient) {
         super(nettyClient);
     }
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
      *
-     * @param rpcRequest
-     * @return
+     * @param rpcRequest    RpcRequest
+     * @return return RpcCallbackFuture
      */
     @Override
     public RpcCallbackFuture sendRequest(RpcRequest rpcRequest) {
@@ -97,7 +97,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
                 Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);
-                Object object = JacksonSerialize.parseObject(JacksonSerialize.toJSONString(result), method.getGenericReturnType());
+                Object object = null;
+                if (method != null) {
+                    object = JacksonSerialize.parseObject(JacksonSerialize.toJSONString(result), method.getGenericReturnType());
+                }
                 rpcResponse.setResult(object);
             }
         }

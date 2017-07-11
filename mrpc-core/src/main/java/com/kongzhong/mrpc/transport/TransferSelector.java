@@ -25,25 +25,17 @@ public class TransferSelector {
     /**
      * 根据传输协议获取一个服务端处理handler
      *
-     * @param transport
-     * @return
-     * @see TransportEnum
+     * @param transport @see TransportEnum
+     * @return NettyChannelHandler
      */
     public ChannelHandler getServerChannelHandler(String transport) throws RpcException {
-
         TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
-        if (null == transportEnum) {
-            throw new InitializeException("transfer type [" + transport + "] error.");
-        }
-
         if (transportEnum.equals(TransportEnum.TCP)) {
             return new TcpServerChannelInitializer(rpcSerialize);
         }
-
         if (transportEnum.equals(TransportEnum.HTTP)) {
             return new HttpServerChannelInitializer();
         }
-
         throw new InitializeException("transfer type is null.");
     }
 

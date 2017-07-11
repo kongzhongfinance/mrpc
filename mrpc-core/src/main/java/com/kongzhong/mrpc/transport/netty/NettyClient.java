@@ -63,7 +63,7 @@ public class NettyClient {
         this.address = address;
 
         String host = address.split(":")[0];
-        int port = Integer.valueOf(address.split(":")[1]);
+        int    port = Integer.parseInt(address.split(":")[1]);
         this.serverAddress = SocketUtils.socketAddress(host, port);
 
     }

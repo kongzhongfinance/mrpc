@@ -17,15 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
 
-    public TcpClientHandler(NettyClient nettyClient) {
+    TcpClientHandler(NettyClient nettyClient) {
         super(nettyClient);
     }
 
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
      *
-     * @param request
-     * @return
+     * @param request   RpcRequest对象
+     * @return 返回一个RpcCallbackFuture
      */
     public RpcCallbackFuture sendRequest(RpcRequest request) {
 
