@@ -116,8 +116,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
             exception = JacksonSerialize.toJSONString(t);
             className = t.getClass().getName();
         } catch (Exception e) {
-            t = e;
-            exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), t));
+            exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), e));
             className = SystemException.class.getName();
         }
         response.setReturnType(className);
