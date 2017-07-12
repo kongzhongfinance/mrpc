@@ -1,9 +1,11 @@
 package com.kongzhong.mrpc.client;
 
-import com.kongzhong.mrpc.exception.RpcServiceException;
+import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.exception.TimeoutException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -20,11 +22,11 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class RpcCallbackFuture {
 
-    private RpcRequest request;
+    private RpcRequest  request;
     private RpcResponse response;
-    private Lock lock = new ReentrantLock();
-    private Condition finish = lock.newCondition();
-    private long startTime = System.currentTimeMillis();
+    private Lock      lock      = new ReentrantLock();
+    private Condition finish    = lock.newCondition();
+    private long      startTime = System.currentTimeMillis();
 
     public RpcCallbackFuture(RpcRequest request) {
         this.request = request;
@@ -52,7 +54,9 @@ public class RpcCallbackFuture {
             }
 
             if (null != response && !response.getSuccess()) {
-                throw new RpcServiceException(response.getReturnType(), response.getException(), response.getExceptionMeta());
+                Class<?>  expType   = ReflectUtils.from(response.getReturnType());
+                Exception exception = (Exception) JacksonSerialize.parseObject(response.getException(), expType);
+                throw exception;
             }
             return null;
         } finally {

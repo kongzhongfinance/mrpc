@@ -19,8 +19,9 @@ public class ExceptionApplication {
         UserService userService = rpcClient.getProxyReferer(UserService.class);
 
         try {
-            // userService.testNormalExp();
-            userService.testBizExp(2333);
+//             userService.testNormalExp();
+//            userService.testBizExp(2333);
+            userService.testNoArgException();
         } catch (Exception e) {
             e.printStackTrace();
         }

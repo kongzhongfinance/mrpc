@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.server;
 
-import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
@@ -16,13 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 
 import static com.kongzhong.mrpc.Const.SERVER_INTERCEPTOR_PREFIX;
 
@@ -112,27 +109,22 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
      */
     protected Throwable buildErrorResponse(Throwable t, RpcResponse response) {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
-
-        String exception = Throwables.getStackTraceAsString(t);
-
-        response.setReturnType(t.getClass().getName());
+        String exception;
+        String className;
+        try {
+            t.getClass().getConstructor();
+            exception = JacksonSerialize.toJSONString(t);
+            className = t.getClass().getName();
+        } catch (Exception e) {
+            t = e;
+            exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), t));
+            className = SystemException.class.getName();
+        }
+        response.setReturnType(className);
         response.setException(exception);
-        response.setExceptionMeta(getExceptionMeta(t));
         response.setSuccess(false);
+
         return t;
     }
 
-    private String getExceptionMeta(Throwable t) {
-        Map<String, Object> map = new HashMap<>();
-        try {
-            Field[] fields = t.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                field.setAccessible(true);
-                Object value = field.get(t);
-                map.put(field.getName(), value);
-            }
-        } catch (IllegalAccessException e) {
-        }
-        return JacksonSerialize.toJSONString(map);
-    }
 }

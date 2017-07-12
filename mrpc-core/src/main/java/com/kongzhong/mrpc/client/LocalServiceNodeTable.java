@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.client;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.CollectionUtils;
@@ -145,7 +146,7 @@ public class LocalServiceNodeTable {
      *
      * @param serverAddress
      */
-    public static void reConnected(String serverAddress) {
+    public static void reConnecting(String serverAddress) {
         updateNode(serverAddress, node -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
     }
 
@@ -247,6 +248,11 @@ public class LocalServiceNodeTable {
         Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, new HashSet<>());
         serviceNodes.add(serverAddress);
         SERVICE_MAPPINGS.put(serviceName, serviceNodes);
+
+        SERVICE_NODES.stream()
+                .filter(serviceNode -> serviceNode.getServerAddress().equals(Const.EMPTY_SERVER))
+                .findFirst()
+                .ifPresent(serviceNode -> serviceNode.getServices().remove(serviceName));
 
         SERVICE_NODES.stream()
                 .filter(serviceNode -> serviceNode.getServerAddress().equals(serverAddress))

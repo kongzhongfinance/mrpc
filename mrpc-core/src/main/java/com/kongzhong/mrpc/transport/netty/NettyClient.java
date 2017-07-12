@@ -114,7 +114,7 @@ public class NettyClient {
             LocalServiceNodeTable.setNodeAlive(handler);
 
             if (isHttp && ClientConfig.me().getPingInterval() > 0) {
-                enabledPing(channel);
+                this.enabledPing(channel);
             }
             return channel;
         } catch (Exception e) {

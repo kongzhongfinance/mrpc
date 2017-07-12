@@ -97,7 +97,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private Set<String> discoveryService(String serviceName) {
         String appId = ClientConfig.me().getAppId();
-        String path = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
+        String path  = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
         // 发现地址列表
         Set<String> addressSet = new HashSet<>();
         if (zkClient.exists(path)) {
@@ -121,28 +121,30 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         lock.lock();
         try {
             String appId = ClientConfig.me().getAppId();
-            String path = Constant.ZK_ROOT + "/" + appId;
+            String path  = Constant.ZK_ROOT + "/" + appId;
 
             List<String> serviceList = zkClient.getChildren(path);
             if (CollectionUtils.isEmpty(serviceList)) {
                 System.out.println();
                 log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
             } else {
+                if (CollectionUtils.isNotEmpty(LocalServiceNodeTable.getDeadServices())) {
+                    log.debug("Alive services: {}", LocalServiceNodeTable.getAliveServices());
+                    serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
+                    log.debug("Dead service changed: {}", serviceList);
 
-                serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
-
-                log.debug("Dead service changed: {}", serviceList);
-                log.debug("Alive services: {}", LocalServiceNodeTable.getAliveServices());
-
-                Set<String> address = serviceList.stream()
-                        .map(service -> this.discoveryService(service))
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toSet());
-
-                // update node list
-                if (CollectionUtils.isNotEmpty(address)) {
-                    log.debug("Update node list: {}", address);
-                    Connections.me().recoverConnect(new HashSet<>(serviceList), address);
+                    Map<String, Set<String>> serviceMap = new HashMap<>();
+                    for (String service : serviceList) {
+                        Set<String> address = this.discoveryService(service);
+                        if (null != address && !address.isEmpty()) {
+                            serviceMap.put(service, address);
+                        }
+                    }
+                    // update node list
+                    if (CollectionUtils.isNotEmpty(serviceMap.values())) {
+                        log.debug("Update node list: {}", serviceMap.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+                    }
+                    Connections.me().recoverConnect(serviceMap);
                 }
             }
         } finally {

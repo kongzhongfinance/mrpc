@@ -5,7 +5,7 @@ import com.kongzhong.mrpc.client.cluster.LoadBalance;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.exception.RpcServiceException;
+import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +41,12 @@ public class FailOverHaStrategy implements HaStrategy {
                     TimeUnit.MILLISECONDS.sleep(100);
                     log.debug("Failover retry [{}]", i + 1);
                 } else {
-                    if (e instanceof RpcServiceException || e instanceof RpcException) {
-                        throw e;
-                    } else {
-                        throw new SystemException(e);
-                    }
+                    throw e;
+//                    if (e instanceof ServiceException || e instanceof RpcException) {
+//                        throw e;
+//                    } else {
+//                        throw new SystemException(e);
+//                    }
                 }
             }
         }

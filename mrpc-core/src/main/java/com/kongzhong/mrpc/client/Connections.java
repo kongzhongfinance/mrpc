@@ -37,14 +37,14 @@ public class Connections {
     /**
      * 细粒度的可重入锁
      */
-    private Lock lock = new ReentrantLock();
+    private Lock      lock          = new ReentrantLock();
     private Condition handlerStatus = lock.newCondition();
 
     /**
      * 并行处理器个数
      */
-    private final static int parallel = Runtime.getRuntime().availableProcessors() + 1;
-    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
+    private final static int            parallel       = Runtime.getRuntime().availableProcessors() + 1;
+    private              EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
 
     /**
      * 客户端 消息处理线程池
@@ -183,10 +183,29 @@ public class Connections {
         // 把services绑定的服务修改为addresses
         addresses.forEach(address -> {
             LocalServiceNodeTable.addIfNotPresent(address);
-            LocalServiceNodeTable.reConnected(address);
+            LocalServiceNodeTable.reConnecting(address);
             services.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
             this.syncConnect(address);
         });
+    }
+
+    public void recoverConnect(Map<String, Set<String>> serviceMap) {
+
+        // 把services绑定的服务修改为addresses
+        serviceMap.forEach((serviceName, addresses) -> {
+            addresses.forEach(address -> {
+                LocalServiceNodeTable.addIfNotPresent(address);
+                LocalServiceNodeTable.reConnecting(address);
+                LocalServiceNodeTable.updateServiceNode(serviceName, address);
+            });
+        });
+
+        // 连接
+        serviceMap.values().stream()
+                .flatMap(Set::stream)
+                .distinct()
+                .forEach(address -> this.syncConnect(address));
+
     }
 
     /**
@@ -196,6 +215,9 @@ public class Connections {
      * @return
      */
     private void syncConnect(String address) {
+        if (LocalServiceNodeTable.isConnected(address)) {
+            return;
+        }
         log.debug("Sync connect {}", address);
         LocalServiceNodeTable.setConnected(address);
         new NettyClient(nettyConfig, address).syncCreateChannel(eventLoopGroup);
