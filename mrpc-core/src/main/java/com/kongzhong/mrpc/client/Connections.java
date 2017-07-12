@@ -206,6 +206,7 @@ public class Connections {
                 .distinct()
                 .forEach(address -> this.syncConnect(address));
 
+//        log.debug("Dead services: {}", LocalServiceNodeTable.getDeadServices());
     }
 
     /**
@@ -215,7 +216,7 @@ public class Connections {
      * @return
      */
     private void syncConnect(String address) {
-        if (LocalServiceNodeTable.isConnected(address)) {
+        if (LocalServiceNodeTable.isAlive(address)) {
             return;
         }
         log.debug("Sync connect {}", address);

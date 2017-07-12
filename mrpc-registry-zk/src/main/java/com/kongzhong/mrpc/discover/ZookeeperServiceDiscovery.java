@@ -117,38 +117,33 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
      * @param zkClient
      * @throws RpcException
      */
-    private void watchNode(@NonNull final IZkClient zkClient) throws RpcException {
-        lock.lock();
-        try {
-            String appId = ClientConfig.me().getAppId();
-            String path  = Constant.ZK_ROOT + "/" + appId;
+    private synchronized void watchNode(@NonNull final IZkClient zkClient) throws RpcException {
+        String appId = ClientConfig.me().getAppId();
+        String path  = Constant.ZK_ROOT + "/" + appId;
 
-            List<String> serviceList = zkClient.getChildren(path);
-            if (CollectionUtils.isEmpty(serviceList)) {
-                System.out.println();
-                log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
-            } else {
-                if (CollectionUtils.isNotEmpty(LocalServiceNodeTable.getDeadServices())) {
-                    log.debug("Alive services: {}", LocalServiceNodeTable.getAliveServices());
-                    serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
-                    log.debug("Dead service changed: {}", serviceList);
+        List<String> serviceList = zkClient.getChildren(path);
+        if (CollectionUtils.isEmpty(serviceList)) {
+            System.out.println();
+            log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
+        } else {
 
-                    Map<String, Set<String>> serviceMap = new HashMap<>();
-                    for (String service : serviceList) {
-                        Set<String> address = this.discoveryService(service);
-                        if (null != address && !address.isEmpty()) {
-                            serviceMap.put(service, address);
-                        }
+            if (CollectionUtils.isNotEmpty(LocalServiceNodeTable.getDeadServices())) {
+                serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
+                log.debug("Dead service changed: {}", serviceList);
+
+                Map<String, Set<String>> serviceMap = new HashMap<>();
+                for (String service : serviceList) {
+                    Set<String> address = this.discoveryService(service);
+                    if (null != address && !address.isEmpty()) {
+                        serviceMap.put(service, address);
                     }
-                    // update node list
-                    if (CollectionUtils.isNotEmpty(serviceMap.values())) {
-                        log.debug("Update node list: {}", serviceMap.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList()));
-                    }
-                    Connections.me().recoverConnect(serviceMap);
                 }
+                // update node list
+                if (CollectionUtils.isNotEmpty(serviceMap.values())) {
+                    log.debug("Update node list: {}", serviceMap.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+                }
+                Connections.me().recoverConnect(serviceMap);
             }
-        } finally {
-            lock.unlock();
         }
     }
 

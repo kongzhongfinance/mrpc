@@ -29,7 +29,7 @@ public class LocalServiceNodeTable {
      * 服务和服务提供方客户端映射
      * com.kongzhong.service.UserService -> [127.0.0.1:5066, 127.0.0.1:5067]
      */
-    public final static Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
+    public static final Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
 
     public static List<SimpleClientHandler> getAliveNodes(String serviceName) {
         Set<String> addresses = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
