@@ -30,12 +30,12 @@ import static com.kongzhong.mrpc.Const.SERVER_INTERCEPTOR_PREFIX;
 @Slf4j
 public abstract class AbstractResponseInvoker<T> implements Callable<T> {
 
-    protected Map<String, ServiceBean> serviceBeanMap;
-    protected List<RpcServerInterceptor> interceptors;
-    protected InterceptorChain interceptorChain = new InterceptorChain();
-    protected RpcRequest request;
-    protected RpcResponse response;
-    protected boolean hasInterceptors;
+    protected Map<String, ServiceBean>   serviceBeanMap   = null;
+    protected List<RpcServerInterceptor> interceptors     = null;
+    protected InterceptorChain           interceptorChain = new InterceptorChain();
+    protected RpcRequest                 request          = null;
+    protected RpcResponse                response         = null;
+    protected boolean                    hasInterceptors  = false;
 
     public AbstractResponseInvoker(RpcRequest request, RpcResponse response, Map<String, ServiceBean> serviceBeanMap) {
         this.request = request;
@@ -76,12 +76,12 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
                 throw new RpcException("Not found service bean [" + serviceName + "]");
             }
 
-            Class<?> serviceClass = bean.getClass();
-            String methodName = request.getMethodName();
+            Class<?>   serviceClass   = bean.getClass();
+            String     methodName     = request.getMethodName();
             Class<?>[] parameterTypes = request.getParameterTypes();
-            Object[] parameters = request.getParameters();
+            Object[]   parameters     = request.getParameters();
 
-            FastClass serviceFastClass = FastClass.create(serviceClass);
+            FastClass  serviceFastClass  = FastClass.create(serviceClass);
             FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
 
             if (!hasInterceptors) {
@@ -90,7 +90,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
 
             //执行拦截器
             Invocation invocation = new ServerInvocation(serviceFastMethod, bean, parameters, request, interceptors);
-            Object result = invocation.next();
+            Object     result     = invocation.next();
             return result;
         } catch (Exception e) {
             throw e;
@@ -110,6 +110,8 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
 
         String exception = Throwables.getStackTraceAsString(t);
+
+        response.setReturnType(t.getClass().getName());
         response.setException(exception);
         response.setSuccess(false);
         return t;
