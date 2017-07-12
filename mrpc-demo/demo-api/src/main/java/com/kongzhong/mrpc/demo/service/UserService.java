@@ -44,6 +44,7 @@ public interface UserService {
     default void testNoArgException() {
         throw new NoArgException(22, "没有构造函数的异常");
     }
+
     void testNormalExp() throws Exception;
 
     StatusEnum testEnum(StatusEnum statusEnum);

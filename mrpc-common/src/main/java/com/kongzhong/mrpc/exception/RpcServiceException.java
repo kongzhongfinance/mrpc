@@ -13,11 +13,13 @@ public class RpcServiceException extends RuntimeException {
 
     private String message;
     private String exceptionType;
+    private String exceptionMeta;
 
-    public RpcServiceException(String exceptionType, String message) {
+    public RpcServiceException(String exceptionType, String message, String exceptionMeta) {
         super(message);
         this.exceptionType = exceptionType;
         this.message = message;
+        this.exceptionMeta = exceptionMeta;
     }
 
 }

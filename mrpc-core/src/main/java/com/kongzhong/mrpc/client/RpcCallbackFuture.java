@@ -52,7 +52,7 @@ public class RpcCallbackFuture {
             }
 
             if (null != response && !response.getSuccess()) {
-                throw new RpcServiceException(response.getReturnType(), response.getException());
+                throw new RpcServiceException(response.getReturnType(), response.getException(), response.getExceptionMeta());
             }
             return null;
         } finally {

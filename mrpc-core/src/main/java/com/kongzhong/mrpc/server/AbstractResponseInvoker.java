@@ -10,15 +10,19 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import static com.kongzhong.mrpc.Const.SERVER_INTERCEPTOR_PREFIX;
 
@@ -113,8 +117,22 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
 
         response.setReturnType(t.getClass().getName());
         response.setException(exception);
+        response.setExceptionMeta(getExceptionMeta(t));
         response.setSuccess(false);
         return t;
     }
 
+    private String getExceptionMeta(Throwable t) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            Field[] fields = t.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                Object value = field.get(t);
+                map.put(field.getName(), value);
+            }
+        } catch (IllegalAccessException e) {
+        }
+        return JacksonSerialize.toJSONString(map);
+    }
 }

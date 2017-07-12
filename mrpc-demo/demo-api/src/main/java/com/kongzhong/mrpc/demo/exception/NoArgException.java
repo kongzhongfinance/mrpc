@@ -1,17 +1,12 @@
 package com.kongzhong.mrpc.demo.exception;
 
-import lombok.NoArgsConstructor;
-
 /**
  * Created by biezhi on 10/07/2017.
  */
-public class NoArgException extends RuntimeException {
+public class NoArgException extends ParentException {
 
     private int code;
     private String qqqq;
-
-    public NoArgException() {
-    }
 
     public NoArgException(int code, String qqqq) {
         this.code = code;
