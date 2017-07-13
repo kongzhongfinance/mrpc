@@ -108,7 +108,7 @@ public class NettyClient {
 
             //和服务器连接成功后, 获取MessageSendHandler对象
             Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
-            SimpleClientHandler handler = channel.pipeline().get(clientHandler);
+            SimpleClientHandler                  handler       = channel.pipeline().get(clientHandler);
 
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
@@ -145,7 +145,7 @@ public class NettyClient {
         ScheduledFuture scheduledFuture = channel.eventLoop().scheduleAtFixedRate(() -> {
             try {
                 if (!channel.isActive()) {
-                    closeSchedule(channel);
+                    cancelSchedule(channel);
                     return;
                 }
                 long start = System.currentTimeMillis();
@@ -163,8 +163,16 @@ public class NettyClient {
         scheduledFutureMap.put(channel, scheduledFuture);
     }
 
-    private void closeSchedule(Channel channel) {
-        scheduledFutureMap.get(channel).cancel(true);
+    /**
+     * 停止ping任务
+     *
+     * @param channel
+     */
+    public void cancelSchedule(Channel channel) {
+        ScheduledFuture scheduledFuture = scheduledFutureMap.get(channel);
+        if (null != scheduledFuture && !scheduledFuture.isCancelled()) {
+            scheduledFuture.cancel(true);
+        }
     }
 
     /**

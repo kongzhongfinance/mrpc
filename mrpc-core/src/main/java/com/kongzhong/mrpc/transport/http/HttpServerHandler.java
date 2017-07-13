@@ -46,7 +46,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        super.channelReadComplete(ctx);
         ctx.flush();
     }
 
@@ -63,7 +62,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             log.debug("Rpc receive ping for {}", ctx.channel());
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
             httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
-            ctx.writeAndFlush(httpResponse);
+            ctx.write(httpResponse);
             return;
         }
 
@@ -195,12 +194,16 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
     private void sendError(ChannelHandlerContext ctx, RpcRet ret) throws SerializeException {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
-        ctx.writeAndFlush(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
+        ctx.write(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Server receive body error", cause);
-        this.sendError(ctx, RpcRet.error(Throwables.getStackTraceAsString(cause)));
+        RpcRet           ret      = RpcRet.error(Throwables.getStackTraceAsString(cause));
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));
+        response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
+        ctx.writeAndFlush(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
+
     }
 }

@@ -7,15 +7,12 @@ import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.RpcRequest;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
-import io.netty.util.CharsetUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +71,11 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.debug("Channel inActive: {}", ctx.channel());
+        this.nettyClient.cancelSchedule(ctx.channel());
+
+        // 移除客户端Channel
         Connections.me().inActive(this.nettyClient.getAddress());
+
         ctx.channel().close().sync();
 //        if (nettyClient.isRunning()) {
 //            // 断线重连
@@ -120,8 +121,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
      * @param cause
      */
     protected void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
-        Channel channel = ctx.channel();
-        String requestId = channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).get().toString();
+        Channel           channel           = ctx.channel();
+        String            requestId         = channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).get().toString();
         RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
         if (rpcCallbackFuture != null) {
             callbackFutureMap.remove(requestId);

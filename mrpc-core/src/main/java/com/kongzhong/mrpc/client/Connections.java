@@ -98,9 +98,7 @@ public class Connections {
             mappings.forEach((address, serviceNames) -> {
                 LocalServiceNodeTable.addServices(address, serviceNames);
                 serviceNames.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
-                if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.syncConnect(address);
-                }
+                this.syncConnect(address);
             });
             handlerStatus.signal();
         } finally {
@@ -119,9 +117,7 @@ public class Connections {
             addressSet.forEach(address -> {
                 LocalServiceNodeTable.addServices(address, serviceNames);
                 serviceNames.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
-                if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.syncConnect(address);
-                }
+                this.syncConnect(address);
             });
             handlerStatus.signal();
         } finally {
@@ -163,9 +159,7 @@ public class Connections {
             addressSet.forEach(address -> {
                 LocalServiceNodeTable.addService(address, serviceName);
                 LocalServiceNodeTable.updateServiceNode(serviceName, address);
-                if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.syncConnect(address);
-                }
+                this.syncConnect(address);
             });
             handlerStatus.signal();
         } finally {
@@ -176,19 +170,8 @@ public class Connections {
     /**
      * 恢复连接
      *
-     * @param services
-     * @param addresses
+     * @param serviceMap
      */
-    public void recoverConnect(Set<String> services, Set<String> addresses) {
-        // 把services绑定的服务修改为addresses
-        addresses.forEach(address -> {
-            LocalServiceNodeTable.addIfNotPresent(address);
-            LocalServiceNodeTable.reConnecting(address);
-            services.forEach(serviceName -> LocalServiceNodeTable.updateServiceNode(serviceName, address));
-            this.syncConnect(address);
-        });
-    }
-
     public void recoverConnect(Map<String, Set<String>> serviceMap) {
 
         // 把services绑定的服务修改为addresses
@@ -272,7 +255,7 @@ public class Connections {
         // 添加挂掉的节点
         LocalServiceNodeTable.setNodeDead(address);
         log.info("Remove node [{}]", address);
-        log.info("Dead services ", LocalServiceNodeTable.getDeadServices());
+        log.info("Dead services {}", LocalServiceNodeTable.getDeadServices());
     }
 
     public void shutdown() {
