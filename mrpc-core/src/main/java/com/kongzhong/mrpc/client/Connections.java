@@ -205,8 +205,6 @@ public class Connections {
                 .flatMap(Set::stream)
                 .distinct()
                 .forEach(address -> this.syncConnect(address));
-
-//        log.debug("Dead services: {}", LocalServiceNodeTable.getDeadServices());
     }
 
     /**
@@ -273,8 +271,8 @@ public class Connections {
     public void inActive(String address) {
         // 添加挂掉的节点
         LocalServiceNodeTable.setNodeDead(address);
-
         log.info("Remove node [{}]", address);
+        log.info("Dead services ", LocalServiceNodeTable.getDeadServices());
     }
 
     public void shutdown() {

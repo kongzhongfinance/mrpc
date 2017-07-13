@@ -42,11 +42,6 @@ public class FailOverHaStrategy implements HaStrategy {
                     log.debug("Failover retry [{}]", i + 1);
                 } else {
                     throw e;
-//                    if (e instanceof ServiceException || e instanceof RpcException) {
-//                        throw e;
-//                    } else {
-//                        throw new SystemException(e);
-//                    }
                 }
             }
         }
