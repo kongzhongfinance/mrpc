@@ -26,9 +26,9 @@ public class EventManager {
         listenerMap.get(type).add(listener);
     }
 
-    public void fireEvent(EventType type, RpcContext rpcContext) {
+    public void fireEvent(EventType type, Event event) {
         listenerMap.get(type).stream()
-                .forEach(listener -> listener.trigger(rpcContext));
+                .forEach(listener -> listener.trigger(event));
     }
 
     private static final class EventManagerHolder {

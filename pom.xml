@@ -42,7 +42,7 @@
         <!-- dependency version -->
         <protostuff.version>1.5.2</protostuff.version>
         <objenesis.version>2.6</objenesis.version>
-        <lombok.version>1.16.14</lombok.version>
+        <lombok.version>1.16.18</lombok.version>
         <netty.version>4.1.12.Final</netty.version>
         <spring.version>4.3.7.RELEASE</spring.version>
         <spring-boot.version>1.5.3.RELEASE</spring-boot.version>

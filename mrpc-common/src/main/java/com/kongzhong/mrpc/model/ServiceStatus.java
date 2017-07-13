@@ -24,15 +24,18 @@ public class ServiceStatus implements Serializable {
     private long successCount;
     private long errorCount;
     private long timeoutCount;
+    private long clientCount;
 
     @JsonIgnore
-    private LongAdder invokeAdder = new LongAdder();
+    private LongAdder invokeAdder  = new LongAdder();
     @JsonIgnore
     private LongAdder successAdder = new LongAdder();
     @JsonIgnore
-    private LongAdder errorAdder = new LongAdder();
+    private LongAdder errorAdder   = new LongAdder();
     @JsonIgnore
     private LongAdder timeoutAdder = new LongAdder();
+    @JsonIgnore
+    private LongAdder clientAdder  = new LongAdder();
 
     public void addSuccess() {
         invokeAdder.add(1);
@@ -53,6 +56,16 @@ public class ServiceStatus implements Serializable {
         timeoutAdder.add(1);
         invokeCount = invokeAdder.longValue();
         timeoutCount = timeoutAdder.longValue();
+    }
+
+    public void addClient() {
+        clientAdder.add(1);
+        clientCount = clientAdder.longValue();
+    }
+
+    public void removeClient() {
+        clientAdder.add(-1);
+        clientCount = clientAdder.longValue();
     }
 
 }

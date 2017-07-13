@@ -1,7 +1,5 @@
 package com.kongzhong.mrpc.event;
 
-import com.kongzhong.mrpc.model.RpcContext;
-
 /**
  * 事件监听器
  * <p>
@@ -13,8 +11,8 @@ public interface EventListener {
     /**
      * 触发事件
      *
-     * @param rpcContext
+     * @param event
      */
-    void trigger(RpcContext rpcContext);
+    void trigger(Event event);
 
 }

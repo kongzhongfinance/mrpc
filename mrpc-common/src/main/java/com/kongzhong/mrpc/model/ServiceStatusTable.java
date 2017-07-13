@@ -47,6 +47,18 @@ public class ServiceStatusTable implements Serializable {
         }
     }
 
+    public void addClient() {
+        serviceStatsMap.values().stream()
+                .distinct()
+                .forEach(ServiceStatus::addClient);
+    }
+
+    public void removeClient() {
+        serviceStatsMap.values().stream()
+                .distinct()
+                .forEach(ServiceStatus::removeClient);
+    }
+
     private static final class ServiceStatusTableHolder {
         private static final ServiceStatusTable INSTANCE = new ServiceStatusTable();
     }
