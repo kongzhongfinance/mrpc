@@ -9,6 +9,8 @@ package com.kongzhong.mrpc.enums;
 public enum LbStrategyEnum {
 
     ROUND("轮询"),
+    WEIGHT_ROUND("加权轮询"),
+    WEIGHT_RANDOM("加权随机"),
     RANDOM("随机"),
     CALLLEAST("最少调用");
 

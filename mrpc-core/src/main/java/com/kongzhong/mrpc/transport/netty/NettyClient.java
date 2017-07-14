@@ -43,6 +43,9 @@ public class NettyClient {
     private String address;
 
     @Getter
+    private int weight;
+
+    @Getter
     private boolean isRunning = true;
 
     @Getter
@@ -58,9 +61,10 @@ public class NettyClient {
      */
     private static final Map<Channel, ScheduledFuture> scheduledFutureMap = new HashMap<>();
 
-    public NettyClient(NettyConfig nettyConfig, String address) {
+    public NettyClient(NettyConfig nettyConfig, String address, Integer weight) {
         this.nettyConfig = nettyConfig;
         this.address = address;
+        this.weight = weight;
 
         String host = address.split(":")[0];
         int    port = Integer.parseInt(address.split(":")[1]);

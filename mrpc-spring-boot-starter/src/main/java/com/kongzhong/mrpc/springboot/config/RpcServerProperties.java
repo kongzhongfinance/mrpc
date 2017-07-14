@@ -19,6 +19,9 @@ public class RpcServerProperties {
     // 服务绑定ip:port
     private String address;
 
+    // 服务器权重
+    private int weight;
+
     // 外网弹性ip:port，不清楚不用填写
     private String elasticIp;
 

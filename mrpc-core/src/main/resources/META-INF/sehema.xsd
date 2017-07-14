@@ -52,6 +52,12 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="weight" type="xsd:int" use="optional" default="10">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 服务器权重 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
             <xsd:attribute name="elasticIp" type="xsd:string" use="optional">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 注册外网地址 ]]></xsd:documentation>
