@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 加权轮询策略
+ * 加权轮循策略
  * <p>
  * Created by biezhi on 14/07/2017.
  */
@@ -31,7 +31,7 @@ public class WeightRoundRobinStrategy implements LoadBalance {
                 serverList.add(handler);
             }
         });
-        if (pos.intValue() > serverList.size()) {
+        if (pos.intValue() > handlers.size()) {
             pos = new LongAdder();
         }
         SimpleClientHandler simpleClientHandler = serverList.get(pos.intValue());

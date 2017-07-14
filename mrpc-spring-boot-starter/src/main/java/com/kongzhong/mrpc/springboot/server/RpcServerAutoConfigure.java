@@ -85,8 +85,14 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
                 customServiceMap = commonProperties.getCustom();
             }
 
+            System.out.println();
+
+            log.debug(commonProperties.toString());
+            log.debug(rpcServerProperties.toString() + "\n");
+
             super.appId = rpcServerProperties.getAppId();
             super.address = rpcServerProperties.getAddress();
+            super.weight = rpcServerProperties.getWeight();
             super.elasticIp = rpcServerProperties.getElasticIp();
             super.poolName = rpcServerProperties.getPoolName();
 
@@ -120,8 +126,8 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      */
     @Override
     public String getBindAddress(ServiceBean serviceBean) {
-        String address = super.getBindAddress(serviceBean);
-        Map<String, String> custom = customServiceMap.get(serviceBean.getBeanName());
+        String              address = super.getBindAddress(serviceBean);
+        Map<String, String> custom  = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("address")) {
             address = custom.get("address");
         }
@@ -130,8 +136,8 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Override
     public String getRegisterElasticIp(ServiceBean serviceBean) {
-        String elasticIp = super.getRegisterElasticIp(serviceBean);
-        Map<String, String> custom = customServiceMap.get(serviceBean.getBeanName());
+        String              elasticIp = super.getRegisterElasticIp(serviceBean);
+        Map<String, String> custom    = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom) {
             if (custom.containsKey("elasticIp")) {
                 elasticIp = custom.get("elasticIp");
@@ -151,8 +157,8 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      */
     @Override
     public ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        ServiceRegistry serviceRegistry = super.getRegistry(serviceBean);
-        Map<String, String> custom = customServiceMap.get(serviceBean.getBeanName());
+        ServiceRegistry     serviceRegistry = super.getRegistry(serviceBean);
+        Map<String, String> custom          = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("registry")) {
             String registryName = custom.get("registry");
             return serviceRegistryMap.get(registryName);

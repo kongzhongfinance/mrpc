@@ -103,7 +103,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public abstract RpcCallbackFuture sendRequest(RpcRequest request);
+    public abstract RpcCallbackFuture asyncSendRequest(RpcRequest request);
 
     /**
      * 在channel上保存一个requestId

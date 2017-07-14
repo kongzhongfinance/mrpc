@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 轮询
+ * 轮循
  * <p>
  * Created by biezhi on 09/07/2017.
  */

@@ -54,7 +54,7 @@ public class PropertiesParse {
 
         clientProperties.setLbStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT, LbStrategyEnum.ROUND.name())));
 
-        clientProperties.setHaStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT, HaStrategyEnum.FAILOVER.name())));
+        clientProperties.setHaStrategy(env.getProperty(HA_STRATEGY_STYLE1_CLIENT, env.getProperty(HA_STRATEGY_STYLE2_CLIENT, HaStrategyEnum.FAILOVER.name())));
 
         clientProperties.setDirectAddress(env.getProperty(DIRECT_ADDRESS_STYLE1_CLIENT, env.getProperty(DIRECT_ADDRESS_STYLE2_CLIENT)));
 

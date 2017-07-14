@@ -16,6 +16,7 @@ public class ServiceStatus implements Serializable {
     private String appId;
     private String serviceName;
     private String address;
+    private int    weight;
     private String elasticIp;
     private String registry;
     private String version;

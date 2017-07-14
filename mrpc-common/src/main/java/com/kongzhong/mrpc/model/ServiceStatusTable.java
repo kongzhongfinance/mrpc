@@ -22,10 +22,11 @@ public class ServiceStatusTable implements Serializable {
 
     private Map<String, ServiceStatus> serviceStatsMap = new HashMap<>();
 
-    public void createServiceStatus(ServiceBean serviceBean) {
-        String serviceName = serviceBean.getServiceName();
+    public void createServiceStatus(ServiceBean serviceBean, int weight) {
+        String        serviceName   = serviceBean.getServiceName();
         ServiceStatus serviceStatus = new ServiceStatus();
         BeanUtils.copyProperties(serviceBean, serviceStatus);
+        serviceStatus.setWeight(weight);
         serviceStatsMap.put(serviceName, serviceStatus);
     }
 
@@ -47,6 +48,20 @@ public class ServiceStatusTable implements Serializable {
         }
     }
 
+    /**
+     * 根据服务器地址获取服务器权重
+     *
+     * @param serverAddress
+     * @return
+     */
+    public int getServerWeight(String serverAddress) {
+        ServiceStatus serviceStatus = getServiceStatus(serverAddress);
+        if (null != serviceStatus) {
+            return serviceStatus.getWeight();
+        }
+        return 0;
+    }
+
     public void addClient() {
         serviceStatsMap.values().stream()
                 .distinct()
@@ -65,6 +80,12 @@ public class ServiceStatusTable implements Serializable {
 
     public static ServiceStatusTable me() {
         return ServiceStatusTableHolder.INSTANCE;
+    }
+
+    public ServiceStatus getServiceStatus(String serverAddress) {
+        return serviceStatsMap.values().stream()
+                .filter(serviceStatus -> serverAddress.equals(serviceStatus.getAddress()))
+                .findFirst().orElse(null);
     }
 
     public List<ServiceStatus> getServiceStatus() {

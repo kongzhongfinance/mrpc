@@ -3,10 +3,7 @@ package com.kongzhong.mrpc.transport.http;
 import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.enums.MediaTypeEnum;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.model.RequestBody;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcRet;
-import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
@@ -55,8 +52,16 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         if ("/status".equals(path)) {
             log.debug("Rpc receive ping for {}", ctx.channel());
-            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
-            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
+
+            String           address       = ctx.channel().localAddress().toString();
+            ServiceStatus    serviceStatus = ServiceStatusTable.me().getServiceStatus(address.substring(1));
+            FullHttpResponse httpResponse;
+            if (null != serviceStatus) {
+                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(JacksonSerialize.toJSONString(serviceStatus), CharsetUtil.UTF_8));
+            } else {
+                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
+            }
+            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
             return;
         }

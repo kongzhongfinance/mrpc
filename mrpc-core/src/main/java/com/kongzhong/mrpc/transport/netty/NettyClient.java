@@ -5,11 +5,15 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.SystemException;
+import com.kongzhong.mrpc.model.ServiceStatus;
+import com.kongzhong.mrpc.model.ServiceStatusTable;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
 import com.kongzhong.mrpc.utils.HttpRequest;
+import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -61,10 +65,10 @@ public class NettyClient {
      */
     private static final Map<Channel, ScheduledFuture> scheduledFutureMap = new HashMap<>();
 
-    public NettyClient(NettyConfig nettyConfig, String address, Integer weight) {
+    public NettyClient(NettyConfig nettyConfig, String address) {
         this.nettyConfig = nettyConfig;
         this.address = address;
-        this.weight = weight;
+        this.weight = ServiceStatusTable.me().getServerWeight(address);
 
         String host = address.split(":")[0];
         int    port = Integer.parseInt(address.split(":")[1]);
@@ -117,6 +121,12 @@ public class NettyClient {
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
 
+            String result = getServerStatus();
+            if (StringUtils.isNotEmpty(result)) {
+                ServiceStatus serviceStatus = JacksonSerialize.parseObject(result, ServiceStatus.class);
+                this.weight = serviceStatus.getWeight();
+            }
+
             if (isHttp && ClientConfig.me().getPingInterval() > 0) {
                 this.enabledPing(channel);
             }
@@ -152,12 +162,9 @@ public class NettyClient {
                     cancelSchedule(channel);
                     return;
                 }
-                long start = System.currentTimeMillis();
-                int code = HttpRequest.get("http://" + this.getAddress() + "/status")
-                        .connectTimeout(10_000)
-                        .readTimeout(5000)
-                        .code();
-                if (code == 200) {
+                long   start  = System.currentTimeMillis();
+                String result = getServerStatus();
+                if (StringUtils.isNotEmpty(result)) {
                     log.debug("Rpc send ping for {} after 0ms", channel, (System.currentTimeMillis() - start));
                 }
             } catch (Exception e) {
@@ -167,6 +174,12 @@ public class NettyClient {
         scheduledFutureMap.put(channel, scheduledFuture);
     }
 
+    private String getServerStatus() {
+        return HttpRequest.get("http://" + this.getAddress() + "/status")
+                .connectTimeout(10_000)
+                .readTimeout(5000)
+                .body();
+    }
     /**
      * 停止ping任务
      *

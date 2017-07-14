@@ -253,7 +253,7 @@ public abstract class SimpleRpcServer {
                         serviceBean.setElasticIp(elasticIp);
                         serviceRegistry.register(serviceBean);
 
-                        ServiceStatusTable.me().createServiceStatus(serviceBean);
+                        ServiceStatusTable.me().createServiceStatus(serviceBean, weight);
                     } catch (RpcException e) {
                         log.error("Service register error", e);
                     }

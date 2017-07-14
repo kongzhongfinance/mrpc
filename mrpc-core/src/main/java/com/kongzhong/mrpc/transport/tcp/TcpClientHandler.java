@@ -27,7 +27,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
      * @param request   RpcRequest对象
      * @return 返回一个RpcCallbackFuture
      */
-    public RpcCallbackFuture sendRequest(RpcRequest request) {
+    public RpcCallbackFuture asyncSendRequest(RpcRequest request) {
 
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(request);
         callbackFutureMap.put(request.getRequestId(), rpcCallbackFuture);

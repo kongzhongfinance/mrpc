@@ -39,7 +39,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      * @return return RpcCallbackFuture
      */
     @Override
-    public RpcCallbackFuture sendRequest(RpcRequest rpcRequest) {
+    public RpcCallbackFuture asyncSendRequest(RpcRequest rpcRequest) {
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
         callbackFutureMap.put(rpcRequest.getRequestId(), rpcCallbackFuture);
 

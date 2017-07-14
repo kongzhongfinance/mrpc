@@ -29,7 +29,7 @@ public class WeightRandomStrategy implements LoadBalance {
                 serverList.add(handler);
             }
         });
-        Random random    = new java.util.Random();
+        Random random    = new Random();
         int    randomPos = random.nextInt(serverList.size());
         return serverList.get(randomPos);
     }

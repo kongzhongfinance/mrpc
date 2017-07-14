@@ -48,8 +48,12 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         // 解析客户端配置
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
 
+        System.out.println();
+
         RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
         CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
+
+        System.out.println();
 
         if (clientConfig.getSkipBind()) {
             log.info("RPC client skip bind service.");
@@ -75,6 +79,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
         super.appId = clientConfig.getAppId();
         super.transport = clientConfig.getTransport();
+        super.lbStrategy = clientConfig.getLbStrategy();
+        super.haStrategy = clientConfig.getHaStrategy();
         super.serialize = clientConfig.getSerialize();
         super.directAddress = clientConfig.getDirectAddress();
         super.failOverRetry = clientConfig.getFailOverRetry();
