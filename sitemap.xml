@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/docs/client-config.html</loc>
+    
+    <lastmod>2017-07-15T09:52:40.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/docs/index.html</loc>
     
     <lastmod>2017-07-11T08:55:52.000Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>https://kongzhongfinance.github.io/mrpc/index.html</loc>
     
     <lastmod>2017-07-11T08:54:36.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/client-config.html</loc>
-    
-    <lastmod>2017-07-09T07:33:28.000Z</lastmod>
     
   </url>
   
@@ -58,7 +58,7 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/22/mrpc-0.0.7-snapshot/</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/29/mrpc-0.0.8-snapshot/</loc>
     
     <lastmod>2017-07-08T11:41:26.000Z</lastmod>
     
@@ -72,7 +72,7 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/29/mrpc-0.0.8-snapshot/</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/22/mrpc-0.0.7-snapshot/</loc>
     
     <lastmod>2017-07-08T11:41:26.000Z</lastmod>
     
