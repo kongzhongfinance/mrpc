@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>Zookeeper注册中心 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/zookeeper.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/zookeeper.html">
+    
+  
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+  <!-- Open Graph -->
+  <meta name="description" content="1. Spring配置1.1 服务端&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;       xmlns:mrpc">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zookeeper注册中心">
+<meta property="og:url" content="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/zookeeper.html">
+<meta property="og:site_name" content="mrpc - 轻量级、分布式服务治理框架">
+<meta property="og:description" content="1. Spring配置1.1 服务端&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;       xmlns:mrpc">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2017-07-15T14:48:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper注册中心">
+<meta name="twitter:description" content="1. Spring配置1.1 服务端&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;       xmlns:mrpc">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+  <!-- Google AdSense -->
+  
+
+  <!-- Github Button -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/zh-cn/mrpc/" id="logo">Hexo</a>
+    </h1>
+    <nav id="main-nav">
+      <a href="/mrpc/" class="main-nav-link">首页</a><a href="/mrpc/zh-cn/docs/" class="main-nav-link">文档</a><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">工单</a><a href="/mrpc/news/" class="main-nav-link">更新</a><a href="/mrpc/contribute" class="main-nav-link">贡献</a>
+      <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link"><i class="fa fa-github-alt"></i></a>
+      
+        
+          
+        
+        
+      
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select" data-canonical="docs/zookeeper.html">
+        
+          <option value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">Zookeeper注册中心</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/site/edit/master/source/zh-cn/docs/zookeeper.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
+              </header>
+              <div class="article-content" itemprop="articleBody">
+                <h2 id="1-Spring配置" class="article-heading"><a href="#1-Spring配置" class="headerlink" title="1. Spring配置"></a>1. Spring配置<a class="article-anchor" href="#1-Spring配置" aria-hidden="true"></a></h2><h3 id="1-1-服务端" class="article-heading"><a href="#1-1-服务端" class="headerlink" title="1.1 服务端"></a>1.1 服务端<a class="article-anchor" href="#1-1-服务端" aria-hidden="true"></a></h3><figure class="highlight xml"><table><tr><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></div><div class="line">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">       <span class="attr">xmlns:mrpc</span>=<span class="string">"http://mrpc.kongzhong.com/schema/mrpc"</span></div><div class="line">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></div><div class="line">       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd"&gt;</div><div class="line"></div><div class="line">    <span class="comment">&lt;!-- zookeeper注册中心，集群用逗号隔开 --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:registry</span> <span class="attr">name</span>=<span class="string">"default"</span> <span class="attr">type</span>=<span class="string">"zookeeper"</span> <span class="attr">address</span>=<span class="string">"127.0.0.1:2181"</span>/&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:serverConfig</span> <span class="attr">address</span>=<span class="string">"127.0.0.1:5066"</span> <span class="attr">appId</span>=<span class="string">"demo"</span> /&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.exmaple.api.service"</span>/&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>这里配置了一个注册中心，名称为 <code>default</code> 所有的服务默认都会使用 <code>default</code> 注册中心。<br>启动服务端后在 <code>zookeeper</code> 中查看已经存在一个节点 <code>/mrpc/demo/com.exmaple.api.service.UserService/127.0.0.1:5066</code>;<br><code>appId</code> 为了区分不同项目所在分组。</p>
+<h3 id="1-2-客户端" class="article-heading"><a href="#1-2-客户端" class="headerlink" title="1.2 客户端"></a>1.2 客户端<a class="article-anchor" href="#1-2-客户端" aria-hidden="true"></a></h3><figure class="highlight xml"><table><tr><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></div><div class="line">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">       <span class="attr">xmlns:mrpc</span>=<span class="string">"http://mrpc.kongzhong.com/schema/mrpc"</span></div><div class="line">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></div><div class="line">       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd"&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:clientConfig</span> <span class="attr">appId</span>=<span class="string">"demo"</span>/&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:registry</span> <span class="attr">name</span>=<span class="string">"default"</span> <span class="attr">type</span>=<span class="string">"zookeeper"</span> <span class="attr">address</span>=<span class="string">"127.0.0.1:2181"</span>/&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:referer</span> <span class="attr">id</span>=<span class="string">"userService"</span> <span class="attr">interface</span>=<span class="string">"com.kongzhong.mrpc.demo.service.UserService"</span>/&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>客户端配置从 <code>zookeeper</code> 拉取服务配置。</p>
+<h2 id="2-SpringBoot配置" class="article-heading"><a href="#2-SpringBoot配置" class="headerlink" title="2. SpringBoot配置"></a>2. SpringBoot配置<a class="article-anchor" href="#2-SpringBoot配置" aria-hidden="true"></a></h2><h3 id="2-1-服务端" class="article-heading"><a href="#2-1-服务端" class="headerlink" title="2.1 服务端"></a>2.1 服务端<a class="article-anchor" href="#2-1-服务端" aria-hidden="true"></a></h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mrpc.server.appId=demo</div><div class="line">mrpc.server.address=127.0.0.1:5066</div><div class="line">mrpc.registry[default].type=zookeeper</div><div class="line">mrpc.registry[default].address=127.0.0.1:2181</div><div class="line">logging.level.com.kongzhong.mrpc=debug</div></pre></td></tr></table></figure>
+<h3 id="2-2-客户端" class="article-heading"><a href="#2-2-客户端" class="headerlink" title="2.2 客户端"></a>2.2 客户端<a class="article-anchor" href="#2-2-客户端" aria-hidden="true"></a></h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mrpc.client.appId=demo</div><div class="line">mrpc.registry[default].type=zookeeper</div><div class="line">mrpc.registry[default].address=127.0.0.1:2181</div><div class="line">logging.level.com.kongzhong.mrpc=debug</div></pre></td></tr></table></figure>
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-15T14:48:19.000Z" itemprop="dateModified">上次更新：2017-07-15</time>
+                <a href="helloworld-springboot.html" class="article-footer-prev" title="SpringBoot"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="client-config.html" class="article-footer-next" title="客户端配置"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            <div id="article-toc-inner">
+              <strong class="sidebar-title">目录</strong>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Spring配置"><span class="toc-text">1. Spring配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-服务端"><span class="toc-text">1.1 服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-客户端"><span class="toc-text">1.2 客户端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-SpringBoot配置"><span class="toc-text">2. SpringBoot配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-服务端"><span class="toc-text">2.1 服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-客户端"><span class="toc-text">2.2 客户端</span></a></li></ol></li></ol>
+              <a href="#" id="article-toc-top">回到顶部</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"><strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link">概述</a><a href="architecture-design.html" class="sidebar-link">框架设计</a><strong class="sidebar-title">快速开始</strong><a href="deployment-env.html" class="sidebar-link">开发环境</a><a href="helloworld-spring.html" class="sidebar-link">Spring</a><a href="helloworld-springboot.html" class="sidebar-link">SpringBoot</a><strong class="sidebar-title">注册中心</strong><a href="zookeeper.html" class="sidebar-link current">Zookeeper</a><strong class="sidebar-title">进阶使用</strong><a href="client-config.html" class="sidebar-link">客户端配置</a><a href="server-config.html" class="sidebar-link">服务端配置</a><a href="interceptor.html" class="sidebar-link">拦截器机制</a><a href="exception.html" class="sidebar-link">异常捕获</a><strong class="sidebar-title">管理后台</strong><a href="enabled-admin.html" class="sidebar-link">配置</a><a href="view-nodes.html" class="sidebar-link">节点查看</a><strong class="sidebar-title">扩展插件</strong><a href="metric_influxdb.html" class="sidebar-link">Metrics打点</a><a href="service-validator.html" class="sidebar-link">服务端参数校验</a><strong class="sidebar-title">其他</strong><a href="faq.html" class="sidebar-link">常见问题</a></div>
+</aside>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+      Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+    </div>
+    <div id="footer-links">
+      
+      
+      <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/mrpc/" class="mobile-nav-link">首页</a><a href="/mrpc/zh-cn/docs/" class="mobile-nav-link">文档</a><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">工单</a><a href="/mrpc/news/" class="mobile-nav-link">更新</a><a href="/mrpc/contribute" class="mobile-nav-link">贡献</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link">概述</a><a href="architecture-design.html" class="mobile-nav-link">框架设计</a><strong class="mobile-nav-title">快速开始</strong><a href="deployment-env.html" class="mobile-nav-link">开发环境</a><a href="helloworld-spring.html" class="mobile-nav-link">Spring</a><a href="helloworld-springboot.html" class="mobile-nav-link">SpringBoot</a><strong class="mobile-nav-title">注册中心</strong><a href="zookeeper.html" class="mobile-nav-link current">Zookeeper</a><strong class="mobile-nav-title">进阶使用</strong><a href="client-config.html" class="mobile-nav-link">客户端配置</a><a href="server-config.html" class="mobile-nav-link">服务端配置</a><a href="interceptor.html" class="mobile-nav-link">拦截器机制</a><a href="exception.html" class="mobile-nav-link">异常捕获</a><strong class="mobile-nav-title">管理后台</strong><a href="enabled-admin.html" class="mobile-nav-link">配置</a><a href="view-nodes.html" class="mobile-nav-link">节点查看</a><strong class="mobile-nav-title">扩展插件</strong><a href="metric_influxdb.html" class="mobile-nav-link">Metrics打点</a><a href="service-validator.html" class="mobile-nav-link">服务端参数校验</a><strong class="mobile-nav-title">其他</strong><a href="faq.html" class="mobile-nav-link">常见问题</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="docs/zookeeper.html">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/scrollingelement.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="https://cdn.jsdelivr.net/retinajs/1.3.0/retina.min.js" async></script>
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>

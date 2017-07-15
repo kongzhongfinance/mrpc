@@ -2,79 +2,86 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/client-config.html</loc>
-    
-    <lastmod>2017-07-15T09:55:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/index.html</loc>
-    
-    <lastmod>2017-07-11T08:55:52.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/index.html</loc>
     
-    <lastmod>2017-07-11T08:54:36.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/zookeeper.html</loc>
-    
-    <lastmod>2017-07-09T05:54:04.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/helloworld-springboot.html</loc>
-    
-    <lastmod>2017-07-09T05:40:06.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/helloworld-spring.html</loc>
-    
-    <lastmod>2017-07-08T15:54:31.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/docs/deployment-env.html</loc>
-    
-    <lastmod>2017-07-08T14:00:12.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/pages/contribute.html</loc>
-    
-    <lastmod>2017-07-08T13:31:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/29/mrpc-0.0.8-snapshot/</loc>
-    
-    <lastmod>2017-07-08T11:41:26.000Z</lastmod>
+    <lastmod>2017-07-15T15:25:26.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
     
-    <lastmod>2017-07-08T11:41:26.000Z</lastmod>
+    <lastmod>2017-07-15T14:51:35.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/29/mrpc-0.0.8-snapshot/</loc>
+    
+    <lastmod>2017-07-15T14:51:18.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://kongzhongfinance.github.io/mrpc/news/2017/06/22/mrpc-0.0.7-snapshot/</loc>
     
-    <lastmod>2017-07-08T11:41:26.000Z</lastmod>
+    <lastmod>2017-07-15T14:51:14.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/zookeeper.html</loc>
+    
+    <lastmod>2017-07-15T14:48:19.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/helloworld-springboot.html</loc>
+    
+    <lastmod>2017-07-15T14:47:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/helloworld-spring.html</loc>
+    
+    <lastmod>2017-07-15T14:47:33.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/client-config.html</loc>
+    
+    <lastmod>2017-07-15T14:47:17.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/deployment-env.html</loc>
+    
+    <lastmod>2017-07-15T14:46:59.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/index.html</loc>
+    
+    <lastmod>2017-07-15T14:46:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/index.html</loc>
+    
+    <lastmod>2017-07-15T14:44:11.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
+    
+    <lastmod>2017-07-11T23:24:18.000Z</lastmod>
     
   </url>
   
