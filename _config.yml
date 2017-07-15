@@ -1,30 +1,40 @@
-# Site
 title: mrpc - 轻量级、分布式服务治理框架
-subtitle: 使用netty,spring,kyro,zookeeper搭建的高可用rpc服务框架
-description:
+subtitle: "使用netty,spring,kyro,zookeeper搭建的高可用rpc服务框架"
+description: "netty4,rpc,spring,springboot,zookeeper,kyro"
 author: biezhi
 language: zh-cn
-timezone: PRC
+timezone: UTC
 
-# URL
 url: https://kongzhongfinance.github.io/mrpc
 root: /mrpc
-
 permalink: news/:year/:month/:day/:title/
 archive_dir: news
-
+code_dir: downloads/code
 new_post_name: :year-:month-:day-:title.md # File name of new posts
 post_asset_folder: true
+per_page: 0
+
+theme: navy
+
 highlight:
   enable: true
   line_number: false
-per_page: 0
 
+#disqus_shortname: hexojs
+
+fb_admins: 100000247608790
+algolia:
+  en:
+    api_key: c3d5d4c995b5e0c2ffb5623900279a66
+    index_name: hexo
+  zh-cn:
+    api_key: cdea7d4e47d84f6145b77e7f68689f35
+    index_name: hexo_zh-cn
+#twitter: hexojs
+#weibo: hexojs
 github: kongzhongfinance/mrpc
 
-theme: navy
 deploy:
   type: git
   repo: https://github.com/kongzhongfinance/mrpc
   branch: gh-pages
-

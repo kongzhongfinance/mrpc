@@ -1,7 +1,4 @@
 <!-- GitHub Star -->
-<iframe src="https://ghbtns.com/github-btn.html?user=kongzhongfinance&repo=mrpc&type=star&count=true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+<a class="github-button" href="https://github.com/kongzhongfinance/mrpc" data-count-href="/kongzhongfinance/mrpc/stargazers" data-count-api="/repos/kongzhongfinance/mrpc#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star mrpc on GitHub">Star</a>
 <!-- GitHub fork -->
-<iframe src="https://ghbtns.com/github-btn.html?user=kongzhongfinance&repo=mrpc&type=fork&count=true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
-<!-- Build Status
-<a href="https://travis-ci.org/kongzhongfinance/mrpc"><img src="https://travis-ci.org/kongzhongfinance/mrpc.svg?branch=master" alt="Build Status"></a>
- -->
+<a class="github-button" href="https://github.com/kongzhongfinance/mrpc/fork" data-count-href="/kongzhongfinance/mrpc/network" data-count-api="/repos/kongzhongfinance/mrpc#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork mrpc on GitHub">Fork</a>

@@ -6,19 +6,6 @@ html
 *, *:before, *:after
   box-sizing: inherit
 
-.text-center
-  text-align: center
-
-.nav,.clearfix:before
-    display: table;
-    content: " ";
-.nav,.clearfix:after
-    display: table;
-    content: " ";
-    clear:both
-
-.md-padding-y
-  padding: 20px 0
 button
 input[type="reset"]
 input[type="button"]
@@ -36,18 +23,17 @@ input, button, select
 html, body
   @media screen
     height: 100%
+    // overflow: hidden
 
 body
-  background: color-easywechat
+  background: color-navy
   font-size: font-size
   font-family: font-sans
   color: color-default
   text-rendering: optimizeLegibility
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  position: relative
-  letter-spacing: 0.6px
-  line-height: line-height
+  overflow-x: hidden
 
 .wrapper
   clearfix()
@@ -62,7 +48,6 @@ body
 
 #content-wrap
   background: #fff
-  border-top: 1px solid darken(color-easywechat, 5%)
-  border-bottom: 1px solid darken(color-easywechat, 5%)
-
-.emoji{width:1.5em;height:1.5em;display:inline-block;margin-bottom:-.25em;background-size:contain}
+  border-top: 1px solid darken(color-navy, 5%)
+  border-bottom: 1px solid darken(color-navy, 5%)
+  margin: -1px 0

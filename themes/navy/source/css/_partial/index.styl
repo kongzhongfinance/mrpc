@@ -1,27 +1,10 @@
-body.home{
-  background: #171f26;
-}
-
-.home .with-background {
-  background: #171f26  url(/mrpc/bg.jpg) no-repeat center bottom
-  background-size: cover
-}
-
-.home
-  background: #fff
-  .main-nav-link,#lang-select-label
-    color: #fff;
-  .mobile-nav-toggle-bar
-    background: #fff
-
-
 #banner
   color: rgba(255, 255, 255, 0.8)
   text-align: center
 
 #banner-title
   padding-top: 20px
-  font-size: 1.9rem
+  font-size: 40px
   line-height: 1.15
   font-weight: 300
   font-family: font-title
@@ -31,20 +14,16 @@ body.home{
 
 #banner-start
   text-align: center
-  padding: 4rem 0
-  display:table
-  margin: 0 auto
+  padding: 40px 0
   @media mq-normal
-    padding: 40px 0
-    font-size: 14px
+    padding: 60px 0
+    font-size: 18px
 
 #banner-start-command
-  color: #444
-  background: lighten(color-easywechat, 10%)
+  background: lighten(color-navy, 10%)
   font-family: font-mono
-  display: table-cell
-  vertical-align: middle
-  padding: 1rem 1.2rem;
+  display: inline-block
+  padding: 15px 20px
   &:before
     content: "$"
     opacity: 0.5
@@ -53,8 +32,7 @@ body.home{
 #banner-start-link
   color: #fff
   background: color-link
-  display: table-cell
-  vertical-align: middle
+  display: inline-block
   padding: 15px
   text-decoration: none
   transition: 0.2s
@@ -136,8 +114,7 @@ body.home{
   color: color-link
   text-decoration: none
   margin: 40px 0
-  border: 1px solid
-  border-radius: 2px
+  border: 3px solid
   border-color: lighten(color-link, 20%)
   padding: 12px 24px
   position: relative
@@ -145,19 +122,3 @@ body.home{
   &:hover
     background: @border-color
     color: #fff
-
-.backers-title
-  margin: 2em 0 1em
-  text-align: center
-  font-size: 24px
-
-.backers
-  text-align: center
-
-.backers-item
-  display: inline-block
-  max-width: 300px
-
-.backers-item img
-  max-height: 120px
-  vertical-align: center

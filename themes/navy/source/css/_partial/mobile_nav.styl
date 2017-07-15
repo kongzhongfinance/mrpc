@@ -10,7 +10,7 @@ lang-select-height = 40px
   width: mobile-nav-width
   left: @width * -1
   height: 100%
-  background: #222
+  background: color-navy
   transition: transition-duration
   font-family: font-title
   .mobile-nav-on &
@@ -24,6 +24,7 @@ lang-select-height = 40px
   bottom: lang-select-height
   left: 0
   right: 0
+  -webkit-overflow-scrolling: touch
 
 #mobile-nav-toggle
   position: absolute
@@ -42,7 +43,7 @@ lang-select-height = 40px
     display: none
 
 .mobile-nav-toggle-bar
-  background: #333
+  background: #fff
   position: absolute
   left: 0
   width: 100%
@@ -63,45 +64,11 @@ lang-select-height = 40px
     .mobile-nav-on &
       transform: rotate(-45deg)
 
-#mobile-search-btn
-  position: absolute
-  top: 0
-  bottom: 0
-  right: gutter-width
-  margin: auto
-  width: toggle-width
-  height: @width
-  transition: 0.2s
-  opacity: 0.5
-  &:before, &:after
-    content: ""
-    position: absolute
-  &:before
-    width: 18px
-    height: @width
-    border-radius: 50%
-    border: toggle-line solid #fff
-    top: 0
-    left: 0
-  &:after
-    width: 9px
-    height: toggle-line
-    background: #fff
-    top: 15px
-    right: 0
-    border-radius: toggle-line
-    transform: rotate(45deg)
-    transform-origin: 0
-  &:active
-    opacity: 1
-  @media mq-normal
-    display: none
-
 .mobile-nav-link
   color: #fff
   text-decoration: none
   display: block
-  padding: 18px 15px
+  padding: 10px 15px
   line-height: 1
   white-space: nowrap
   overflow: hidden
@@ -109,7 +76,7 @@ lang-select-height = 40px
 
 .mobile-nav-title
   color: color-link
-  font-weight: 500
+  font-weight: bold
   padding: 10px 15px
   line-height: 1
   display: block
@@ -124,7 +91,7 @@ lang-select-height = 40px
   bottom: 0
   left: 0
   width: 100%
-  background: #222
+  background: color-navy
   border-top: 1px solid #444
 
 #mobile-lang-select-label
@@ -147,6 +114,9 @@ lang-select-height = 40px
 
 #container
   transition: transition-duration
+  height: 100%
+  // overflow: auto
+  -webkit-overflow-scrolling: touch
   .mobile-nav-on &
     transform: translateX(mobile-nav-width)
     overflow: hidden
@@ -155,6 +125,7 @@ lang-select-height = 40px
   position: absolute
   top: 0
   left: 100%
+  width: 100%
   height: 100%
   background: #000
   opacity: 0

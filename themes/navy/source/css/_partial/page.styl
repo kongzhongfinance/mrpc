@@ -25,7 +25,6 @@ note-warn = hsl(0, 100%, 50%)
   float: left
   width: 100%
   padding: 40px 0
-  word-break:break-word;
   @media print
     padding: 0
 
@@ -98,11 +97,11 @@ note-warn = hsl(0, 100%, 50%)
 
 .article-edit-link
   float: right
-  color: #1DAEEB
+  color: #bbb
+  font-size: 24px
   line-height: 36px
   transition: 0.2s
   display: none
-  text-decoration: none;
   &:hover
     color: color-link-hover
   @media mq-normal
@@ -133,8 +132,8 @@ note-warn = hsl(0, 100%, 50%)
     font-size: 1.3em
   h1, h2, h3, h4, h5, h6
     line-height: 1em
-    font-weight: 500
-    margin: 2em 0 1em
+    font-weight: bold
+    margin: 1em 0
   a
     color: color-link
     text-decoration: none
@@ -148,7 +147,7 @@ note-warn = hsl(0, 100%, 50%)
         content: " (" attr(href) ")"
         font-size: 80%
   strong
-    font-weight: 600
+    font-weight: bold
   em
     font-style: italic
   ul, ol, dl
@@ -163,6 +162,8 @@ note-warn = hsl(0, 100%, 50%)
   dl
     list-style: square
   li
+    p
+      margin: 0
     table, blockquote, iframe, .highlight
       margin: 1em 0
   img, video
@@ -192,12 +193,12 @@ note-warn = hsl(0, 100%, 50%)
     margin: 1em 0
     display: block
     font-size: 1.3em
-    font-weight: 500
+    font-weight: bold
   table
     max-width: 100%
     border: 1px solid color-border
     th
-      font-weight: 500
+      font-weight: bold
     th, td
       padding: 5px 15px
     tr
@@ -219,7 +220,7 @@ note-warn = hsl(0, 100%, 50%)
 $article-footer-link
   color: color-link
   text-decoration: none
-  font-weight: 500
+  font-weight: bold
   font-family: font-title
   text-transform: uppercase
   position: absolute

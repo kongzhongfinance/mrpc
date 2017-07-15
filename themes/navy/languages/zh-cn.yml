@@ -1,9 +1,9 @@
 menu:
   home: 首页
-  docs: 使用指南
-  issues: 提交工单
-  news: 更新日志
-  contribute: 参与贡献
+  docs: 文档
+  issues: 工单
+  news: 更新
+  contribute: 贡献
 
 index:
   get_started: 开始使用

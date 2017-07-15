@@ -1,6 +1,5 @@
-zh-cn:
-  home: /
-  docs: /docs
-  issues: https://github.com/kongzhongfinance/mrpc/issues
-  news: /news
-  contribute: /pages/contribute.html
+home: /
+docs: /docs/
+issues: https://github.com/kongzhongfinance/mrpc/issues
+news: /news/
+contribute: /contribute

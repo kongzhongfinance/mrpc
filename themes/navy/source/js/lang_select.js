@@ -1,19 +1,13 @@
 (function(){
   'use strict';
 
-  // 兼容处理
-  if (window.location.href.indexOf('docs/zh-cn') > 0 || window.location.href.indexOf('docs/en') > 0) {
-    window.location.href = window.location.href.replace('docs/zh-cn', 'zh-cn/docs').replace('docs/en', 'en/docs');
-  }
-
   function changeLang(){
     var lang = this.value;
+    var canonical = this.dataset.canonical;
+    if (lang === 'en') lang = '';
+    if (lang) lang += '/';
 
-    if (lang == 'zh-cn' && window.location.pathname == '/') {
-      return window.location.pathname = '/';
-    }
-
-    window.location.pathname = window.location.pathname.replace(/(zh-cn|en)/g, lang).replace('//', '/');
+    location.href = '/' + lang + canonical;
   }
 
   document.getElementById('lang-select').addEventListener('change', changeLang);

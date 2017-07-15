@@ -6,6 +6,8 @@ var url = require('url');
 var cheerio = require('cheerio');
 var lunr = require('lunr');
 
+var localizedPath = ['docs', 'api'];
+
 function startsWith(str, start){
   return str.substring(0, start.length) === start;
 }
@@ -67,11 +69,12 @@ hexo.extend.helper.register('header_menu', function(className){
   var result = '';
   var self = this;
   var lang = this.page.lang;
+  var isEnglish = lang === 'en';
 
-  _.each(menu[lang], function(path, title){
-    result += '<li class="' + className + '-item">';
+  _.each(menu, function(path, title){
+    if (!isEnglish && ~localizedPath.indexOf(title)) path = lang + path;
+
     result += '<a href="' + self.url_for(path) + '" class="' + className + '-link">' + self.__('menu.' + title) + '</a>';
-    result += '</li>';
   });
 
   return result;
@@ -79,25 +82,22 @@ hexo.extend.helper.register('header_menu', function(className){
 
 hexo.extend.helper.register('canonical_url', function(lang){
   var path = this.page.canonical_path;
-  if (lang && lang !== 'zh-cn') path = lang + '/' + path;
+  if (lang && lang !== 'en') path = lang + '/' + path;
 
   return this.config.url + '/' + path;
 });
 
 hexo.extend.helper.register('url_for_lang', function(path){
   var lang = this.page.lang;
+  var url = this.url_for(path);
 
-  if ((path == '' || path == '/') && lang == 'zh-cn') {
-    return '/';
-  }
+  if (lang !== 'en' && url[0] === '/') url = '/' + lang + url;
 
-  return this.url_for(lang + '/' + path).replace('//', '/');
+  return url;
 });
 
 hexo.extend.helper.register('raw_link', function(path){
-  // path: en/docs/installation.md
-  path = path.replace(/((zh\-cn|en)\/docs\/)?/, '');
-  return 'https://github.com/kongzhongfinance/mrpc/edit/site/source/' + path.replace('//', '/');
+  return 'https://github.com/kongzhongfinance/mrpc/site/edit/master/source/' + path;
 });
 
 hexo.extend.helper.register('page_anchor', function(str){
@@ -130,6 +130,16 @@ hexo.extend.helper.register('lunr_index', function(data){
   });
 
   return JSON.stringify(index.toJSON());
+});
+
+hexo.extend.helper.register('canonical_path_for_nav', function(){
+  var path = this.page.canonical_path;
+
+  if (startsWith(path, 'docs/') || startsWith(path, 'api/')){
+    return path;
+  } else {
+    return '';
+  }
 });
 
 hexo.extend.helper.register('lang_name', function(lang){
