@@ -131,11 +131,15 @@
 <blockquote>
 <p>不同的后端服务器可能机器的配置和当前系统的负载并不相同，因此它们的抗压能力也不相同。给配置高、负载低的机器配置更高的权重，让其处理更多的请；而配置低、负载高的机器，给其分配较低的权重，降低其系统负载，加权轮询能很好地处理这一问题，并将请求顺序且按照权重分配到后端。</p>
 </blockquote>
-<p>3、 <code>RANDOM</code>: 随机，客户端随机选择一个节点调用</p>
+<p>3、<code>WEIGHT_RANDOM</code>: 加权随机</p>
+<blockquote>
+<p>与加权轮询法一样，加权随机法也根据后端机器的配置，系统的负载分配不同的权重。不同的是，它是按照权重随机请求后端服务器，而非顺序。</p>
+</blockquote>
+<p>4、 <code>RANDOM</code>: 随机，客户端随机选择一个节点调用</p>
 <blockquote>
 <p>通过系统的随机算法，根据后端服务器的列表大小值来随机选取其中的一台服务器进行访问。由概率统计理论可以得知，随着客户端调用服务端的次数增多，<br>其实际效果越来越接近于平均分配调用量到后端的每一台服务器，也就是轮询的结果。</p>
 </blockquote>
-<p>4、 <code>CALLLEAST</code>: 最少调用，客户端选择当前服务列表中最少被调用的节点（压力最小的服务）</p>
+<p>5、 <code>CALLLEAST</code>: 最少调用，客户端选择当前服务列表中最少被调用的节点（压力最小的服务）</p>
 <blockquote>
 <p>系统把新连接分配给当前连接数目最少的服务器。该算法在各个服务器运算能力基本相似的环境中非常有效。</p>
 </blockquote>
@@ -153,7 +157,7 @@
                 
               </div>
               <footer class="article-footer">
-                <time class="article-footer-updated" datetime="2017-07-15T09:52:40.000Z" itemprop="dateModified">上次更新：2017-07-15</time>
+                <time class="article-footer-updated" datetime="2017-07-15T09:55:57.000Z" itemprop="dateModified">上次更新：2017-07-15</time>
                 <a href="zookeeper.html" class="article-footer-prev" title="Zookeeper"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="server-config.html" class="article-footer-next" title="服务端配置"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
               </footer>
               
