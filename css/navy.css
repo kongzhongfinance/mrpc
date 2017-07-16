@@ -1386,6 +1386,14 @@ a.article-title:hover {
 #footer-copyright a {
   font-weight: bold;
 }
+#footer-copyright .links {
+  float: right;
+  margin-left: 200px;
+  font-weight: 400;
+}
+#footer-copyright .links a {
+  font-weight: 400;
+}
 #footer-links {
   margin-top: 1em;
 }
