@@ -97,7 +97,7 @@ hexo.extend.helper.register('url_for_lang', function(path){
 });
 
 hexo.extend.helper.register('raw_link', function(path){
-  return 'https://github.com/kongzhongfinance/mrpc/site/edit/master/source/' + path;
+  return 'https://github.com/kongzhongfinance/mrpc/edit/site/source/' + path;
 });
 
 hexo.extend.helper.register('page_anchor', function(str){
