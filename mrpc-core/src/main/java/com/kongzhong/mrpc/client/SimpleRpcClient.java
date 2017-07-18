@@ -57,7 +57,7 @@ public abstract class SimpleRpcClient {
     /**
      * 客户端是否已经初始化
      */
-    protected boolean isInit;
+    boolean isInit;
 
     /**
      * 负载均衡策略，默认轮询
@@ -75,7 +75,7 @@ public abstract class SimpleRpcClient {
      * 跳过服务绑定
      */
     @Setter
-    protected Boolean skipBind = false;
+    Boolean skipBind = false;
 
     /**
      * 客户端服务调用超时，单位/毫秒
@@ -115,7 +115,7 @@ public abstract class SimpleRpcClient {
     /**
      * 客户端直连地址列表
      */
-    protected Map<String, List<ClientBean>> directAddressList = Maps.newHashMap();
+    private Map<String, List<ClientBean>> directAddressList = Maps.newHashMap();
 
     /**
      * appId
@@ -138,32 +138,31 @@ public abstract class SimpleRpcClient {
     /**
      * 客户端拦截器列表
      */
-    protected List<RpcClientInterceptor> rpcClientInteceptors = Lists.newArrayList();
+    private List<RpcClientInterceptor> rpcClientInteceptors = Lists.newArrayList();
 
     protected NettyConfig nettyConfig;
 
     /**
      * 获取一个Class的代理对象
      *
-     * @param rpcInterface
-     * @param <T>
-     * @return
+     * @param rpcInterface Rpc服务接口
+     * @param <T>          服务接口类型
+     * @return 返回服务代理类
      */
-    protected <T> T getProxyBean(Class<T> rpcInterface) {
+    <T> T getProxyBean(Class<T> rpcInterface) {
         return Reflection.newProxy(rpcInterface, new SimpleClientProxy(rpcClientInteceptors));
     }
 
     /**
      * 获取服务使用的注册中心
      *
-     * @param clientBean
-     * @return
+     * @param clientBean 客户端引用Bean
+     * @return 返回该引用服务发现对象
      */
-    protected ServiceDiscovery getDiscovery(ClientBean clientBean) {
+    private ServiceDiscovery getDiscovery(ClientBean clientBean) {
         String registryName = StringUtils.isNotEmpty(clientBean.getRegistry()) ? clientBean.getRegistry() : "default";
         clientBean.setRegistry(registryName);
-        ServiceDiscovery serviceDiscovery = serviceDiscoveryMap.get(registryName);
-        return serviceDiscovery;
+        return serviceDiscoveryMap.get(registryName);
     }
 
     protected void init() throws RpcException {
@@ -182,7 +181,7 @@ public abstract class SimpleRpcClient {
         }
 
         LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
-        TransportEnum transportEnum = TransportEnum.valueOf(this.transport.toUpperCase());
+        TransportEnum  transportEnum  = TransportEnum.valueOf(this.transport.toUpperCase());
         HaStrategyEnum haStrategyEnum = HaStrategyEnum.valueOf(this.haStrategy.toUpperCase());
 
         ClientConfig.me().setAppId(appId);
@@ -207,7 +206,7 @@ public abstract class SimpleRpcClient {
     protected void directConnect() {
         Map<String, Set<String>> mappings = Maps.newHashMap();
         directAddressList.forEach((directAddress, clientBeans) -> {
-            Set<String> serviceNames = clientBeans.stream().map(clientBean -> clientBean.getServiceName()).collect(Collectors.toSet());
+            Set<String> serviceNames = clientBeans.stream().map(ClientBean::getServiceName).collect(Collectors.toSet());
             mappings.put(directAddress, serviceNames);
         });
         if (null != nettyConfig) {
@@ -219,27 +218,16 @@ public abstract class SimpleRpcClient {
     /**
      * 设置默认注册中心
      *
-     * @param serviceDiscovery
+     * @param serviceDiscovery 注册中心
      */
     public void setDefaultDiscovery(ServiceDiscovery serviceDiscovery) {
         serviceDiscoveryMap.put("default", serviceDiscovery);
     }
 
     /**
-     * 绑定多个客户端引用服务
-     *
-     * @param interfaces 接口名
-     */
-    public void bindReferer(String... interfaces) {
-        if (null != interfaces) {
-            Stream.of(interfaces).forEach(type -> clientBeans.add(new ClientBean(ReflectUtils.from(type))));
-        }
-    }
-
-    /**
      * 添加一个客户端拦截器
      *
-     * @param inteceptor
+     * @param inteceptor 客户端拦截器
      */
     public void addInterceptor(RpcClientInterceptor inteceptor) {
         if (null == inteceptor) {
@@ -252,11 +240,11 @@ public abstract class SimpleRpcClient {
     /**
      * 初始化客户端引用
      *
-     * @param clientBean
-     * @param beanFactory
+     * @param clientBean  客户端引用Bean
+     * @param beanFactory Bean工厂
      */
     protected void initReferer(ClientBean clientBean, ConfigurableListableBeanFactory beanFactory) {
-        String serviceName = clientBean.getServiceName();
+        String   serviceName  = clientBean.getServiceName();
         Class<?> serviceClass = clientBean.getServiceClass();
         try {
             Object object = this.getProxyBean(serviceClass);
@@ -295,24 +283,18 @@ public abstract class SimpleRpcClient {
     /**
      * 返回引用是否使用注册中心
      *
-     * @param clientBean
-     * @return
+     * @param clientBean 客户端引用Bean
+     * @return 返回客户端引用是否使用注册中心
      */
     protected boolean usedRegistry(ClientBean clientBean) {
-        if (StringUtils.isNotEmpty(clientBean.getRegistry())) {
-            return true;
-        }
-        if (serviceDiscoveryMap.containsKey("default") && StringUtils.isEmpty(clientBean.getDirectAddress())) {
-            return true;
-        }
-        return false;
+        return StringUtils.isNotEmpty(clientBean.getRegistry()) || serviceDiscoveryMap.containsKey("default") && StringUtils.isEmpty(clientBean.getDirectAddress());
     }
 
     /**
      * 返回客户端的直连地址
      *
-     * @param clientBean
-     * @return
+     * @param clientBean 客户端引用Bean
+     * @return 返回客户端直连服务端地址
      */
     protected String getDirectAddress(ClientBean clientBean) {
         String directAddress = StringUtils.isNotEmpty(clientBean.getDirectAddress()) ? clientBean.getDirectAddress() : this.directAddress;
@@ -320,17 +302,16 @@ public abstract class SimpleRpcClient {
         return directAddress;
     }
 
-    protected ServiceDiscovery parseRegistry(RegistryBean registryBean) {
+    ServiceDiscovery parseRegistry(RegistryBean registryBean) {
         String type = registryBean.getType();
         if (RegistryEnum.DEFAULT.getName().equals(type)) {
             return new DefaultDiscovery();
         }
         try {
             if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-                String zkAddr = registryBean.getAddress();
+                String zkAddr             = registryBean.getAddress();
                 Object zookeeperDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
-                ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperDiscovery;
-                return serviceDiscovery;
+                return (ServiceDiscovery) zookeeperDiscovery;
             }
         } catch (Exception e) {
             throw new SystemException("Parse ServiceDiscovery error", e);

@@ -55,7 +55,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
 
         Map<String, NettyConfig> nettyConfigMap = ctx.getBeansOfType(NettyConfig.class);
         if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
-            this.nettyConfig = nettyConfigMap.values().stream().findFirst().get();
+            this.nettyConfig = nettyConfigMap.values().stream().findFirst().orElse(new NettyConfig());
         }
 
         super.init();
@@ -64,7 +64,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
 
         ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
-        DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
+        DefaultListableBeanFactory     dbf     = (DefaultListableBeanFactory) context.getBeanFactory();
 
         if (CollectionUtils.isNotEmpty(clientBeanMap)) {
             clientBeanMap.values().forEach(clientBean -> super.initReferer(clientBean, dbf));
@@ -81,9 +81,9 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
     /***
      * 动态代理,获得代理后的对象
      *
-     * @param rpcInterface
-     * @param <T>
-     * @return
+     * @param rpcInterface Rpc服务接口
+     * @param <T>   服务类型
+     * @return 获取一个服务代理对象
      */
     public <T> T getProxyReferer(Class<T> rpcInterface) {
         if (!isInit) {

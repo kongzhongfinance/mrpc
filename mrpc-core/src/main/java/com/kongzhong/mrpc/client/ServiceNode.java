@@ -23,23 +23,19 @@ public class ServiceNode {
     /**
      * 服务地址，存储在注册中心都地址
      */
-    private String serverAddress;
-
+    private String              serverAddress;
     /**
      * 客户端连接
      */
     private SimpleClientHandler clientHandler;
-
     /**
      * 节点存活状态
      */
-    private NodeAliveStateEnum aliveState;
-
+    private NodeAliveStateEnum  aliveState;
     /**
      * 是否开始尝试连接
      */
-    private boolean connected;
-
+    private boolean             connected;
     /**
      * 该节点下都服务列表
      */

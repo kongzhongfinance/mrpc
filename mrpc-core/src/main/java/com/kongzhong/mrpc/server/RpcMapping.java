@@ -28,14 +28,14 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RpcMapping {
 
-    private Map<String, ServiceBean> serviceBeanMap = Maps.newConcurrentMap();
+    private Map<String, ServiceBean>   serviceBeanMap     = Maps.newConcurrentMap();
     private List<RpcServerInterceptor> serverInterceptors = Lists.newArrayList();
 
     /**
      * 添加一个服务Bean
      *
-     * @param bean
-     * @param beanName
+     * @param bean     服务Bean对象
+     * @param beanName Bean在IOC容器中的名称
      */
     public void addServiceBean(Object bean, String beanName) {
         RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
@@ -43,12 +43,12 @@ public class RpcMapping {
             if (null == rpcService) {
                 return;
             }
-            Object realBean = AopTargetUtils.getTarget(bean);
+            Object realBean    = AopTargetUtils.getTarget(bean);
             String serviceName = rpcService.value().getName();
-            String appId = rpcService.appId();
-            String registry = rpcService.registry();
-            String address = rpcService.address();
-            String elasticIp = rpcService.elasticIp();
+            String appId       = rpcService.appId();
+            String registry    = rpcService.registry();
+            String address     = rpcService.address();
+            String elasticIp   = rpcService.elasticIp();
 
             if (NoInterface.class.getName().equals(serviceName)) {
                 Class<?>[] interfaces = realBean.getClass().getInterfaces();
@@ -75,18 +75,17 @@ public class RpcMapping {
         }
     }
 
-    public RpcMapping addServiceBean(ServiceBean serviceBean) {
+    void addServiceBean(ServiceBean serviceBean) {
         if (null == serviceBean) {
             throw new SystemException("Service bean not is null");
         }
         serviceBeanMap.put(serviceBean.getServiceName(), serviceBean);
-        return this;
     }
 
     /**
      * 添加一个服务端拦截器
      *
-     * @param rpcServerInterceptor
+     * @param rpcServerInterceptor 服务端拦截器
      */
     public void addInterceptor(RpcServerInterceptor rpcServerInterceptor) {
         if (null == rpcServerInterceptor) {
@@ -94,19 +93,6 @@ public class RpcMapping {
         }
         log.info("Add server interceptor [{}]", rpcServerInterceptor);
         this.serverInterceptors.add(rpcServerInterceptor);
-    }
-
-    /**
-     * 添加一组服务端拦截器
-     *
-     * @param rpcServerInteceptors
-     */
-    public void addInterceptors(List<RpcServerInterceptor> rpcServerInteceptors) {
-        if (null == rpcServerInteceptors) {
-            throw new SystemException("RpcServerInterceptor bean not is null");
-        }
-        log.info("Add server interceptor {}", rpcServerInteceptors.toString());
-        this.serverInterceptors.addAll(rpcServerInteceptors);
     }
 
     private static final class RpcMappingHolder {

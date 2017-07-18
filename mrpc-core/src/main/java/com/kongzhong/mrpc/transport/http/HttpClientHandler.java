@@ -12,7 +12,10 @@ import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +23,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static com.kongzhong.mrpc.Const.*;
+import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
+import static io.netty.handler.codec.http.HttpHeaderValues.TEXT_PLAIN;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Values.GZIP;
 
 /**
  * @author biezhi
@@ -56,12 +63,12 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             log.debug("Client send body: \n{}", JacksonSerialize.toJSONString(requestBody, true));
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
-            req.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-            req.headers().set(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
-            req.headers().set(HttpHeaders.Names.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
+            req.headers().set(CONNECTION, KEEP_ALIVE);
+            req.headers().set(ACCEPT_ENCODING, GZIP);
+            req.headers().set(CONTENT_TYPE, TEXT_PLAIN);
 
-            ByteBuf bbuf = Unpooled.wrappedBuffer(sendBody.getBytes(CharsetUtil.UTF_8));
-            req.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+            ByteBuf bbuf = Unpooled.wrappedBuffer(sendBody != null ? sendBody.getBytes(CharsetUtil.UTF_8) : new byte[0]);
+            req.headers().set(CONTENT_LENGTH, bbuf.readableBytes());
             req.content().clear().writeBytes(bbuf);
 
             this.setChannelRequestId(rpcRequest.getRequestId());
@@ -95,7 +102,8 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         if (rpcResponse.getSuccess()) {
             log.debug("Client receive body: \n{}", JacksonSerialize.toJSONString(rpcResponse, true));
             Object result = rpcResponse.getResult();
-            if (null != result && null != rpcResponse.getReturnType() && !rpcResponse.getReturnType().equals(Void.class)) {
+            if (null != result && null != rpcResponse.getReturnType()
+                    && !rpcResponse.getReturnType().equals(Void.class)) {
                 Method method = ReflectUtils.method(ReflectUtils.from(serviceClass), methodName);
                 Object object = null;
                 if (method != null) {

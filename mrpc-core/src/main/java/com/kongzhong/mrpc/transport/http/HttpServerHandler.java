@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.kongzhong.mrpc.Const.*;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -32,7 +32,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Slf4j
 public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
-    public HttpServerHandler() {
+    HttpServerHandler() {
         super();
     }
 
@@ -46,9 +46,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         super.channelRead0(ctx, httpRequest);
 
-        String uri = httpRequest.uri();
+        String             uri          = httpRequest.uri();
         QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
-        String path = queryDecoder.path();
+        String             path         = queryDecoder.path();
 
         if ("/status".equals(path)) {
             log.debug("Rpc receive ping for {}", ctx.channel());
@@ -61,7 +61,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             } else {
                 httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
             }
-            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
+            httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
             return;
         }
@@ -92,7 +92,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         String serviceName = requestBody.getService();
-        String methodName = requestBody.getMethod();
+        String methodName  = requestBody.getMethod();
 
         if (StringUtils.isEmpty(serviceName)) {
             this.sendError(ctx, RpcRet.notFound("[service] not is null."));
@@ -124,14 +124,14 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         httpResponse.headers().set(HEADER_REQUEST_ID, rpcRequest.getRequestId());
         httpResponse.headers().set(HEADER_SERVICE_CLASS, rpcRequest.getClassName());
         httpResponse.headers().set(HEADER_METHOD_NAME, rpcRequest.getMethodName());
-        httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
-        httpResponse.headers().set(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-        httpResponse.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
-        httpResponse.headers().set(HttpHeaders.Names.PRAGMA, "no-cache");
-        httpResponse.headers().set(HttpHeaders.Names.EXPIRES, "-1");
+        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        httpResponse.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        httpResponse.headers().set(CACHE_CONTROL, "no-cache");
+        httpResponse.headers().set(PRAGMA, "no-cache");
+        httpResponse.headers().set(EXPIRES, "-1");
 
         if (HttpUtil.isKeepAlive(httpRequest)) {
-            httpResponse.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
         HttpResponseInvoker responseCallback = new HttpResponseInvoker(rpcRequest, httpResponse, serviceBeanMap);
@@ -141,18 +141,18 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
     /**
      * 解析请求参数
      *
-     * @param ctx
-     * @param requestBody
-     * @param type
-     * @return
-     * @throws NoSuchMethodException
+     * @param ctx         NettyChannel上下文
+     * @param requestBody 请求体
+     * @param type        方法所在Class
+     * @return 返回一个RpcRequest
+     * @throws NoSuchMethodException 当方法签名不存在时抛出
      */
     private RpcRequest parseParams(ChannelHandlerContext ctx, RequestBody requestBody, Class<?> type) throws Exception {
 
         String serviceName = requestBody.getService();
-        String methodName = requestBody.getMethod();
+        String methodName  = requestBody.getMethod();
 
-        Method method = ReflectUtils.method(type, methodName);
+        Method       method  = ReflectUtils.method(type, methodName);
         List<Object> argJSON = requestBody.getParameters();
 
         // 找不到method
@@ -162,8 +162,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         // 解析参数到args中
-        Object[] args = new Object[method.getParameterCount()];
-        Type[] genericParameterTypes = method.getGenericParameterTypes();
+        Object[] args                  = new Object[method.getParameterCount()];
+        Type[]   genericParameterTypes = method.getGenericParameterTypes();
 
         for (int i = 0; i < args.length; i++) {
             Type paramType = genericParameterTypes[i];
@@ -173,7 +173,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         // 构造请求
         String requestId = null != requestBody.getRequestId() ? requestBody.getRequestId() : StringUtils.getUUID();
 
-        RpcRequest rpcRequest = RpcRequest.builder()
+        return RpcRequest.builder()
                 .requestId(requestId)
                 .className(serviceName)
                 .methodName(method.getName())
@@ -181,18 +181,17 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
                 .returnType(method.getReturnType())
                 .parameters(args)
                 .build();
-
-        return rpcRequest;
     }
 
     /**
      * 错误处理
      *
-     * @param ctx
-     * @param ret
+     * @param ctx NettyChannel上下文
+     * @param ret Rpc Http响应
      */
     private void sendError(ChannelHandlerContext ctx, RpcRet ret) throws SerializeException {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()),
+                Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
         ctx.write(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
     }

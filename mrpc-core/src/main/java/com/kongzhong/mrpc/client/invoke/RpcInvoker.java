@@ -22,8 +22,7 @@ public class RpcInvoker {
             throw new ConnectException(String.format("Client Channel %s unactive.", clientHandler.getChannel()));
         }
         RpcCallbackFuture rpcCallbackFuture = clientHandler.asyncSendRequest(request);
-        Object            result            = rpcCallbackFuture.get();
-        return result;
+        return rpcCallbackFuture.get();
     }
 
     public RpcRequest getRequest() {

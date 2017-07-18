@@ -24,8 +24,8 @@ public class Referers {
     /**
      * 添加客户端引用列表
      *
-     * @param types
-     * @return
+     * @param types 客户端引用类型
+     * @return 返回Referers
      */
     public Referers add(Class<?>... types) {
         Stream.of(types).forEach(type -> referers.add(new ClientBean(type)));

@@ -67,7 +67,7 @@ public class Connections {
      * <p>
      * server:port -> serviceNames
      *
-     * @param mappings
+     * @param mappings 服务映射关系
      */
     public void asyncConnect(Map<String, Set<String>> mappings) {
         try {
@@ -90,7 +90,7 @@ public class Connections {
      * <p>
      * server:port -> serviceNames
      *
-     * @param mappings
+     * @param mappings 服务映射关系
      */
     public void syncConnect(Map<String, Set<String>> mappings) {
         try {
@@ -109,7 +109,8 @@ public class Connections {
     /**
      * 同步直连
      *
-     * @param addressSet
+     * @param serviceNames 服务名称列表
+     * @param addressSet   服务地址列表
      */
     public void syncDirectConnect(Set<String> serviceNames, Set<String> addressSet) {
         try {
@@ -126,32 +127,10 @@ public class Connections {
     }
 
     /**
-     * 异步直连
-     *
-     * @param serviceName
-     * @param addressSet
-     */
-    public void asyncDirectConnect(String serviceName, Set<String> addressSet) {
-        try {
-            lock.lock();
-            addressSet.forEach(address -> {
-                LocalServiceNodeTable.addService(address, serviceName);
-                LocalServiceNodeTable.updateServiceNode(serviceName, address);
-                if (!LocalServiceNodeTable.isConnected(address)) {
-                    this.asyncConnect(address);
-                }
-            });
-            handlerStatus.signal();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
      * 同步直连
      *
-     * @param serviceName
-     * @param addressSet
+     * @param serviceName 服务接口全名称
+     * @param addressSet  服务地址列表
      */
     public void syncDirectConnect(String serviceName, Set<String> addressSet) {
         try {
@@ -170,31 +149,28 @@ public class Connections {
     /**
      * 恢复连接
      *
-     * @param serviceMap
+     * @param serviceMap 服务和节点地址
      */
     public void recoverConnect(Map<String, Set<String>> serviceMap) {
 
         // 把services绑定的服务修改为addresses
-        serviceMap.forEach((serviceName, addresses) -> {
-            addresses.forEach(address -> {
-                LocalServiceNodeTable.addIfNotPresent(address);
-                LocalServiceNodeTable.reConnecting(address);
-                LocalServiceNodeTable.updateServiceNode(serviceName, address);
-            });
-        });
+        serviceMap.forEach((serviceName, addresses) -> addresses.forEach(address -> {
+            LocalServiceNodeTable.addIfNotPresent(address);
+            LocalServiceNodeTable.reConnecting(address);
+            LocalServiceNodeTable.updateServiceNode(serviceName, address);
+        }));
 
         // 连接
         serviceMap.values().stream()
                 .flatMap(Set::stream)
                 .distinct()
-                .forEach(address -> this.syncConnect(address));
+                .forEach(this::syncConnect);
     }
 
     /**
      * 同步建立连接
      *
-     * @param address
-     * @return
+     * @param address 服务地址
      */
     private void syncConnect(String address) {
         if (LocalServiceNodeTable.isAlive(address)) {
@@ -208,8 +184,7 @@ public class Connections {
     /**
      * 异步建立连接
      *
-     * @param address
-     * @return
+     * @param address 服务地址
      */
     private void asyncConnect(String address) {
         log.debug("Async connect {}", address);
@@ -220,11 +195,10 @@ public class Connections {
     /**
      * 休眠
      *
-     * @param milliscond
      */
-    private void sleep(int milliscond) {
+    private void sleep() {
         try {
-            TimeUnit.MILLISECONDS.sleep(milliscond);
+            TimeUnit.MILLISECONDS.sleep(500);
         } catch (Exception e) {
             log.error("", e);
         }
@@ -233,14 +207,13 @@ public class Connections {
     /**
      * 根据服务获取连接
      *
-     * @param serviceName
-     * @return
-     * @throws Exception
+     * @param serviceName 服务全名称
+     * @return 返回查询到的客户端列表
      */
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
         int pos = 0;
         while (!LocalServiceNodeTable.SERVICE_MAPPINGS.containsKey(serviceName) && pos < 4) {
-            sleep(500);
+            sleep();
             pos++;
         }
         return LocalServiceNodeTable.getAliveNodes(serviceName);
@@ -249,7 +222,7 @@ public class Connections {
     /**
      * 客户端移除一个失效的连接
      *
-     * @param address
+     * @param address 服务地址
      */
     public void inActive(String address) {
         // 添加挂掉的节点

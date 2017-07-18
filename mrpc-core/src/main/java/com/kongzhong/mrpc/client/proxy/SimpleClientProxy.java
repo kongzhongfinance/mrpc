@@ -37,16 +37,13 @@ import static com.kongzhong.mrpc.Const.CLIENT_INTERCEPTOR_PREFIX;
 public class SimpleClientProxy extends AbstractInvocationHandler {
 
     // 负载均衡器
-    protected LoadBalance loadBalance;
+    private LoadBalance loadBalance;
 
     // 是否有客户端拦截器
-    protected boolean hasInterceptors;
+    private boolean hasInterceptors;
 
     // 客户端拦截器列表
-    protected List<RpcClientInterceptor> interceptors;
-
-    // 拦截器链
-    protected InterceptorChain interceptorChain = new InterceptorChain();
+    private List<RpcClientInterceptor> interceptors;
 
     private String appId;
 
@@ -66,6 +63,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
             int pos = interceptors.size();
             log.info("Add interceptor {}", interceptors.toString());
             for (RpcClientInterceptor rpcClientInterceptor : interceptors) {
+                InterceptorChain interceptorChain = new InterceptorChain();
                 interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcClientInterceptor);
             }
         }
@@ -98,19 +96,18 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
 
         RpcInvoker rpcInvoker = new RpcInvoker(request, clientHandler);
         Invocation invocation = new ClientInvocation(rpcInvoker, interceptors);
-        Object result = invocation.next();
-        return result;
+        return invocation.next();
     }
 
     /**
      * 获取该方法的高可用策略
      *
-     * @param method
-     * @return
+     * @param method 调用的方法
+     * @return 返回该方法的高可用策略
      */
     private HaStrategyEnum getHaStrategy(Method method) {
         HaStrategyEnum haStrategyEnum = ClientConfig.me().getHaStrategy();
-        Command command = method.getAnnotation(Command.class);
+        Command        command        = method.getAnnotation(Command.class);
         if (null != command) {
             haStrategyEnum = command.haStrategy();
         }
@@ -120,12 +117,12 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     /**
      * 获取该方法的调用超时
      *
-     * @param method
-     * @return
+     * @param method 调用的方法
+     * @return 返回该方法的超时时长
      */
     private int getWaitTimeout(Method method) {
         Command command = method.getAnnotation(Command.class);
-        int timeout = ClientConfig.me().getWaitTimeout();
+        int     timeout = ClientConfig.me().getWaitTimeout();
         if (null != command) {
             return command.waitTimeout();
         }

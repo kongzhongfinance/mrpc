@@ -12,6 +12,7 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +32,14 @@ import java.util.Map;
 @Slf4j
 @Data
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = {"transferSelector"})
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class RpcSpringServer extends SimpleRpcServer implements ApplicationContextAware, InitializingBean {
 
     /**
      * ① 设置上下文
      *
-     * @param ctx
-     * @throws BeansException
+     * @param ctx Spring应用上下文
      */
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
@@ -89,19 +90,16 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
 
     /**
      * ② 后置操作
-     *
-     * @throws Exception
      */
     @Override
     public void afterPropertiesSet() throws Exception {
         this.startServer();
     }
 
-    protected ServiceRegistry parseRegistry(RegistryBean registryBean) {
+    private ServiceRegistry parseRegistry(RegistryBean registryBean) {
         String type = registryBean.getType();
         if (RegistryEnum.DEFAULT.getName().equals(type)) {
-            ServiceRegistry serviceRegistry = new DefaultRegistry();
-            return serviceRegistry;
+            return new DefaultRegistry();
         }
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
             String zkAddr = registryBean.getAddress();

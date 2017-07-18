@@ -133,7 +133,7 @@ public abstract class SimpleRpcServer {
     /**
      * 传输协议选择器
      */
-    protected TransferSelector transferSelector;
+    private TransferSelector transferSelector;
 
     /**
      * netty服务端配置
@@ -152,7 +152,7 @@ public abstract class SimpleRpcServer {
     /**
      * 服务端处理线程池
      */
-    protected static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
+    private static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
 
     private ScheduledFuture adminSchedule;
 
@@ -212,12 +212,8 @@ public abstract class SimpleRpcServer {
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
 
             String[] ipAddr = address.split(":");
-            if (null == ipAddr) {
-                throw new SystemException("RPC server bind address error, please check your server address and port.");
-            }
-
-            String host = null;
-            int    port = -1;
+            String   host   = null;
+            int      port   = -1;
 
             if (ipAddr.length == 1) {
                 host = NetUtils.getLocalAddress().getHostAddress();
@@ -288,23 +284,16 @@ public abstract class SimpleRpcServer {
 
     /**
      * 后台监听
-     *
-     * @param future
-     * @throws InterruptedException
      */
     private void channelSync(ChannelFuture future) throws InterruptedException {
 
         if (null != adminConfig && adminConfig.isEnabled()) {
 
             // 有客户端连接
-            EventManager.me().addEventListener(EventType.SERVER_CLIENT_CONNECTED, e -> {
-                ServiceStatusTable.me().addClient();
-            });
+            EventManager.me().addEventListener(EventType.SERVER_CLIENT_CONNECTED, e -> ServiceStatusTable.me().addClient());
 
             // 有客户端断开
-            EventManager.me().addEventListener(EventType.SERVER_CLIENT_DISCONNECT, e -> {
-                ServiceStatusTable.me().removeClient();
-            });
+            EventManager.me().addEventListener(EventType.SERVER_CLIENT_DISCONNECT, e -> ServiceStatusTable.me().removeClient());
 
             adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> {
                 String url = adminConfig.getUrl() + "/api/service";
@@ -333,7 +322,7 @@ public abstract class SimpleRpcServer {
                     log.debug("连接失败");
                 } catch (Exception e) {
                     log.error("Send error", e);
-                    cancelAdminSchedule(true);
+                    cancelAdminSchedule();
                 }
             }, 100, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
         }
@@ -351,24 +340,18 @@ public abstract class SimpleRpcServer {
         }
     }
 
-    private void cancelAdminSchedule(boolean mayInterruptIfRunning) {
-        adminSchedule.cancel(mayInterruptIfRunning);
+    private void cancelAdminSchedule() {
+        adminSchedule.cancel(true);
     }
 
     /**
      * 返回引用是否使用注册中心
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回该服务是否使用了注册中心
      */
-    protected boolean usedRegistry(ServiceBean serviceBean) {
-        if (StringUtils.isNotEmpty(serviceBean.getRegistry())) {
-            return true;
-        }
-        if (serviceRegistryMap.containsKey("default")) {
-            return true;
-        }
-        return false;
+    private boolean usedRegistry(ServiceBean serviceBean) {
+        return StringUtils.isNotEmpty(serviceBean.getRegistry()) || serviceRegistryMap.containsKey("default");
     }
 
     protected String getAppId(ServiceBean serviceBean) {
@@ -382,8 +365,8 @@ public abstract class SimpleRpcServer {
     /**
      * 获取服务暴露的地址 ip:port
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回该服务绑定的地址
      */
     protected String getBindAddress(ServiceBean serviceBean) {
         String address = this.address;
@@ -404,24 +387,24 @@ public abstract class SimpleRpcServer {
     /**
      * 获取服务使用的注册中心
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回当前服务的注册中心
      */
     protected ServiceRegistry getRegistry(ServiceBean serviceBean) {
         return serviceRegistryMap.get(getRegistryName(serviceBean));
     }
 
-    protected String getRegistryName(ServiceBean serviceBean) {
+    private String getRegistryName(ServiceBean serviceBean) {
         return StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : "default";
     }
 
     /**
      * 提交任务,异步获取结果.
      *
-     * @param task
-     * @param ctx
-     * @param request
-     * @param response
+     * @param task     任务
+     * @param ctx      Netty上下文
+     * @param request  RpcRequest请求对象
+     * @param response RpcResponse请求对象
      */
     public static void submit(Callable<Boolean> task, final ChannelHandlerContext ctx, final RpcRequest request, final RpcResponse response) {
 
@@ -433,16 +416,8 @@ public abstract class SimpleRpcServer {
             @Override
             public void onSuccess(Boolean result) {
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
-                ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
-                    /**
-                     * 服务端回显 request已经处理完毕
-                     * @param channelFuture
-                     * @throws Exception
-                     */
-                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Server execute [{}] success.", request.getRequestId());
-                    }
-                });
+                // 服务端回显 request已经处理完毕
+                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.debug("Server execute [{}] success.", request.getRequestId()));
             }
 
             @Override
@@ -463,18 +438,7 @@ public abstract class SimpleRpcServer {
                 EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, Event.builder().rpcContext(RpcContext.get()).build());
 
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
-                ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
-                    /**
-                     * 服务端回显 request已经处理完毕
-                     * @param channelFuture
-                     * @throws Exception
-                     */
-                    @Override
-                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Server execute [{}] success.", response.headers().get(HEADER_REQUEST_ID));
-                    }
-
-                });
+                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.debug("Server execute [{}] success.", response.headers().get(HEADER_REQUEST_ID)));
             }
 
             @Override
@@ -487,14 +451,13 @@ public abstract class SimpleRpcServer {
     /**
      * 将map转换为注册中心实现
      *
-     * @param map
-     * @return
+     * @param map 将Map中的注册中心筛选出来
+     * @return 返回筛选出来的注册中心
      */
     protected ServiceRegistry mapToRegistry(Map<String, String> map) {
         String type = map.get("type");
         if (RegistryEnum.DEFAULT.getName().equals(type)) {
-            ServiceRegistry serviceRegistry = new DefaultRegistry();
-            return serviceRegistry;
+            return new DefaultRegistry();
         }
         // Zookeeper注册中心
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
@@ -508,11 +471,10 @@ public abstract class SimpleRpcServer {
         return null;
     }
 
-    protected ServiceRegistry getZookeeperServiceRegistry(String zkAddr) {
+    ServiceRegistry getZookeeperServiceRegistry(String zkAddr) {
         try {
-            Object          zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
-            ServiceRegistry serviceRegistry          = (ServiceRegistry) zookeeperServiceRegistry;
-            return serviceRegistry;
+            Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
+            return (ServiceRegistry) zookeeperServiceRegistry;
         } catch (Exception e) {
             log.error("", e);
         }
@@ -522,20 +484,17 @@ public abstract class SimpleRpcServer {
     /**
      * 销毁资源,卸载服务
      */
-    protected void listenDestroy() {
+    private void listenDestroy() {
         log.debug("RPC server backend listen destroy");
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-
-            rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
-                String          serviceName     = serviceBean.getServiceName();
-                ServiceRegistry serviceRegistry = getRegistry(serviceBean);
-                try {
-                    serviceRegistry.unRegister(serviceBean);
-                    log.debug("Unregister service => [{}]", serviceName);
-                } catch (Exception e) {
-                    log.error("Unregister service error", e);
-                }
-            });
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+            String          serviceName     = serviceBean.getServiceName();
+            ServiceRegistry serviceRegistry = getRegistry(serviceBean);
+            try {
+                serviceRegistry.unRegister(serviceBean);
+                log.debug("Unregister service => [{}]", serviceName);
+            } catch (Exception e) {
+                log.error("Unregister service error", e);
+            }
+        })));
     }
 }
