@@ -19,7 +19,7 @@ public class RpcInvoker {
 
     public Object invoke() throws Exception {
         if (!clientHandler.getChannel().isActive()) {
-            throw new ConnectException(String.format("Client Channel %s unactive.", clientHandler.getChannel()));
+            throw new ConnectException(String.format("Server channel %s unactive.", clientHandler.getChannel()));
         }
         RpcCallbackFuture rpcCallbackFuture = clientHandler.asyncSendRequest(request);
         return rpcCallbackFuture.get();
