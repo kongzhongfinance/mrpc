@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
+    
+    <lastmod>2017-07-19T08:00:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
+    
+    <lastmod>2017-07-19T08:00:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/metric_influxdb.html</loc>
     
     <lastmod>2017-07-19T03:37:38.000Z</lastmod>
@@ -19,13 +33,6 @@
     <loc>https://kongzhongfinance.github.io/mrpc/index.html</loc>
     
     <lastmod>2017-07-15T15:25:26.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
-    
-    <lastmod>2017-07-15T14:51:35.000Z</lastmod>
     
   </url>
   
@@ -89,13 +96,6 @@
     <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/index.html</loc>
     
     <lastmod>2017-07-15T14:44:11.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
-    
-    <lastmod>2017-07-11T23:24:18.000Z</lastmod>
     
   </url>
   

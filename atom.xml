@@ -5,7 +5,7 @@
   <link href="/mrpc/atom.xml" rel="self"/>
   
   <link href="https://kongzhongfinance.github.io/mrpc/"/>
-  <updated>2017-07-15T14:51:35.000Z</updated>
+  <updated>2017-07-19T08:00:44.000Z</updated>
   <id>https://kongzhongfinance.github.io/mrpc/</id>
   
   <author>
@@ -20,12 +20,12 @@
     <link href="https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/"/>
     <id>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</id>
     <published>2017-07-07T00:00:00.000Z</published>
-    <updated>2017-07-15T14:51:35.000Z</updated>
+    <updated>2017-07-19T08:00:44.000Z</updated>
     
     <content type="html"><![CDATA[<ol>
 <li>重新本地服务缓存实现</li>
 <li>添加服务端定时推送数据到 <code>admin</code></li>
-<li>支持自动发现本地<code>IP</code></li>
+<li>支持自动发现本地<code>IP</code>(读取第一块网卡的IP地址)</li>
 <li>支持无序启动服务</li>
 <li>添加客户端定时 <code>ping</code> 功能</li>
 </ol>
@@ -36,9 +36,9 @@
       &lt;ol&gt;
 &lt;li&gt;重新本地服务缓存实现&lt;/li&gt;
 &lt;li&gt;添加服务端定时推送数据到 &lt;code&gt;admin&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;支持自动发现本地&lt;code&gt;IP&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持自动发现本地&lt;code&gt;IP&lt;/code&gt;(读取第一块网卡的IP地址)&lt;/li&gt;
 &lt;li&gt;支持无序启动服务&lt;/li&gt;
-&lt;li&gt;添加客户端定时 &lt;code&gt;ping&lt;
+&lt;li&gt;添加客户端
     
     </summary>
     
