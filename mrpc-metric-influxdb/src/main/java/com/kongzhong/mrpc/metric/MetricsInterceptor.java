@@ -19,8 +19,9 @@ import javax.annotation.Resource;
 @Slf4j
 public class MetricsInterceptor implements RpcServerInterceptor {
 
-    private MetricsClient metricsClient;
-    private MetricsUtils  metricsUtils;
+    private boolean       classLevel    = true;
+    private MetricsClient metricsClient = null;
+    private MetricsUtils  metricsUtils  = null;
 
     @Resource
     private MetricsProperties metricsProperties;
@@ -37,6 +38,7 @@ public class MetricsInterceptor implements RpcServerInterceptor {
     public void postConstr() {
         if (null != metricsProperties) {
             log.info("{}", metricsProperties);
+            this.classLevel = metricsProperties.getParticle().equalsIgnoreCase(ParticleLevel.CLASS.name());
             this.metricsClient = new MetricsClient(metricsProperties);
             this.initMetricsUtils();
         }
@@ -54,13 +56,19 @@ public class MetricsInterceptor implements RpcServerInterceptor {
         long     begin  = System.currentTimeMillis();
         try {
             Object bean = invocation.next();
-            metricsUtils.success(clazz, method, metricsClient.getName(), begin);
+            if (classLevel) {
+                method = null;
+            }
+            metricsUtils.success(clazz, method, "", begin);
             return bean;
         } catch (Exception e) {
+            if (classLevel) {
+                method = null;
+            }
             if (e instanceof SystemException) {
-                metricsUtils.systemFail(clazz, method, metricsClient.getName(), begin);
+                metricsUtils.systemFail(clazz, method, "", begin);
             } else {
-                metricsUtils.serviceFail(clazz, method, metricsClient.getName(), begin);
+                metricsUtils.serviceFail(clazz, method, "", begin);
             }
             throw e;
         }

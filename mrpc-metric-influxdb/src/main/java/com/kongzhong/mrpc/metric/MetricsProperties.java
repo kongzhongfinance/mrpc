@@ -17,11 +17,15 @@ public class MetricsProperties {
 
     // metric appId，用于标识项目
     private String appId;
-
-    // 暂无卵用
-    private String name;
-
+    // 监控粒度，默认为类级别，可修改为method级别
+    private String particle = ParticleLevel.CLASS.name();
     // influxdb配置
-    private InfluxdbProperties influxdb;
+    private String url;
+    private String username;
+    private String password;
+    private String database;
+    private int    actions         = 1000;
+    private int    flushDuration   = 100;
+    private String retentionPolicy = "autogen";
 
 }
