@@ -32,21 +32,21 @@ public class ServiceBeanProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Class<?> service = bean.getClass();
-        boolean hasInterface = ReflectUtils.hasInterface(service, RpcServerInterceptor.class);
-        if (hasInterface) {
-            rpcMapping.addInterceptor((RpcServerInterceptor) bean);
-        }
-
-        RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
-        if (null == rpcService) {
-            return bean;
-        }
         Object realBean = null;
         try {
             realBean = AopTargetUtils.getTarget(bean);
         } catch (Exception e) {
             log.error("Get bean target error", e);
+        }
+        Class<?> service = realBean.getClass();
+        boolean hasInterface = ReflectUtils.hasInterface(service, RpcServerInterceptor.class);
+        if (hasInterface) {
+            rpcMapping.addInterceptor((RpcServerInterceptor) realBean);
+        }
+
+        RpcService rpcService = AnnotationUtils.findAnnotation(service, RpcService.class);
+        if (null == rpcService) {
+            return bean;
         }
         rpcMapping.addServiceBean(realBean, beanName);
         return bean;

@@ -59,16 +59,24 @@ public class MetricsInterceptor implements RpcServerInterceptor {
             if (classLevel) {
                 method = null;
             }
-            metricsUtils.success(clazz, method, "", begin);
+            try {
+                metricsUtils.success(clazz, method, "", begin);
+            } catch (Exception e) {
+                log.error("Metrics调用失败", e);
+            }
             return bean;
         } catch (Exception e) {
             if (classLevel) {
                 method = null;
             }
-            if (e instanceof SystemException) {
-                metricsUtils.systemFail(clazz, method, "", begin);
-            } else {
-                metricsUtils.serviceFail(clazz, method, "", begin);
+            try {
+                if (e instanceof SystemException) {
+                    metricsUtils.systemFail(clazz, method, "", begin);
+                } else {
+                    metricsUtils.serviceFail(clazz, method, "", begin);
+                }
+            } catch (Exception e2) {
+                log.error("Metrics调用失败", e2);
             }
             throw e;
         }
