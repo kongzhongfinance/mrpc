@@ -72,10 +72,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         String body = httpRequest.content().toString(CharsetUtil.UTF_8);
-
-        log.debug("{}\t", httpRequest.protocolVersion());
-        log.debug("{}\t{}", httpRequest.method(), uri);
-
         if (StringUtils.isEmpty(body)) {
             this.sendError(ctx, RpcRet.notFound("body not is empty."));
             return;

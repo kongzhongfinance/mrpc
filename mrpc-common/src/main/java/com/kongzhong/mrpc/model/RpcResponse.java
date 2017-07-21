@@ -20,7 +20,6 @@ public class RpcResponse implements Serializable {
     private Object result;
     private Boolean success = false;
     private String returnType;
-
     private String exception;
 
 }
