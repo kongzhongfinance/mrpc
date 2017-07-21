@@ -4,7 +4,7 @@ import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.TransportEnum;
-import com.kongzhong.mrpc.exception.SystemException;
+import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.model.ServiceStatus;
 import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.LongAdder;
  * Netty Client
  *
  * @author biezhi
- *         24/06/2017
+ * 24/06/2017
  */
 @Slf4j
 public class NettyClient {
@@ -132,7 +132,8 @@ public class NettyClient {
             }
             return channel;
         } catch (Exception e) {
-            throw new SystemException("Sync create bootstrap error", e);
+            LocalServiceNodeTable.setNodeDead(address);
+            throw new ConnectException(String.format("Connect [%s] fail", address), e);
         }
     }
 
@@ -180,6 +181,7 @@ public class NettyClient {
                 .readTimeout(5000)
                 .body();
     }
+
     /**
      * 停止ping任务
      *

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * 本地服务节点表
  *
  * @author biezhi
- *         29/06/2017
+ * 29/06/2017
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -152,7 +152,9 @@ public class LocalServiceNodeTable {
      * @param serverAddress 服务地址
      */
     static void reConnecting(String serverAddress) {
-        updateNode(serverAddress, node -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
+        if (!isAlive(serverAddress)) {
+            updateNode(serverAddress, node -> node.setAliveState(NodeAliveStateEnum.CONNECTING));
+        }
     }
 
     /**
@@ -226,15 +228,6 @@ public class LocalServiceNodeTable {
         return SERVICE_NODES.stream()
                 .filter(node -> node.getServerAddress().equals(address))
                 .findFirst();
-    }
-
-    /**
-     * 设置服务已连接
-     *
-     * @param serverAddress 服务地址
-     */
-    static void setConnected(String serverAddress) {
-        updateNode(serverAddress, node -> node.setConnected(true));
     }
 
     /**

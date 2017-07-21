@@ -48,9 +48,9 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         }
 
         // 客户端拦截器
-        Map<String, RpcClientInterceptor> inteceptorMap = ctx.getBeansOfType(RpcClientInterceptor.class);
-        if (CollectionUtils.isNotEmpty(inteceptorMap)) {
-            inteceptorMap.values().forEach(super::addInterceptor);
+        Map<String, RpcClientInterceptor> interceptorMap = ctx.getBeansOfType(RpcClientInterceptor.class);
+        if (CollectionUtils.isNotEmpty(interceptorMap)) {
+            interceptorMap.values().forEach(super::addInterceptor);
         }
 
         Map<String, NettyConfig> nettyConfigMap = ctx.getBeansOfType(NettyConfig.class);

@@ -35,16 +35,17 @@
             <artifactId>mrpc-spring-boot-starter</artifactId>
             <version>${mrpc-starter.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-metric-influxdb</artifactId>
-            <version>${mrpc-metric.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.kongzhong.mrpc</groupId>-->
+        <!--<artifactId>mrpc-metric-influxdb</artifactId>-->
+        <!--<version>${mrpc-metric.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.16</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

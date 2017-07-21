@@ -177,7 +177,6 @@ public class Connections {
             return;
         }
         log.debug("Sync connect {}", address);
-        LocalServiceNodeTable.setConnected(address);
         new NettyClient(nettyConfig, address).syncCreateChannel(eventLoopGroup);
     }
 
@@ -188,7 +187,6 @@ public class Connections {
      */
     private void asyncConnect(String address) {
         log.debug("Async connect {}", address);
-        LocalServiceNodeTable.setConnected(address);
         new NettyClient(nettyConfig, address).asyncCreateChannel(eventLoopGroup);
     }
 
@@ -211,11 +209,6 @@ public class Connections {
      * @return 返回查询到的客户端列表
      */
     public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
-        int pos = 0;
-        while (!LocalServiceNodeTable.SERVICE_MAPPINGS.containsKey(serviceName) && pos < 4) {
-            sleep();
-            pos++;
-        }
         return LocalServiceNodeTable.getAliveNodes(serviceName);
     }
 

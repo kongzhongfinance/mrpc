@@ -21,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.Watcher;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +33,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     @Getter
     @Setter
-    private String zkAddr;
+    private String zkAddress;
 
     private boolean isInit;
 
@@ -43,10 +41,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private Map<String, IZkChildListener> subRelate = Maps.newConcurrentMap();
 
-    private Lock lock = new ReentrantLock();
-
-    public ZookeeperServiceDiscovery(String zkAddr) {
-        this.zkAddr = zkAddr;
+    public ZookeeperServiceDiscovery(String zkAddress) {
+        this.zkAddress = zkAddress;
         init();
     }
 
@@ -55,9 +51,9 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             return;
         }
         isInit = true;
-        zkClient = new ZkClient(zkAddr);
+        zkClient = new ZkClient(zkAddress);
 
-        log.info("Connect zookeeper server: [{}]", zkAddr);
+        log.info("Connect zookeeper server: [{}]", zkAddress);
 
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
@@ -127,7 +123,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
         } else {
 
-            if (CollectionUtils.isNotEmpty(LocalServiceNodeTable.getDeadServices())) {
+            Set<String> deadServices = LocalServiceNodeTable.getDeadServices();
+            if (CollectionUtils.isNotEmpty(deadServices)) {
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
                 log.debug("Dead service changed: {}", serviceList);
 

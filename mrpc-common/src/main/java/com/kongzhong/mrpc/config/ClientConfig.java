@@ -1,13 +1,16 @@
 package com.kongzhong.mrpc.config;
 
+import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.Map;
 
 /**
  * 客户端公共配置
@@ -25,6 +28,7 @@ public class ClientConfig {
     private RpcSerialize rpcSerialize;
     private LbStrategyEnum lbStrategy = LbStrategyEnum.RANDOM;
     private TransportEnum transport = TransportEnum.TCP;
+    private Map<String, ServiceDiscovery> serviceDiscoveryMap = Maps.newHashMap();
 
     /**
      * 跳过服务绑定
@@ -64,4 +68,7 @@ public class ClientConfig {
         return ClientConfigHolder.INSTANCE;
     }
 
+    public ServiceDiscovery getServiceDiscovery(String serviceName){
+        return serviceDiscoveryMap.get(serviceName);
+    }
 }
