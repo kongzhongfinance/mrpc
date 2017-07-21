@@ -93,7 +93,8 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
             Invocation invocation = new ServerInvocation(serviceFastMethod, bean, parameters, request, interceptors);
             return invocation.next();
         } finally {
-            log.debug("Service {}.{}() execute time: {}ms", serviceName, methodName, (System.currentTimeMillis() - startTime));
+            log.debug("[{}.{}]", serviceName, methodName);
+            log.debug("Request [{}] execute time: {}ms", request.getRequestId(), (System.currentTimeMillis() - startTime));
             RpcContext.remove();
         }
     }
