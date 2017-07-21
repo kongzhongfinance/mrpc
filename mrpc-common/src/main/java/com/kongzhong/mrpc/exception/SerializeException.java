@@ -1,19 +1,15 @@
 package com.kongzhong.mrpc.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * 序列化异常
  *
  * @author biezhi
  *         2017/4/26
  */
+@NoArgsConstructor
 public class SerializeException extends Exception {
-
-    public SerializeException() {
-    }
-
-    public SerializeException(String message) {
-        super(message);
-    }
 
     public SerializeException(String message, Throwable cause) {
         super(message, cause);
