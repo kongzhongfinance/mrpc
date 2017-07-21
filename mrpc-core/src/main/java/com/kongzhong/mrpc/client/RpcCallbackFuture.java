@@ -43,8 +43,9 @@ public class RpcCallbackFuture {
             long waitTime = System.currentTimeMillis() - beginTime;
             if (waitTime > milliseconds) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
-                log.warn(msg + ", requestId:{}", request.getRequestId());
-                log.warn("waitTime: {}ms", waitTime);
+                log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
+                log.warn("RequestId: {}", request.getRequestId());
+                log.warn("waitTime : {}ms", waitTime);
                 throw new TimeoutException(msg);
             }
         }
