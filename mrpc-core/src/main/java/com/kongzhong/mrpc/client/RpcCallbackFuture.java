@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.client;
 
-import com.kongzhong.mrpc.exception.TimeoutException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
@@ -9,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * RPC客户端回调

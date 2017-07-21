@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.demo.tcp;
 
 import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.service.UserService;
-import com.kongzhong.mrpc.exception.TimeoutException;
 
 import java.util.concurrent.TimeUnit;
 
