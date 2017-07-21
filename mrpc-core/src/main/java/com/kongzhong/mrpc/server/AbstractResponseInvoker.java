@@ -62,11 +62,13 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
      * @throws Throwable 当执行服务方法出现异常时抛出
      */
     protected Object invokeMethod(RpcRequest request) throws Throwable {
+
+        RpcContext.set(new RpcContext(request));
+        String serviceName = request.getClassName();
+        String methodName  = request.getMethodName();
+        long   startTime   = System.currentTimeMillis();
+
         try {
-
-            RpcContext.set(new RpcContext(request));
-            String serviceName = request.getClassName();
-
             ServiceBean serviceBean = serviceBeanMap.get(serviceName);
             if (null == serviceBean) {
                 throw new RpcException("Not found service bean define [" + serviceName + "]");
@@ -77,11 +79,9 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
                 throw new RpcException("Not found service bean [" + serviceName + "]");
             }
 
-            Class<?>   serviceClass   = bean.getClass();
-            String     methodName     = request.getMethodName();
-            Class<?>[] parameterTypes = request.getParameterTypes();
-            Object[]   parameters     = request.getParameters();
-
+            Class<?>   serviceClass      = bean.getClass();
+            Class<?>[] parameterTypes    = request.getParameterTypes();
+            Object[]   parameters        = request.getParameters();
             FastClass  serviceFastClass  = FastClass.create(serviceClass);
             FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
 
@@ -93,6 +93,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
             Invocation invocation = new ServerInvocation(serviceFastMethod, bean, parameters, request, interceptors);
             return invocation.next();
         } finally {
+            log.debug("Service {}.{}() execute time: {}ms", serviceName, methodName, (System.currentTimeMillis() - startTime));
             RpcContext.remove();
         }
     }

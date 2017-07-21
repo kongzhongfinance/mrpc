@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * RPC客户端回调
  *
  * @author biezhi
- *         2017/4/29
+ * 2017/4/29
  */
 @Slf4j
 public class RpcCallbackFuture {
@@ -48,12 +48,12 @@ public class RpcCallbackFuture {
             long time = System.currentTimeMillis() - startTime;
             if (time > milliseconds) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
-                log.warn(msg + ", {}ms", time);
+                log.warn(msg + ", requestId:{} timeout: {}ms", request.getRequestId(), time);
                 throw new TimeoutException(msg);
             }
 
             if (null != response && !response.getSuccess()) {
-                Class<?>  expType   = ReflectUtils.from(response.getReturnType());
+                Class<?> expType = ReflectUtils.from(response.getReturnType());
                 throw (Exception) JacksonSerialize.parseObject(response.getException(), expType);
             }
             return null;
