@@ -46,7 +46,7 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
  * 抽象服务端请求处理器
  *
  * @author biezhi
- *         2017/4/19
+ * 2017/4/19
  */
 @Slf4j
 @NoArgsConstructor
@@ -438,7 +438,8 @@ public abstract class SimpleRpcServer {
                 EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, Event.builder().rpcContext(RpcContext.get()).build());
 
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
-                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.debug("Server execute [{}] success.", response.headers().get(HEADER_REQUEST_ID)));
+                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture ->
+                        log.debug("Server send to {} success, requestId [{}]", ctx.channel(), response.headers().get(HEADER_REQUEST_ID)));
             }
 
             @Override

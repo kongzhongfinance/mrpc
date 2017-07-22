@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.LongAdder;
  * 抽象客户端请求处理器
  *
  * @author biezhi
- *         2017/4/19
+ * 2017/4/19
  */
 @Slf4j
 public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler<T> {
@@ -40,7 +40,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     protected LongAdder hits = new LongAdder();
 
-    protected final Map<String, RpcCallbackFuture> callbackFutureMap = Maps.newConcurrentMap();
+    public static final Map<String, RpcCallbackFuture> callbackFutureMap = Maps.newConcurrentMap();
 
     public SimpleClientHandler(NettyClient nettyClient) {
         this.nettyClient = nettyClient;

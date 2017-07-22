@@ -30,7 +30,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Values.GZIP;
 
 /**
  * @author biezhi
- *         2017/4/19
+ * 2017/4/19
  */
 @Slf4j
 public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
@@ -42,7 +42,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
     /**
      * 每次客户端发送一次RPC请求的 时候调用.
      *
-     * @param rpcRequest    RpcRequest
+     * @param rpcRequest RpcRequest
      * @return return RpcCallbackFuture
      */
     @Override
@@ -90,9 +90,9 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             return;
         }
 
-        String requestId = httpResponse.headers().get(HEADER_REQUEST_ID);
+        String requestId    = httpResponse.headers().get(HEADER_REQUEST_ID);
         String serviceClass = httpResponse.headers().get(HEADER_SERVICE_CLASS);
-        String methodName = httpResponse.headers().get(HEADER_METHOD_NAME);
+        String methodName   = httpResponse.headers().get(HEADER_METHOD_NAME);
 
         if (StringUtils.isEmpty(requestId) || StringUtils.isEmpty(serviceClass) || StringUtils.isEmpty(methodName)) {
             log.error("{}", body);
@@ -117,6 +117,8 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         if (rpcCallbackFuture != null) {
             callbackFutureMap.remove(requestId);
             rpcCallbackFuture.done(rpcResponse);
+        } else {
+            log.error("Not found request id [{}]", requestId);
         }
     }
 

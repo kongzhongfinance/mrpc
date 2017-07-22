@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.exception.TimeoutException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,13 +20,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RpcCallbackFuture {
 
-    private RpcRequest     request   = null;
-    private RpcResponse    response  = null;
-    private CountDownLatch latch     = new CountDownLatch(1);
-    private long           beginTime = System.currentTimeMillis();
+    private RpcRequest     request;
+    private RpcResponse    response;
+    private CountDownLatch latch;
+    private long           beginTime;
 
     public RpcCallbackFuture(RpcRequest request) {
         this.request = request;
+        this.latch = new CountDownLatch(1);
+        this.beginTime = System.currentTimeMillis();
     }
 
     public Object get(int milliseconds) throws Exception {
@@ -41,7 +44,7 @@ public class RpcCallbackFuture {
             }
         } else {
             long waitTime = System.currentTimeMillis() - beginTime;
-            if (waitTime > milliseconds) {
+            if (waitTime > milliseconds && SimpleClientHandler.callbackFutureMap.containsKey(response.getRequestId())) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
                 log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
                 log.warn("RequestId: {}", request.getRequestId());
