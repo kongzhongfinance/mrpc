@@ -22,6 +22,8 @@ public class ServiceEntity implements Serializable {
     private String appId;
     private String version;
     private String registry;
+    private String address;
+    private String aliveState;
     private Long   invokeCount;
     private Long   successCount;
     private Long   timeoutCount;

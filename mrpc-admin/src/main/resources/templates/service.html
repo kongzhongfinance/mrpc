@@ -15,7 +15,7 @@
                data-search="true"
                data-toggle="table"
                data-id-field="id"
-               data-url="/admin/api/services.json"
+               data-url="/api/service"
                data-side-pagination="server"
                data-pagination="true"
                data-show-columns="true"
@@ -29,11 +29,7 @@
                 <th data-field="appId">AppId</th>
                 <th data-field="address">绑定地址</th>
                 <th data-field="registry">注册中心</th>
-                <th data-field="invokeCount">调用次数</th>
-                <th data-field="successCount">成功次数</th>
-                <th data-field="errorCount">失败次数</th>
-                <th data-field="timeoutCount">超时次数</th>
-                <th data-field="alive">存活状态</th>
+                <th data-field="aliveState">存活状态</th>
             </tr>
             </thead>
         </table>
@@ -45,8 +41,5 @@
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.js"></script>
 
-<script>
-
-</script>
 </body>
 </html>

@@ -211,19 +211,19 @@ public abstract class SimpleRpcServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
 
-            String[] ipAddr = address.split(":");
-            String   host   = null;
-            int      port   = -1;
+            String[] ipAddress = address.split(":");
+            String   host      = null;
+            int      port      = -1;
 
-            if (ipAddr.length == 1) {
+            if (ipAddress.length == 1) {
                 host = NetUtils.getLocalAddress().getHostAddress();
-                port = Integer.parseInt(ipAddr[0]);
+                port = Integer.parseInt(ipAddress[0]);
                 this.address = host + ':' + port;
             }
 
-            if (ipAddr.length == 2) {
-                host = ipAddr[0];
-                port = Integer.parseInt(ipAddr[1]);
+            if (ipAddress.length == 2) {
+                host = ipAddress[0];
+                port = Integer.parseInt(ipAddress[1]);
             }
 
             //获取服务器IP地址和端口
@@ -295,36 +295,13 @@ public abstract class SimpleRpcServer {
             // 有客户端断开
             EventManager.me().addEventListener(EventType.SERVER_CLIENT_DISCONNECT, e -> ServiceStatusTable.me().removeClient());
 
-            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> {
-                String url = adminConfig.getUrl() + "/api/service";
-                ServiceNodePayload serviceNodePayload = ServiceNodePayload.builder()
-                        .address(this.address)
-                        .appId(this.appId)
-                        .availAble(NodeAliveStateEnum.ALIVE)
-                        .transport(TransportEnum.valueOf(this.transport.toUpperCase()))
-                        .services(ServiceStatusTable.me().getServiceStatus())
-                        .build();
+            // 停止服务
+            EventManager.me().addEventListener(EventType.SHUTDOWN_SERVER, e -> {
+                cancelAdminSchedule();
+                sendServerStatus(NodeAliveStateEnum.DEAD);
+            });
 
-                String body = JacksonSerialize.toJSONString(serviceNodePayload);
-                log.debug("Request URL\t: {}", url);
-                log.debug("Send body\t\t: {}", body);
-
-                try {
-                    int code = HttpRequest.post(url)
-                            .contentType("application/json;charset=utf-8")
-                            .connectTimeout(10_000)
-                            .readTimeout(5000)
-                            .basic(adminConfig.getUsername(), adminConfig.getPassword())
-                            .send(body).code();
-
-                    log.debug("Response code: {}", code);
-                } catch (HttpRequest.HttpRequestException e) {
-                    log.debug("连接失败");
-                } catch (Exception e) {
-                    log.error("Send error", e);
-                    cancelAdminSchedule();
-                }
-            }, 100, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
+            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> sendServerStatus(NodeAliveStateEnum.ALIVE), 500, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
         }
 
         if ("true".equals(this.test)) {
@@ -337,6 +314,40 @@ public abstract class SimpleRpcServer {
             }).start();
         } else {
             future.channel().closeFuture().sync();
+        }
+    }
+
+    /**
+     * 发送服务状态给后台
+     */
+    private void sendServerStatus(NodeAliveStateEnum aliveState) {
+        String url = adminConfig.getUrl() + "/api/service";
+        ServiceNodePayload serviceNodePayload = ServiceNodePayload.builder()
+                .address(this.address)
+                .appId(this.appId)
+                .aliveState(aliveState)
+                .transport(TransportEnum.valueOf(this.transport.toUpperCase()))
+                .services(ServiceStatusTable.me().getServiceStatus())
+                .build();
+
+        String body = JacksonSerialize.toJSONString(serviceNodePayload);
+        log.debug("Request URL\t: {}", url);
+        log.debug("Send body\t\t: {}", body);
+
+        try {
+            int code = HttpRequest.post(url)
+                    .contentType("application/json;charset=utf-8")
+                    .connectTimeout(10_000)
+                    .readTimeout(5000)
+                    .basic(adminConfig.getUsername(), adminConfig.getPassword())
+                    .send(body).code();
+
+            log.debug("Response code: {}", code);
+        } catch (HttpRequest.HttpRequestException e) {
+            log.debug("连接失败");
+        } catch (Exception e) {
+            log.error("Send error", e);
+            cancelAdminSchedule();
         }
     }
 
@@ -486,15 +497,15 @@ public abstract class SimpleRpcServer {
      * 销毁资源,卸载服务
      */
     private void listenDestroy() {
-        log.debug("RPC server backend listen destroy");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+            EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
             String          serviceName     = serviceBean.getServiceName();
             ServiceRegistry serviceRegistry = getRegistry(serviceBean);
             try {
                 serviceRegistry.unRegister(serviceBean);
-                log.debug("Unregister service => [{}]", serviceName);
+                log.debug("UnRegister service => [{}]", serviceName);
             } catch (Exception e) {
-                log.error("Unregister service error", e);
+                log.error("UnRegister service error", e);
             }
         })));
     }

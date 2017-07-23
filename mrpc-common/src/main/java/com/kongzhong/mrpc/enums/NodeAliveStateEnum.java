@@ -8,8 +8,8 @@ package com.kongzhong.mrpc.enums;
  */
 public enum NodeAliveStateEnum {
 
-    ALIVE("节点存活"),
-    DEAD("节点挂掉"),
+    ALIVE("存活"),
+    DEAD("挂掉"),
     CONNECTING("连接中");
 
     private final String state;
@@ -18,4 +18,7 @@ public enum NodeAliveStateEnum {
         this.state = state;
     }
 
+    public String getState() {
+        return state;
+    }
 }

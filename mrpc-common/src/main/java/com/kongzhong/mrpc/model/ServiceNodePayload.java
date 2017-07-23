@@ -20,7 +20,7 @@ public class ServiceNodePayload {
 
     private String appId;
     private String address;
-    private NodeAliveStateEnum availAble;
+    private NodeAliveStateEnum aliveState;
     private TransportEnum transport;
     private List<ServiceStatus> services;
 
