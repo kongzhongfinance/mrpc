@@ -14,7 +14,8 @@
                             <div class="col-sm-9">
                                 <select id="nodeSelect" class="form-control">
                                     #for(item : nodes)
-                                    <option appId="${item.appId}" transport="${item.transport}" value="${item.address}">${item.address}
+                                    <option appId="${item.appId}" transport="${item.transport}" value="${item.address}">
+                                        ${item.address}
                                     </option>
                                     #end
                                 </select>
@@ -24,10 +25,13 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label">业务线程池数</label>
                             <div class="col-sm-7">
-                                <input id="businessThreadPoolSize" type="number" class="form-control" placeholder="业务线程池数"/>
+                                <input id="businessThreadPoolSize" type="number" class="form-control"
+                                       placeholder="业务线程池数"/>
                             </div>
                             <div class="col-sm-2">
-                                <button type="button" class="btn btn-info waves-effect waves-light" onclick="setBusinessThreadPoolSize()">修改</button>
+                                <button type="button" class="btn btn-info waves-effect waves-light"
+                                        onclick="setBusinessThreadPoolSize()">修改
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -46,15 +50,13 @@
             address: first.val(),
             transport: first.attr('transport')
         };
-        $.post('/api/node/get-config', param, function (data) {
-            if(data){
+        $.post('/api/config/server', param, function (data) {
+            if (data) {
                 $('#businessThreadPoolSize').val(data.businessThreadPoolSize);
-            } else{
+            } else {
                 alert('获取[' + first.val() + ']配置失败');
             }
         });
-
-
     });
 
     function setBusinessThreadPoolSize() {
@@ -71,7 +73,7 @@
             method: method,
             value: value
         };
-        $.post('/api/node/set-config', param, function (data) {
+        $.post('/api/config/server/update', param, function (data) {
 
         });
     }
