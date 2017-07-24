@@ -11,17 +11,19 @@ import lombok.ToString;
  * 服务端公共配置
  *
  * @author biezhi
- *         20/06/2017
+ * 20/06/2017
  */
 @Data
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 public class ServerConfig {
 
-    private String appId;
-    private String elasticIp;
+    private String       appId;
+    private String       elasticIp;
     private RpcSerialize rpcSerialize;
-    private TransportEnum transport;
+    private TransportEnum transport              = TransportEnum.TCP;
+    // 业务线程池数
+    private int           businessThreadPoolSize = 16;
 
     private static final class ServerConfigHolder {
         private static final ServerConfig INSTANCE = new ServerConfig();

@@ -15,26 +15,14 @@
 
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-common</artifactId>
-            <version>${mrpc-common.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-core</artifactId>
-            <version>${mrpc-core.version}</version>
+            <artifactId>mrpc-spring-boot-starter</artifactId>
+            <version>${mrpc-starter.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
         </dependency>
 
         <dependency>

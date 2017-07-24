@@ -19,7 +19,9 @@ public class NodeEntity implements Serializable {
 
     @Id
     private String address;
+    private String appId;
     private String status;
+    private String transport;
     private Long   updateTime;
 
 }

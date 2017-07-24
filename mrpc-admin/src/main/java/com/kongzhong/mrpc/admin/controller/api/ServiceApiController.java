@@ -65,7 +65,9 @@ public class ServiceApiController {
 
         NodeEntity nodeEntity = new NodeEntity();
         nodeEntity.setAddress(serviceNodePayload.getAddress());
+        nodeEntity.setAppId(serviceNodePayload.getAppId());
         nodeEntity.setStatus(serviceNodePayload.getAliveState().getState());
+        nodeEntity.setTransport(serviceNodePayload.getTransport().name());
         nodeEntity.setUpdateTime(time);
         nodeRepository.save(nodeEntity);
 

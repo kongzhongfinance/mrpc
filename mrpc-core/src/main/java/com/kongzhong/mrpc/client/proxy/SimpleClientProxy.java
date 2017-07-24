@@ -10,6 +10,7 @@ import com.kongzhong.mrpc.client.cluster.loadblance.LoadBalanceFactory;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.config.ClientConfig;
+import com.kongzhong.mrpc.embedded.ConfigServiceImpl;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.RpcException;
@@ -31,7 +32,7 @@ import static com.kongzhong.mrpc.Const.CLIENT_INTERCEPTOR_PREFIX;
  * 默认的客户端代理
  *
  * @author biezhi
- *         2017/4/28
+ * 2017/4/28
  */
 @Slf4j
 public class SimpleClientProxy extends AbstractInvocationHandler {
@@ -121,8 +122,12 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
      * @return 返回该方法的超时时长
      */
     private int getWaitTimeout(Method method) {
+        Integer timeout = ConfigServiceImpl.me().getMethodWaitTimeout(method.getName());
+        if (null != timeout) {
+            return timeout;
+        }
         Command command = method.getAnnotation(Command.class);
-        int     timeout = ClientConfig.me().getWaitTimeout();
+        timeout = ClientConfig.me().getWaitTimeout();
         if (null != command) {
             return command.waitTimeout();
         }

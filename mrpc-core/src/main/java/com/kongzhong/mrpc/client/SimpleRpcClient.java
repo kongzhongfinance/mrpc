@@ -138,7 +138,7 @@ public abstract class SimpleRpcClient {
     /**
      * 客户端拦截器列表
      */
-    private List<RpcClientInterceptor> rpcClientInteceptors = Lists.newArrayList();
+    private List<RpcClientInterceptor> rpcClientInterceptors = Lists.newArrayList();
 
     protected NettyConfig nettyConfig;
 
@@ -150,7 +150,7 @@ public abstract class SimpleRpcClient {
      * @return 返回服务代理类
      */
     <T> T getProxyBean(Class<T> rpcInterface) {
-        return Reflection.newProxy(rpcInterface, new SimpleClientProxy(rpcClientInteceptors));
+        return Reflection.newProxy(rpcInterface, new SimpleClientProxy(rpcClientInterceptors));
     }
 
     /**
@@ -234,7 +234,7 @@ public abstract class SimpleRpcClient {
             throw new IllegalArgumentException("RpcClientInterceptor not is null");
         }
         log.info("Add interceptor [{}]", inteceptor.toString());
-        this.rpcClientInteceptors.add(inteceptor);
+        this.rpcClientInterceptors.add(inteceptor);
     }
 
     /**

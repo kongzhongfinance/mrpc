@@ -20,9 +20,6 @@ public class NettyConfig {
     // 客户端连接超时，默认3秒，超过后断开
     private int connTimeout = 3000;
 
-    // 业务线程池数
-    private int businessThreadPoolSize = 16;
-
     private int backlog;
 
     private boolean keepalive;

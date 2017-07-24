@@ -7,6 +7,8 @@ import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.config.ServerConfig;
+import com.kongzhong.mrpc.embedded.ConfigService;
+import com.kongzhong.mrpc.embedded.ConfigServiceImpl;
 import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
@@ -189,7 +191,13 @@ public abstract class SimpleRpcServer {
         }
 
         transferSelector = new TransferSelector(rpcSerialize);
-        LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(nettyConfig.getBusinessThreadPoolSize(), -1));
+        ServerConfig serverConfig           = ServerConfig.me();
+        int          businessThreadPoolSize = serverConfig.getBusinessThreadPoolSize();
+        setListeningExecutorService(businessThreadPoolSize);
+    }
+
+    public static void setListeningExecutorService(int businessThreadPoolSize) {
+        LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(businessThreadPoolSize, -1));
     }
 
     private void bindRpcServer() {
@@ -229,6 +237,8 @@ public abstract class SimpleRpcServer {
             //获取服务器IP地址和端口
             ServerConfig.me().setElasticIp(elasticIp);
             ChannelFuture future = bootstrap.bind(host, port).sync();
+
+            this.registerEmbedded();
 
             //注册服务
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
@@ -280,6 +290,21 @@ public abstract class SimpleRpcServer {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
+    }
+
+    /**
+     * 注册内置服务
+     */
+    private void registerEmbedded() {
+        // 注册内置服务
+        ConfigService configService     = ConfigServiceImpl.me();
+        ServiceBean   configServiceBean = new ServiceBean();
+        configServiceBean.setBean(configService);
+        configServiceBean.setServiceName(ConfigService.class.getName());
+        configServiceBean.setAppId(appId);
+        configServiceBean.setAddress(address);
+        configServiceBean.setElasticIp(elasticIp);
+        rpcMapping.addServiceBean(configServiceBean);
     }
 
     /**

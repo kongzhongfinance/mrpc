@@ -30,15 +30,15 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
         log.info("{}\t{}", httpMethod, requestURI);
         request.setAttribute("version", adminProperties.getVersion());
 
-        if (requestURI.startsWith("/admin")) {
-            Object loginModel = request.getSession().getAttribute(LOGIN_SESSION_KEY);
-            if (null == loginModel) {
-                response.sendRedirect("/signin");
-                return false;
-            } else {
-
-            }
-        }
+//        if (requestURI.startsWith("/admin")) {
+//            Object loginModel = request.getSession().getAttribute(LOGIN_SESSION_KEY);
+//            if (null == loginModel) {
+//                response.sendRedirect("/signin");
+//                return false;
+//            } else {
+//
+//            }
+//        }
         return true;
     }
 
