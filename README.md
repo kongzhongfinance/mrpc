@@ -12,31 +12,15 @@ mrpc是一款简洁易用的分布式服务化治理框架。
 - 多种负载均衡策略
 - 集群下的容错处理(FailOver/FailFast)
 - 拦截器处理, 插件式扩展
-- 客户端断线重连，自动恢复
+- 客户端自动恢复
 - 动态注册/卸载服务
+- Admin后台动态修改配置
 - 秒级监控，使用statsd-influxdb-grafana打点预览
 - 服务调用链查看
 
 ## 快速入门
 
-### 创建服务端
-
-```java
-public interface UserService {
-    String hello(String name);
-}
-
-// 服务实现
-@RpcService
-public class UserServiceImpl implements UserService{
-    
-    @Override
-    public String sayHello(String name){
-        return "Hello " + name;
-    }
-    
-}
-```
+[文档](https://kongzhongfinance.github.io/mrpc/)
 
 ### 更多例子
 
@@ -48,6 +32,7 @@ public class UserServiceImpl implements UserService{
 
 1. 简化异常处理
 2. 添加最少连接负载策略
+3. 添加Admin后台
 
 #### 0.0.9-SNAPSHOT
 
