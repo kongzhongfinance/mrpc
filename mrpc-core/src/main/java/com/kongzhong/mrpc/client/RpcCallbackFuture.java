@@ -44,7 +44,7 @@ public class RpcCallbackFuture {
             }
         } else {
             long waitTime = System.currentTimeMillis() - beginTime;
-            if (waitTime > milliseconds && SimpleClientHandler.callbackFutureMap.containsKey(response.getRequestId())) {
+            if (waitTime > milliseconds && SimpleClientHandler.callbackFutureMap.containsKey(request.getRequestId())) {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
                 log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
                 log.warn("RequestId: {}", request.getRequestId());
