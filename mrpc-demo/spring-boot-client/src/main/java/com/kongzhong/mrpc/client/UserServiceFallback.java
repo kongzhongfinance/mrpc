@@ -12,4 +12,9 @@ public class UserServiceFallback {
     public String testHystrix(int errorNum) {
         return "默认返回22";
     }
+
+    public String fall(int errorNum) {
+        return "这是一个神奇的BUG";
+    }
+
 }

@@ -15,11 +15,7 @@
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
@@ -27,5 +23,5 @@
             <version>1.5.12</version>
         </dependency>
     </dependencies>
-
+    
 </project>

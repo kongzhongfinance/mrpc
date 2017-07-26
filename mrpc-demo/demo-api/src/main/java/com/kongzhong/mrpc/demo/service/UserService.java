@@ -99,11 +99,12 @@ public interface UserService {
         }
     }
 
-    @Command(fallbackType = "com.kongzhong.mrpc.client.UserServiceFallback")
+    @Command(fallbackType = "com.kongzhong.mrpc.client.UserServiceFallback", fallbackMethod = "fall")
     default String testHystrix(int num) {
         if (num != 20) {
             throw new RuntimeException("运行时异常");
         }
         return "ok";
     }
+
 }

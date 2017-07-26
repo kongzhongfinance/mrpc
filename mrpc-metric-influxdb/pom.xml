@@ -20,7 +20,7 @@
             <version>${mrpc-common.version}</version>
             <scope>provided</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-core</artifactId>
