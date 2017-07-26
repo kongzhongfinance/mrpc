@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>Hystrix熔断 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/hystrix.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/hystrix.html">
+    
+  
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+  <!-- Open Graph -->
+  <meta name="description" content="hystrix语义为“豪猪”，具有自我保护的能力。hystrix的出现即为解决雪崩效应，它通过四个方面的机制来解决这个问题:  隔离（线程池隔离和信号量隔离）：限制调用分布式服务的资源使用，某一个调用的服务出现问题不会影响其他服务调用。 优雅的降级机制：超时降级、资源不足时(线程或信号量)降级，降级后可以配合降级接口返回托底数据。 融断：当失败率达到阀值自动触发降级(如因网络故障/超时造成的失败率">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hystrix熔断">
+<meta property="og:url" content="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/hystrix.html">
+<meta property="og:site_name" content="mrpc - 轻量级、分布式服务治理框架">
+<meta property="og:description" content="hystrix语义为“豪猪”，具有自我保护的能力。hystrix的出现即为解决雪崩效应，它通过四个方面的机制来解决这个问题:  隔离（线程池隔离和信号量隔离）：限制调用分布式服务的资源使用，某一个调用的服务出现问题不会影响其他服务调用。 优雅的降级机制：超时降级、资源不足时(线程或信号量)降级，降级后可以配合降级接口返回托底数据。 融断：当失败率达到阀值自动触发降级(如因网络故障/超时造成的失败率">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/4/24/f1dc1569e23652c496d4ce8f332a63c9?imageView2/0/w/1280/h/960">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/4/24/a5de4f0919dba3265b969b62dfa7b0b2?imageView2/0/w/1280/h/960">
+<meta property="og:updated_time" content="2017-07-26T09:08:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hystrix熔断">
+<meta name="twitter:description" content="hystrix语义为“豪猪”，具有自我保护的能力。hystrix的出现即为解决雪崩效应，它通过四个方面的机制来解决这个问题:  隔离（线程池隔离和信号量隔离）：限制调用分布式服务的资源使用，某一个调用的服务出现问题不会影响其他服务调用。 优雅的降级机制：超时降级、资源不足时(线程或信号量)降级，降级后可以配合降级接口返回托底数据。 融断：当失败率达到阀值自动触发降级(如因网络故障/超时造成的失败率">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2017/4/24/f1dc1569e23652c496d4ce8f332a63c9?imageView2/0/w/1280/h/960">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+  <!-- Google AdSense -->
+  
+
+  <!-- Github Button -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/zh-cn/mrpc/" id="logo">Hexo</a>
+    </h1>
+    <nav id="main-nav">
+      <a href="/mrpc/" class="main-nav-link">首页</a><a href="/mrpc/zh-cn/docs/" class="main-nav-link">文档</a><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">工单</a><a href="/mrpc/news/" class="main-nav-link">更新</a><a href="/mrpc/contribute" class="main-nav-link">贡献</a>
+      <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link"><i class="fa fa-github-alt"></i></a>
+      
+        
+          
+        
+        
+      
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select" data-canonical="docs/hystrix.html">
+        
+          <option value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">Hystrix熔断</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/zh-cn/docs/hystrix.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
+              </header>
+              <div class="article-content" itemprop="articleBody">
+                <p><code>hystrix</code>语义为“豪猪”，具有自我保护的能力。<br>hystrix的出现即为解决雪崩效应，它通过四个方面的机制来解决这个问题:</p>
+<ul>
+<li>隔离（线程池隔离和信号量隔离）：限制调用分布式服务的资源使用，某一个调用的服务出现问题不会影响其他服务调用。</li>
+<li>优雅的降级机制：超时降级、资源不足时(线程或信号量)降级，降级后可以配合降级接口返回托底数据。</li>
+<li>融断：当失败率达到阀值自动触发降级(如因网络故障/超时造成的失败率高)，熔断器触发的快速失败会进行快速恢复。</li>
+<li>缓存：提供了请求缓存、请求合并实现。</li>
+<li>支持实时监控、报警、控制（修改配置）</li>
+</ul>
+<p><code>mrpc</code>中以插件的形式将其引入，使用也非常简单。</p>
+<h2 id="降级" class="article-heading"><a href="#降级" class="headerlink" title="降级"></a>降级<a class="article-anchor" href="#降级" aria-hidden="true"></a></h2><p>可能大家会混淆“融断”和“降级”两个概念。<br>在股票市场，熔断这个词大家都不陌生，是指当股指波幅达到某个点后，交易所为控制风险采取的暂停交易措施。<br>相应的，服务熔断一般是指软件系统中，由于某些原因使得服务出现了过载现象，为防止造成整个系统故障，<br>从而采用的一种保护措施，所以很多地方把熔断亦称为过载保护。</p>
+<p>大家都见过女生旅行吧，大号的旅行箱是必备物，平常走走近处绰绰有余，但一旦出个远门，<br>再大的箱子都白搭了，怎么办呢？常见的情景就是把物品拿出来分分堆，比了又比，<br>最后一些非必需品的就忍痛放下了，等到下次箱子够用了，再带上用一用。<br>而服务降级，就是这么回事，整体资源快不够了，忍痛将某些服务先关掉，待渡过难关，再开启回来。<br>二者的目标是一致的，目的都是保证上游服务的稳定性。<br>但其关注的重点并不一样，融断对下层依赖的服务并不级（或者说孰轻孰重），一旦产生故障就断掉；<br>而降级需要对下层依赖的业务分级，把产生故障的丢了，换一个轻量级的方案，是一种退而求其次的方法。</p>
+<p>根据业务场景的不同，一般采用以下两种模式：<br>第一种（最常用）如果服务失败，则我们通过fallback进行降级，返回静态值。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/4/24/f1dc1569e23652c496d4ce8f332a63c9?imageView2/0/w/1280/h/960" alt=""></p>
+<p>第二种采用服务级联的模式，如果第一个服务失败，则调用备用服务，例如失败重试或者访问缓存失败再去取数据库。<br>服务级联的目的则是尽最大努力保证返回数据的成功性，但如果考虑不充分，则有可能导致级联的服务崩溃（比如，缓存失败了，把全部流量打到数据库，瞬间导致数据库挂掉）。因此级联模式，也要慎用，增加了管理的难度。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/4/24/a5de4f0919dba3265b969b62dfa7b0b2?imageView2/0/w/1280/h/960" alt=""></p>
+<h2 id="开始使用" class="article-heading"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用<a class="article-anchor" href="#开始使用" aria-hidden="true"></a></h2><p>在RPC客户端加入如下依赖</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.kongzhong.mrpc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mrpc-hystrix<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>[最新版本]<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="配置降级" class="article-heading"><a href="#配置降级" class="headerlink" title="配置降级"></a>配置降级<a class="article-anchor" href="#配置降级" aria-hidden="true"></a></h2><p>默认情况下所有的服务都不具备降级特性，服务降级的粒度是方法级别，<br>需要单独在方法上进行配置。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@Command</span>(fallbackType = <span class="string">"com.kongzhong.mrpc.client.UserServiceFallback"</span>)</div></pre></td></tr></table></figure>
+<p><code>mrpc</code> 提供一个名为<code>@Command</code>的注解，您可以在接口定义的方法上配置当服务降级后<br>调用的类和方法，不配置<code>fallbackMethod</code>则调用和接口方法相同，同时该方法的参数列表也必须一致。</p>
+<h2 id="客户端处理" class="article-heading"><a href="#客户端处理" class="headerlink" title="客户端处理"></a>客户端处理<a class="article-anchor" href="#客户端处理" aria-hidden="true"></a></h2><p>在客户端实现一个 <code>UserServiceFallback</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserServiceFallback</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">testHystrix</span><span class="params">(<span class="keyword">int</span> errorNum)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"默认返回22"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">fall</span><span class="params">(<span class="keyword">int</span> errorNum)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"这是一个神奇的BUG"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>服务端</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">testHystrix</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (num != <span class="number">20</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"运行时异常"</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="string">"ok"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>至于当服务调用出现异常后会调用<code>UserServiceFallback</code>中的哪个方法看你的API方法是如何定义的。</p>
+<p>参考资料：</p>
+<ul>
+<li><a href="https://juejin.im/entry/58fd69235c497d00580437cc" target="_blank" rel="external">hystrix 原理与应用</a></li>
+</ul>
+
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-07-26T09:08:02.000Z" itemprop="dateModified">上次更新：2017-07-26</time>
+                <a href="view-nodes.html" class="article-footer-prev" title="节点查看"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="metric_influxdb.html" class="article-footer-next" title="Metrics打点"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            <div id="article-toc-inner">
+              <strong class="sidebar-title">目录</strong>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#降级"><span class="toc-text">降级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始使用"><span class="toc-text">开始使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置降级"><span class="toc-text">配置降级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端处理"><span class="toc-text">客户端处理</span></a></li></ol>
+              <a href="#" id="article-toc-top">回到顶部</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"><strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link">概述</a><a href="architecture-design.html" class="sidebar-link">框架设计</a><strong class="sidebar-title">快速开始</strong><a href="deployment-env.html" class="sidebar-link">开发环境</a><a href="helloworld-spring.html" class="sidebar-link">Spring</a><a href="helloworld-springboot.html" class="sidebar-link">SpringBoot</a><strong class="sidebar-title">注册中心</strong><a href="zookeeper.html" class="sidebar-link">Zookeeper</a><strong class="sidebar-title">进阶使用</strong><a href="client-config.html" class="sidebar-link">客户端配置</a><a href="server-config.html" class="sidebar-link">服务端配置</a><a href="interceptor.html" class="sidebar-link">拦截器机制</a><a href="exception.html" class="sidebar-link">异常捕获</a><strong class="sidebar-title">管理后台</strong><a href="enabled-admin.html" class="sidebar-link">配置</a><a href="view-nodes.html" class="sidebar-link">节点查看</a><strong class="sidebar-title">扩展插件</strong><a href="hystrix.html" class="sidebar-link current">Hystrix熔断</a><a href="metric_influxdb.html" class="sidebar-link">Metrics打点</a><a href="service-validator.html" class="sidebar-link">服务端参数校验</a><strong class="sidebar-title">其他</strong><a href="faq.html" class="sidebar-link">常见问题</a></div>
+</aside>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+      Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+
+      
+        
+        
+        
+      
+
+    </div>
+
+    <div id="footer-links">
+      <a href="http://weibo.com/kzjr" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+      
+      <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/mrpc/" class="mobile-nav-link">首页</a><a href="/mrpc/zh-cn/docs/" class="mobile-nav-link">文档</a><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">工单</a><a href="/mrpc/news/" class="mobile-nav-link">更新</a><a href="/mrpc/contribute" class="mobile-nav-link">贡献</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link">概述</a><a href="architecture-design.html" class="mobile-nav-link">框架设计</a><strong class="mobile-nav-title">快速开始</strong><a href="deployment-env.html" class="mobile-nav-link">开发环境</a><a href="helloworld-spring.html" class="mobile-nav-link">Spring</a><a href="helloworld-springboot.html" class="mobile-nav-link">SpringBoot</a><strong class="mobile-nav-title">注册中心</strong><a href="zookeeper.html" class="mobile-nav-link">Zookeeper</a><strong class="mobile-nav-title">进阶使用</strong><a href="client-config.html" class="mobile-nav-link">客户端配置</a><a href="server-config.html" class="mobile-nav-link">服务端配置</a><a href="interceptor.html" class="mobile-nav-link">拦截器机制</a><a href="exception.html" class="mobile-nav-link">异常捕获</a><strong class="mobile-nav-title">管理后台</strong><a href="enabled-admin.html" class="mobile-nav-link">配置</a><a href="view-nodes.html" class="mobile-nav-link">节点查看</a><strong class="mobile-nav-title">扩展插件</strong><a href="hystrix.html" class="mobile-nav-link current">Hystrix熔断</a><a href="metric_influxdb.html" class="mobile-nav-link">Metrics打点</a><a href="service-validator.html" class="mobile-nav-link">服务端参数校验</a><strong class="mobile-nav-title">其他</strong><a href="faq.html" class="mobile-nav-link">常见问题</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="docs/hystrix.html">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/scrollingelement.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="https://cdn.jsdelivr.net/retinajs/1.3.0/retina.min.js" async></script>
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>
