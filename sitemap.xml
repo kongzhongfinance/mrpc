@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/</loc>
+    
+    <lastmod>2017-07-26T09:09:33.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/hystrix.html</loc>
     
     <lastmod>2017-07-26T09:08:02.000Z</lastmod>
@@ -16,14 +23,14 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
     
     <lastmod>2017-07-19T08:00:44.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
     
     <lastmod>2017-07-19T08:00:44.000Z</lastmod>
     
