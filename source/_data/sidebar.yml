@@ -17,6 +17,7 @@ docs:
     config_admin: enabled-admin.html
     view_nodes: view-nodes.html
   extensions:
+    hystrix: hystrix.html
     metric_influxdb: metric_influxdb.html
     service_validator: service-validator.html
   other:
