@@ -5,7 +5,7 @@
   <link href="/mrpc/atom.xml" rel="self"/>
   
   <link href="https://kongzhongfinance.github.io/mrpc/"/>
-  <updated>2017-07-26T09:09:33.000Z</updated>
+  <updated>2017-07-26T09:18:46.000Z</updated>
   <id>https://kongzhongfinance.github.io/mrpc/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>mrpc 0.0.9-SNAPSHOT</title>
+    <title>mrpc 0.1.0-SNAPSHOT</title>
     <link href="https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/"/>
     <id>https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/</id>
     <published>2017-07-26T00:00:00.000Z</published>
-    <updated>2017-07-26T09:09:33.000Z</updated>
+    <updated>2017-07-26T09:18:46.000Z</updated>
     
     <content type="html"><![CDATA[<ol>
 <li>简化异常处理</li>
