@@ -3,11 +3,12 @@ package com.kongzhong.mrpc.client;
 import com.kongzhong.mrpc.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author biezhi
- *         2017/5/15
+ * 2017/5/15
  */
 @RestController
 public class IndexController {
@@ -22,6 +23,11 @@ public class IndexController {
             return "ok";
         }
         return userService.hello(msg);
+    }
+
+    @GetMapping("/hystrix")
+    public String hystrix(@RequestParam(defaultValue = "0", name = "num") int num) {
+        return userService.testHystrix(num);
     }
 
 }

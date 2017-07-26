@@ -23,6 +23,7 @@ import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.ArrayList;
@@ -139,6 +140,8 @@ public abstract class SimpleRpcClient {
      * 客户端拦截器列表
      */
     private List<RpcClientInterceptor> rpcClientInterceptors = Lists.newArrayList();
+
+    protected static BeanFactory beanFactory;
 
     protected NettyConfig nettyConfig;
 
@@ -318,6 +321,14 @@ public abstract class SimpleRpcClient {
             throw new SystemException("Parse ServiceDiscovery error", e);
         }
         return null;
+    }
+
+    public static <T> T getBean(Class<T> type){
+        return beanFactory.getBean(type);
+    }
+
+    public static Object getBean(String beanName){
+        return beanFactory.getBean(beanName);
     }
 
     /**

@@ -104,6 +104,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         ctx = applicationContext;
+        beanFactory = ctx;
     }
 
 }

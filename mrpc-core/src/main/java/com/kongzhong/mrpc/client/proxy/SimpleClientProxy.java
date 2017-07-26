@@ -82,6 +82,8 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
                 .returnType(method.getReturnType())
                 .waitTimeout(this.getWaitTimeout(method))
                 .timestamp(System.currentTimeMillis())
+                .fallbackType(this.getFallbackType(method))
+                .fallbackMethod(this.getFallbackMethod(method))
                 .build();
 
         HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHaStrategy(method));
@@ -133,4 +135,21 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
         }
         return timeout;
     }
+
+    private String getFallbackType(Method method) {
+        Command command = method.getAnnotation(Command.class);
+        if (null != command && !"".equals(command.fallbackType())) {
+            return command.fallbackType();
+        }
+        return null;
+    }
+
+    private String getFallbackMethod(Method method) {
+        Command command = method.getAnnotation(Command.class);
+        if (null != command && !"".equals(command.fallbackMethod())) {
+            return command.fallbackMethod();
+        }
+        return method.getName();
+    }
+
 }

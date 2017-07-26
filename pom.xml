@@ -19,6 +19,7 @@
         <module>mrpc-spring-boot-starter</module>
         <module>mrpc-admin</module>
         <module>mrpc-interceptor-validator</module>
+        <module>mrpc-hystrix</module>
     </modules>
 
     <properties>
@@ -138,35 +139,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--<profiles>-->
-
-    <!--<profile>-->
-    <!--<id>dev</id>-->
-    <!--<build>-->
-    <!--<resources>-->
-    <!--<resource>-->
-    <!--<directory>src/main/java</directory>-->
-    <!--<filtering>false</filtering>-->
-    <!--</resource>-->
-    <!--<resource>-->
-    <!--<directory>src/main/resources</directory>-->
-    <!--<filtering>false</filtering>-->
-    <!--</resource>-->
-    <!--<resource>-->
-    <!--<directory>src/main/test</directory>-->
-    <!--<filtering>false</filtering>-->
-    <!--</resource>-->
-    <!--<resource>-->
-    <!--<directory>src/test/resources</directory>-->
-    <!--<filtering>false</filtering>-->
-    <!--</resource>-->
-    <!--</resources>-->
-    <!--</build>-->
-    <!--</profile>-->
-    <!--</profiles>-->
-
     <build>
-
         <plugins>
             <!--  Compile  -->
             <plugin>

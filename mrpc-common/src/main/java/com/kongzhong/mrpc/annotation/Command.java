@@ -30,4 +30,18 @@ public @interface Command {
      */
     HaStrategyEnum haStrategy() default HaStrategyEnum.FAILOVER;
 
+    /**
+     * 服务降级后调用的Class
+     *
+     * @return
+     */
+    String fallbackType() default "";
+
+    /**
+     * 服务降级后调用的方法名称，默认为服务方法名
+     *
+     * @return
+     */
+    String fallbackMethod() default "";
+
 }
