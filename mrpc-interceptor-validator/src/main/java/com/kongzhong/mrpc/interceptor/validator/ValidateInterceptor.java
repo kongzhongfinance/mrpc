@@ -26,6 +26,10 @@ public class ValidateInterceptor implements RpcServerInterceptor {
     public Object execute(ServerInvocation invocation) throws Exception {
         Object[] parameters = invocation.getParameters();
         for (Object arg : parameters) {
+            //参数为空不校验
+            if (arg == null) {
+                break;
+            }
             validate(arg);
         }
         return invocation.next();
