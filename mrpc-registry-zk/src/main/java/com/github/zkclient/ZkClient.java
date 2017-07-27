@@ -290,7 +290,7 @@ public class ZkClient implements Watcher, IZkClient {
 
             // We might have to install child change event listener if a new node was created
             if (getShutdownTrigger()) {
-                LOG.debug("ignoring event '{" + event.getType() + " | " + event.getPath() + "}' since shutdown triggered");
+                LOG.debug("ignoring event '{" + event.getType() + " | " + event.getPath() + "}' since closeRpcClient triggered");
                 return;
             }
             if (stateChanged) {

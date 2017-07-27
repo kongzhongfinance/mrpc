@@ -35,6 +35,6 @@ public class HelloClientApplication {
             TimeUnit.SECONDS.sleep(3);
         }
 
-        rpcClient.shutdown();
+        rpcClient.closeRpcClient();
     }
 }

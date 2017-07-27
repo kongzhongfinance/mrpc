@@ -25,6 +25,6 @@ public class ClientIdelApplication {
         StatusEnum statusEnum = userService.testEnum(StatusEnum.SUCCESS);
         System.out.println(statusEnum);
 
-        rpcClient.shutdown();
+        rpcClient.closeRpcClient();
     }
 }

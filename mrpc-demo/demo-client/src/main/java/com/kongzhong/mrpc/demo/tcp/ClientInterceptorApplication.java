@@ -27,6 +27,6 @@ public class ClientInterceptorApplication {
             userService.add(10, 20);
             TimeUnit.SECONDS.sleep(3);
         }
-        rpcClient.shutdown();
+        rpcClient.closeRpcClient();
     }
 }

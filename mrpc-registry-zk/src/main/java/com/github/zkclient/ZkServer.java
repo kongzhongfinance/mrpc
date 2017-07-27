@@ -119,7 +119,7 @@ public class ZkServer {
     public void shutdown() {
         ZooKeeperServer zk = _zk;
         if (zk == null) {
-            LOG.warn("shutdown duplication");
+            LOG.warn("closeRpcClient duplication");
             return;
         } else {
             _zk = null;

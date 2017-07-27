@@ -17,7 +17,7 @@ public class NoImplClientApplication {
         final NoImplService noImplService = rpcClient.getProxyReferer(NoImplService.class);
         System.out.println(noImplService);
         noImplService.say();
-        rpcClient.shutdown();
+        rpcClient.closeRpcClient();
     }
 
 }

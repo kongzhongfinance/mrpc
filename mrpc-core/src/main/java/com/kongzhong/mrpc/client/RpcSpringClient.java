@@ -76,6 +76,7 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
         super.directConnect();
 
         log.info("Bind services finished.");
+        super.closeRpcClient();
     }
 
     /***

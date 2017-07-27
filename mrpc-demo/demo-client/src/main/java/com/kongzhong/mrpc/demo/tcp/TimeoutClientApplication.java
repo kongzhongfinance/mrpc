@@ -29,6 +29,6 @@ public class TimeoutClientApplication {
 
         System.out.println("停止");
         TimeUnit.SECONDS.sleep(1);
-        rpcClient.shutdown();
+        rpcClient.closeRpcClient();
     }
 }
