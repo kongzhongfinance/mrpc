@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.server;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
@@ -62,8 +63,6 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
      * @throws Throwable 当执行服务方法出现异常时抛出
      */
     protected Object invokeMethod(RpcRequest request) throws Throwable {
-
-        RpcContext.set(new RpcContext(request));
         String serviceName = request.getClassName();
         String methodName  = request.getMethodName();
         long   startTime   = System.currentTimeMillis();
@@ -118,6 +117,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
             exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), e));
             className = SystemException.class.getName();
         }
+        response.getContext().put(Const.SERVER_EXCEPTION, exception);
         response.setReturnType(className);
         response.setException(exception);
         response.setSuccess(false);

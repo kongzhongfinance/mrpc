@@ -30,4 +30,8 @@ public class IndexController {
         return userService.testHystrix(num);
     }
 
+    @GetMapping("/trace")
+    public String trace(){
+        return userService.testTrace();
+    }
 }

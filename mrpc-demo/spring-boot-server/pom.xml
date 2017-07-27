@@ -35,6 +35,13 @@
             <artifactId>mrpc-spring-boot-starter</artifactId>
             <version>${mrpc-starter.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-trace</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>com.kongzhong.mrpc</groupId>-->
         <!--<artifactId>mrpc-metric-influxdb</artifactId>-->

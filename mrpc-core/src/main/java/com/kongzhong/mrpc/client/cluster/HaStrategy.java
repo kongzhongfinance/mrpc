@@ -8,7 +8,7 @@ import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
  * HA策略
  *
  * @author biezhi
- *         2017/4/24
+ * 2017/4/24
  */
 @FunctionalInterface
 public interface HaStrategy {

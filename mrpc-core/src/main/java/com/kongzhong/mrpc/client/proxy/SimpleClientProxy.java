@@ -72,6 +72,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
 
     @Override
     protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
+
         RpcRequest request = RpcRequest.builder()
                 .appId(appId)
                 .requestId(StringUtils.getUUID())

@@ -20,6 +20,7 @@
         <module>mrpc-admin</module>
         <module>mrpc-interceptor-validator</module>
         <module>mrpc-hystrix</module>
+        <module>mrpc-trace</module>
     </modules>
 
     <properties>

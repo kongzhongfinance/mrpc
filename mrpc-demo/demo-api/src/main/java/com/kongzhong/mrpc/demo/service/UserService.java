@@ -107,4 +107,6 @@ public interface UserService {
         return "ok";
     }
 
+    String testTrace();
+
 }

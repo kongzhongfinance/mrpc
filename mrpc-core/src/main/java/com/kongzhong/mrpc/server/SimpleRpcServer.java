@@ -23,6 +23,7 @@ import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.utils.*;
 import io.netty.bootstrap.ServerBootstrap;
@@ -472,7 +473,6 @@ public abstract class SimpleRpcServer {
             public void onSuccess(FullHttpResponse response) {
                 // 服务端响应前
                 EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, Event.builder().rpcContext(RpcContext.get()).build());
-
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture ->
                         log.debug("Server send to {} success, requestId [{}]", ctx.channel(), response.headers().get(HEADER_REQUEST_ID)));

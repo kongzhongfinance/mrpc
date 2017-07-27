@@ -54,6 +54,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                 .requestId(rpcRequest.getRequestId())
                 .service(rpcRequest.getClassName())
                 .method(rpcRequest.getMethodName())
+                .context(rpcRequest.getContext())
                 .parameters(Arrays.asList(rpcRequest.getParameters()))
                 .build();
 

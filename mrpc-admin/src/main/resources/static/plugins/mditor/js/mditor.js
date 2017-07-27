@@ -1770,7 +1770,7 @@
 	 *   对于父子关系和事件冒泡，目前方案如果用 delete 删除一个属性，无关真实删除关系，
 	 *   即便调用 clearReference 也无法再清除关系，子对象的 parents 中会一直有一个引用，当前方案最高效
 	 * 其它方法一:
-	 *   将「关系」放入全局数组中，然后将 ob.parents 变成一个「属性」从全局数组件中 filter 出来，
+	 *   将「关系」放入全局数组中，然后将 ob.parents 变成一个「属性」从全局数组件中 interceptor 出来，
 	 *   基本和目前方法类似，但是关系在外部存领教，所以 clearReference 可清除。
 	 * 其它方案二: 
 	 *   构造时添加到全局数组，每一个 observer change 时都让放到全局的 observer 遍历自身的，
@@ -5982,7 +5982,7 @@
 	    }
 	    updateModifierKey(event);
 	
-	    // see if we need to ignore the keypress (filter() can can be overridden)
+	    // see if we need to ignore the keypress (interceptor() can can be overridden)
 	    // by default ignore key presses if a select, textarea, or input is focused
 	    if (!assignKey.filter.call(this, event)) return;
 	
@@ -6198,7 +6198,7 @@
 	    return k;
 	  }
 	
-	  // set window.key and window.key.set/get/deleteScope, and the default filter
+	  // set window.key and window.key.set/get/deleteScope, and the default interceptor
 	  global.key = assignKey;
 	  global.key.setScope = setScope;
 	  global.key.getScope = getScope;
@@ -8829,7 +8829,7 @@
 			var filter = filters[i];
 			filter = typeof filter === 'string' ? {filter: filter, language: filter} : filter;
 			if (Prism.languages[filter.language]) {
-				all_filters['filter-' + filter.filter] = {
+				all_filters['interceptor-' + filter.filter] = {
 					pattern: RegExp(filter_pattern.replace('{{filter_name}}', filter.filter), 'm'),
 					lookbehind: true,
 					inside: {

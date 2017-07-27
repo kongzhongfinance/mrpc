@@ -173,6 +173,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
                 .requestId(requestId)
                 .className(serviceName)
                 .methodName(method.getName())
+                .context(requestBody.getContext())
                 .parameterTypes(method.getParameterTypes())
                 .returnType(method.getReturnType())
                 .parameters(args)

@@ -1,6 +1,8 @@
 package com.kongzhong.mrpc.client;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.exception.TimeoutException;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
@@ -8,6 +10,7 @@ import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +37,10 @@ public class RpcCallbackFuture {
     public Object get(int milliseconds) throws Exception {
         if (latch.await(milliseconds, TimeUnit.MILLISECONDS)) {
             if (null != response) {
+                Map<String, String> context = response.getContext();
+                context.put(Const.SERVER_HOST, this.request.getContext().get(Const.SERVER_HOST));
+                context.put(Const.SERVER_PORT, this.request.getContext().get(Const.SERVER_PORT));
+                RpcContext.setAttachments(context);
                 if (response.getSuccess()) {
                     return response.getResult();
                 } else {

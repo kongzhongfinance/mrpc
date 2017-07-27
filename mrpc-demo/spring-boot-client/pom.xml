@@ -49,7 +49,12 @@
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-hystrix</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-trace</artifactId>
+            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 

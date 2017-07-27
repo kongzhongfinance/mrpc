@@ -3,6 +3,8 @@ package com.kongzhong.mrpc.transport.http;
 import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.AbstractResponseInvoker;
+import com.kongzhong.mrpc.trace.TraceConstants;
+import com.kongzhong.mrpc.utils.TimeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -30,12 +32,14 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(request.getRequestId());
         try {
+            rpcResponse.getContext().put(TraceConstants.SR_TIME, TimeUtils.currentMicrosString());
             Object result = super.invokeMethod(request);
             rpcResponse.setResult(result);
             if (null != request.getReturnType()) {
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
             rpcResponse.setSuccess(true);
+            rpcResponse.getContext().put(TraceConstants.SS_TIME, TimeUtils.currentMicrosString());
             ServiceStatusTable.me().addSuccessInvoke(request.getClassName());
         } catch (Throwable e) {
             e = buildErrorResponse(e, rpcResponse);
@@ -43,7 +47,7 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             ServiceStatusTable.me().addErrorInvoke(request.getClassName());
         } finally {
             RpcContext.remove();
-            String body = JacksonSerialize.toJSONString(rpcResponse);
+            String  body    = JacksonSerialize.toJSONString(rpcResponse);
             ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
 
             httpResponse.content().clear().writeBytes(byteBuf);
