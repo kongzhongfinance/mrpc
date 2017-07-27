@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  * RPC客户端抽象实现
  *
  * @author biezhi
- *         2017/4/25
+ * 2017/4/25
  */
 @NoArgsConstructor
 @Slf4j
@@ -313,8 +313,8 @@ public abstract class SimpleRpcClient {
         }
         try {
             if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-                String zkAddr             = registryBean.getAddress();
-                Object zookeeperDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
+                String zkAddress          = registryBean.getAddress();
+                Object zookeeperDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddress);
                 return (ServiceDiscovery) zookeeperDiscovery;
             }
         } catch (Exception e) {
@@ -323,11 +323,11 @@ public abstract class SimpleRpcClient {
         return null;
     }
 
-    public static <T> T getBean(Class<T> type){
+    public static <T> T getBean(Class<T> type) {
         return beanFactory.getBean(type);
     }
 
-    public static Object getBean(String beanName){
+    public static Object getBean(String beanName) {
         return beanFactory.getBean(beanName);
     }
 
@@ -335,7 +335,8 @@ public abstract class SimpleRpcClient {
      * 停止客户端，释放资源
      */
     public void shutdown() {
-//        log.info("Stop mrpc client");
+        log.info("Stop mrpc client");
+        LocalServiceNodeTable.shutdown();
 //        Connections.me().shutdown();
 //        serviceDiscoveryMap.values().forEach(serviceDiscovery -> serviceDiscovery.stop());
     }

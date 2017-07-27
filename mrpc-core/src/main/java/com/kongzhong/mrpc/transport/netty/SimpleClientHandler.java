@@ -100,7 +100,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
      */
     public void close() {
         nettyClient.shutdown();
-        channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        channel.close().addListener(ChannelFutureListener.CLOSE);
     }
 
     public abstract RpcCallbackFuture asyncSendRequest(RpcRequest request);
