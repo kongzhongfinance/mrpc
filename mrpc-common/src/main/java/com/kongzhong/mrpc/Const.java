@@ -92,6 +92,7 @@ public interface Const {
     String EMPTY_SERVER                        = "empty_server";
     String SERVER_HOST                         = "server_host";
     String SERVER_PORT                         = "server_port";
+    String SERVER_OWNER                        = "server_owner";
     String SERVER_EXCEPTION                    = "server_exception";
 
 }

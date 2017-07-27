@@ -64,38 +64,38 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
 
     private Span startTrace(RpcRequest request) {
 
-        // start consume span
-        Span consumeSpan = new Span();
-        consumeSpan.setId(Ids.get());
+        // start client span
+        Span clientSpan = new Span();
+        clientSpan.setId(Ids.get());
 
         long traceId  = TraceContext.getTraceId();
         long parentId = TraceContext.getSpanId();
 
-        consumeSpan.setTrace_id(traceId);
-        consumeSpan.setParent_id(parentId);
+        clientSpan.setTrace_id(traceId);
+        clientSpan.setParent_id(parentId);
 
         String serviceName = request.getClassName() + "." + request.getMethodName();
-        consumeSpan.setName(serviceName);
+        clientSpan.setName(serviceName);
 
         long timestamp = TimeUtils.currentMicros();
-        consumeSpan.setTimestamp(timestamp);
+        clientSpan.setTimestamp(timestamp);
 
         // cs annotation
         int providerHost = NetUtils.ip2Num(request.getContext().get(Const.SERVER_HOST));
         int providerPort = Integer.parseInt(request.getContext().get(Const.SERVER_PORT));
 
-        consumeSpan.addToAnnotations(
+        clientSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_CS,
                         Endpoint.create(serviceName, providerHost, providerPort)));
 
-//        String providerOwner = provider.getParameter("owner");
-//        if (!Strings.isNullOrEmpty(providerOwner)) {
-//            // app owner
-//            consumeSpan.addToBinary_annotations(BinaryAnnotation.create(
-//                    "owner", providerOwner, null
-//            ));
-//        }
-        return consumeSpan;
+        String serviceOwner = request.getContext().get(Const.SERVER_OWNER);
+        if (StringUtils.isNotEmpty(serviceOwner)) {
+            // app owner
+            clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                    "owner", serviceOwner, null
+            ));
+        }
+        return clientSpan;
     }
 
     private void endTrace(Span consumeSpan, Stopwatch watch) {
@@ -113,8 +113,7 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         if (StringUtils.isNotEmpty(exception)) {
             // attach exception
             consumeSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "Exception", exception, null
-            ));
+                    "Exception", exception, null));
         }
 
         // collect the span
