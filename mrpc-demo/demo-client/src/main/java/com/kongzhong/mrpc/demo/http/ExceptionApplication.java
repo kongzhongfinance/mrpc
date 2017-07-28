@@ -26,6 +26,6 @@ public class ExceptionApplication {
             e.printStackTrace();
         }
 
-        rpcClient.closeRpcClient();
+        rpcClient.shutdown();
     }
 }

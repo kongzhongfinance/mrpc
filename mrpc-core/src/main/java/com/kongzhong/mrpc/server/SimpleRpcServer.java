@@ -23,7 +23,6 @@ import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.transport.TransferSelector;
 import com.kongzhong.mrpc.utils.*;
 import io.netty.bootstrap.ServerBootstrap;
@@ -42,6 +41,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
@@ -54,7 +55,7 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 @Slf4j
 @NoArgsConstructor
 @ToString(exclude = {"rpcMapping", "transferSelector"})
-public abstract class SimpleRpcServer {
+public abstract class SimpleRpcServer implements AutoCloseable {
 
     /**
      * RPC服务映射
@@ -158,6 +159,9 @@ public abstract class SimpleRpcServer {
     private static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
 
     private ScheduledFuture adminSchedule;
+
+    private volatile boolean isClosed = false;
+    private          Lock    lock     = new ReentrantLock();
 
     /**
      * 启动RPC服务端
@@ -273,10 +277,6 @@ public abstract class SimpleRpcServer {
                 // 服务注册后
                 EventManager.me().fireEvent(EventType.SERVER_SERVICE_REGISTER, Event.builder().rpcContext(RpcContext.get()).build());
             });
-
-            if (this.usedRegistry) {
-                this.listenDestroy();
-            }
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
 
@@ -521,17 +521,30 @@ public abstract class SimpleRpcServer {
     /**
      * 销毁资源,卸载服务
      */
-    private void listenDestroy() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
-            EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
-            String          serviceName     = serviceBean.getServiceName();
-            ServiceRegistry serviceRegistry = getRegistry(serviceBean);
-            try {
-                serviceRegistry.unRegister(serviceBean);
-                log.debug("UnRegister service => [{}]", serviceName);
-            } catch (Exception e) {
-                log.error("UnRegister service error", e);
+    @Override
+    public void close() {
+        lock.lock();
+        try {
+            if (isClosed) {
+                return;
             }
-        })));
+            log.info("Unregistering mrpc server on shutdown");
+            EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
+            rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
+                String          serviceName     = serviceBean.getServiceName();
+                ServiceRegistry serviceRegistry = getRegistry(serviceBean);
+                try {
+                    if (null != serviceRegistry) {
+                        serviceRegistry.unRegister(serviceBean);
+                        log.debug("UnRegister service => [{}]", serviceName);
+                    }
+                } catch (Exception e) {
+                    log.error("UnRegister service error", e);
+                }
+            });
+        } finally {
+            isClosed = true;
+            lock.unlock();
+        }
     }
 }

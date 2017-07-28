@@ -6,17 +6,18 @@ import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.enums.HaStrategyEnum;
-import com.kongzhong.mrpc.enums.LbStrategyEnum;
-import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.enums.TransportEnum;
+import com.kongzhong.mrpc.enums.*;
+import com.kongzhong.mrpc.event.Event;
+import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
+import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,7 +44,7 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor
 @Slf4j
-public abstract class SimpleRpcClient {
+public abstract class SimpleRpcClient implements AutoCloseable {
 
     /**
      * 序列化类型，默认protostuff
@@ -144,6 +147,9 @@ public abstract class SimpleRpcClient {
     protected static BeanFactory beanFactory;
 
     protected NettyConfig nettyConfig;
+
+    private volatile boolean isClosed = false;
+    private          Lock    lock     = new ReentrantLock();
 
     /**
      * 获取一个Class的代理对象
@@ -334,10 +340,26 @@ public abstract class SimpleRpcClient {
     /**
      * 停止客户端，释放资源
      */
-    public void closeRpcClient() {
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            log.info("Stop mrpc client");
-            LocalServiceNodeTable.shutdown();
-        }));
+    public void shutdown() {
+        this.close();
     }
+
+    /**
+     * 停止客户端，释放资源
+     */
+    @Override
+    public void close() {
+        lock.lock();
+        try {
+            if (isClosed) {
+                return;
+            }
+            log.info("Unregistering mrpc client on shutdown");
+            LocalServiceNodeTable.shutdown();
+        } finally {
+            isClosed = true;
+            lock.unlock();
+        }
+    }
+
 }

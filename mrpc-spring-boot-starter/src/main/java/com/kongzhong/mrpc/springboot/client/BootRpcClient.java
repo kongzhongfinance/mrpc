@@ -27,7 +27,7 @@ import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
  * Spring Boot启动器
  *
  * @author biezhi
- *         2017/4/25
+ * 2017/4/25
  */
 @Slf4j
 @NoArgsConstructor
@@ -52,8 +52,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
         System.out.println();
 
-        RpcClientProperties clientConfig = PropertiesParse.getRpcClientProperties(configurableEnvironment);
-        CommonProperties commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
+        RpcClientProperties clientConfig     = PropertiesParse.getRpcClientProperties(configurableEnvironment);
+        CommonProperties    commonProperties = PropertiesParse.getCommonProperties(configurableEnvironment);
 
         System.out.println();
 
@@ -108,7 +108,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             super.directConnect();
 
             log.info("Bind services finished");
-            super.closeRpcClient();
         } catch (Exception e) {
             log.error("RPC client init error", e);
         }
@@ -148,17 +147,22 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             return serviceDiscovery;
         }
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-            String zkAddr = map.getOrDefault("address", "127.0.0.1:2181");
-            log.info("RPC server connect zookeeper address: {}", zkAddr);
+            String zkAddress = map.getOrDefault("address", "127.0.0.1:2181");
+            log.info("RPC server connect zookeeper address: {}", zkAddress);
             try {
-                Object zookeeperServiceDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
-                ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperServiceDiscovery;
+                Object           zookeeperServiceDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddress);
+                ServiceDiscovery serviceDiscovery          = (ServiceDiscovery) zookeeperServiceDiscovery;
                 return serviceDiscovery;
             } catch (Exception e) {
                 log.error("Setting service discovery error", e);
             }
         }
         return null;
+    }
+
+    @Override
+    public void close() {
+        super.close();
     }
 
 }

@@ -50,7 +50,7 @@ public class ServerCnxnFactory {
             if (ZkClientUtils.zkVersion == ZkVersion.V33) {
                 Class<?> clazz = Class.forName(zk33Factory);
                 factory.target = clazz.getDeclaredConstructor(InetSocketAddress.class).newInstance(new InetSocketAddress(port));
-                factory.shutdownMethod = clazz.getDeclaredMethod("closeRpcClient", new Class[0]);
+                factory.shutdownMethod = clazz.getDeclaredMethod("shutdown", new Class[0]);
                 factory.joinMethod = clazz.getMethod("join", new Class[0]);
                 factory.startupMethod = clazz.getDeclaredMethod("startup", ZooKeeperServer.class);
             } else {

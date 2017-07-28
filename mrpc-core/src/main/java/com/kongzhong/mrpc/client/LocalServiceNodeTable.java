@@ -199,12 +199,12 @@ public class LocalServiceNodeTable {
     public static void shutdown() {
         SERVICE_MAPPINGS.clear();
         SERVICE_NODES.stream()
-                .map(ServiceNode::getClientHandler)
-                .forEach(handler -> {
-                    handler.getNettyClient().shutdown();
-                    handler.close();
-                });
-
+                .map(node -> Optional.ofNullable(node.getClientHandler()))
+                .forEach(handler ->
+                        handler.ifPresent(h -> {
+                            h.getNettyClient().shutdown();
+                            h.close();
+                        }));
         SERVICE_NODES.clear();
     }
 

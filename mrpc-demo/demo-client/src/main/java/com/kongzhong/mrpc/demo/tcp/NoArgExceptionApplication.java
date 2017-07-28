@@ -23,7 +23,7 @@ public class NoArgExceptionApplication {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        rpcClient.closeRpcClient();
+        rpcClient.shutdown();
     }
 
 }
