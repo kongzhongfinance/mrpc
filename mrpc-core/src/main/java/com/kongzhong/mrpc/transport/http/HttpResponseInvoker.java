@@ -1,8 +1,10 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.AbstractResponseInvoker;
+import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import io.netty.buffer.ByteBuf;
@@ -32,6 +34,8 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(request.getRequestId());
         try {
+            rpcResponse.getContext().putIfAbsent(Const.APP_NAME, SimpleRpcServer.getContext(Const.APP_NAME));
+            rpcResponse.getContext().putIfAbsent(Const.SERVER_OWNER, SimpleRpcServer.getContext(Const.SERVER_OWNER));
             rpcResponse.getContext().put(TraceConstants.SR_TIME, TimeUtils.currentMicrosString());
             Object result = super.invokeMethod(request);
             rpcResponse.setResult(result);

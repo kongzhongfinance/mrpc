@@ -46,6 +46,24 @@
                 </xsd:annotation>
             </xsd:attribute>
 
+            <xsd:attribute name="appName" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ AppName ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="owner" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 负责人 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="ownerEmail" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 负责人邮箱 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
             <xsd:attribute name="address" type="xsd:string" use="required">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 服务暴露地址 ]]></xsd:documentation>

@@ -30,4 +30,7 @@ public class RpcRequest implements Serializable {
     @Builder.Default
     private Map<String, String> context = new HashMap<>();
 
+    public void addContext(String key, String value){
+        context.putIfAbsent(key, value);
+    }
 }

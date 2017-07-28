@@ -9,7 +9,6 @@ import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
-import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.Constant;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
@@ -97,8 +96,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         // 发现地址列表
         Set<String> addressSet = new HashSet<>();
         if (zkClient.exists(path)) {
-            List<String> addresses = zkClient.getChildren(path);
-            addresses.forEach(addressSet::add);
+            addressSet.addAll(zkClient.getChildren(path));
         }
         if (!subRelate.containsKey(path)) {
             subRelate.put(path, zkChildListener);
@@ -110,10 +108,9 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     /**
      * 监听到服务变动
      *
-     * @param zkClient
-     * @throws RpcException
+     * @param zkClient Zk客户端
      */
-    private synchronized void watchNode(@NonNull final IZkClient zkClient) throws RpcException {
+    private synchronized void watchNode(@NonNull final IZkClient zkClient) {
         String appId = ClientConfig.me().getAppId();
         String path  = Constant.ZK_ROOT + "/" + appId;
 

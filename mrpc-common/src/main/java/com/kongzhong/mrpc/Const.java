@@ -92,7 +92,11 @@ public interface Const {
     String EMPTY_SERVER                        = "empty_server";
     String SERVER_HOST                         = "server_host";
     String SERVER_PORT                         = "server_port";
+    String APP_ID                              = "app_id";
+    String APP_NAME                            = "app_name";
+    String SERVER_NAME                         = "server_name";
     String SERVER_OWNER                        = "server_owner";
+    String SERVER_OWNER_EMAIL                  = "server_owner_email";
     String SERVER_EXCEPTION                    = "server_exception";
 
 }

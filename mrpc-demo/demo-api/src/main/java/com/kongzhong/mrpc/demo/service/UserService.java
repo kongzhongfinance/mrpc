@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.service;
 
 import com.kongzhong.mrpc.annotation.Command;
+import com.kongzhong.mrpc.annotation.Comment;
 import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.exception.NoArgException;
 import com.kongzhong.mrpc.demo.model.Person;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @author biezhi
  * 2017/4/19
  */
+@Comment(name = "用户服务", owners = "biezhi", emails = "biezhi.me@gmail.com")
 public interface UserService {
 
     default int add(int a, int b) {

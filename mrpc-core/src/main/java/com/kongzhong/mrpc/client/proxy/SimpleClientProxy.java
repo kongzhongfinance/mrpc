@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.client.proxy;
 
 import com.google.common.reflect.AbstractInvocationHandler;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.annotation.Command;
+import com.kongzhong.mrpc.annotation.Comment;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
@@ -87,6 +89,8 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
                 .fallbackMethod(this.getFallbackMethod(method))
                 .build();
 
+        setContext(request, method);
+
         HaStrategy haStrategy = HighAvailableFactory.getHaStrategy(this.getHaStrategy(method));
         if (!hasInterceptors) {
             return haStrategy.call(request, loadBalance);
@@ -135,6 +139,18 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
             return command.waitTimeout();
         }
         return timeout;
+    }
+
+    private void setContext(RpcRequest request, Method method) {
+        Comment comment = method.getDeclaringClass().getAnnotation(Comment.class);
+        if (null != comment) {
+            if (StringUtils.isNotEmpty(comment.name())) {
+                request.addContext(Const.SERVER_NAME, comment.name());
+            }
+            if (comment.owners().length > 0) {
+                request.addContext(Const.SERVER_OWNER, String.join(",", comment.owners()));
+            }
+        }
     }
 
     private String getFallbackType(Method method) {

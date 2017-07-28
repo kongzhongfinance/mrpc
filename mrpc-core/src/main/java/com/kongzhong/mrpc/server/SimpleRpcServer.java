@@ -127,6 +127,14 @@ public abstract class SimpleRpcServer implements AutoCloseable {
     @Setter
     protected String appId;
 
+    @Getter
+    @Setter
+    protected String appName;
+
+    @Getter
+    @Setter
+    protected String owner;
+
     /**
      * 是否是测试环境，如果 "true" 则在启动后不会挂起程序
      */
@@ -152,6 +160,8 @@ public abstract class SimpleRpcServer implements AutoCloseable {
     @Getter
     @Setter
     protected AdminConfig adminConfig;
+
+    private static final Map<String, String> SERVER_CONTEXT = Maps.newHashMap();
 
     /**
      * 服务端处理线程池
@@ -516,6 +526,14 @@ public abstract class SimpleRpcServer implements AutoCloseable {
             log.error("", e);
         }
         return null;
+    }
+
+    protected static void setContext(String key, String value) {
+        SERVER_CONTEXT.put(key, value);
+    }
+
+    public static String getContext(String key) {
+        return SERVER_CONTEXT.get(key);
     }
 
     /**

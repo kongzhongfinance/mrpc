@@ -31,6 +31,15 @@ public class RpcServerProperties {
     // 服务所属appId
     private String appId = "default";
 
+    // 服务名称
+    private String appName;
+
+    // 服务负责人
+    private String owner;
+
+    // 负责人邮箱
+    private String ownerEmail;
+
     // 业务线程池前缀
     private String poolName = "mrpc-server";
 

@@ -33,7 +33,7 @@ import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
  * RPC服务端自动配置
  *
  * @author biezhi
- *         2017/5/13
+ * 2017/5/13
  */
 @Conditional(ServerEnvironmentCondition.class)
 @EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class, AdminProperties.class})
@@ -91,6 +91,10 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             log.debug(rpcServerProperties.toString() + "\n");
 
             super.appId = rpcServerProperties.getAppId();
+            setContext(Const.APP_ID, rpcServerProperties.getAppId());
+            setContext(Const.APP_NAME, rpcServerProperties.getAppName());
+            setContext(Const.SERVER_OWNER, rpcServerProperties.getOwner());
+
             super.address = rpcServerProperties.getAddress();
             super.weight = rpcServerProperties.getWeight();
             super.elasticIp = rpcServerProperties.getElasticIp();
@@ -121,8 +125,8 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     /**
      * 获取服务暴露的地址 ip:port
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回服务绑定的地址
      */
     @Override
     public String getBindAddress(ServiceBean serviceBean) {
@@ -152,8 +156,8 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     /**
      * 获取服务使用的注册中心
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回该服务的注册中心
      */
     @Override
     public ServiceRegistry getRegistry(ServiceBean serviceBean) {

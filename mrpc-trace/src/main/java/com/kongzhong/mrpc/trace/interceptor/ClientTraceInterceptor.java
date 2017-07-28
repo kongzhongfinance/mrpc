@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 /**
  * ClientTraceInterceptor
@@ -58,7 +59,7 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         log.debug("sr time: " + RpcContext.getAttachments(TraceConstants.SR_TIME));
         log.debug("ss time: " + RpcContext.getAttachments(TraceConstants.SS_TIME));
 
-        this.endTrace(consumeSpan, watch);
+        this.endTrace(request, consumeSpan, watch);
         return result;
     }
 
@@ -73,9 +74,7 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
 
         clientSpan.setTrace_id(traceId);
         clientSpan.setParent_id(parentId);
-
-        String serviceName = request.getClassName() + "." + request.getMethodName();
-        clientSpan.setName(serviceName);
+        clientSpan.setName(request.getMethodName());
 
         long timestamp = TimeUtils.currentMicros();
         clientSpan.setTimestamp(timestamp);
@@ -86,38 +85,51 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
 
         clientSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                        Endpoint.create(serviceName, providerHost, providerPort)));
+                        Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, request.getClassName()), providerHost, providerPort)));
 
-        String serviceOwner = request.getContext().get(Const.SERVER_OWNER);
-        if (StringUtils.isNotEmpty(serviceOwner)) {
-            // app owner
-            clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "owner", serviceOwner, null
-            ));
+        String owners = request.getContext().get(Const.SERVER_OWNER);
+        if (StringUtils.isNotEmpty(owners)) {
+            Stream.of(owners.split(","))
+                .forEach(owner -> {
+                    // app owner
+                    clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                            "负责人", owner, null
+                    ));
+                });
+        }
+        String emails = request.getContext().get(Const.SERVER_OWNER_EMAIL);
+        if (StringUtils.isNotEmpty(emails)) {
+            Stream.of(emails.split(","))
+                    .forEach(email -> {
+                        // app owner
+                        clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                                "负责人邮箱", email, null
+                        ));
+                    });
         }
         return clientSpan;
     }
 
-    private void endTrace(Span consumeSpan, Stopwatch watch) {
-        consumeSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch) {
+        clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
         String host = RpcContext.getAttachments(Const.SERVER_HOST);
         int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
         // cr annotation
-        consumeSpan.addToAnnotations(
+        clientSpan.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                        Endpoint.create(consumeSpan.getName(), NetUtils.ip2Num(host), port)));
+                        Endpoint.create(request.getMethodName(), NetUtils.ip2Num(host), port)));
 
         String exception = RpcContext.getAttachments(Const.SERVER_EXCEPTION);
         if (StringUtils.isNotEmpty(exception)) {
             // attach exception
-            consumeSpan.addToBinary_annotations(BinaryAnnotation.create(
+            clientSpan.addToBinary_annotations(BinaryAnnotation.create(
                     "Exception", exception, null));
         }
 
         // collect the span
-        TraceContext.addSpan(consumeSpan);
+        TraceContext.addSpan(clientSpan);
     }
 
 }
