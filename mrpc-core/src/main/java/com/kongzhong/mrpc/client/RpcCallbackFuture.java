@@ -55,7 +55,7 @@ public class RpcCallbackFuture {
                 String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
                 log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
                 log.warn("RequestId: {}", request.getRequestId());
-                log.warn("waitTime : {}ms", waitTime);
+                log.warn("Invoke time: {}ms", waitTime);
                 throw new TimeoutException(msg);
             }
         }

@@ -55,4 +55,8 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
         ctx.writeAndFlush(response);
     }
 
+    @Override
+    public void hasBeenShutdown(ChannelHandlerContext ctx, RpcRequest msg) {
+
+    }
 }

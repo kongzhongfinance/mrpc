@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.google.common.base.Throwables;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.MediaTypeEnum;
+import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
@@ -27,7 +29,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * http请求处理器
  *
  * @author biezhi
- *         2017/4/21
+ * 2017/4/21
  */
 @Slf4j
 public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
@@ -63,6 +65,11 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             }
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
+            return;
+        }
+
+        if (isShutdown) {
+            this.hasBeenShutdown(ctx, httpRequest);
             return;
         }
 
@@ -195,11 +202,34 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Server receive body error", cause);
+        log.error("Server io error: {}", ctx.channel(), cause);
         RpcRet           ret      = RpcRet.error(Throwables.getStackTraceAsString(cause));
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(ret.getCode()), Unpooled.copiedBuffer(JacksonSerialize.toJSONString(ret), CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
         ctx.writeAndFlush(response)/*.addListener(ChannelFutureListener.CLOSE)*/;
+    }
 
+    @Override
+    public void hasBeenShutdown(ChannelHandlerContext ctx, FullHttpRequest msg) {
+        RpcResponse rpcResponse = new RpcResponse();
+        rpcResponse.setRequestId(msg.headers().get(Const.HEADER_REQUEST_ID));
+        rpcResponse.setSuccess(false);
+        rpcResponse.setException(JacksonSerialize.toJSONString(new ConnectException("The server has been shutdown.")));
+        rpcResponse.setReturnType(ConnectException.class.getName());
+
+        String body = JacksonSerialize.toJSONString(rpcResponse);
+
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
+        httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
+        httpResponse.headers().set(HEADER_REQUEST_ID, msg.headers().get(Const.HEADER_REQUEST_ID));
+        httpResponse.headers().set(HEADER_SERVICE_CLASS, msg.headers().get(Const.HEADER_SERVICE_CLASS));
+        httpResponse.headers().set(HEADER_METHOD_NAME, msg.headers().get(Const.HEADER_METHOD_NAME));
+        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        httpResponse.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        httpResponse.headers().set(CACHE_CONTROL, "no-cache");
+        httpResponse.headers().set(PRAGMA, "no-cache");
+        httpResponse.headers().set(EXPIRES, "-1");
+
+        ctx.writeAndFlush(httpResponse)/*.addListener(ChannelFutureListener.CLOSE)*/;
     }
 }

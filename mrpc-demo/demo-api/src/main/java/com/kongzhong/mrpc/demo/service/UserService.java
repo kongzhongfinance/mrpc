@@ -92,12 +92,14 @@ public interface UserService {
         return statusEnum;
     }
 
-    default void testTimeout(int timeOut) {
+    default String testTimeout(int timeOut) {
         try {
             TimeUnit.SECONDS.sleep(timeOut);
             System.out.println("执行完毕");
+            return "haha";
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 

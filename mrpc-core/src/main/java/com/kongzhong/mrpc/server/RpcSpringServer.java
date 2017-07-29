@@ -27,7 +27,7 @@ import java.util.Map;
  * RPC服务端Spring实现
  *
  * @author biezhi
- *         2017/4/24
+ * 2017/4/24
  */
 @Slf4j
 @Data
@@ -93,6 +93,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> super.close()));
         this.startServer();
     }
 
@@ -102,12 +103,11 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
             return new DefaultRegistry();
         }
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-            String zkAddr = registryBean.getAddress();
-            log.info("RPC server connect zookeeper address: {}", zkAddr);
-            return super.getZookeeperServiceRegistry(zkAddr);
+            String zkAddress = registryBean.getAddress();
+            log.info("RPC server connect zookeeper address: {}", zkAddress);
+            return super.getZookeeperServiceRegistry(zkAddress);
         }
         return null;
     }
-
 
 }

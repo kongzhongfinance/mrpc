@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.transport.netty;
 import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
+import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcMapping;
@@ -16,12 +17,14 @@ import java.util.Map;
  * 抽象服务端请求处理器
  *
  * @author biezhi
- *         2017/4/21
+ * 2017/4/21
  */
 @Slf4j
 public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler<T> {
 
     protected Map<String, ServiceBean> serviceBeanMap;
+
+    protected static boolean isShutdown;
 
     public SimpleServerHandler() {
         this.serviceBeanMap = RpcMapping.me().getServiceBeanMap();
@@ -38,6 +41,7 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
+        log.debug("Channel Inactive {}", ctx.channel());
         // 客户端断开连接
         Event event = Event.builder().rpcContext(RpcContext.get()).build();
         event.setAttribute("clientAddress", ctx.channel().remoteAddress());
@@ -53,4 +57,11 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
     }
 
     public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
+
+    public abstract void hasBeenShutdown(ChannelHandlerContext ctx, T msg);
+
+    public static void shutdown() {
+        isShutdown = true;
+    }
+
 }

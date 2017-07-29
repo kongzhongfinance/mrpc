@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.server;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
 import com.kongzhong.mrpc.Const;
@@ -24,6 +25,7 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -36,6 +38,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
@@ -167,6 +170,8 @@ public abstract class SimpleRpcServer implements AutoCloseable {
      * 服务端处理线程池
      */
     private static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
+
+    private static List<ListenableFuture> listenableFutures = Lists.newCopyOnWriteArrayList();
 
     private ScheduledFuture adminSchedule;
 
@@ -472,6 +477,7 @@ public abstract class SimpleRpcServer implements AutoCloseable {
 //                log.error("", t);
             }
         }, LISTENING_EXECUTOR_SERVICE);
+        listenableFutures.add(listenableFuture);
     }
 
     public static void submit(Callable<FullHttpResponse> task, final ChannelHandlerContext ctx) {
@@ -493,6 +499,7 @@ public abstract class SimpleRpcServer implements AutoCloseable {
                 log.error("", t);
             }
         }, LISTENING_EXECUTOR_SERVICE);
+        listenableFutures.add(listenableFuture);
     }
 
     /**
@@ -508,19 +515,19 @@ public abstract class SimpleRpcServer implements AutoCloseable {
         }
         // Zookeeper注册中心
         if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-            String zkAddr = map.get("address");
-            if (StringUtils.isEmpty(zkAddr)) {
+            String zkAddress = map.get("address");
+            if (StringUtils.isEmpty(zkAddress)) {
                 throw new SystemException("Zookeeper connect address not is empty");
             }
-            log.info("RPC server connect zookeeper address: {}", zkAddr);
-            return this.getZookeeperServiceRegistry(zkAddr);
+            log.info("RPC server connect zookeeper address: {}", zkAddress);
+            return this.getZookeeperServiceRegistry(zkAddress);
         }
         return null;
     }
 
-    ServiceRegistry getZookeeperServiceRegistry(String zkAddr) {
+    ServiceRegistry getZookeeperServiceRegistry(String zkAddress) {
         try {
-            Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
+            Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddress);
             return (ServiceRegistry) zookeeperServiceRegistry;
         } catch (Exception e) {
             log.error("", e);
@@ -546,8 +553,20 @@ public abstract class SimpleRpcServer implements AutoCloseable {
             if (isClosed) {
                 return;
             }
-            log.info("Unregistering mrpc server on shutdown");
+            log.info("UnRegistering mrpc server on shutdown");
+
+            // 拒绝连接
+            SimpleServerHandler.shutdown();
+
             EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
+
+            for (ListenableFuture<FullHttpResponse> listenableFuture : listenableFutures) {
+                while (!listenableFuture.isDone()) {
+                    TimeUtils.sleep(100);
+                }
+            }
+
+            LISTENING_EXECUTOR_SERVICE.shutdown();
             rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
                 String          serviceName     = serviceBean.getServiceName();
                 ServiceRegistry serviceRegistry = getRegistry(serviceBean);

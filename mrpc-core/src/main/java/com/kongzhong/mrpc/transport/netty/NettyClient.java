@@ -133,6 +133,7 @@ public class NettyClient {
             return channel;
         } catch (Exception e) {
             LocalServiceNodeTable.setNodeDead(address);
+//            eventLoopGroup.shutdownGracefully();
             throw new ConnectException(String.format("Connect [%s] fail", address), e);
         }
     }

@@ -198,13 +198,6 @@ public class LocalServiceNodeTable {
      */
     public static void shutdown() {
         SERVICE_MAPPINGS.clear();
-        SERVICE_NODES.stream()
-                .map(node -> Optional.ofNullable(node.getClientHandler()))
-                .forEach(handler ->
-                        handler.ifPresent(h -> {
-                            h.getNettyClient().shutdown();
-                            h.close();
-                        }));
         SERVICE_NODES.clear();
     }
 

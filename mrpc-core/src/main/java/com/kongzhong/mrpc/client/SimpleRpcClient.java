@@ -349,13 +349,13 @@ public abstract class SimpleRpcClient implements AutoCloseable {
      */
     @Override
     public void close() {
-        lock.lock();
         try {
+            lock.lock();
             if (isClosed) {
                 return;
             }
-            log.info("Unregistering mrpc client on shutdown");
-            LocalServiceNodeTable.shutdown();
+            log.info("UnRegistering mrpc client on shutdown");
+            Connections.me().shutdown();
         } finally {
             isClosed = true;
             lock.unlock();

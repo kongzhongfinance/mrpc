@@ -67,10 +67,13 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             req.headers().set(CONNECTION, KEEP_ALIVE);
             req.headers().set(ACCEPT_ENCODING, GZIP);
             req.headers().set(CONTENT_TYPE, TEXT_PLAIN);
+            req.headers().set(HEADER_REQUEST_ID, rpcRequest.getRequestId());
+            req.headers().set(HEADER_SERVICE_CLASS, rpcRequest.getClassName());
+            req.headers().set(HEADER_METHOD_NAME, rpcRequest.getMethodName());
 
-            ByteBuf bbuf = Unpooled.wrappedBuffer(sendBody != null ? sendBody.getBytes(CharsetUtil.UTF_8) : new byte[0]);
-            req.headers().set(CONTENT_LENGTH, bbuf.readableBytes());
-            req.content().clear().writeBytes(bbuf);
+            ByteBuf bodyBuf = Unpooled.wrappedBuffer(sendBody != null ? sendBody.getBytes(CharsetUtil.UTF_8) : new byte[0]);
+            req.headers().set(CONTENT_LENGTH, bodyBuf.readableBytes());
+            req.content().clear().writeBytes(bodyBuf);
 
             this.setChannelRequestId(rpcRequest.getRequestId());
 
