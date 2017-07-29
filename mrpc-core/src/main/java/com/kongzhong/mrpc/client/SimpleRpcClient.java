@@ -19,6 +19,7 @@ import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
@@ -355,6 +356,7 @@ public abstract class SimpleRpcClient implements AutoCloseable {
                 return;
             }
             log.info("UnRegistering mrpc client on shutdown");
+            SimpleClientHandler.shutdown();
             Connections.me().shutdown();
         } finally {
             isClosed = true;

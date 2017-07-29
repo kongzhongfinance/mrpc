@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
@@ -47,6 +48,9 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      */
     @Override
     public RpcCallbackFuture asyncSendRequest(RpcRequest rpcRequest) {
+        if(isShutdown){
+            throw new SystemException("Rpc client has been shutdown.");
+        }
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
         callbackFutureMap.put(rpcRequest.getRequestId(), rpcCallbackFuture);
 

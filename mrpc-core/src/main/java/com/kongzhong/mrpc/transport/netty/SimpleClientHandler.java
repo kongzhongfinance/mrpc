@@ -36,6 +36,8 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     @Setter
     protected NettyClient nettyClient;
 
+    protected static boolean isShutdown;
+
     protected LongAdder hits = new LongAdder();
 
     public static final Map<String, RpcCallbackFuture> callbackFutureMap = Maps.newConcurrentMap();
@@ -129,4 +131,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
         }
     }
 
+    public static void shutdown(){
+        isShutdown = true;
+    }
 }
