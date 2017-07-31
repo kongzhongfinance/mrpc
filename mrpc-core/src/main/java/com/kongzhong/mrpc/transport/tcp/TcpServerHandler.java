@@ -28,7 +28,7 @@ public class TcpServerHandler extends SimpleServerHandler<RpcRequest> {
 
         super.channelRead0(ctx, request);
 
-        log.debug("Server receive body: \n{}", JacksonSerialize.toJSONString(request, true));
+        log.debug("Server receive body: {}", JacksonSerialize.toJSONString(request));
 
         RpcResponse response = new RpcResponse();
         TcpResponseInvoker tcpResponseInvoker = new TcpResponseInvoker(request, response, serviceBeanMap);

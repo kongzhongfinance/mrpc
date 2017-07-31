@@ -65,7 +65,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         try {
             String sendBody = JacksonSerialize.toJSONString(requestBody);
 
-            log.debug("Client send body: \n{}", JacksonSerialize.toJSONString(requestBody, true));
+            log.debug("Client send body: {}", JacksonSerialize.toJSONString(requestBody));
 
             DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
             req.headers().set(CONNECTION, KEEP_ALIVE);
@@ -108,7 +108,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
         RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
         if (rpcResponse.getSuccess()) {
-            log.debug("Client receive body: \n{}", JacksonSerialize.toJSONString(rpcResponse, true));
+            log.debug("Client receive body: {}", JacksonSerialize.toJSONString(rpcResponse));
             Object result = rpcResponse.getResult();
             if (null != result && null != rpcResponse.getReturnType()
                     && !rpcResponse.getReturnType().equals(Void.class)) {

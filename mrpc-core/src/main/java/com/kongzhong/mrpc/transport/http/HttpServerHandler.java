@@ -68,13 +68,13 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        if (isShutdown) {
-            this.hasBeenShutdown(ctx, httpRequest);
+        if (!"/rpc".equals(path)) {
+            this.sendError(ctx, RpcRet.error("bad request."));
             return;
         }
 
-        if (!"/rpc".equals(path)) {
-            this.sendError(ctx, RpcRet.error("bad request."));
+        if (isShutdown) {
+            this.hasBeenShutdown(ctx, httpRequest);
             return;
         }
 
@@ -87,7 +87,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         RequestBody requestBody;
         try {
             requestBody = JacksonSerialize.parseObject(body, RequestBody.class);
-            log.debug("Server receive body: \n{}", JacksonSerialize.toJSONString(requestBody, true));
+            log.debug("Server receive body: {}", JacksonSerialize.toJSONString(requestBody));
         } catch (Exception e) {
             log.error("Server receive body parse error", e);
             this.sendError(ctx, RpcRet.error("Unable to identify the requested format."));

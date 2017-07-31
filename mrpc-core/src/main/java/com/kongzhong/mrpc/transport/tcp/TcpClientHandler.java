@@ -35,7 +35,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(request);
         callbackFutureMap.put(request.getRequestId(), rpcCallbackFuture);
 
-        log.debug("Client send body: \n{}", JacksonSerialize.toJSONString(request, true));
+        log.debug("Client send body: {}", JacksonSerialize.toJSONString(request));
 
         this.setChannelRequestId(request.getRequestId());
         channel.writeAndFlush(request);
@@ -45,7 +45,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
         if (response.getSuccess()) {
-            log.debug("Client receive body: \n{}", JacksonSerialize.toJSONString(response, true));
+            log.debug("Client receive body: {}", JacksonSerialize.toJSONString(response));
         }
         String            requestId         = response.getRequestId();
         RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
