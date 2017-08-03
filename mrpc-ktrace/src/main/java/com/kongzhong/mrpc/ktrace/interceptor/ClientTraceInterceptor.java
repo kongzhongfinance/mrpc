@@ -5,6 +5,7 @@ import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -22,10 +23,10 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
 
         // prepare trace context
         Map<String, String> context = request.getContext();
-        String requestId = Trace.getCurrentRequestId();
-        context.put("requestId", requestId);
+        String traceId = Trace.getCurrentRequestId();
+        context.put(TraceConstants.TRACE_ID, traceId);
         if (log.isDebugEnabled()) {
-            log.debug("ClientTraceInterceptor [put] BeforeRequestId={} CurrentRequestId={}", Trace.getCurrentRequestId(), requestId);
+            log.debug("ClientTraceInterceptor [put] BeforeTraceId={} CurrentTraceId={}", Trace.getCurrentRequestId(), traceId);
         }
 
         // invoke

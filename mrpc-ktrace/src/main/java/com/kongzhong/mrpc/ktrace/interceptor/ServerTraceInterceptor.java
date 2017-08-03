@@ -4,6 +4,7 @@ import com.kongzhong.finance.basic.trace.Trace;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,11 +19,11 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
 
         System.out.println(Thread.currentThread().getName());
         // prepare trace context
-        String requestId = request.getContext().get("requestId");
+        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
         if (log.isDebugEnabled()) {
-            log.debug("ServerTraceInterceptor CurrentRequestId={} AfterRequestId={}", Trace.getCurrentRequestId(), requestId);
+            log.debug("ServerTraceInterceptor CurrentTraceId={} AfterTraceId={}", Trace.getCurrentRequestId(), traceId);
         }
-        Trace.continueTrace(requestId);
+        Trace.continueTrace(traceId);
 
         // executor other interceptor
         return invocation.next();

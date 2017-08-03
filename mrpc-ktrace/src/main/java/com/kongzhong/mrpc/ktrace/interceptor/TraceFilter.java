@@ -25,9 +25,9 @@ public class TraceFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // do trace
-        String currentRequestId = Trace.getCurrentRequestId();
+        String currentTraceId = Trace.getCurrentRequestId();
         if (log.isDebugEnabled()) {
-            log.debug("TraceFilter CurrentRequestId={}", currentRequestId);
+            log.debug("TraceFilter CurrentTraceId={}", currentTraceId);
         }
 
         // executor other filters
