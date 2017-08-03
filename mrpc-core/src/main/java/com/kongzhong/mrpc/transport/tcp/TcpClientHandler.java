@@ -5,10 +5,12 @@ import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 /**
  * @author biezhi
@@ -35,7 +37,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(request);
         callbackFutureMap.put(request.getRequestId(), rpcCallbackFuture);
 
-        log.debug("Client send body: \n{}", JacksonSerialize.toJSONString(request, true));
+        log.debug("Client send body: {}", JacksonSerialize.toJSONString(request));
 
         this.setChannelRequestId(request.getRequestId());
         channel.writeAndFlush(request);
@@ -45,7 +47,7 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
         if (response.getSuccess()) {
-            log.debug("Client receive body: \n{}", JacksonSerialize.toJSONString(response, true));
+            log.debug("Client receive body: {}", JacksonSerialize.toJSONString(response));
         }
         String            requestId         = response.getRequestId();
         RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);

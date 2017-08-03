@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.transport.netty;
 import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
-import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcMapping;
@@ -57,8 +56,6 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
     }
 
     public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
-
-    public abstract void hasBeenShutdown(ChannelHandlerContext ctx, T msg);
 
     public static void shutdown() {
         isShutdown = true;

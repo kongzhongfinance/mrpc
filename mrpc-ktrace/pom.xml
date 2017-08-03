@@ -3,36 +3,35 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mrpc-demo</artifactId>
+        <artifactId>mrpc</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
         <version>0.1.0-ktrace-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>demo-client</artifactId>
+    <artifactId>mrpc-ktrace</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>demo-api</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-core</artifactId>
-            <version>${mrpc-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-registry-zk</artifactId>
-            <version>${mrpc-zk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-serialize-kryo</artifactId>
-            <version>${mrpc-serialize-kryo.version}</version>
+            <scope>provided</scope>
         </dependency>
 
+        <!-- basic -->
+        <dependency>
+            <groupId>com.kongzhong.finance.basic</groupId>
+            <artifactId>trace</artifactId>
+            <version>0.1.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- servlet -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

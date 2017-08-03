@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.demo.service.UserService;
-import com.kongzhong.mrpc.trace.interceptor.TraceFilter;
+import com.kongzhong.mrpc.ktrace.interceptor.TraceFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
