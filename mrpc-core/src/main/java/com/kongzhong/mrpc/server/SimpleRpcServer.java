@@ -58,7 +58,7 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 @Slf4j
 @NoArgsConstructor
 @ToString(exclude = {"rpcMapping", "transferSelector"})
-public abstract class SimpleRpcServer implements AutoCloseable {
+public abstract class SimpleRpcServer {
 
     /**
      * RPC服务映射
@@ -297,6 +297,8 @@ public abstract class SimpleRpcServer implements AutoCloseable {
 
             // 服务启动后
             EventManager.me().fireEvent(EventType.SERVER_STARTED, Event.builder().rpcContext(RpcContext.get()).build());
+
+            Runtime.getRuntime().addShutdownHook(new Thread( () -> this.close()));
 
             this.channelSync(future);
 
@@ -546,7 +548,6 @@ public abstract class SimpleRpcServer implements AutoCloseable {
     /**
      * 销毁资源,卸载服务
      */
-    @Override
     public void close() {
         lock.lock();
         try {
