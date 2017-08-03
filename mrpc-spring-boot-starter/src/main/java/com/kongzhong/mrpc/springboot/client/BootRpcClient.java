@@ -108,6 +108,9 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
             super.directConnect();
 
             log.info("Bind services finished");
+
+            Runtime.getRuntime().addShutdownHook(new Thread( () -> this.close()));
+
         } catch (Exception e) {
             log.error("RPC client init error", e);
         }

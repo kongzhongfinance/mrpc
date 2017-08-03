@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor
 @Slf4j
-public abstract class SimpleRpcClient implements AutoCloseable {
+public abstract class SimpleRpcClient {
 
     /**
      * 序列化类型，默认protostuff
@@ -348,7 +348,6 @@ public abstract class SimpleRpcClient implements AutoCloseable {
     /**
      * 停止客户端，释放资源
      */
-    @Override
     public void close() {
         try {
             lock.lock();
