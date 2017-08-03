@@ -22,12 +22,12 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         RpcRequest request = invoker.getRequest();
 
         // prepare trace context
-        Map<String, String> context = request.getContext();
         String traceId = Trace.getCurrentRequestId();
+        // put requestContext
+        Map<String, String> context = request.getContext();
         context.put(TraceConstants.TRACE_ID, traceId);
-        if (log.isDebugEnabled()) {
-            log.debug("ClientTraceInterceptor [put] BeforeTraceId={} CurrentTraceId={}", Trace.getCurrentRequestId(), traceId);
-        }
+
+        log.debug("ClientTraceInterceptor [put] CurrentTraceId={}", traceId);
 
         // invoke
         return invoker.invoke();

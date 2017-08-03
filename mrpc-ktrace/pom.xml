@@ -23,6 +23,7 @@
             <groupId>com.kongzhong.finance.basic</groupId>
             <artifactId>trace</artifactId>
             <version>0.1.2-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- servlet -->
