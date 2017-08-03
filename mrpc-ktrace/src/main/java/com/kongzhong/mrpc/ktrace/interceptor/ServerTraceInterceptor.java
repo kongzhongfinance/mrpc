@@ -17,7 +17,6 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
     public Object execute(ServerInvocation invocation) throws Exception {
         RpcRequest request = invocation.getRequest();
 
-        System.out.println(Thread.currentThread().getName());
         // prepare trace context
         String traceId = request.getContext().get(TraceConstants.TRACE_ID);
         if (log.isDebugEnabled()) {
