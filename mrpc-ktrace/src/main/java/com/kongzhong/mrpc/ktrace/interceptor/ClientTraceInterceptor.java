@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.ktrace.interceptor;
 
-import com.kongzhong.finance.basic.trace.Trace;
+import com.kongzhong.finance.ktrace.core.Trace;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;

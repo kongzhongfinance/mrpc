@@ -20,9 +20,9 @@
 
         <!-- basic -->
         <dependency>
-            <groupId>com.kongzhong.finance.basic</groupId>
-            <artifactId>trace</artifactId>
-            <version>0.1.2-SNAPSHOT</version>
+            <groupId>com.kongzhong.finance.ktrace</groupId>
+            <artifactId>core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

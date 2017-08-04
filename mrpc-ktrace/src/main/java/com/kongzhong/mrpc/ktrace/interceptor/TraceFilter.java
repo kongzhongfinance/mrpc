@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.ktrace.interceptor;
 
-import com.kongzhong.finance.basic.trace.Trace;
+import com.kongzhong.finance.ktrace.core.Trace;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.Filter;
