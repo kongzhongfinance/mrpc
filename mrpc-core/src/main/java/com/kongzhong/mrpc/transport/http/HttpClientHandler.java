@@ -135,6 +135,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         } else {
             log.error("Not found request id [{}]", requestId);
         }
+        MDC.remove(TraceConstants.TRACE_ID);
     }
 
     @Override
