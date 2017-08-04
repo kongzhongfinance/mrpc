@@ -165,7 +165,6 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             HttpResponseInvoker responseCallback = new HttpResponseInvoker(rpcRequest, httpResponse, serviceBeanMap);
             SimpleRpcServer.submit(responseCallback, ctx);
         }
-        MDC.remove(TraceConstants.TRACE_ID);
     }
 
     /**

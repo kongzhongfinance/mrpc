@@ -22,7 +22,7 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         if (log.isDebugEnabled()) {
             log.debug("ServerTraceInterceptor CurrentTraceId={} AfterTraceId={}", Trace.getCurrentRequestId(), traceId);
         }
-        Trace.continueTrace(traceId, Trace.getSpanId());
+        Trace.continueTrace(traceId, Trace.parseParentSpanId(traceId));
 
         // executor other interceptor
         return invocation.next();
