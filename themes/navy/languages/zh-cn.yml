@@ -38,6 +38,7 @@ sidebar:
     extensions: 扩展插件
     hystrix: Hystrix熔断
     metric_influxdb: Metrics打点
+    ktrace: KTrace跟踪
     service_validator: 服务端参数校验
     other: 其他
     faq: 常见问题

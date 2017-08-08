@@ -96,3 +96,4 @@ public String testHystrix(int num) {
 参考资料：
 
 - [hystrix 原理与应用](https://juejin.im/entry/58fd69235c497d00580437cc)
+- [Hystrix文档翻译](http://youdang.github.io/2016/01/30/translate-hystrix-wiki-homepage/)
