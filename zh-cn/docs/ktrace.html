@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>KTrace跟踪 | mrpc - 轻量级、分布式服务治理框架</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/ktrace.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/ktrace.html">
+    
+  
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/mrpc/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/mrpc/atom.xml" title="mrpc - 轻量级、分布式服务治理框架">
+  <!-- Open Graph -->
+  <meta name="description" content="ktrace 是为了解决rpc服务在分布式环境下的调用链问题，目前还不完善，已经出了一个简单的版本。 加入依赖RPC 服务端和客户端都要加入 &amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;com.kongzhong.mrpc&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;mrpc-ktrace&amp;lt;/artifactId&amp;gt;    &amp;l">
+<meta property="og:type" content="website">
+<meta property="og:title" content="KTrace跟踪">
+<meta property="og:url" content="https://kongzhongfinance.github.io/mrpc/zh-cn/docs/ktrace.html">
+<meta property="og:site_name" content="mrpc - 轻量级、分布式服务治理框架">
+<meta property="og:description" content="ktrace 是为了解决rpc服务在分布式环境下的调用链问题，目前还不完善，已经出了一个简单的版本。 加入依赖RPC 服务端和客户端都要加入 &amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;com.kongzhong.mrpc&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;mrpc-ktrace&amp;lt;/artifactId&amp;gt;    &amp;l">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2017-08-08T05:58:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KTrace跟踪">
+<meta name="twitter:description" content="ktrace 是为了解决rpc服务在分布式环境下的调用链问题，目前还不完善，已经出了一个简单的版本。 加入依赖RPC 服务端和客户端都要加入 &amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;com.kongzhong.mrpc&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;mrpc-ktrace&amp;lt;/artifactId&amp;gt;    &amp;l">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+  <!-- Google AdSense -->
+  
+
+  <!-- Github Button -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="wrapper">
+  <div id="header-inner" class="inner">
+    <h1 id="logo-wrap">
+      <a href="/zh-cn/mrpc/" id="logo">Hexo</a>
+    </h1>
+    <nav id="main-nav">
+      <a href="/mrpc/" class="main-nav-link">首页</a><a href="/mrpc/zh-cn/docs/" class="main-nav-link">文档</a><a href="https://github.com/kongzhongfinance/mrpc/issues" class="main-nav-link">工单</a><a href="/mrpc/news/" class="main-nav-link">更新</a><a href="/mrpc/contribute" class="main-nav-link">贡献</a>
+      <a href="https://github.com/kongzhongfinance/mrpc" class="main-nav-link"><i class="fa fa-github-alt"></i></a>
+      
+        
+          
+        
+        
+      
+    </nav>
+    <div id="lang-select-wrap">
+      <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+      <select id="lang-select" data-canonical="docs/ktrace.html">
+        
+          <option value="zh-cn" selected>简体中文</option>
+        
+      </select>
+    </div>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">KTrace跟踪</h1>
+                <a href="https://github.com/kongzhongfinance/mrpc/edit/site/source/zh-cn/docs/ktrace.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
+              </header>
+              <div class="article-content" itemprop="articleBody">
+                <p><code>ktrace</code> 是为了解决rpc服务在分布式环境下的调用链问题，目前还不完善，已经出了一个简单的版本。</p>
+<h2 id="加入依赖" class="article-heading"><a href="#加入依赖" class="headerlink" title="加入依赖"></a>加入依赖<a class="article-anchor" href="#加入依赖" aria-hidden="true"></a></h2><p><code>RPC</code> 服务端和客户端都要加入</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.kongzhong.mrpc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mrpc-ktrace<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;mrpc-ktrace.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="Web接入" class="article-heading"><a href="#Web接入" class="headerlink" title="Web接入"></a>Web接入<a class="article-anchor" href="#Web接入" aria-hidden="true"></a></h2><p>服务的入口是从某个web请求开始的，你可以在Web端添加一个<code>Filter</code>来贯穿整个请求链。</p>
+<blockquote>
+<p>当然别忘了添加上面的依赖，因为这个Filter是在那个库里面</p>
+</blockquote>
+<p><strong>SpringBoot Web环境配置</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * RPC服务同时是Web服务的需要注入</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> FilterRegistrationBean <span class="title">traceFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">    ServletRegistrationBean servletRegistrationBean = <span class="keyword">new</span> ServletRegistrationBean();</div><div class="line">    servletRegistrationBean.setName(<span class="string">"TraceFilter"</span>);</div><div class="line">    FilterRegistrationBean filterRegistrationBean = <span class="keyword">new</span> FilterRegistrationBean(<span class="keyword">new</span> TraceFilter(), servletRegistrationBean);</div><div class="line">    filterRegistrationBean.setName(<span class="string">"TraceFilter"</span>);</div><div class="line">    filterRegistrationBean.setUrlPatterns(Collections.singletonList(<span class="string">"/*"</span>));</div><div class="line">    <span class="keyword">return</span> filterRegistrationBean;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>web.xml配置</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>TraceFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>com.kongzhong.mrpc.ktrace.interceptor.TraceFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>TraceFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dispatcher</span>&gt;</span>REQUEST<span class="tag">&lt;/<span class="name">dispatcher</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div></pre></td></tr></table></figure>
+
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2017-08-08T05:58:42.000Z" itemprop="dateModified">上次更新：2017-08-08</time>
+                <a href="metric_influxdb.html" class="article-footer-prev" title="Metrics打点"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="service-validator.html" class="article-footer-next" title="服务端参数校验"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            <div id="article-toc-inner">
+              <strong class="sidebar-title">目录</strong>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加入依赖"><span class="toc-text">加入依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web接入"><span class="toc-text">Web接入</span></a></li></ol>
+              <a href="#" id="article-toc-top">回到顶部</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner"><strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link">概述</a><a href="architecture-design.html" class="sidebar-link">框架设计</a><strong class="sidebar-title">快速开始</strong><a href="deployment-env.html" class="sidebar-link">开发环境</a><a href="helloworld-spring.html" class="sidebar-link">Spring</a><a href="helloworld-springboot.html" class="sidebar-link">SpringBoot</a><strong class="sidebar-title">注册中心</strong><a href="zookeeper.html" class="sidebar-link">Zookeeper</a><strong class="sidebar-title">进阶使用</strong><a href="client-config.html" class="sidebar-link">客户端配置</a><a href="server-config.html" class="sidebar-link">服务端配置</a><a href="interceptor.html" class="sidebar-link">拦截器机制</a><a href="exception.html" class="sidebar-link">异常捕获</a><strong class="sidebar-title">管理后台</strong><a href="enabled-admin.html" class="sidebar-link">配置</a><a href="view-nodes.html" class="sidebar-link">节点查看</a><strong class="sidebar-title">扩展插件</strong><a href="hystrix.html" class="sidebar-link">Hystrix熔断</a><a href="metric_influxdb.html" class="sidebar-link">Metrics打点</a><a href="ktrace.html" class="sidebar-link current">KTrace跟踪</a><a href="service-validator.html" class="sidebar-link">服务端参数校验</a><strong class="sidebar-title">其他</strong><a href="faq.html" class="sidebar-link">常见问题</a></div>
+</aside>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2017 <a href="https://github.com/biezhi" target="_blank">biezhi</a><br>
+      Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+
+      
+        
+        
+        
+      
+
+    </div>
+
+    <div id="footer-links">
+      <a href="http://weibo.com/kzjr" class="footer-link" target="_blank"><i class="fa fa-weibo"></i></a>
+      
+      <a href="https://github.com/kongzhongfinance/mrpc" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/mrpc/" class="mobile-nav-link">首页</a><a href="/mrpc/zh-cn/docs/" class="mobile-nav-link">文档</a><a href="https://github.com/kongzhongfinance/mrpc/issues" class="mobile-nav-link">工单</a><a href="/mrpc/news/" class="mobile-nav-link">更新</a><a href="/mrpc/contribute" class="mobile-nav-link">贡献</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/kongzhongfinance/mrpc" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link">概述</a><a href="architecture-design.html" class="mobile-nav-link">框架设计</a><strong class="mobile-nav-title">快速开始</strong><a href="deployment-env.html" class="mobile-nav-link">开发环境</a><a href="helloworld-spring.html" class="mobile-nav-link">Spring</a><a href="helloworld-springboot.html" class="mobile-nav-link">SpringBoot</a><strong class="mobile-nav-title">注册中心</strong><a href="zookeeper.html" class="mobile-nav-link">Zookeeper</a><strong class="mobile-nav-title">进阶使用</strong><a href="client-config.html" class="mobile-nav-link">客户端配置</a><a href="server-config.html" class="mobile-nav-link">服务端配置</a><a href="interceptor.html" class="mobile-nav-link">拦截器机制</a><a href="exception.html" class="mobile-nav-link">异常捕获</a><strong class="mobile-nav-title">管理后台</strong><a href="enabled-admin.html" class="mobile-nav-link">配置</a><a href="view-nodes.html" class="mobile-nav-link">节点查看</a><strong class="mobile-nav-title">扩展插件</strong><a href="hystrix.html" class="mobile-nav-link">Hystrix熔断</a><a href="metric_influxdb.html" class="mobile-nav-link">Metrics打点</a><a href="ktrace.html" class="mobile-nav-link current">KTrace跟踪</a><a href="service-validator.html" class="mobile-nav-link">服务端参数校验</a><strong class="mobile-nav-title">其他</strong><a href="faq.html" class="mobile-nav-link">常见问题</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="docs/ktrace.html">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/mrpc/js/lang_select.js"></script>
+<script src="/mrpc/js/scrollingelement.js"></script>
+<script src="/mrpc/js/toc.js"></script>
+<script src="/mrpc/js/mobile_nav.js"></script>
+<!-- endbuild -->
+<script src="https://cdn.jsdelivr.net/retinajs/1.3.0/retina.min.js" async></script>
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>
