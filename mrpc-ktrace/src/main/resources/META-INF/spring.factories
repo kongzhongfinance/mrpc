@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.kongzhong.mrpc.ktrace.interceptor.ClientTraceInterceptor,\
+com.kongzhong.mrpc.ktrace.interceptor.ServerTraceInterceptor

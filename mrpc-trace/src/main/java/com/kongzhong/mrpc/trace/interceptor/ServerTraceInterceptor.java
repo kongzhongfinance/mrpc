@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
-import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -36,6 +35,8 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         String spanId = request.getContext().get(TraceConstants.SPAN_ID);
         // prepare trace context
         this.startTrace(traceId, spanId);
+        //
+
         Object result = invocation.next();
         this.endTrace();
         return result;

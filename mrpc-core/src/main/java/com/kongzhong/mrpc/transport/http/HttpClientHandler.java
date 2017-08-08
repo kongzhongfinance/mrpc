@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -19,14 +20,20 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import static com.kongzhong.mrpc.Const.*;
+import static com.kongzhong.mrpc.Const.HEADER_METHOD_NAME;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_SERVICE_CLASS;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderValues.TEXT_PLAIN;
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.ACCEPT_ENCODING;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaders.Values.GZIP;
 
 /**
@@ -90,7 +97,6 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse httpResponse) throws Exception {
-
         log.debug("Client channel read: {}", ctx.channel());
 
         String body = httpResponse.content().toString(CharsetUtil.UTF_8);
@@ -107,6 +113,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         }
 
         RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
+        MDC.put(TraceConstants.TRACE_ID, rpcResponse.getContext().get(TraceConstants.TRACE_ID));
         if (rpcResponse.getSuccess()) {
             log.debug("Client receive body: {}", JacksonSerialize.toJSONString(rpcResponse));
             Object result = rpcResponse.getResult();
@@ -128,6 +135,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         } else {
             log.error("Not found request id [{}]", requestId);
         }
+        MDC.remove(TraceConstants.TRACE_ID);
     }
 
     @Override

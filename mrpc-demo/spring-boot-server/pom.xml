@@ -21,6 +21,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -38,8 +44,14 @@
 
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-trace</artifactId>
+            <artifactId>mrpc-ktrace</artifactId>
             <version>${parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kongzhong.finance.basic</groupId>
+            <artifactId>klog</artifactId>
+            <version>0.1.3-SNAPSHOT</version>
         </dependency>
 
         <!--<dependency>-->
