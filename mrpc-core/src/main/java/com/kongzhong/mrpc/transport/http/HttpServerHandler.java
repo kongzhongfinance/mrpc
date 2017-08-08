@@ -72,6 +72,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         if (!"/rpc".equals(path)) {
+            log.warn("Client {} request [{}]", ctx.channel(), path);
             this.sendError(ctx, httpRequest, new RpcException("Bad request"));
             return;
         }
@@ -198,7 +199,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
      */
     private void sendError(ChannelHandlerContext ctx, FullHttpRequest msg, Exception e) throws SerializeException {
         RpcResponse rpcResponse = new RpcResponse();
-        rpcResponse.setRequestId(msg.headers().get(Const.HEADER_REQUEST_ID));
+        if (null != msg) {
+            rpcResponse.setRequestId(msg.headers().get(Const.HEADER_REQUEST_ID, ""));
+        }
         rpcResponse.setSuccess(false);
         rpcResponse.setException(JacksonSerialize.toJSONString(e));
         rpcResponse.setReturnType(ConnectException.class.getName());
@@ -207,9 +210,11 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
         httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
-        httpResponse.headers().set(HEADER_REQUEST_ID, msg.headers().get(Const.HEADER_REQUEST_ID));
-        httpResponse.headers().set(HEADER_SERVICE_CLASS, msg.headers().get(Const.HEADER_SERVICE_CLASS));
-        httpResponse.headers().set(HEADER_METHOD_NAME, msg.headers().get(Const.HEADER_METHOD_NAME));
+        if (null != msg) {
+            httpResponse.headers().set(HEADER_REQUEST_ID, msg.headers().get(Const.HEADER_REQUEST_ID, ""));
+            httpResponse.headers().set(HEADER_SERVICE_CLASS, msg.headers().get(Const.HEADER_SERVICE_CLASS, ""));
+            httpResponse.headers().set(HEADER_METHOD_NAME, msg.headers().get(Const.HEADER_METHOD_NAME, ""));
+        }
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
         httpResponse.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
         httpResponse.headers().set(CACHE_CONTROL, "no-cache");
