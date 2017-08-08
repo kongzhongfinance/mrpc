@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.kongzhong.finance.ktrace</groupId>
             <artifactId>core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1-RELEASE</version>
             <scope>provided</scope>
         </dependency>
 
