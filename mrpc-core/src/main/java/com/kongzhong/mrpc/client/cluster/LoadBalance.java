@@ -29,13 +29,19 @@ public interface LoadBalance {
     default List<SimpleClientHandler> handlers(String serviceName) throws Exception {
         List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
         if (handlers.size() == 0) {
-            TimeUnit.SECONDS.sleep(1);
             ServiceDiscovery serviceDiscovery = ClientConfig.me().getServiceDiscovery(serviceName);
             if (null != serviceDiscovery) {
-                ClientBean clientBean = new ClientBean();
-                clientBean.setServiceName(serviceName);
-                serviceDiscovery.discover(clientBean);
-                return this.handlers(serviceName);
+                while (true) {
+                    TimeUnit.SECONDS.sleep(1);
+                    ClientBean clientBean = new ClientBean();
+                    clientBean.setServiceName(serviceName);
+                    serviceDiscovery.discover(clientBean);
+                    handlers = Connections.me().getHandlers(serviceName);
+                    if (handlers.size() > 0) {
+                        break;
+                    }
+                }
+                return handlers;
             }
             System.out.println(String.format("Local service mappings: %s", LocalServiceNodeTable.SERVICE_MAPPINGS));
             throw new RpcException("Service [" + serviceName + "] not found.");
