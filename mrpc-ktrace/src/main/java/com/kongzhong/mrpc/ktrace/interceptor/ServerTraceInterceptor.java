@@ -25,6 +25,8 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         Trace.continueTrace(traceId, Trace.parseParentSpanId(traceId));
 
         // executor other interceptor
-        return invocation.next();
+        Object invoke = invocation.next();
+        Trace.continueTrace(null);
+        return invoke;
     }
 }
