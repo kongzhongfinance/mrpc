@@ -24,17 +24,17 @@ public class TraceFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        // clear trace context
+        Trace.continueTrace(null);
+
         // do trace
-        String currentTraceId = Trace.getCurrentRequestId();
         if (log.isDebugEnabled()) {
+            String currentTraceId = Trace.getCurrentRequestId();
             log.debug("TraceFilter CurrentTraceId={}", currentTraceId);
         }
 
         // executor other filters
         chain.doFilter(request, response);
-
-        // clear trace context
-        Trace.continueTrace(null);
     }
 
     @Override
