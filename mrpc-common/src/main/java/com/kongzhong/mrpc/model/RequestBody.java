@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.model;
 
 import lombok.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +19,12 @@ import java.util.Map;
 @ToString
 public class RequestBody {
 
-    private String              requestId;
-    private String              service;
-    private String              method;
-    private String              version;
-    private Map<String, String> context;
-    private List<Object>        parameters;
-    private List<String>        parameterTypes;
+    private String requestId;
+    private String service;
+    private String method;
+    private String version;
+    private Map<String, String> context = new HashMap<>();
+    private List<Object> parameters;
+    private List<String> parameterTypes;
 
 }
