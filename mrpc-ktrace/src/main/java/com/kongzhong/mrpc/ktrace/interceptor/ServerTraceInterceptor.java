@@ -17,12 +17,15 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
     public Object execute(ServerInvocation invocation) throws Exception {
         RpcRequest request = invocation.getRequest();
 
-        // prepare trace context
-        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
-        if (log.isDebugEnabled()) {
-            log.debug("ServerTraceInterceptor CurrentTraceId={} AfterTraceId={}", Trace.getCurrentRequestId(), traceId);
+        // TODO 操蛋的兼容
+        if (null != request.getContext()) {
+            // prepare trace context
+            String traceId = request.getContext().get(TraceConstants.TRACE_ID);
+            if (log.isDebugEnabled()) {
+                log.debug("ServerTraceInterceptor CurrentTraceId={} AfterTraceId={}", Trace.getCurrentRequestId(), traceId);
+            }
+            Trace.continueTrace(traceId, Trace.parseParentSpanId(traceId));
         }
-        Trace.continueTrace(traceId, Trace.parseParentSpanId(traceId));
 
         // executor other interceptor
         Object invoke = invocation.next();

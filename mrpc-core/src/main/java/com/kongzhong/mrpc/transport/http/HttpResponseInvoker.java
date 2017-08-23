@@ -34,10 +34,15 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(request.getRequestId());
         try {
-            rpcResponse.getContext().putAll(request.getContext());
-            rpcResponse.getContext().putIfAbsent(Const.APP_NAME, SimpleRpcServer.getContext(Const.APP_NAME));
-            rpcResponse.getContext().putIfAbsent(Const.SERVER_OWNER, SimpleRpcServer.getContext(Const.SERVER_OWNER));
-            rpcResponse.getContext().put(TraceConstants.SR_TIME, TimeUtils.currentMicrosString());
+            // TODO: 兼容期，过后删除
+            if (null != request.getContext()) {
+                rpcResponse.getContext().putAll(request.getContext());
+            }
+            if (null != rpcResponse.getContext()) {
+                rpcResponse.getContext().putIfAbsent(Const.APP_NAME, SimpleRpcServer.getContext(Const.APP_NAME));
+                rpcResponse.getContext().putIfAbsent(Const.SERVER_OWNER, SimpleRpcServer.getContext(Const.SERVER_OWNER));
+                rpcResponse.getContext().put(TraceConstants.SR_TIME, TimeUtils.currentMicrosString());
+            }
             Object result = super.invokeMethod(request);
             rpcResponse.setResult(result);
             if (null != request.getReturnType()) {

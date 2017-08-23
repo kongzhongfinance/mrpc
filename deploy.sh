@@ -17,6 +17,9 @@ cd ..
 cd mrpc-metric-influxdb && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ..
 
+cd mrpc-ktrace && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
+cd ..
+
 cd mrpc-hystrix && mvn clean deploy -P snapshots -Dmaven.test.skip=true -U
 cd ..
 

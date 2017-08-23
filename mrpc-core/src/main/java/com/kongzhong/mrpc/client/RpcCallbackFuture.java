@@ -38,9 +38,12 @@ public class RpcCallbackFuture {
         if (latch.await(milliseconds, TimeUnit.MILLISECONDS)) {
             if (null != response) {
                 Map<String, String> context = response.getContext();
-                context.put(Const.SERVER_HOST, this.request.getContext().get(Const.SERVER_HOST));
-                context.put(Const.SERVER_PORT, this.request.getContext().get(Const.SERVER_PORT));
-                RpcContext.setAttachments(context);
+                // TODO: 兼容期，过后删除
+                if(null != context){
+                    context.put(Const.SERVER_HOST, this.request.getContext().get(Const.SERVER_HOST));
+                    context.put(Const.SERVER_PORT, this.request.getContext().get(Const.SERVER_PORT));
+                    RpcContext.setAttachments(context);
+                }
                 if (response.getSuccess()) {
                     return response.getResult();
                 } else {

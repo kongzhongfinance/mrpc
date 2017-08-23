@@ -113,7 +113,11 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         }
 
         RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
-        MDC.put(TraceConstants.TRACE_ID, rpcResponse.getContext().get(TraceConstants.TRACE_ID));
+        // TODO: 兼容期，过后删除
+        if(null != rpcResponse.getContext()){
+            MDC.put(TraceConstants.TRACE_ID, rpcResponse.getContext().get(TraceConstants.TRACE_ID));
+        }
+
         if (rpcResponse.getSuccess()) {
             log.debug("Client receive body: {}", JacksonSerialize.toJSONString(rpcResponse));
             Object result = rpcResponse.getResult();
