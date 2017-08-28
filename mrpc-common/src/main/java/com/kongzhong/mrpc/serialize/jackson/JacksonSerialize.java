@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 
 /**
  * JSON工具类
@@ -43,6 +44,7 @@ public class JacksonSerialize {
 
     private static SimpleModule initModule() {
         return new SimpleModule().
+                addDeserializer(Date.class, new DateDeserializer()).
                 addSerializer(LocalTime.class, new LocalTimeSerializer()).
                 addDeserializer(LocalTime.class, new LocalTimeDeserializer()).
                 addSerializer(LocalDate.class, new LocalDateSerializer()).
