@@ -8,6 +8,8 @@ import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
@@ -17,8 +19,9 @@ import org.springframework.core.annotation.AnnotationUtils;
  *         2017/5/13
  */
 @Slf4j
-public class ServiceBeanProcessor implements BeanPostProcessor {
+public class ServiceBeanProcessor implements BeanPostProcessor, ApplicationContextAware {
 
+    private ApplicationContext ctx;
     public RpcMapping rpcMapping;
 
     public ServiceBeanProcessor(RpcMapping rpcMapping) {
@@ -48,8 +51,12 @@ public class ServiceBeanProcessor implements BeanPostProcessor {
         if (null == rpcService) {
             return bean;
         }
-        rpcMapping.addServiceBean(realBean, beanName);
+        rpcMapping.addServiceBean(ctx.getBean(beanName), beanName);
         return bean;
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ctx = applicationContext;
+    }
 }
