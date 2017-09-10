@@ -33,8 +33,6 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         }
 
         // invoke
-        Object invoke = invoker.invoke();
-        Trace.continueTrace(null);
-        return invoke;
+        return invoker.invoke();
     }
 }
