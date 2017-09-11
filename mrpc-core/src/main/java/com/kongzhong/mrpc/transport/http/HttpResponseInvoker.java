@@ -63,6 +63,7 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             ServiceStatusTable.me().addErrorInvoke(request.getClassName());
         } finally {
             RpcContext.remove();
+            MDC.remove(TraceConstants.TRACE_ID);
             String  body    = JacksonSerialize.toJSONString(rpcResponse);
             ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
 
