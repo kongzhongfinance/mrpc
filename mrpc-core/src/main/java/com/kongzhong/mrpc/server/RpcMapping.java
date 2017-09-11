@@ -7,12 +7,12 @@ import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.model.NoInterface;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.support.AopUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -38,12 +38,12 @@ public class RpcMapping {
      * @param beanName Bean在IOC容器中的名称
      */
     public void addServiceBean(Object bean, String beanName) {
-        RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
+        Class<?> targetClass = AopUtils.getTargetClass(bean);
+        RpcService rpcService = targetClass.getAnnotation(RpcService.class);
         try {
             if (null == rpcService) {
                 return;
             }
-            Object realBean    = AopTargetUtils.getTarget(bean);
             String serviceName = rpcService.value().getName();
             String appId       = rpcService.appId();
             String registry    = rpcService.registry();
@@ -51,9 +51,9 @@ public class RpcMapping {
             String elasticIp   = rpcService.elasticIp();
 
             if (NoInterface.class.getName().equals(serviceName)) {
-                Class<?>[] interfaces = realBean.getClass().getInterfaces();
+                Class<?>[] interfaces = targetClass.getInterfaces();
                 if (null == interfaces || interfaces.length != 1) {
-                    serviceName = realBean.getClass().getName();
+                    serviceName = targetClass.getName();
                 } else {
                     serviceName = interfaces[0].getName();
                 }
@@ -63,7 +63,7 @@ public class RpcMapping {
 
             ServiceBean serviceBean = new ServiceBean();
             serviceBean.setAppId(appId);
-            serviceBean.setBean(realBean);
+            serviceBean.setBean(bean);
             serviceBean.setBeanName(beanName);
             serviceBean.setServiceName(serviceName);
             serviceBean.setRegistry(registry);
