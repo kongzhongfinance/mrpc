@@ -42,7 +42,6 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             // TODO: 兼容期，过后删除
             if (null != request.getContext()) {
                 rpcResponse.getContext().putAll(request.getContext());
-                MDC.put(TraceConstants.TRACE_ID, request.getContext().get(TraceConstants.TRACE_ID));
             }
             if (null != rpcResponse.getContext()) {
                 rpcResponse.getContext().putIfAbsent(Const.APP_NAME, SimpleRpcServer.getContext(Const.APP_NAME));
