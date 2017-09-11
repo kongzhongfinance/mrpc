@@ -60,6 +60,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         }
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
         callbackFutureMap.put(rpcRequest.getRequestId(), rpcCallbackFuture);
+        MDC.put(TraceConstants.TRACE_ID, rpcRequest.getContext().get(TraceConstants.TRACE_ID));
 
         RequestBody requestBody = RequestBody.builder()
                 .requestId(rpcRequest.getRequestId())
