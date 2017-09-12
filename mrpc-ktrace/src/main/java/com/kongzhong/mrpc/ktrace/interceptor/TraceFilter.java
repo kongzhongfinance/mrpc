@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.ktrace.interceptor;
 
 import com.kongzhong.finance.ktrace.core.Trace;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,6 +32,7 @@ public class TraceFilter implements Filter {
         // do trace
         if (log.isDebugEnabled()) {
             String currentTraceId = Trace.getCurrentRequestId();
+            MDC.put(TraceConstants.TRACE_ID, currentTraceId);
             log.debug("TraceFilter CurrentTraceId={}", currentTraceId);
         }
 

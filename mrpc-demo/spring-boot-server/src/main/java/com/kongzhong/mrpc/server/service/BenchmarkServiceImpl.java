@@ -3,15 +3,18 @@ package com.kongzhong.mrpc.server.service;
 
 import com.kongzhong.mrpc.annotation.RpcService;
 import com.kongzhong.mrpc.demo.service.BenchmarkService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RpcService
 public class BenchmarkServiceImpl implements BenchmarkService {
 
     @Override
     public Object echoService(Object request) {
+        log.info("####echoService####");
         return request;
     }
 
