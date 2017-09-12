@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.service.UserService;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,8 @@ public class HttpClientApplication {
         System.out.println("toMap => " + rmap);
 
         System.out.println(userService.getPersons());
+
+        System.out.println(userService.transDate(new Date()));
 
         rpcClient.shutdown();
     }

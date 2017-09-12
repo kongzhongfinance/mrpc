@@ -113,4 +113,8 @@ public interface UserService {
 
     String testTrace();
 
+    default Date transDate(Date time) {
+        System.out.println(time);
+        return time;
+    }
 }
