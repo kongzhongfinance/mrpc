@@ -2,8 +2,10 @@ package com.kongzhong.mrpc.demo.http;
 
 import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.demo.model.XXDto;
 import com.kongzhong.mrpc.demo.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +46,12 @@ public class HttpClientApplication {
 
         System.out.println(userService.getPersons());
 
-        System.out.println(userService.transDate(new Date()));
+        XXDto xxDto = new XXDto();
+        xxDto.setAge(22);
+        xxDto.setBirthday(new Date());
+        xxDto.setMoney(new BigDecimal("23.11"));
+
+        System.out.println(userService.transDate(xxDto));
 
         rpcClient.shutdown();
     }
