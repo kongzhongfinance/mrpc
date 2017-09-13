@@ -1,17 +1,19 @@
 package com.kongzhong.mrpc.serialize.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kongzhong.mrpc.exception.SerializeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,7 +24,7 @@ import java.util.Date;
  * JSON工具类
  *
  * @author biezhi
- *         2017/4/20
+ * 2017/4/20
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,13 +40,9 @@ public class JacksonSerialize {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public static ObjectMapper getMapper() {
-        return mapper;
-    }
-
     private static SimpleModule initModule() {
         return new SimpleModule().
-                addDeserializer(Date.class, new DateDeserializer()).
+                addDeserializer(Date.class, new DateDeserialize()).
                 addSerializer(LocalTime.class, new LocalTimeSerializer()).
                 addDeserializer(LocalTime.class, new LocalTimeDeserializer()).
                 addSerializer(LocalDate.class, new LocalDateSerializer()).

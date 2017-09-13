@@ -7,6 +7,7 @@ import com.kongzhong.mrpc.demo.exception.NoArgException;
 import com.kongzhong.mrpc.demo.model.Person;
 import com.kongzhong.mrpc.demo.model.Result;
 import com.kongzhong.mrpc.demo.model.StatusEnum;
+import com.kongzhong.mrpc.demo.model.XXDto;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.*;
@@ -112,5 +113,10 @@ public interface UserService {
     }
 
     String testTrace();
+
+    default XXDto transDate(XXDto time) {
+        System.out.println(time);
+        return time;
+    }
 
 }

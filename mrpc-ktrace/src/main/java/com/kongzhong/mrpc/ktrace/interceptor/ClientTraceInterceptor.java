@@ -7,6 +7,7 @@ import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 import java.util.Map;
 
@@ -29,12 +30,11 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
             // put requestContext
             Map<String, String> context = request.getContext();
             context.put(TraceConstants.TRACE_ID, traceId);
+            MDC.put(TraceConstants.TRACE_ID, traceId);
             log.debug("ClientTraceInterceptor [put] CurrentTraceId={}", traceId);
         }
 
         // invoke
-        Object invoke = invoker.invoke();
-        Trace.continueTrace(null);
-        return invoke;
+        return invoker.invoke();
     }
 }

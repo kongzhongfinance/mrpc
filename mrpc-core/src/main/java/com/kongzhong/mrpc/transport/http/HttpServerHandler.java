@@ -5,7 +5,12 @@ import com.kongzhong.mrpc.enums.MediaTypeEnum;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.model.*;
+import com.kongzhong.mrpc.model.RequestBody;
+import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.model.ServiceStatus;
+import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.trace.TraceConstants;
@@ -15,17 +20,32 @@ import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static com.kongzhong.mrpc.Const.*;
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static com.kongzhong.mrpc.Const.HEADER_METHOD_NAME;
+import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
+import static com.kongzhong.mrpc.Const.HEADER_SERVICE_CLASS;
+import static io.netty.handler.codec.http.HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CACHE_CONTROL;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.EXPIRES;
+import static io.netty.handler.codec.http.HttpHeaders.Names.PRAGMA;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -132,7 +152,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         // 解析请求
-        RpcRequest rpcRequest = this.parseParams(ctx, httpRequest, requestBody, bean.getClass());
+        Class<?> targetClass = AopUtils.getTargetClass(bean);
+        RpcRequest rpcRequest = this.parseParams(ctx, httpRequest, requestBody, targetClass);
         if (null != rpcRequest) {
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
             httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
