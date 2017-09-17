@@ -1,7 +1,9 @@
 package com.kongzhong.mrpc.ktrace.interceptor;
 
 import com.kongzhong.finance.ktrace.core.Trace;
+import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,6 +28,8 @@ public class TraceFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // clear trace context
         Trace.continueTrace(null);
+        //rpc使用MDC方式接入 必须手动清空
+        MDC.remove(TraceConstants.TRACE_ID);
 
         // do trace
         if (log.isDebugEnabled()) {
@@ -41,6 +45,8 @@ public class TraceFilter implements Filter {
     public void destroy() {
         // clear trace context
         Trace.continueTrace(null);
+        //rpc使用MDC方式接入 必须手动清空
+        MDC.remove(TraceConstants.TRACE_ID);
     }
 
 }

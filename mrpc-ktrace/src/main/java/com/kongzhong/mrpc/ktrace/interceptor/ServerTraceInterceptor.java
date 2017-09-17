@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 /**
  * Created by IFT8 on 2017/8/1.
@@ -21,15 +22,17 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         if (null != request.getContext()) {
             // prepare trace context
             String traceId = request.getContext().get(TraceConstants.TRACE_ID);
-            if (log.isDebugEnabled()) {
-                log.debug("ServerTraceInterceptor CurrentTraceId={} AfterTraceId={}", Trace.getCurrentRequestId(), traceId);
-            }
+            //rpc使用MDC方式接入 必须手动清空
+            MDC.remove(TraceConstants.TRACE_ID);
             Trace.continueTrace(traceId, Trace.parseParentSpanId(traceId));
+            if (log.isDebugEnabled()) {
+                String currentRequestId = Trace.getCurrentRequestId();
+                log.debug("ServerTraceInterceptor beforeTraceId={} CurrentTraceId={}", traceId, currentRequestId);
+            }
         }
 
         // executor other interceptor
-        Object invoke = invocation.next();
-        Trace.continueTrace(null);
-        return invoke;
+        // 拦截器顺序未知 所以不能清空Trace
+        return invocation.next();
     }
 }
