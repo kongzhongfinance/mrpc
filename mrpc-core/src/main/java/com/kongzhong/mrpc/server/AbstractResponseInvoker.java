@@ -12,10 +12,8 @@ import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
@@ -97,7 +95,6 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
             log.debug("[{}.{}]", serviceName, methodName);
             log.debug("Request [{}] execute time: {}ms", request.getRequestId(), (System.currentTimeMillis() - startTime));
             RpcContext.remove();
-            MDC.remove(TraceConstants.TRACE_ID);
         }
     }
 

@@ -28,11 +28,12 @@ public class TraceFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // clear trace context
         Trace.continueTrace(null);
+        //rpc使用MDC方式接入 必须手动清空
+        MDC.remove(TraceConstants.TRACE_ID);
 
         // do trace
         if (log.isDebugEnabled()) {
             String currentTraceId = Trace.getCurrentRequestId();
-            MDC.put(TraceConstants.TRACE_ID, currentTraceId);
             log.debug("TraceFilter CurrentTraceId={}", currentTraceId);
         }
 
@@ -44,6 +45,8 @@ public class TraceFilter implements Filter {
     public void destroy() {
         // clear trace context
         Trace.continueTrace(null);
+        //rpc使用MDC方式接入 必须手动清空
+        MDC.remove(TraceConstants.TRACE_ID);
     }
 
 }
