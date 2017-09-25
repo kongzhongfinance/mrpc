@@ -39,7 +39,7 @@ public class RpcCallbackFuture {
             if (null != response) {
                 Map<String, String> context = response.getContext();
                 // TODO: 兼容期，过后删除
-                if(null != context){
+                if (null != context) {
                     context.put(Const.SERVER_HOST, this.request.getContext().get(Const.SERVER_HOST));
                     context.put(Const.SERVER_PORT, this.request.getContext().get(Const.SERVER_PORT));
                     RpcContext.setAttachments(context);
@@ -54,13 +54,14 @@ public class RpcCallbackFuture {
             }
         } else {
             long waitTime = System.currentTimeMillis() - beginTime;
-            if (waitTime > milliseconds && SimpleClientHandler.callbackFutureMap.containsKey(request.getRequestId())) {
-                String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
-                log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
-                log.warn("RequestId: {}", request.getRequestId());
-                log.warn("Invoke time: {}ms", waitTime);
-                throw new TimeoutException(msg);
-            }
+            log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
+            log.warn("RequestId: {}", request.getRequestId());
+            log.warn("Invoke time: {}ms", waitTime);
+            String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
+//            if (waitTime > milliseconds && SimpleClientHandler.callbackFutureMap.containsKey(request.getRequestId())) {
+//                throw new TimeoutException(msg);
+//            }
+            throw new TimeoutException(msg);
         }
         return null;
     }
