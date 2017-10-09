@@ -20,12 +20,16 @@ public class HelloClientApplication {
 
         UserService userService = rpcClient.getProxyReferer(UserService.class);
 
-        Thread.sleep(1000);
-
-        while (true) {
-            System.out.println(userService.hello("hello world http."));
-            Thread.sleep(3000);
+        try {
+            userService.testTimeout(14);
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
+//        while (true) {
+//            System.out.println(userService.hello("hello world http."));
+//            Thread.sleep(3000);
+//        }
 
     }
 }
