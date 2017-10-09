@@ -83,10 +83,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             FullHttpResponse httpResponse;
             if (null != serviceStatus) {
                 ByteBuf byteBuf = Unpooled.copiedBuffer(JacksonSerialize.toJSONString(serviceStatus), CharsetUtil.UTF_8);
-                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf);
+                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
             } else {
                 ByteBuf byteBuf = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
-                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, byteBuf);
+                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, byteBuf, false);
             }
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
@@ -155,7 +155,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         Class<?> targetClass = AopUtils.getTargetClass(bean);
         RpcRequest rpcRequest = this.parseParams(ctx, httpRequest, requestBody, targetClass);
         if (null != rpcRequest) {
-            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("", CharsetUtil.UTF_8));
+            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK,
+                    Unpooled.copiedBuffer("", CharsetUtil.UTF_8), false);
             httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
             httpResponse.headers().set(HEADER_REQUEST_ID, rpcRequest.getRequestId());
             httpResponse.headers().set(HEADER_SERVICE_CLASS, rpcRequest.getClassName());
@@ -237,7 +238,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         String body = JacksonSerialize.toJSONString(rpcResponse);
 
-        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY,
+                Unpooled.copiedBuffer(body, CharsetUtil.UTF_8), false);
         httpResponse.headers().set(CONTENT_TYPE, MediaTypeEnum.JSON.toString());
         if (null != msg) {
             httpResponse.headers().set(HEADER_REQUEST_ID, msg.headers().get(Const.HEADER_REQUEST_ID, ""));

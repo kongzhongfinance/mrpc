@@ -75,7 +75,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             log.debug("Client send body: {}", JacksonSerialize.toJSONString(requestBody));
 
-            DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
+            DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc", false);
             req.headers().set(CONNECTION, KEEP_ALIVE);
             req.headers().set(ACCEPT_ENCODING, GZIP);
             req.headers().set(CONTENT_TYPE, TEXT_PLAIN);
