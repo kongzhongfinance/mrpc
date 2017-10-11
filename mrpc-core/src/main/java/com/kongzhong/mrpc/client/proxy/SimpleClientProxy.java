@@ -48,6 +48,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     // 客户端拦截器列表
     private List<RpcClientInterceptor> interceptors;
 
+    // 配置文件全局APPID，标识一个应用
     private String appId;
 
     public SimpleClientProxy(List<RpcClientInterceptor> interceptors) {
@@ -76,7 +77,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
 
         RpcRequest request = RpcRequest.builder()
-                .appId(appId)
+                .appId(this.getAppId(method.getDeclaringClass()))
                 .requestId(StringUtils.getUUID())
                 .methodName(method.getName())
                 .className(method.getDeclaringClass().getName())
@@ -120,6 +121,20 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
             haStrategyEnum = command.haStrategy();
         }
         return haStrategyEnum;
+    }
+
+    /**
+     * 获取该方法的调用超时
+     *
+     * @param serviceType 调用的方法
+     * @return 返回该方法的超时时长
+     */
+    private String getAppId(Class<?> serviceType) {
+        Command command = serviceType.getAnnotation(Command.class);
+        if (null != command && StringUtils.isNotEmpty(command.appId())) {
+            return command.appId();
+        }
+        return this.appId;
     }
 
     /**
