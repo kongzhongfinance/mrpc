@@ -5,12 +5,10 @@ import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 /**
  * @author biezhi
@@ -29,13 +27,14 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
      * @param request RpcRequest对象
      * @return 返回一个RpcCallbackFuture
      */
+    @Override
     public RpcCallbackFuture asyncSendRequest(RpcRequest request) {
         if (isShutdown) {
             throw new SystemException("Rpc client has been shutdown.");
         }
 
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(request);
-        callbackFutureMap.put(request.getRequestId(), rpcCallbackFuture);
+        CALLBACK_FUTURE_MAP.put(request.getRequestId(), rpcCallbackFuture);
 
         log.debug("Client send body: {}", JacksonSerialize.toJSONString(request));
 
@@ -50,9 +49,9 @@ public class TcpClientHandler extends SimpleClientHandler<RpcResponse> {
             log.debug("Client receive body: {}", JacksonSerialize.toJSONString(response));
         }
         String            requestId         = response.getRequestId();
-        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
+        RpcCallbackFuture rpcCallbackFuture = CALLBACK_FUTURE_MAP.get(requestId);
         if (rpcCallbackFuture != null) {
-            callbackFutureMap.remove(requestId);
+            CALLBACK_FUTURE_MAP.remove(requestId);
             rpcCallbackFuture.done(response);
         }
     }

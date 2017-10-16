@@ -17,35 +17,35 @@ import java.util.Map;
 @ToString
 public class RpcContext {
 
-    private final static FastThreadLocal<RpcRequest> requestFastThreadLocal = new FastThreadLocal<>();
+    private final static FastThreadLocal<RpcRequest> REQUEST_FAST_THREAD_LOCAL = new FastThreadLocal<>();
 
-    private final static ThreadLocal<Map<String, String>> attachmentLocal = new ThreadLocal<>();
+    private final static ThreadLocal<Map<String, String>> ATTACHMENT_LOCAL = new ThreadLocal<>();
 
     private RpcRequest rpcRequest;
 
     public static RpcRequest getRpcRequest() {
-        return requestFastThreadLocal.get();
+        return REQUEST_FAST_THREAD_LOCAL.get();
     }
 
     public static void setAttachments(Map<String, String> attachments) {
-        attachmentLocal.remove();
-        attachmentLocal.set(attachments);
+        ATTACHMENT_LOCAL.remove();
+        ATTACHMENT_LOCAL.set(attachments);
     }
 
     public static String getAttachments(String key) {
-        Map<String, String> attachments = attachmentLocal.get();
+        Map<String, String> attachments = ATTACHMENT_LOCAL.get();
         if (null == attachments) {
-            attachmentLocal.set(new HashMap<>());
+            ATTACHMENT_LOCAL.set(new HashMap<>());
         }
-        return attachmentLocal.get().get(key);
+        return ATTACHMENT_LOCAL.get().get(key);
     }
 
     public static void setRpcRequest(RpcRequest rpcRequest) {
-        requestFastThreadLocal.set(rpcRequest);
+        REQUEST_FAST_THREAD_LOCAL.set(rpcRequest);
     }
 
     public static void remove() {
-        requestFastThreadLocal.remove();
+        REQUEST_FAST_THREAD_LOCAL.remove();
     }
 
     public static RpcContext get() {

@@ -191,18 +191,22 @@ public abstract class SimpleRpcServer {
             nettyConfig = new NettyConfig(128, true);
         }
 
-        if (null == transport) transport = "tcp";
-        if (null == serialize) serialize = "kyro";
+        if (null == transport) {
+            transport = "tcp";
+        }
+        if (null == serialize) {
+            serialize = "kyro";
+        }
 
         if (CollectionUtils.isNotEmpty(serviceRegistryMap)) {
             usedRegistry = true;
         }
 
         RpcSerialize rpcSerialize = null;
-        if (serialize.equalsIgnoreCase("kyro")) {
+        if ("kyro".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
         }
-        if (serialize.equalsIgnoreCase("protostuff")) {
+        if ("protostuff".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
         }
 

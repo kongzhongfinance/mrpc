@@ -177,16 +177,24 @@ public abstract class SimpleRpcClient {
 
     protected void init() throws RpcException {
 
-        if (null == serialize) serialize = "kyro";
-        if (null == transport) transport = "tcp";
-        if (null == lbStrategy) lbStrategy = LbStrategyEnum.ROUND.name();
-        if (null == haStrategy) haStrategy = HaStrategyEnum.FAILOVER.name();
+        if (null == serialize) {
+            serialize = "kyro";
+        }
+        if (null == transport) {
+            transport = "tcp";
+        }
+        if (null == lbStrategy) {
+            lbStrategy = LbStrategyEnum.ROUND.name();
+        }
+        if (null == haStrategy) {
+            haStrategy = HaStrategyEnum.FAILOVER.name();
+        }
 
         RpcSerialize rpcSerialize = null;
-        if (serialize.equalsIgnoreCase("kyro")) {
+        if ("kyro".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
         }
-        if (serialize.equalsIgnoreCase("protostuff")) {
+        if ("protostuff".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
         }
 

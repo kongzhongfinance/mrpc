@@ -16,8 +16,9 @@ public class RpcThreadPool {
                 return new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors() * queues);
             case SYNCHRONOUS_QUEUE:
                 return new SynchronousQueue<>();
+            default:
+                return null;
         }
-        return null;
     }
 
     /**

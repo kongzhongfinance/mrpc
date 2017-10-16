@@ -63,7 +63,7 @@ public class NettyClient {
     /**
      * Channel调度map
      */
-    private static final Map<Channel, ScheduledFuture> scheduledFutureMap = new HashMap<>();
+    private static final Map<Channel, ScheduledFuture> SCHEDULED_FUTURE_MAP = new HashMap<>();
 
     public NettyClient(NettyConfig nettyConfig, String address) {
         this.nettyConfig = nettyConfig;
@@ -173,7 +173,7 @@ public class NettyClient {
                 log.warn("Rpc send ping error: {}", e.getMessage());
             }
         }, 0, ClientConfig.me().getPingInterval(), TimeUnit.MILLISECONDS);
-        scheduledFutureMap.put(channel, scheduledFuture);
+        SCHEDULED_FUTURE_MAP.put(channel, scheduledFuture);
     }
 
     private String getServerStatus() {
@@ -189,7 +189,7 @@ public class NettyClient {
      * @param channel
      */
     public void cancelSchedule(Channel channel) {
-        ScheduledFuture scheduledFuture = scheduledFutureMap.get(channel);
+        ScheduledFuture scheduledFuture = SCHEDULED_FUTURE_MAP.get(channel);
         if (null != scheduledFuture && !scheduledFuture.isCancelled()) {
             scheduledFuture.cancel(true);
         }

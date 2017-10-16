@@ -59,7 +59,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             throw new SystemException("Rpc client has been shutdown.");
         }
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
-        callbackFutureMap.put(rpcRequest.getRequestId(), rpcCallbackFuture);
+        CALLBACK_FUTURE_MAP.put(rpcRequest.getRequestId(), rpcCallbackFuture);
         MDC.put(TraceConstants.TRACE_ID, rpcRequest.getContext().get(TraceConstants.TRACE_ID));
 
         RequestBody requestBody = RequestBody.builder()
@@ -133,9 +133,9 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             }
         }
 
-        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
+        RpcCallbackFuture rpcCallbackFuture = CALLBACK_FUTURE_MAP.get(requestId);
         if (rpcCallbackFuture != null) {
-            callbackFutureMap.remove(requestId);
+            CALLBACK_FUTURE_MAP.remove(requestId);
             rpcCallbackFuture.done(rpcResponse);
         } else {
             log.error("Not found request id [{}]", requestId);

@@ -15,24 +15,24 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoadBalanceFactory {
 
-    private static final LoadBalance roundRobinLoadBalance    = new RoundRobinStrategy();
-    private static final LoadBalance randomLoadBalance        = new RandomStrategy();
-    private static final LoadBalance callLeastStrategy        = new CallLeastStrategy();
-    private static final LoadBalance weightRoundRobinStrategy = new WeightRoundRobinStrategy();
-    private static final LoadBalance weightRandomStrategy     = new WeightRandomStrategy();
+    private static final LoadBalance ROUND_ROBIN_STRATEGY        = new RoundRobinStrategy();
+    private static final LoadBalance RANDOM_STRATEGY             = new RandomStrategy();
+    private static final LoadBalance CALL_LEAST_STRATEGY         = new CallLeastStrategy();
+    private static final LoadBalance WEIGHT_ROUND_ROBIN_STRATEGY = new WeightRoundRobinStrategy();
+    private static final LoadBalance WEIGHT_RANDOM_STRATEGY      = new WeightRandomStrategy();
 
     public static LoadBalance getLoadBalance(@NonNull LbStrategyEnum lbStrategyEnum) {
         switch (lbStrategyEnum) {
             case ROUND:
-                return roundRobinLoadBalance;
+                return ROUND_ROBIN_STRATEGY;
             case WEIGHT_ROUND:
-                return weightRoundRobinStrategy;
+                return WEIGHT_ROUND_ROBIN_STRATEGY;
             case WEIGHT_RANDOM:
-                return weightRandomStrategy;
+                return WEIGHT_RANDOM_STRATEGY;
             case RANDOM:
-                return randomLoadBalance;
+                return RANDOM_STRATEGY;
             case CALLLEAST:
-                return callLeastStrategy;
+                return CALL_LEAST_STRATEGY;
             default:
                 throw new RpcException(String.format("No haStrategy [%s]", lbStrategyEnum.name()));
         }
