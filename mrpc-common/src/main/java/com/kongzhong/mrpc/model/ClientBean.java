@@ -14,6 +14,7 @@ import lombok.ToString;
 public class ClientBean {
 
     private String id;
+    private String appId;
     private String serviceName;
     private Class<?> serviceClass;
     private String registry;

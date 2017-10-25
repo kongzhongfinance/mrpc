@@ -16,7 +16,7 @@ public interface HaStrategy {
     Object call(RpcRequest request, LoadBalance loadBalance) throws Exception;
 
     default Object invoke(RpcRequest request, LoadBalance loadBalance) throws Exception {
-        SimpleClientHandler clientHandler = loadBalance.next(request.getClassName());
+        SimpleClientHandler clientHandler = loadBalance.next(request.getAppId(), request.getClassName());
         clientHandler.addHit();
         RpcInvoker rpcInvoker = new RpcInvoker(request, clientHandler);
         return rpcInvoker.invoke();

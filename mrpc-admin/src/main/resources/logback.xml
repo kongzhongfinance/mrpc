@@ -1,38 +1,38 @@
-<?xml version="1.0"?>
-<configuration>
-    <!-- ch.qos.logback.core.ConsoleAppender 控制台输出 -->
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n
-            </pattern>
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <contextName>Logback Demo</contextName>
+
+    <property name="LOG_HOME" value="logs" />
+
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder默认配置为PartternLayoutEncoder    -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 -->
-    <appender name="file"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <Encoding>UTF-8</Encoding>
-        <File>/data/logs/mrpc-admin/mrpc-admin.log</File>
+    <!-- 按照每天生成日志文件 -->
+    <appender name="ROLLINGFILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>/data/logs/mrpc-admin/mrpc-admin-%d{yyyy-MM-dd}.log
-            </FileNamePattern>
-            <MaxHistory>10</MaxHistory>
-            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>100MB</MaxFileSize>
-            </TimeBasedFileNamingAndTriggeringPolicy>
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
         </rollingPolicy>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n
-            </pattern>
-        </layout>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>100MB</MaxFileSize>
+        </triggeringPolicy>
     </appender>
 
-    <!-- 日志级别 -->
-    <root>
-        <!-- 定义了ERROR和INFO级别的日志，分别在FILE文件和控制台输出 -->
-        <level value="info" />
-        <appender-ref ref="file" />
-        <appender-ref ref="console" />
-    </root>
+    <logger name="com.kongzhong.mrpc" level="DEBUG" additivity="false" />
 
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLINGFILE" />
+    </root>
 </configuration>
