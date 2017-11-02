@@ -58,9 +58,6 @@ public class RpcCallbackFuture {
             log.warn("RequestId: {}", request.getRequestId());
             log.warn("Invoke time: {}ms", waitTime);
             String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
-//            if (waitTime > milliseconds && SimpleClientHandler.CALLBACK_FUTURE_MAP.containsKey(request.getRequestId())) {
-//                throw new TimeoutException(msg);
-//            }
             throw new TimeoutException(msg);
         }
         return null;
