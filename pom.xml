@@ -7,7 +7,7 @@
     <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
 
     <modules>
         <module>mrpc-common</module>
@@ -28,19 +28,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
-
-        <!-- parent version -->
-        <parent.version>0.1.0-SNAPSHOT</parent.version>
-
-        <!-- rpc version -->
-        <mrpc-common.version>0.1.0-SNAPSHOT</mrpc-common.version>
-        <mrpc-core.version>0.1.0-SNAPSHOT</mrpc-core.version>
-        <mrpc-starter.version>0.1.0-SNAPSHOT</mrpc-starter.version>
-        <mrpc-zk.version>0.1.0-SNAPSHOT</mrpc-zk.version>
-        <mrpc-serialize-kryo.version>0.1.0-SNAPSHOT</mrpc-serialize-kryo.version>
-        <mrpc-serialize-protostuff.version>0.1.0-SNAPSHOT</mrpc-serialize-protostuff.version>
-        <mrpc-interceptor-validator.version>0.1.0-SNAPSHOT</mrpc-interceptor-validator.version>
-        <mrpc-metric.version>0.1.0-SNAPSHOT</mrpc-metric.version>
 
         <!-- dependency version -->
         <protostuff.version>1.5.2</protostuff.version>
@@ -106,37 +93,37 @@
             <dependency>
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-common</artifactId>
-                <version>${mrpc-common.version}</version>
+                <version>${parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-core</artifactId>
-                <version>${mrpc-core.version}</version>
+                <version>${parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-serialize-kryo</artifactId>
-                <version>${mrpc-serialize-kryo.version}</version>
+                <version>${parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-serialize-protostuff</artifactId>
-                <version>${mrpc-serialize-protostuff.version}</version>
+                <version>${parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-registry-zk</artifactId>
-                <version>${mrpc-zk.version}</version>
+                <version>${parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-interceptor-validator</artifactId>
-                <version>${mrpc-interceptor-validator.version}</version>
+                <version>${parent.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -26,17 +26,17 @@ public class ReflectUtils {
     /**
      * 缓存class
      */
-    private static final Map<String, Class<?>> classPool = Maps.newConcurrentMap();
+    private static final Map<String, Class<?>> CLASS_CONCURRENT_MAP = Maps.newConcurrentMap();
 
     /**
      * 缓存method
      */
-    private static final Map<String, Method> methodPool = Maps.newConcurrentMap();
+    private static final Map<String, Method> METHOD_CONCURRENT_MAP = Maps.newConcurrentMap();
 
     /**
      * 缓存类型
      */
-    private static final Map<String, Class<?>> primitiveTypes = Maps.newHashMap();
+    private static final Map<String, Class<?>> PRIMITIVE_TYPES = Maps.newHashMap();
 
     /**
      * 加载一个class
@@ -46,11 +46,11 @@ public class ReflectUtils {
      */
     public static Class<?> from(String className) {
         try {
-            if (classPool.containsKey(className)) {
-                return classPool.get(className);
+            if (CLASS_CONCURRENT_MAP.containsKey(className)) {
+                return CLASS_CONCURRENT_MAP.get(className);
             }
             Class<?> clzzz = Class.forName(className);
-            classPool.put(className, clzzz);
+            CLASS_CONCURRENT_MAP.put(className, clzzz);
             return clzzz;
         } catch (Exception e) {
             return null;
@@ -66,13 +66,13 @@ public class ReflectUtils {
      */
     public static Method method(Class<?> type, String methodName) {
         String key = type.getName() + ":" + methodName;
-        if (methodPool.containsKey(key)) {
-            return methodPool.get(key);
+        if (METHOD_CONCURRENT_MAP.containsKey(key)) {
+            return METHOD_CONCURRENT_MAP.get(key);
         }
         Method[] methods = type.getMethods();
         for (Method method : methods) {
             if (method.getName().equals(methodName)) {
-                methodPool.put(key, method);
+                METHOD_CONCURRENT_MAP.put(key, method);
                 return method;
             }
         }
@@ -90,11 +90,11 @@ public class ReflectUtils {
     public static Method method(Class<?> type, String methodName, Class[] paramTypes) {
         try {
             String key = type.getName() + ":" + methodName + ":" + Arrays.toString(paramTypes);
-            if (methodPool.containsKey(key)) {
-                return methodPool.get(key);
+            if (METHOD_CONCURRENT_MAP.containsKey(key)) {
+                return METHOD_CONCURRENT_MAP.get(key);
             }
             Method method = type.getMethod(methodName, paramTypes);
-            methodPool.put(key, method);
+            METHOD_CONCURRENT_MAP.put(key, method);
             return method;
         } catch (Exception e) {
         }
@@ -110,11 +110,13 @@ public class ReflectUtils {
     public static List<String> getParamNames(Method method) {
         try {
             int size = method.getParameterTypes().length;
-            if (size == 0)
+            if (size == 0) {
                 return Lists.newArrayList();
+            }
             List<String> list = getParamNames(method.getDeclaringClass()).get(getKey(method));
-            if (list != null && list.size() != size)
+            if (list != null && list.size() != size) {
                 return list.subList(0, size);
+            }
             return list;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -130,11 +132,13 @@ public class ReflectUtils {
     public static List<String> getParamNames(Constructor<?> constructor) {
         try {
             int size = constructor.getParameterTypes().length;
-            if (size == 0)
+            if (size == 0) {
                 return Lists.newArrayList();
+            }
             List<String> list = getParamNames(constructor.getDeclaringClass()).get(getKey(constructor));
-            if (list != null && list.size() != size)
+            if (list != null && list.size() != size) {
                 return list.subList(0, size);
+            }
             return list;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -270,14 +274,18 @@ public class ReflectUtils {
                                 dis.skipBytes(2);
                                 dis.skipBytes(2);
                                 if (!"this".equals(varName)) //非静态方法,第一个参数是this
+                                {
                                     varNames.add(varName);
+                                }
                             }
                             names.put(methodName + "," + descriptor, varNames);
-                        } else
+                        } else {
                             dis.skipBytes(code_attribute_length);
+                        }
                     }
-                } else
+                } else {
                     dis.skipBytes(attribute_length);
+                }
             }
         }
         dis.close();
@@ -295,23 +303,26 @@ public class ReflectUtils {
         } else if (obj instanceof Constructor) {
             sb.append("<init>,"); //只有非静态构造方法才能用有方法参数的,而且通过反射API拿不到静态构造方法
             getDescriptor(sb, (Constructor<?>) obj);
-        } else
+        } else {
             throw new RuntimeException("Not Method or Constructor!");
+        }
         return sb.toString();
     }
 
     public static void getDescriptor(StringBuilder sb, Method method) {
         sb.append('(');
-        for (Class<?> klass : method.getParameterTypes())
+        for (Class<?> klass : method.getParameterTypes()) {
             getDescriptor(sb, klass);
+        }
         sb.append(')');
         getDescriptor(sb, method.getReturnType());
     }
 
     public static void getDescriptor(StringBuilder sb, Constructor<?> constructor) {
         sb.append('(');
-        for (Class<?> klass : constructor.getParameterTypes())
+        for (Class<?> klass : constructor.getParameterTypes()) {
             getDescriptor(sb, klass);
+        }
         sb.append(')');
         sb.append('V');
     }
@@ -371,14 +382,14 @@ public class ReflectUtils {
     }
 
     static {
-        primitiveTypes.put("int", int.class);
-        primitiveTypes.put("boolean", boolean.class);
-        primitiveTypes.put("char", char.class);
-        primitiveTypes.put("byte", byte.class);
-        primitiveTypes.put("short", short.class);
-        primitiveTypes.put("long", long.class);
-        primitiveTypes.put("float", float.class);
-        primitiveTypes.put("double", double.class);
+        PRIMITIVE_TYPES.put("int", int.class);
+        PRIMITIVE_TYPES.put("boolean", boolean.class);
+        PRIMITIVE_TYPES.put("char", char.class);
+        PRIMITIVE_TYPES.put("byte", byte.class);
+        PRIMITIVE_TYPES.put("short", short.class);
+        PRIMITIVE_TYPES.put("long", long.class);
+        PRIMITIVE_TYPES.put("float", float.class);
+        PRIMITIVE_TYPES.put("double", double.class);
     }
 
     /**
@@ -388,7 +399,7 @@ public class ReflectUtils {
      * @return
      */
     public static Class<?> getBasicType(String primitive) {
-        return primitiveTypes.get(primitive);
+        return PRIMITIVE_TYPES.get(primitive);
     }
 
     /**
@@ -398,7 +409,7 @@ public class ReflectUtils {
      * @return
      */
     public static boolean isBasic(String primitive) {
-        return primitiveTypes.containsKey(primitive);
+        return PRIMITIVE_TYPES.containsKey(primitive);
     }
 
     /**

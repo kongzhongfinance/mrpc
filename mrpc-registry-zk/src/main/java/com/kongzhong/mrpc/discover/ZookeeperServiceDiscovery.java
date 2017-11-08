@@ -71,7 +71,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     public void discover(@NonNull ClientBean clientBean) throws Exception {
         log.debug("Discovery {}", clientBean);
 
-        Set<String> addressSet = this.discoveryService(clientBean.getServiceName());
+        Set<String> addressSet = this.discoveryService(clientBean.getAppId(), clientBean.getServiceName());
         if (CollectionUtils.isEmpty(addressSet)) {
             System.out.println();
 
@@ -90,8 +90,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
-    private Set<String> discoveryService(String serviceName) {
-        String appId = ClientConfig.me().getAppId();
+    private Set<String> discoveryService(String appId, String serviceName) {
         String path  = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
         // 发现地址列表
         Set<String> addressSet = new HashSet<>();
@@ -127,7 +126,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
                 Map<String, Set<String>> serviceMap = new HashMap<>();
                 for (String service : serviceList) {
-                    Set<String> address = this.discoveryService(service);
+                    Set<String> address = this.discoveryService(appId, service);
                     if (null != address && !address.isEmpty()) {
                         serviceMap.put(service, address);
                     }
@@ -150,6 +149,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
+    @Override
     public void stop() {
         if (zkClient != null) {
             zkClient.close();

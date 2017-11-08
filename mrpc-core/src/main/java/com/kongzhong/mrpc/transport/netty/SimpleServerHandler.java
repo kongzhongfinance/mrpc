@@ -47,6 +47,7 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
         EventManager.me().fireEvent(EventType.SERVER_CLIENT_DISCONNECT, event);
     }
 
+    @Override
     public void channelRead0(ChannelHandlerContext ctx, T msg) throws Exception {
         // 服务端接收到请求
         Event event = Event.builder().rpcContext(RpcContext.get()).build();
@@ -55,6 +56,7 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
         EventManager.me().fireEvent(EventType.SERVER_ACCEPT, event);
     }
 
+    @Override
     public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
 
     public static void shutdown() {

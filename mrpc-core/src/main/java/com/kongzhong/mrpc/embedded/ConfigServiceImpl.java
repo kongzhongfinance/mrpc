@@ -68,6 +68,7 @@ public class ConfigServiceImpl implements ConfigService {
      *
      * @return
      */
+    @Override
     public Map<String, Object> environments() {
         return new HashMap<>();
     }
@@ -78,6 +79,7 @@ public class ConfigServiceImpl implements ConfigService {
      * @param key
      * @return
      */
+    @Override
     public Object getEnvironment(String key) {
         return "";
     }

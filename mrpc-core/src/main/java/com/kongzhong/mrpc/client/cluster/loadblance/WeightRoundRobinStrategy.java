@@ -19,8 +19,8 @@ public class WeightRoundRobinStrategy implements LoadBalance {
     private LongAdder pos = new LongAdder();
 
     @Override
-    public SimpleClientHandler next(String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = handlers(serviceName);
+    public SimpleClientHandler next(String appId, String serviceName) throws Exception {
+        List<SimpleClientHandler> handlers = handlers(appId, serviceName);
         if (handlers.size() == 1) {
             return handlers.get(0);
         }

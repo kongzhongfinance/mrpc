@@ -45,7 +45,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-        super.beanFactory = beanFactory;
+        SimpleRpcClient.beanFactory = beanFactory;
 
         // 解析客户端配置
         ConfigurableEnvironment configurableEnvironment = beanFactory.getBean(ConfigurableEnvironment.class);
@@ -71,9 +71,9 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
         super.clientBeans = referersObject.getReferers();
 
         // 客户端拦截器
-        Map<String, RpcClientInterceptor> rpcClientInteceptorMap = beanFactory.getBeansOfType(RpcClientInterceptor.class);
-        if (null != rpcClientInteceptorMap) {
-            rpcClientInteceptorMap.values().forEach(super::addInterceptor);
+        Map<String, RpcClientInterceptor> rpcClientInterceptorMap = beanFactory.getBeansOfType(RpcClientInterceptor.class);
+        if (null != rpcClientInterceptorMap) {
+            rpcClientInterceptorMap.values().forEach(super::addInterceptor);
         }
 
         this.customServiceMap = commonProperties.getCustom();
@@ -109,7 +109,7 @@ public class BootRpcClient extends SimpleRpcClient implements BeanDefinitionRegi
 
             log.info("Bind services finished");
 
-            Runtime.getRuntime().addShutdownHook(new Thread( () -> this.close()));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::close));
 
         } catch (Exception e) {
             log.error("RPC client init error", e);

@@ -40,7 +40,9 @@ public class ServerInvocation implements Invocation {
             try {
                 return fastMethod.invoke(this.target, this.parameters);
             } catch (Exception e) {
-                if (e instanceof InvocationTargetException) throw (Exception) e.getCause();
+                if (e instanceof InvocationTargetException) {
+                    throw (Exception) e.getCause();
+                }
                 throw e;
             }
         } else {

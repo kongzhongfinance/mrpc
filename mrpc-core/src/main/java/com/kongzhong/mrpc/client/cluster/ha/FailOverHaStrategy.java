@@ -22,7 +22,7 @@ public class FailOverHaStrategy implements HaStrategy {
     @Override
     public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
         int rc    = ClientConfig.me().getFailOverRetry();
-        int nodes = loadBalance.handlers(request.getClassName()).size();
+        int nodes = loadBalance.handlers(request.getAppId(), request.getClassName()).size();
         if (nodes == 1 || rc < 0) {
             rc = 0;
         }

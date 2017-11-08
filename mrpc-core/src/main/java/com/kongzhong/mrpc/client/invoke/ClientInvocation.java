@@ -35,7 +35,9 @@ public class ClientInvocation implements Invocation {
             try {
                 return rpcInvoker.invoke();
             } catch (Exception e) {
-                if (e instanceof InvocationTargetException) throw (Exception) e.getCause();
+                if (e instanceof InvocationTargetException) {
+                    throw (Exception) e.getCause();
+                }
                 throw e;
             }
         } else {

@@ -19,6 +19,7 @@ public enum MediaTypeEnum {
         this.contentType = contentType;
     }
 
+    @Override
     public String toString() {
         return this.contentType;
     }

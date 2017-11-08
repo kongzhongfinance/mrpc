@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 /**
  * RPC服务方法注解，标注在服务实现方法上
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Component
 public @interface Command {

@@ -21,11 +21,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
-        <!-- rpc version -->
-        <mrpc-common.version>0.1.0-SNAPSHOT</mrpc-common.version>
-        <mrpc-core.version>0.1.0-SNAPSHOT</mrpc-core.version>
-        <mrpc-starter.version>0.1.0-SNAPSHOT</mrpc-starter.version>
-        <mrpc-zk.version>0.1.0-SNAPSHOT</mrpc-zk.version>
+        <mrpc.version>0.1.1-SNAPSHOT</mrpc.version>
 
         <!-- dependency version -->
         <lombok.version>1.16.18</lombok.version>
@@ -51,7 +47,7 @@
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-spring-boot-starter</artifactId>
-            <version>${mrpc-starter.version}</version>
+            <version>${mrpc.version}</version>
         </dependency>
 
         <dependency>
@@ -64,6 +60,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

@@ -63,13 +63,12 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
         } finally {
             RpcContext.remove();
             MDC.remove(TraceConstants.TRACE_ID);
-            String  body    = JacksonSerialize.toJSONString(rpcResponse);
-            ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
-
-            httpResponse.content().clear().writeBytes(byteBuf);
-            httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
-            return httpResponse;
         }
+        String  body    = JacksonSerialize.toJSONString(rpcResponse);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
+        httpResponse.content().clear().writeBytes(byteBuf);
+        httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
+        return httpResponse;
     }
 
 }
