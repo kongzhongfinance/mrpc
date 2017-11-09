@@ -91,6 +91,31 @@ mrpc.server.serialize=protostuff
 修改序列化配置后请查看依赖中是否包含相应的序列化实现。
 {% endnote %}
 
+### 1.3 业务线程池
+
+默认情况下使用服务器 `CPU * 2` 个线程，可配置。
+
+**Spring配置**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mrpc="http://mrpc.kongzhong.com/schema/mrpc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
+
+    <mrpc:nettyConfig businessThreadPoolSize="16" />
+
+</beans>
+```
+
+**SpringBoot配置**
+
+```properties
+mrpc.netty.businessThreadPoolSize=16
+```
+
 ## 2. 服务器权重
 
 当您用到加权负载均衡的时候，可以为不同服务器分配权重，根据资源占用等情况进行调整。
