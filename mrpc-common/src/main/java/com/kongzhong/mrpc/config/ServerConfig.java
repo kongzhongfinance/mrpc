@@ -21,9 +21,7 @@ public class ServerConfig {
     private String       appId;
     private String       elasticIp;
     private RpcSerialize rpcSerialize;
-    private TransportEnum transport              = TransportEnum.TCP;
-    // 业务线程池数
-    private int           businessThreadPoolSize = 16;
+    private TransportEnum transport = TransportEnum.TCP;
 
     private static final class ServerConfigHolder {
         private static final ServerConfig INSTANCE = new ServerConfig();

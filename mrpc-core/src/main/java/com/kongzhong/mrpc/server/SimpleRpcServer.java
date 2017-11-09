@@ -215,8 +215,7 @@ public abstract class SimpleRpcServer {
         }
 
         transferSelector = new TransferSelector(rpcSerialize);
-        ServerConfig serverConfig           = ServerConfig.me();
-        int          businessThreadPoolSize = serverConfig.getBusinessThreadPoolSize();
+        int businessThreadPoolSize = nettyConfig.getBusinessThreadPoolSize();
         setListeningExecutorService(businessThreadPoolSize);
     }
 

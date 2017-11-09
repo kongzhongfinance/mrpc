@@ -21,12 +21,11 @@ public class ConfigServiceImpl implements ConfigService {
     /*---------------------服务端:START----------------------*/
     @Override
     public int getBusinessThreadPoolSize() {
-        return ServerConfig.me().getBusinessThreadPoolSize();
+        return 16;
     }
 
     @Override
     public void setBusinessThreadPoolSize(int threadPoolSize) {
-        ServerConfig.me().setBusinessThreadPoolSize(threadPoolSize);
         SimpleRpcServer.setListeningExecutorService(threadPoolSize);
     }
     /*---------------------服务端:END------------------------*/
