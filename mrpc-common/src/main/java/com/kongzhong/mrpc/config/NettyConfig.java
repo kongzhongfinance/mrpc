@@ -29,13 +29,14 @@ public class NettyConfig {
     private int lowWaterMark           = 32 * 1024;
     private int highWaterMark          = 64 * 1024;
     /**
-     * 业务线程池数
+     * 业务线程池数，默认为当前CPU*2
      */
     private int businessThreadPoolSize = 16;
 
     public NettyConfig(int backlog, boolean keepalive) {
         this.backlog = backlog;
         this.keepalive = keepalive;
+        this.businessThreadPoolSize = Runtime.getRuntime().availableProcessors() * 2;
     }
 
 }
