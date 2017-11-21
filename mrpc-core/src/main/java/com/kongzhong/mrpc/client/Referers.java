@@ -40,8 +40,6 @@ public class Referers {
         Command    command    = type.getAnnotation(Command.class);
         if (null != command && StringUtils.isNotEmpty(command.appId())) {
             clientBean.setAppId(command.appId());
-        } else {
-            clientBean.setAppId(ClientConfig.me().getAppId());
         }
         return clientBean;
     }

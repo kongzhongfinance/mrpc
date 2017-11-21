@@ -277,6 +277,9 @@ public abstract class SimpleRpcClient {
                 if (null == serviceDiscovery) {
                     throw new SystemException(String.format("Client referer [%s] not found registry [%s]", serviceName, clientBean.getRegistry()));
                 }
+                if (StringUtils.isEmpty(clientBean.getAppId())){
+                    clientBean.setAppId(ClientConfig.me().getAppId());
+                }
                 ClientConfig.me().getServiceDiscoveryMap().put(serviceName, serviceDiscovery);
                 serviceDiscovery.discover(clientBean);
             } else {
