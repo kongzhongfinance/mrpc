@@ -99,7 +99,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        if (isShutdown) {
+        if (SimpleServerHandler.IS_SHUTDOWN) {
             this.sendError(ctx, httpRequest, new ConnectException("The server has been shutdown."));
             return;
         }

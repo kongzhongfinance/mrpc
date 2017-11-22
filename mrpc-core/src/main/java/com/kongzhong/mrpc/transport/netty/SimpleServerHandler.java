@@ -23,7 +23,7 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
 
     protected Map<String, ServiceBean> serviceBeanMap;
 
-    protected static boolean isShutdown;
+    protected static boolean IS_SHUTDOWN = false;
 
     public SimpleServerHandler() {
         this.serviceBeanMap = RpcMapping.me().getServiceBeanMap();
@@ -60,7 +60,8 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
     public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
 
     public static void shutdown() {
-        isShutdown = true;
+        log.info("Shutdown now.");
+        IS_SHUTDOWN = true;
     }
 
 }
