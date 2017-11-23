@@ -3,7 +3,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.trace.TraceAgent;
+import com.kongzhong.mrpc.trace.agent.HttpAgent;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.TraceContext;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class ServerTraceInterceptor implements RpcServerInterceptor {
 
-    private TraceAgent agent;
+    private HttpAgent agent;
 
     @Resource
     private TraceServerAutoConfigure traceServerAutoConfigure;
@@ -29,7 +29,7 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
             traceServerAutoConfigure = new TraceServerAutoConfigure();
         }
         log.info("Server {}", traceServerAutoConfigure);
-        this.agent = new TraceAgent(traceServerAutoConfigure.getUrl());
+        this.agent = new HttpAgent(traceServerAutoConfigure.getUrl());
     }
 
     @Override

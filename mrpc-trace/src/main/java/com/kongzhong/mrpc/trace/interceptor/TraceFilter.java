@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
-import com.kongzhong.mrpc.trace.TraceAgent;
+import com.kongzhong.mrpc.trace.agent.HttpAgent;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.TraceContext;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
@@ -27,11 +27,11 @@ import java.util.concurrent.TimeUnit;
 public class TraceFilter implements Filter {
 
     private TraceClientAutoConfigure conf;
-    private TraceAgent               agent;
+    private HttpAgent                agent;
 
     public TraceFilter(TraceClientAutoConfigure conf) {
         this.conf = conf;
-        this.agent = new TraceAgent(conf.getUrl());
+        this.agent = new HttpAgent(conf.getUrl());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TraceFilter implements Filter {
         if (!conf.getEnable()) {
             return;
         }
-        agent = new TraceAgent(conf.getUrl());
+        agent = new HttpAgent(conf.getUrl());
         log.info("init the trace interceptor with config({}).", new Object[]{config});
     }
 
