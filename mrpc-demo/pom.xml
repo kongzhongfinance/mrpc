@@ -20,6 +20,7 @@
         <module>spring-boot-server</module>
         <module>spring-boot-client</module>
         <module>spring-boot-server-and-client</module>
+        <module>spring-boot-server2</module>
     </modules>
 
     <dependencies>

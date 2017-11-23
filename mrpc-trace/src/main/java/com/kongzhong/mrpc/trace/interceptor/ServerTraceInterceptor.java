@@ -6,27 +6,41 @@ import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceAgent;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.TraceContext;
-import com.kongzhong.mrpc.trace.config.TraceConf;
-import com.kongzhong.mrpc.trace.config.TraceConfLoader;
+import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * ServerTraceInterceptor
  */
+@Slf4j
 public class ServerTraceInterceptor implements RpcServerInterceptor {
 
-    private TraceConf  conf  = TraceConfLoader.load("trace.yml");
-    private TraceAgent agent = new TraceAgent(conf.getServer());
+    private TraceAgent agent;
+
+    @Resource
+    private TraceServerAutoConfigure traceServerAutoConfigure;
+
+    @PostConstruct
+    public void init() {
+        if (null == traceServerAutoConfigure) {
+            traceServerAutoConfigure = new TraceServerAutoConfigure();
+        }
+        log.info("Server {}", traceServerAutoConfigure);
+        this.agent = new TraceAgent(traceServerAutoConfigure.getUrl());
+    }
 
     @Override
     public Object execute(ServerInvocation invocation) throws Exception {
-        if (!conf.getEnable()) {
+        if (!traceServerAutoConfigure.getEnable()) {
             // not enable tracing
             return invocation.next();
         }
 
         RpcRequest request = invocation.getRequest();
-
-        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
+        String     traceId = request.getContext().get(TraceConstants.TRACE_ID);
         if (null == traceId) {
             // don't need tracing
             return invocation.next();
@@ -35,8 +49,6 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         String spanId = request.getContext().get(TraceConstants.SPAN_ID);
         // prepare trace context
         this.startTrace(traceId, spanId);
-        //
-
         Object result = invocation.next();
         this.endTrace();
         return result;
@@ -50,8 +62,12 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
     }
 
     private void endTrace() {
-        agent.send(TraceContext.getSpans());
-        TraceContext.clear();
+        try {
+            agent.send(TraceContext.getSpans());
+            TraceContext.clear();
+        } catch (Exception e) {
+            log.error("", e);
+        }
     }
 
 }

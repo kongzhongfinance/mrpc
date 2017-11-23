@@ -31,6 +31,7 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
 
     @Override
     public Object execute(ClientInvocation invocation) throws Exception {
+
         if (TraceContext.getTraceId() == null) {
             // not need tracing
             return invocation.next();
@@ -90,12 +91,12 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         String owners = request.getContext().get(Const.SERVER_OWNER);
         if (StringUtils.isNotEmpty(owners)) {
             Stream.of(owners.split(","))
-                .forEach(owner -> {
-                    // app owner
-                    clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                            "负责人", owner, null
-                    ));
-                });
+                    .forEach(owner -> {
+                        // app owner
+                        clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                                "负责人", owner, null
+                        ));
+                    });
         }
         String emails = request.getContext().get(Const.SERVER_OWNER_EMAIL);
         if (StringUtils.isNotEmpty(emails)) {

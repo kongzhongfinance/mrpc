@@ -9,27 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-boot-client</artifactId>
-
-    <repositories>
-        <repository>
-            <id>releases</id>
-            <name>Popocloud Release Repository</name>
-            <url>http://106.75.120.228:8083/nexus/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>snapshots</id>
-            <name>Popocloud Snapshot Repository</name>
-            <url>http://106.75.120.228:8083/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
+    <artifactId>spring-boot-server2</artifactId>
 
     <dependencies>
         <dependency>
@@ -39,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>logback-classic</artifactId>
@@ -51,28 +31,30 @@
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-spring-boot-starter</artifactId>
             <version>${parent.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
+
         <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-hystrix</artifactId>
-            <version>${parent.version}</version>
+            <groupId>com.kongzhong.finance.basic</groupId>
+            <artifactId>klog</artifactId>
+            <version>0.2.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-trace</artifactId>
             <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.kongzhong.finance.basic</groupId>
-            <artifactId>klog</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -87,5 +69,24 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <!-- 可执行Jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- 发布跳过 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

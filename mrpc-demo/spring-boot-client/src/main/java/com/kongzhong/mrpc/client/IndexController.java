@@ -35,9 +35,6 @@ public class IndexController {
     @GetMapping("/trace")
     public String trace() {
         String t1 = userService.testTrace();
-        log.info("@@ t1={}", t1);
-        String t2 = userService.testTrace();
-        log.info("@@ t2={}", t2);
-        return t1 + t2;
+        return t1;
     }
 }
