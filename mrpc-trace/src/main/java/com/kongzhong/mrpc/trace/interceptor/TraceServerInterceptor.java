@@ -1,13 +1,14 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
+import com.kongzhong.basic.zipkin.TraceContext;
+import com.kongzhong.basic.zipkin.agent.AbstractAgent;
+import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceConstants;
-import com.kongzhong.mrpc.trace.TraceContext;
-import com.kongzhong.mrpc.trace.agent.AbstractAgent;
-import com.kongzhong.mrpc.trace.agent.KafkaAgent;
+
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
 import lombok.extern.slf4j.Slf4j;
 

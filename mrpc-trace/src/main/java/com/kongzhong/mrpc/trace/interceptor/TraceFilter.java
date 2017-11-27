@@ -1,12 +1,12 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
+import com.kongzhong.basic.zipkin.TraceContext;
+import com.kongzhong.basic.zipkin.agent.AbstractAgent;
+import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.trace.TraceConstants;
-import com.kongzhong.mrpc.trace.TraceContext;
-import com.kongzhong.mrpc.trace.agent.AbstractAgent;
-import com.kongzhong.mrpc.trace.agent.KafkaAgent;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
-import com.kongzhong.mrpc.trace.util.ServerInfo;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import com.twitter.zipkin.gen.Annotation;

@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
+import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
@@ -9,7 +10,6 @@ import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceConstants;
-import com.kongzhong.mrpc.trace.TraceContext;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
