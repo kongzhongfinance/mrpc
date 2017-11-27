@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.trace.agent;
 
 import com.github.kristofa.brave.SpanCollectorMetricsHandler;
 import com.kongzhong.mrpc.trace.SimpleMetricsHandler;
-import com.kongzhong.mrpc.trace.agent.AbstractAgent;
 import com.kongzhong.mrpc.trace.collector.HttpSpanCollector;
 
 /**

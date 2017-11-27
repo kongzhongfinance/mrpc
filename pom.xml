@@ -22,7 +22,6 @@
         <module>mrpc-hystrix</module>
         <module>mrpc-trace</module>
         <module>mrpc-ktrace</module>
-        <module>mrpc-zipkin</module>
     </modules>
 
     <properties>

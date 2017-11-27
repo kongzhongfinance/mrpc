@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Throwables;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
@@ -29,6 +30,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class ClientTraceInterceptor implements RpcClientInterceptor {
 
+
     @Override
     public Object execute(ClientInvocation invocation) throws Exception {
 
@@ -36,6 +38,11 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
             // not need tracing
             return invocation.next();
         }
+
+//        if (!conf.getEnable()) {
+//            // not enable tracing
+//            return invocation.next();
+//        }
 
         RpcInvoker invoker = invocation.getRpcInvoker();
         RpcRequest request = invoker.getRequest();
@@ -47,21 +54,21 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         log.debug("consumer invoke before: ");
         TraceContext.print();
 
-        Map<String, String> context = request.getContext();
+        try {
+            Object result = invoker.invoke();
 
-        context.put(TraceConstants.TRACE_ID, consumeSpan.getTrace_id() + "");
-        context.put(TraceConstants.SPAN_ID, consumeSpan.getId() + "");
+            log.debug("consumer invoke after: ");
+            TraceContext.print();
 
-        Object result = invoker.invoke();
+            log.debug("sr time: {}", RpcContext.getAttachments(TraceConstants.SR_TIME));
+            log.debug("ss time: {}", RpcContext.getAttachments(TraceConstants.SS_TIME));
 
-        log.debug("consumer invoke after: ");
-        TraceContext.print();
-
-        log.debug("sr time: " + RpcContext.getAttachments(TraceConstants.SR_TIME));
-        log.debug("ss time: " + RpcContext.getAttachments(TraceConstants.SS_TIME));
-
-        this.endTrace(request, consumeSpan, watch);
-        return result;
+            this.endTrace(request, consumeSpan, watch, null);
+            return result;
+        } catch (Exception e) {
+            this.endTrace(request, consumeSpan, watch, e);
+            throw e;
+        }
     }
 
     private Span startTrace(RpcRequest request) {
@@ -98,20 +105,16 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
                         ));
                     });
         }
-        String emails = request.getContext().get(Const.SERVER_OWNER_EMAIL);
-        if (StringUtils.isNotEmpty(emails)) {
-            Stream.of(emails.split(","))
-                    .forEach(email -> {
-                        // app owner
-                        clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                                "负责人邮箱", email, null
-                        ));
-                    });
-        }
+
+        // attach trace data
+        Map<String, String> attaches = request.getContext();
+        attaches.put(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
+        attaches.put(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
+
         return clientSpan;
     }
 
-    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch) {
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
         clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
         String host = RpcContext.getAttachments(Const.SERVER_HOST);
@@ -122,11 +125,10 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
                         Endpoint.create(request.getMethodName(), NetUtils.ip2Num(host), port)));
 
-        String exception = RpcContext.getAttachments(Const.SERVER_EXCEPTION);
-        if (StringUtils.isNotEmpty(exception)) {
+        if (null != e) {
             // attach exception
             clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "Exception", exception, null));
+                    "Exception", Throwables.getStackTraceAsString(e), null));
         }
 
         // collect the span

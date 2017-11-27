@@ -3,9 +3,11 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.trace.agent.AbstractAgent;
 import com.kongzhong.mrpc.trace.agent.HttpAgent;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.TraceContext;
+import com.kongzhong.mrpc.trace.agent.KafkaAgent;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +20,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class ServerTraceInterceptor implements RpcServerInterceptor {
 
-    private HttpAgent agent;
+    private AbstractAgent agent;
 
     @Resource
     private TraceServerAutoConfigure traceServerAutoConfigure;
@@ -29,7 +31,7 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
             traceServerAutoConfigure = new TraceServerAutoConfigure();
         }
         log.info("Server {}", traceServerAutoConfigure);
-        this.agent = new HttpAgent(traceServerAutoConfigure.getUrl());
+        this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl());
     }
 
     @Override
@@ -49,9 +51,14 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         String spanId = request.getContext().get(TraceConstants.SPAN_ID);
         // prepare trace context
         this.startTrace(traceId, spanId);
-        Object result = invocation.next();
-        this.endTrace();
-        return result;
+        try {
+            Object result = invocation.next();
+            this.endTrace();
+            return result;
+        } catch (Exception e) {
+            this.endTrace();
+            throw e;
+        }
     }
 
     private void startTrace(String traceId, String spanId) {

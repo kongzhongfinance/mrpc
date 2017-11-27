@@ -1,10 +1,10 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.base.Strings;
-import com.kongzhong.mrpc.trace.agent.HttpAgent;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.TraceContext;
+import com.kongzhong.mrpc.trace.agent.AbstractAgent;
+import com.kongzhong.mrpc.trace.agent.KafkaAgent;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.trace.util.ServerInfo;
 import com.kongzhong.mrpc.utils.Ids;
@@ -27,11 +27,11 @@ import java.util.concurrent.TimeUnit;
 public class TraceFilter implements Filter {
 
     private TraceClientAutoConfigure conf;
-    private HttpAgent                agent;
+    private AbstractAgent            agent;
 
     public TraceFilter(TraceClientAutoConfigure conf) {
         this.conf = conf;
-        this.agent = new HttpAgent(conf.getUrl());
+        this.agent = new KafkaAgent(conf.getUrl());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TraceFilter implements Filter {
         if (!conf.getEnable()) {
             return;
         }
-        agent = new HttpAgent(conf.getUrl());
+        agent = new KafkaAgent(conf.getUrl());
         log.info("init the trace interceptor with config({}).", new Object[]{config});
     }
 
@@ -71,6 +71,8 @@ public class TraceFilter implements Filter {
         // end root span
         endTrace(req, rootSpan, watch);
 
+        // clear trace context
+        TraceContext.clear();
     }
 
     private Span startTrace(HttpServletRequest req, String point) {
@@ -88,7 +90,7 @@ public class TraceFilter implements Filter {
 
         // sr annotation
         apiSpan.addToAnnotations(
-                Annotation.create(timestamp, TraceConstants.ANNO_CS,
+                Annotation.create(timestamp, TraceConstants.ANNO_SR,
                         Endpoint.create(apiName, ServerInfo.IP4, req.getLocalPort())));
 
         // app name
@@ -100,13 +102,6 @@ public class TraceFilter implements Filter {
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
                 "owner", conf.getOwner(), null
         ));
-
-        // trace desc
-        if (!Strings.isNullOrEmpty(point)) {
-            apiSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "description", "描述信息", null
-            ));
-        }
         return apiSpan;
     }
 
