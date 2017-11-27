@@ -20,31 +20,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- brave core -->
         <dependency>
-            <groupId>io.zipkin.brave</groupId>
-            <artifactId>brave-core</artifactId>
-            <version>3.11.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.auto.value</groupId>
-            <artifactId>auto-value</artifactId>
-            <version>1.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.zipkin.reporter2</groupId>
-            <artifactId>zipkin-sender-kafka11</artifactId>
-            <version>2.1.4</version>
-        </dependency>
-
-        <!-- for kafka collector -->
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>0.10.0.0</version>
-            <scope>provided</scope>
+            <groupId>com.kongzhong.basic</groupId>
+            <artifactId>zipkin-trace</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
