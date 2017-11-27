@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.TraceContext;
@@ -48,6 +49,8 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         }
 
         String spanId = request.getContext().get(TraceConstants.SPAN_ID);
+
+        log.info("traceId : {}", traceId);
         // prepare trace context
         this.startTrace(traceId, spanId);
         try {

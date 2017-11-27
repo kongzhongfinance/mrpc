@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.trace;
 
 import com.twitter.zipkin.gen.Span;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
  * TraceContext
  */
 @Slf4j
+@NoArgsConstructor
 public class TraceContext {
 
     /**
@@ -26,8 +28,6 @@ public class TraceContext {
      * The current trace's span list
      */
     private static ThreadLocal<List<Span>> SPANS = new InheritableThreadLocal<>();
-
-    private TraceContext() {}
 
     public static void setTraceId(Long traceId) {
         TRACE_ID.set(traceId);
