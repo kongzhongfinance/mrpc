@@ -22,14 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 /**
  * ClientTraceInterceptor
  */
 @Slf4j
-public class ClientTraceInterceptor implements RpcClientInterceptor {
-
+public class TraceClientInterceptor implements RpcClientInterceptor {
 
     @Override
     public Object execute(ClientInvocation invocation) throws Exception {
@@ -38,11 +36,6 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
             // not need tracing
             return invocation.next();
         }
-
-//        if (!conf.getEnable()) {
-//            // not enable tracing
-//            return invocation.next();
-//        }
 
         RpcInvoker invoker = invocation.getRpcInvoker();
         RpcRequest request = invoker.getRequest();
@@ -97,13 +90,10 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
 
         String owners = request.getContext().get(Const.SERVER_OWNER);
         if (StringUtils.isNotEmpty(owners)) {
-            Stream.of(owners.split(","))
-                    .forEach(owner -> {
-                        // app owner
-                        clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                                "负责人", owner, null
-                        ));
-                    });
+            // app owner
+            clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                    "owner", owners, null
+            ));
         }
 
         // attach trace data

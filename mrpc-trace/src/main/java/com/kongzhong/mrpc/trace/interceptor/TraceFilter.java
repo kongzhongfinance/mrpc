@@ -26,26 +26,26 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TraceFilter implements Filter {
 
-    private TraceClientAutoConfigure conf;
+    private TraceClientAutoConfigure clientAutoConfigure;
     private AbstractAgent            agent;
 
-    public TraceFilter(TraceClientAutoConfigure conf) {
-        this.conf = conf;
-        this.agent = new KafkaAgent(conf.getUrl());
+    public TraceFilter(TraceClientAutoConfigure clientAutoConfigure) {
+        this.clientAutoConfigure = clientAutoConfigure;
+        this.agent = new KafkaAgent(clientAutoConfigure.getUrl());
     }
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-        if (!conf.getEnable()) {
+        if (!clientAutoConfigure.getEnable()) {
             return;
         }
-        agent = new KafkaAgent(conf.getUrl());
+        agent = new KafkaAgent(clientAutoConfigure.getUrl());
         log.info("init the trace interceptor with config({}).", new Object[]{config});
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!conf.getEnable()) {
+        if (!clientAutoConfigure.getEnable()) {
             chain.doFilter(request, response);
             return;
         }
@@ -95,12 +95,12 @@ public class TraceFilter implements Filter {
 
         // app name
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
-                "name", conf.getName(), null
+                "name", clientAutoConfigure.getName(), null
         ));
 
         // app owner
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
-                "owner", conf.getOwner(), null
+                "负责人", clientAutoConfigure.getOwner(), null
         ));
         return apiSpan;
     }

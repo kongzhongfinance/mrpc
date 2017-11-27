@@ -2,8 +2,8 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.demo.service.PayService;
-import com.kongzhong.mrpc.trace.interceptor.ClientTraceInterceptor;
-import com.kongzhong.mrpc.trace.interceptor.ServerTraceInterceptor;
+import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
+import com.kongzhong.mrpc.trace.interceptor.TraceServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,13 +23,13 @@ public class OtherServerApplication {
     }
 
     @Bean
-    public ServerTraceInterceptor serverTraceInterceptor(){
-        return new ServerTraceInterceptor();
+    public TraceServerInterceptor serverTraceInterceptor(){
+        return new TraceServerInterceptor();
     }
 
     @Bean
-    public ClientTraceInterceptor clientTraceInterceptor() {
-        return new ClientTraceInterceptor();
+    public TraceClientInterceptor clientTraceInterceptor() {
+        return new TraceClientInterceptor();
     }
 
     public static void main(String[] args) {

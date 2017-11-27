@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.demo.service.UserService;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
-import com.kongzhong.mrpc.trace.interceptor.ClientTraceInterceptor;
+import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
 import com.kongzhong.mrpc.trace.interceptor.TraceFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +39,8 @@ public class BootClientApplication {
 //    }
 
     @Bean
-    public ClientTraceInterceptor clientTraceInterceptor() {
-        return new ClientTraceInterceptor();
+    public TraceClientInterceptor clientTraceInterceptor() {
+        return new TraceClientInterceptor();
     }
 
     @Bean
