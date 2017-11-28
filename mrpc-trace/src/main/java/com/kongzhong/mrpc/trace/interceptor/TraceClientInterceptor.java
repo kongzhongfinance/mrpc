@@ -3,6 +3,8 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceContext;
+import com.kongzhong.basic.zipkin.agent.AbstractAgent;
+import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
@@ -10,6 +12,7 @@ import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.trace.TraceConstants;
+import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -18,8 +21,10 @@ import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,12 +32,26 @@ import java.util.concurrent.TimeUnit;
  * ClientTraceInterceptor
  */
 @Slf4j
+@Data
 public class TraceClientInterceptor implements RpcClientInterceptor {
+
+    private AbstractAgent agent;
+
+    private TraceClientAutoConfigure traceClientAutoConfigure;
+
+    public TraceClientInterceptor(TraceClientAutoConfigure traceClientAutoConfigure) {
+        if (null == traceClientAutoConfigure) {
+            this.traceClientAutoConfigure = new TraceClientAutoConfigure();
+        } else {
+            this.traceClientAutoConfigure = traceClientAutoConfigure;
+            this.agent = new KafkaAgent(traceClientAutoConfigure.getUrl());
+        }
+    }
 
     @Override
     public Object execute(ClientInvocation invocation) throws Exception {
 
-        if (TraceContext.getTraceId() == null) {
+        if (!traceClientAutoConfigure.getEnable()) {
             // not need tracing
             return invocation.next();
         }
@@ -41,8 +60,12 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         RpcRequest request = invoker.getRequest();
 
         // start the watch
-        Stopwatch watch       = Stopwatch.createStarted();
-        Span      consumeSpan = this.startTrace(request);
+        Stopwatch watch = Stopwatch.createStarted();
+
+        List<Span> rootSpans = TraceContext.getSpans();
+        boolean    fromUrl   = (rootSpans != null && rootSpans.isEmpty() == false);
+
+        Span consumeSpan = this.startTrace(request, fromUrl);
 
         log.debug("consumer invoke before: ");
         TraceContext.print();
@@ -56,25 +79,38 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             log.debug("sr time: {}", RpcContext.getAttachments(TraceConstants.SR_TIME));
             log.debug("ss time: {}", RpcContext.getAttachments(TraceConstants.SS_TIME));
 
-            this.endTrace(request, consumeSpan, watch, null);
+            this.endTrace(request, consumeSpan, watch, fromUrl, null);
             return result;
         } catch (Exception e) {
-            this.endTrace(request, consumeSpan, watch, e);
+            this.endTrace(request, consumeSpan, watch, fromUrl, e);
             throw e;
         }
     }
 
-    private Span startTrace(RpcRequest request) {
+    private Span startTrace(RpcRequest request, boolean fromUrl) {
 
         // start client span
         Span clientSpan = new Span();
-        clientSpan.setId(Ids.get());
 
-        long traceId  = TraceContext.getTraceId();
-        long parentId = TraceContext.getSpanId();
+        long id       = Ids.get();
+        long traceId  = id;
+        long parentId = id;
 
+        // 判断是不是要创建新的span
+        if (fromUrl) {
+            // 来源于url,直接继承
+            traceId = (TraceContext.getTraceId());
+            clientSpan.setParent_id(parentId); // 这个使用不当,如果放在else分支,会导致zipkin ui js溢出
+        } else {
+            // 开始span
+            TraceContext.start();
+            TraceContext.setTraceId(id);
+            TraceContext.setSpanId(id);
+        }
+
+        clientSpan.setId(id);
         clientSpan.setTrace_id(traceId);
-        clientSpan.setParent_id(parentId);
+
         clientSpan.setName(request.getMethodName());
 
         long timestamp = TimeUtils.currentMicros();
@@ -92,7 +128,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         if (StringUtils.isNotEmpty(owners)) {
             // app owner
             clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "owner", owners, null
+                    "负责人", owners, null
             ));
         }
 
@@ -104,7 +140,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         return clientSpan;
     }
 
-    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, boolean fromUrl, Exception e) {
         clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
         String host = RpcContext.getAttachments(Const.SERVER_HOST);
@@ -123,6 +159,14 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
         // collect the span
         TraceContext.addSpan(clientSpan);
+
+        // 来源于url的span,在本地发送
+        if (!fromUrl) {
+            // 将span发送出去
+            agent.send(TraceContext.getSpans());
+            TraceContext.clear();
+        }
+
     }
 
 }

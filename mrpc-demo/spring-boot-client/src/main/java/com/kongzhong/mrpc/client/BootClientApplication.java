@@ -8,10 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Collections;
 
@@ -28,34 +30,29 @@ public class BootClientApplication {
         return new Referers().add(UserService.class);
     }
 
-//    @Bean
-//    public FilterRegistrationBean traceFilter() {
-//        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
-//        servletRegistrationBean.setName("TraceFilter");
-//        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new TraceFilter(), servletRegistrationBean);
-//        filterRegistrationBean.setName("TraceFilter");
-//        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
-//        return filterRegistrationBean;
-//    }
-
     @Bean
-    public TraceClientInterceptor clientTraceInterceptor() {
-        return new TraceClientInterceptor();
-    }
+    @ConditionalOnClass(TraceClientInterceptor.class)
+    public FilterRegistrationBean traceFilter(@Autowired TraceClientInterceptor traceClientInterceptor) {
 
-    @Bean
-    @ConditionalOnClass(TraceClientAutoConfigure.class)
-    public FilterRegistrationBean traceFilter(@Autowired TraceClientAutoConfigure traceClientAutoConfigure) {
-
-        log.info("Client Trace {}", traceClientAutoConfigure);
+        TraceFilter traceFilter = new TraceFilter(traceClientInterceptor.getTraceClientAutoConfigure(), traceClientInterceptor.getAgent());
 
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
         servletRegistrationBean.setName("TraceFilter");
 
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new TraceFilter(traceClientAutoConfigure), servletRegistrationBean);
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(traceFilter, servletRegistrationBean);
         filterRegistrationBean.setName("TraceFilter");
         filterRegistrationBean.setUrlPatterns(Collections.singletonList("/*"));
         return filterRegistrationBean;
+    }
+
+    @Bean
+    public TraceClientInterceptor clientTraceInterceptor() {
+        TraceClientAutoConfigure traceClientAutoConfigure = new TraceClientAutoConfigure();
+        traceClientAutoConfigure.setEnable(true);
+        traceClientAutoConfigure.setUrl("127.0.0.1:9092");
+        traceClientAutoConfigure.setOwner("biezhi");
+        traceClientAutoConfigure.setName("web-client");
+        return new TraceClientInterceptor(traceClientAutoConfigure);
     }
 
     public static void main(String[] args) {

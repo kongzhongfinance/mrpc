@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.demo.service.OtherService;
+import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
 import com.kongzhong.mrpc.trace.interceptor.TraceServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,12 @@ public class ServerApplication {
 
     @Bean
     public TraceClientInterceptor clientTraceInterceptor() {
-        return new TraceClientInterceptor();
+        TraceClientAutoConfigure traceClientAutoConfigure = new TraceClientAutoConfigure();
+        traceClientAutoConfigure.setEnable(true);
+        traceClientAutoConfigure.setUrl("127.0.0.1:9092");
+        traceClientAutoConfigure.setOwner("biezhi");
+        traceClientAutoConfigure.setName("server");
+        return new TraceClientInterceptor(traceClientAutoConfigure);
     }
 
     public static void main(String[] args) {

@@ -29,18 +29,14 @@ public class TraceFilter implements Filter {
     private TraceClientAutoConfigure clientAutoConfigure;
     private AbstractAgent            agent;
 
-    public TraceFilter(TraceClientAutoConfigure clientAutoConfigure) {
+    public TraceFilter(TraceClientAutoConfigure clientAutoConfigure, AbstractAgent agent) {
         this.clientAutoConfigure = clientAutoConfigure;
-        this.agent = new KafkaAgent(clientAutoConfigure.getUrl());
+        this.agent = agent;
     }
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-        if (!clientAutoConfigure.getEnable()) {
-            return;
-        }
-        agent = new KafkaAgent(clientAutoConfigure.getUrl());
-        log.info("init the trace interceptor with config({}).", new Object[]{config});
+
     }
 
     @Override
@@ -70,9 +66,6 @@ public class TraceFilter implements Filter {
 
         // end root span
         endTrace(req, rootSpan, watch);
-
-        // clear trace context
-        TraceContext.clear();
     }
 
     private Span startTrace(HttpServletRequest req, String point) {
@@ -115,6 +108,10 @@ public class TraceFilter implements Filter {
 
         // send trace spans
         agent.send(TraceContext.getSpans());
+
+        // clear trace context
+        TraceContext.clear();
+
     }
 
     @Override
