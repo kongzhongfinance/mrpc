@@ -1,9 +1,14 @@
 package com.kongzhong.mrpc.trace.config;
 
+import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
 
@@ -14,6 +19,7 @@ import javax.annotation.PostConstruct;
 @Data
 @Slf4j
 @ConfigurationProperties("mrpc.client.trace")
+@ConditionalOnExpression("'${mrpc.client.trace.enable}'=='true'")
 public class TraceClientAutoConfigure {
 
     /**
@@ -37,7 +43,26 @@ public class TraceClientAutoConfigure {
     private String owner;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         log.info("[config] TraceClientAutoConfigure 加载完成 {}", this.toString());
     }
+
+    @Bean
+    public TraceClientInterceptor clientTraceInterceptor(@Autowired Environment environment) {
+        String enable = environment.getProperty("mrpc.client.trace.enable");
+        if (StringUtils.isEmpty(enable)) {
+            return null;
+        }
+        String url   = environment.getProperty("mrpc.client.trace.url");
+        String owner = environment.getProperty("mrpc.client.trace.owner");
+        String name  = environment.getProperty("mrpc.client.trace.name");
+
+        TraceClientAutoConfigure traceClientAutoConfigure = new TraceClientAutoConfigure();
+        traceClientAutoConfigure.setEnable(Boolean.valueOf(enable));
+        traceClientAutoConfigure.setUrl(url);
+        traceClientAutoConfigure.setOwner(owner);
+        traceClientAutoConfigure.setName(name);
+        return new TraceClientInterceptor(traceClientAutoConfigure);
+    }
+
 }

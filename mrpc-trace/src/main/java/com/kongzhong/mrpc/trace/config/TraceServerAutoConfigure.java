@@ -1,8 +1,13 @@
 package com.kongzhong.mrpc.trace.config;
 
+import com.kongzhong.mrpc.trace.interceptor.TraceServerInterceptor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PostConstruct;
 
@@ -13,6 +18,7 @@ import javax.annotation.PostConstruct;
 @Data
 @Slf4j
 @ConfigurationProperties("mrpc.server.trace")
+@ConditionalOnExpression("'${mrpc.server.trace.enable}'=='true'")
 public class TraceServerAutoConfigure {
 
     /**
@@ -38,6 +44,11 @@ public class TraceServerAutoConfigure {
     @PostConstruct
     public void init(){
         log.info("[config] TraceServerAutoConfigure 加载完成 {}", this.toString());
+    }
+
+    @Bean
+    public TraceServerInterceptor serverTraceInterceptor(){
+        return new TraceServerInterceptor();
     }
 
 }
