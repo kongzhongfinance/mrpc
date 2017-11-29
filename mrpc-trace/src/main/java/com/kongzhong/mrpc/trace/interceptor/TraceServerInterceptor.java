@@ -10,10 +10,12 @@ import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
 import com.kongzhong.mrpc.utils.TimeUtils;
+import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,8 +88,9 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
 
     private void endTrace() {
         try {
-            agent.send(TraceContext.getSpans());
-            log.info("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
+            List<Span> spans = TraceContext.getSpans();
+            agent.send(spans);
+            log.info("Send trace data {}.", JacksonSerialize.toJSONString(spans));
         } catch (Exception e) {
             log.error("发送Trace失败", e);
         }
