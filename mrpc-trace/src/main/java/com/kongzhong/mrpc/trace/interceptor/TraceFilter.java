@@ -78,7 +78,7 @@ public class TraceFilter implements Filter {
         // start root span
         Span rootSpan = startTrace(req, uri);
 
-        log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), TraceContext.getTraceId(), TraceContext.getSpanId());
+        log.info("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), TraceContext.getTraceId(), TraceContext.getSpanId());
 
         // prepare trace context
         TraceContext.start();

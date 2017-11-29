@@ -68,7 +68,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         // start the watch
         Span consumeSpan = this.startTrace(request);
 
-        log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), TraceContext.getTraceId(), TraceContext.getSpanId());
+        log.info("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), TraceContext.getTraceId(), TraceContext.getSpanId());
 
         log.debug("consumer invoke before: ");
         TraceContext.print();
