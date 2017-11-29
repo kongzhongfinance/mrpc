@@ -6,6 +6,7 @@ import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
 import com.kongzhong.mrpc.utils.TimeUtils;
@@ -86,7 +87,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     private void endTrace() {
         try {
             agent.send(TraceContext.getSpans());
-            log.info("Send trace data success.");
+            log.info("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
         } catch (Exception e) {
             log.error("发送Trace失败", e);
         }

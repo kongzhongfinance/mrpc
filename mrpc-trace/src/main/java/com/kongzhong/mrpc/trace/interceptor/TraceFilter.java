@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.ServletPathMatcher;
@@ -99,11 +100,9 @@ public class TraceFilter implements Filter {
         Span   apiSpan = new Span();
 
         // span basic data
-        long id = Ids.get();
-
         Long traceId = TraceContext.getTraceId();
         if (null == traceId) {
-            traceId = id;
+            traceId = Ids.get();
         }
 
         apiSpan.setId(traceId);
@@ -161,7 +160,7 @@ public class TraceFilter implements Filter {
         // send trace spans
         try {
             agent.send(TraceContext.getSpans());
-            log.info("Send trace data success.");
+            log.info("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
         } catch (Exception e) {
             log.error("发送到Trace失败", e);
         }

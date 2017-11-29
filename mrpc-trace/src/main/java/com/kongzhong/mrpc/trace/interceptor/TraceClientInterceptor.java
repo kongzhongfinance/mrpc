@@ -24,7 +24,6 @@ import com.twitter.zipkin.gen.Span;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,11 +94,18 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         // start client span
         Span clientSpan = new Span();
 
-        clientSpan.setId(Ids.get());
+        Long traceId = TraceContext.getTraceId();
+        Long id, parentId;
+        if (null == traceId) {
+            traceId = Ids.get();
+            id = traceId;
+            parentId = traceId;
+        } else {
+            id = Ids.get();
+            parentId = TraceContext.getSpanId();
+        }
 
-        long traceId  = TraceContext.getTraceId();
-        long parentId = TraceContext.getSpanId();
-
+        clientSpan.setId(id);
         clientSpan.setTrace_id(traceId);
         clientSpan.setParent_id(parentId);
         clientSpan.setName(request.getMethodName());
