@@ -70,6 +70,8 @@ public class TraceFilter implements Filter {
             return;
         }
 
+        log.info("Trace filter url: {}", uri);
+
         // do trace
         Stopwatch watch = Stopwatch.createStarted();
 
@@ -149,8 +151,12 @@ public class TraceFilter implements Filter {
         span.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
         // send trace spans
-        agent.send(TraceContext.getSpans());
-
+        try {
+            agent.send(TraceContext.getSpans());
+            log.info("Send trace data success.");
+        } catch (Exception e){
+            log.error("发送到Trace失败", e);
+        }
         // clear trace context
         TraceContext.clear();
 

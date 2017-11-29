@@ -25,7 +25,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,7 +69,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         boolean    formUrl   = (rootSpans != null && !rootSpans.isEmpty());
 
         // start the watch
-        Span consumeSpan = this.startTrace(request, formUrl);
+        Span consumeSpan = this.startTrace(request);
 
         log.debug("consumer invoke before: ");
         TraceContext.print();
@@ -92,7 +91,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         }
     }
 
-    private Span startTrace(RpcRequest request, boolean formUrl) {
+    private Span startTrace(RpcRequest request) {
 
         // start client span
         Span clientSpan = new Span();
@@ -126,9 +125,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         }
 
         // attach trace data
-        Map<String, String> attaches = request.getContext();
-        attaches.put(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
-        attaches.put(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
+        request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
+        request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
 
         return clientSpan;
     }
@@ -152,6 +150,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
         // collect the span
         TraceContext.addSpan(clientSpan);
+
     }
 
 }

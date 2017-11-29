@@ -59,14 +59,16 @@ public class TraceClientAutoConfigure {
             return null;
         }
         String url   = environment.getProperty("mrpc.client.trace.url");
-        String topic   = environment.getProperty("mrpc.client.trace.topic");
+        String topic = environment.getProperty("mrpc.client.trace.topic");
         String owner = environment.getProperty("mrpc.client.trace.owner");
         String name  = environment.getProperty("mrpc.client.trace.name");
 
         TraceClientAutoConfigure traceClientAutoConfigure = new TraceClientAutoConfigure();
         traceClientAutoConfigure.setEnable(Boolean.valueOf(enable));
         traceClientAutoConfigure.setUrl(url);
-        traceClientAutoConfigure.setTopic(topic);
+        if(null != topic){
+            traceClientAutoConfigure.setTopic(topic);
+        }
         traceClientAutoConfigure.setOwner(owner);
         traceClientAutoConfigure.setName(name);
         return new TraceClientInterceptor(traceClientAutoConfigure);

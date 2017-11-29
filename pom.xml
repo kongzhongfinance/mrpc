@@ -21,7 +21,6 @@
         <module>mrpc-interceptor-validator</module>
         <module>mrpc-hystrix</module>
         <module>mrpc-trace</module>
-        <module>mrpc-ktrace</module>
     </modules>
 
     <properties>

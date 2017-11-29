@@ -29,7 +29,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     @PostConstruct
     public void init() {
         if (null == traceServerAutoConfigure) {
-            traceServerAutoConfigure = new TraceServerAutoConfigure();
+            this.traceServerAutoConfigure = new TraceServerAutoConfigure();
         } else {
             try {
                 this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
@@ -41,10 +41,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
 
     @Override
     public Object execute(ServerInvocation invocation) throws Exception {
-        if (!traceServerAutoConfigure.getEnable()) {
+        if (!this.traceServerAutoConfigure.getEnable()) {
             // not enable tracing
             return invocation.next();
         }
+
+        log.info("Trace Server Interceptor");
 
         RpcRequest request = invocation.getRequest();
         String     traceId = request.getContext().get(TraceConstants.TRACE_ID);
@@ -82,6 +84,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     private void endTrace() {
         try {
             agent.send(TraceContext.getSpans());
+            log.info("Send trace data success.");
         } catch (Exception e) {
             log.error("发送Trace失败", e);
         }

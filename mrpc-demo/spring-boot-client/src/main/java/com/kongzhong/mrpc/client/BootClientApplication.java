@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.demo.service.UserService;
 import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
+import com.kongzhong.mrpc.trace.interceptor.TraceFilter;
 import com.kongzhong.mrpc.trace.utils.Exclusions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,9 @@ public class BootClientApplication {
     @Bean
     @ConditionalOnClass(TraceClientInterceptor.class)
     public FilterRegistrationBean filterRegistrationBean(@Autowired TraceClientInterceptor traceClientInterceptor) {
-        com.kongzhong.mrpc.trace.interceptor.TraceFilter traceFilter = new com.kongzhong.mrpc.trace.interceptor.TraceFilter(traceClientInterceptor.getTraceClientAutoConfigure(), traceClientInterceptor.getAgent());
+        TraceFilter traceFilter = new TraceFilter(traceClientInterceptor.getTraceClientAutoConfigure(),
+                traceClientInterceptor.getAgent());
+
         FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
         filterRegistration.setFilter(traceFilter);
         filterRegistration.addUrlPatterns("/*");
