@@ -33,6 +33,11 @@ public class TraceClientAutoConfigure {
     private String url;
 
     /**
+     * kafka topic name
+     */
+    private String topic = "zipkin";
+
+    /**
      * The app name
      */
     private String name;

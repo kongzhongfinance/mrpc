@@ -37,6 +37,11 @@ public class TraceServerAutoConfigure {
     private String name;
 
     /**
+     * kafka topic name
+     */
+    private String topic = "zipkin";
+
+    /**
      * The app owner
      */
     private String owner;

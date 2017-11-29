@@ -44,7 +44,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             this.traceClientAutoConfigure = new TraceClientAutoConfigure();
         } else {
             this.traceClientAutoConfigure = traceClientAutoConfigure;
-            this.agent = new KafkaAgent(traceClientAutoConfigure.getUrl());
+            this.agent = new KafkaAgent(traceClientAutoConfigure.getUrl(), traceClientAutoConfigure.getTopic());
         }
     }
 

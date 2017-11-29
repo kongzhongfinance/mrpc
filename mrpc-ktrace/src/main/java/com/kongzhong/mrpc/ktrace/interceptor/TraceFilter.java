@@ -29,7 +29,7 @@ public class TraceFilter implements Filter {
         // clear trace context
         Trace.continueTrace(null);
         //rpc使用MDC方式接入 必须手动清空
-        MDC.remove(TraceConstants.TRACE_ID);
+        MDC.remove(KTraceConst.KTRACE_ID);
 
         // do trace
         if (log.isDebugEnabled()) {
@@ -46,7 +46,7 @@ public class TraceFilter implements Filter {
         // clear trace context
         Trace.continueTrace(null);
         //rpc使用MDC方式接入 必须手动清空
-        MDC.remove(TraceConstants.TRACE_ID);
+        MDC.remove(KTraceConst.KTRACE_ID);
     }
 
 }

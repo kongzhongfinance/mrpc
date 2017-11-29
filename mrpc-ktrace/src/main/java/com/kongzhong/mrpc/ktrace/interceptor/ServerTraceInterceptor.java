@@ -4,7 +4,6 @@ import com.kongzhong.finance.ktrace.core.Trace;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
@@ -21,9 +20,9 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
         // TODO 操蛋的兼容
         if (null != request.getContext()) {
             // prepare trace context
-            String traceId = request.getContext().get(TraceConstants.TRACE_ID);
+            String traceId = request.getContext().get(KTraceConst.KTRACE_ID);
             //rpc使用MDC方式接入 必须手动清空
-            MDC.remove(TraceConstants.TRACE_ID);
+            MDC.remove(KTraceConst.KTRACE_ID);
             Trace.continueTrace(traceId, Trace.parseParentSpanId(traceId));
             if (log.isDebugEnabled()) {
                 String currentRequestId = Trace.getCurrentRequestId();

@@ -28,7 +28,7 @@ public class ClientTraceInterceptor implements RpcClientInterceptor {
         if (null != request.getContext()) {
             // put requestContext
             Map<String, String> context = request.getContext();
-            context.put(TraceConstants.TRACE_ID, traceId);
+            context.put(KTraceConst.KTRACE_ID, traceId);
             log.debug("ClientTraceInterceptor [put] CurrentTraceId={}", traceId);
         }
 

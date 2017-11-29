@@ -31,7 +31,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         if (null == traceServerAutoConfigure) {
             traceServerAutoConfigure = new TraceServerAutoConfigure();
         } else {
-            this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl());
+            this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
         }
     }
 
