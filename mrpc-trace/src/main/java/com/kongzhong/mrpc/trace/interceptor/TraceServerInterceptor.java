@@ -31,7 +31,11 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         if (null == traceServerAutoConfigure) {
             traceServerAutoConfigure = new TraceServerAutoConfigure();
         } else {
-            this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+            try {
+                this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+            } catch (Exception e) {
+                log.error("初始化Trace服务端失败", e);
+            }
         }
     }
 
@@ -76,7 +80,11 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     }
 
     private void endTrace() {
-        agent.send(TraceContext.getSpans());
+        try {
+            agent.send(TraceContext.getSpans());
+        } catch (Exception e) {
+            log.error("发送Trace失败", e);
+        }
         TraceContext.clear();
     }
 

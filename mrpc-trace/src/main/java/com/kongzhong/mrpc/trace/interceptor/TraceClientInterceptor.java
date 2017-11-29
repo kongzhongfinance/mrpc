@@ -44,7 +44,11 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             this.traceClientAutoConfigure = new TraceClientAutoConfigure();
         } else {
             this.traceClientAutoConfigure = traceClientAutoConfigure;
-            this.agent = new KafkaAgent(traceClientAutoConfigure.getUrl(), traceClientAutoConfigure.getTopic());
+            try {
+                this.agent = new KafkaAgent(traceClientAutoConfigure.getUrl(), traceClientAutoConfigure.getTopic());
+            } catch (Exception e) {
+                log.error("初始化Trace客户端失败", e);
+            }
         }
     }
 
@@ -63,7 +67,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         Stopwatch watch = Stopwatch.createStarted();
 
         List<Span> rootSpans = TraceContext.getSpans();
-        boolean    formUrl    = (rootSpans != null && !rootSpans.isEmpty());
+        boolean    formUrl   = (rootSpans != null && !rootSpans.isEmpty());
 
         // start the watch
         Span consumeSpan = this.startTrace(request, formUrl);
