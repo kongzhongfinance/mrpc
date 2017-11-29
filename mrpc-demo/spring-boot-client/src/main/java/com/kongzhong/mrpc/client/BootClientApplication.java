@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.demo.service.UserService;
 import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
+import com.kongzhong.mrpc.trace.utils.Exclusions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -32,7 +33,7 @@ public class BootClientApplication {
         FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
         filterRegistration.setFilter(traceFilter);
         filterRegistration.addUrlPatterns("/*");
-        filterRegistration.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico");
+        filterRegistration.addInitParameter("exclusions", Exclusions.defaultExclusions().toString());
         // filterRegistration.setAsyncSupported(true);
         filterRegistration.setDispatcherTypes(DispatcherType.REQUEST);
         return filterRegistration;

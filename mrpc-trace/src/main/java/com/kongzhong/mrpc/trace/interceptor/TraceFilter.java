@@ -39,7 +39,7 @@ public class TraceFilter implements Filter {
     /**
      * PatternMatcher used in determining which paths to react to for a given request.
      */
-    protected ServletPathMatcher pathMatcher = new ServletPathMatcher();
+    private ServletPathMatcher pathMatcher = ServletPathMatcher.getInstance();
 
     public TraceFilter(TraceClientAutoConfigure clientAutoConfigure, AbstractAgent agent) {
         this.clientAutoConfigure = clientAutoConfigure;
