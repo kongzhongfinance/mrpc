@@ -100,8 +100,14 @@ public class TraceFilter implements Filter {
 
         // span basic data
         long id = Ids.get();
-        apiSpan.setId(id);
-        apiSpan.setTrace_id(id);
+
+        Long traceId = TraceContext.getTraceId();
+        if (null == traceId) {
+            traceId = id;
+        }
+
+        apiSpan.setId(traceId);
+        apiSpan.setTrace_id(traceId);
         apiSpan.setName(point);
         long timestamp = TimeUtils.currentMicros();
         apiSpan.setTimestamp(timestamp);
@@ -156,7 +162,7 @@ public class TraceFilter implements Filter {
         try {
             agent.send(TraceContext.getSpans());
             log.info("Send trace data success.");
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("发送到Trace失败", e);
         }
         // clear trace context
