@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public class ClientTraceInterceptor implements RpcClientInterceptor {
 
     @Override
-    public Object execute(ClientInvocation invocation) throws Exception {
+    public Object execute(ClientInvocation invocation) throws Throwable {
         if (TraceContext.getTraceId() == null) {
             // not need tracing
             return invocation.next();

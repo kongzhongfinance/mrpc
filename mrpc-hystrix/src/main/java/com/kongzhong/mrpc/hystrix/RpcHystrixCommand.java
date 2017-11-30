@@ -37,7 +37,12 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 
     @Override
     protected Object run() throws Exception {
-        return invoker.invoke();
+        try {
+            return invoker.invoke();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
     }
 
     @Override

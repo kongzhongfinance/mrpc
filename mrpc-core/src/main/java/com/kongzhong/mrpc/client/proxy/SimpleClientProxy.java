@@ -82,7 +82,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     }
 
     @Override
-    protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
+    protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
 
         String appId = this.getAppId(method.getDeclaringClass());
 

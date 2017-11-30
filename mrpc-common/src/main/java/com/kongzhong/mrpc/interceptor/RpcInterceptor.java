@@ -9,6 +9,6 @@ package com.kongzhong.mrpc.interceptor;
 @FunctionalInterface
 public interface RpcInterceptor {
 
-    Object execute(Invocation invocation) throws Exception;
+    Object execute(Invocation invocation) throws Throwable;
 
 }

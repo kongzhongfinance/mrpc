@@ -18,7 +18,7 @@ public class ServerTraceInterceptor implements RpcServerInterceptor {
     private TraceAgent agent = new TraceAgent(conf.getServer());
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         if (!conf.getEnable()) {
             // not enable tracing
             return invocation.next();

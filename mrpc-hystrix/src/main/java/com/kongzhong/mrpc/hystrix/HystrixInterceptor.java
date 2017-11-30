@@ -13,7 +13,7 @@ import org.springframework.core.annotation.Order;
 public class HystrixInterceptor implements RpcClientInterceptor {
 
     @Override
-    public Object execute(ClientInvocation invocation) throws Exception {
+    public Object execute(ClientInvocation invocation) throws Throwable {
         if (StringUtils.isNotEmpty(invocation.getRpcInvoker().getRequest().getFallbackType())) {
             // 是否配置降级
             RpcHystrixCommand command = new RpcHystrixCommand(invocation.getRpcInvoker());

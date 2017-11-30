@@ -6,7 +6,6 @@ import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +33,7 @@ public class RpcCallbackFuture {
         this.beginTime = System.currentTimeMillis();
     }
 
-    public Object get(int milliseconds) throws Exception {
+    public Object get(int milliseconds) throws Throwable {
         if (latch.await(milliseconds, TimeUnit.MILLISECONDS)) {
             if (null != response) {
                 Map<String, String> context = response.getContext();
@@ -47,9 +46,14 @@ public class RpcCallbackFuture {
                 if (response.getSuccess()) {
                     return response.getResult();
                 } else {
-                    Class<?>  expType   = ReflectUtils.from(response.getReturnType());
-                    Exception exception = (Exception) JacksonSerialize.parseObject(response.getException(), expType);
-                    throw exception;
+                    Class<?> expType = ReflectUtils.from(response.getReturnType());
+                    Object   object  = JacksonSerialize.parseObject(response.getException(), expType);
+                    if (object instanceof Exception) {
+                        throw (Exception) object;
+                    }
+                    if (object instanceof Throwable) {
+                        throw (Throwable) object;
+                    }
                 }
             }
         } else {
