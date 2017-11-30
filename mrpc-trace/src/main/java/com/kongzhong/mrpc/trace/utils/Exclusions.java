@@ -46,6 +46,10 @@ public class Exclusions {
         return this;
     }
 
+    public Set<String> getExclusions() {
+        return exclusions;
+    }
+
     @Override
     public String toString() {
         return this.exclusions.stream().collect(Collectors.joining(","));

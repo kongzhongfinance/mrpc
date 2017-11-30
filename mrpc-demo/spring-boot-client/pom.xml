@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.kongzhong.finance.basic</groupId>
             <artifactId>klog</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <version>${klog.version}</version>
         </dependency>
     </dependencies>
 

@@ -40,6 +40,7 @@
         <zookeeper.version>3.4.8</zookeeper.version>
         <jackson.version>2.7.0</jackson.version>
         <consul-api.version>1.2.3</consul-api.version>
+        <klog.version>0.2.6-SNAPSHOT</klog.version>
     </properties>
 
     <dependencies>
