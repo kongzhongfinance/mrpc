@@ -132,6 +132,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
             request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
 
+            TraceContext.setTraceId(traceId);
+            TraceContext.setSpanId(clientSpan.getId());
             return clientSpan;
 
         } catch (Exception e) {
