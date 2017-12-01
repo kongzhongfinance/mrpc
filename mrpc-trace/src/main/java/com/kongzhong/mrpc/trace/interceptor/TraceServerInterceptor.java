@@ -22,7 +22,7 @@ import java.util.Map;
  * ServerTraceInterceptor
  */
 @Slf4j
-public class TraceServerInterceptor extends BaseFilter implements RpcServerInterceptor {
+public class TraceServerInterceptor implements RpcServerInterceptor {
 
     private AbstractAgent agent;
 
@@ -34,7 +34,12 @@ public class TraceServerInterceptor extends BaseFilter implements RpcServerInter
         if (null == traceServerAutoConfigure) {
             this.traceServerAutoConfigure = new TraceServerAutoConfigure();
         } else {
-            this.init(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+            try {
+                this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+            } catch (Exception e) {
+                log.error("初始化Trace服务端失败", e);
+            }
+
         }
     }
 
@@ -64,13 +69,12 @@ public class TraceServerInterceptor extends BaseFilter implements RpcServerInter
         try {
             Object result = invocation.next();
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
-            endTrace();
+            this.endTrace();
             return result;
         } catch (Exception e) {
-            endTrace();
+            this.endTrace();
             throw e;
         }
-
     }
 
     private void startTrace(Map<String, String> attaches) {
