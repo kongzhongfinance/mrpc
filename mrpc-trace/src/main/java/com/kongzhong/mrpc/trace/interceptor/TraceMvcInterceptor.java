@@ -16,6 +16,7 @@ import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -29,6 +30,7 @@ import java.util.Set;
  */
 @Data
 @Slf4j
+@EqualsAndHashCode(callSuper = true)
 public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
 
     private TraceClientAutoConfigure clientAutoConfigure;
