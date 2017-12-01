@@ -155,5 +155,4 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         TraceContext.addSpan(clientSpan);
 
     }
-
 }

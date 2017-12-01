@@ -92,7 +92,9 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         try {
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
-            log.info("Send trace data {}.", JacksonSerialize.toJSONString(spans));
+            if (log.isDebugEnabled()) {
+                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(spans));
+            }
         } catch (Exception e) {
             log.error("发送Trace失败", e);
         }

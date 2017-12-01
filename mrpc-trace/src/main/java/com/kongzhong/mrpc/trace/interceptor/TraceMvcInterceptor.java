@@ -147,7 +147,9 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
         // send trace spans
         try {
             agent.send(TraceContext.getSpans());
-            log.info("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
+            if (log.isDebugEnabled()) {
+                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
+            }
         } catch (Exception e) {
             log.error("发送到Trace失败", e);
         }
