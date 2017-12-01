@@ -115,8 +115,14 @@ public class BaseFilter {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
                 endTrace(request, rootSpan, times);
             }
+            // clear trace context
+            TraceContext.clear();
+            if (log.isDebugEnabled()) {
+                log.debug("Filter Trace clear.");
+                TraceContext.print();
+            }
         }catch (Exception e){
-            log.error("endTrace error ", e);
+            log.error("Filter endTrace error ", e);
         }
     }
 
@@ -132,16 +138,10 @@ public class BaseFilter {
         try {
             agent.send(TraceContext.getSpans());
             if (log.isDebugEnabled()) {
-                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
+                log.debug("Filter Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
             }
         } catch (Exception e) {
-            log.error("发送到Trace失败", e);
-        }
-        // clear trace context
-        TraceContext.clear();
-        if (log.isDebugEnabled()) {
-            log.debug("Trace clear.");
-            TraceContext.print();
+            log.error("Filter发送到Trace失败", e);
         }
     }
 

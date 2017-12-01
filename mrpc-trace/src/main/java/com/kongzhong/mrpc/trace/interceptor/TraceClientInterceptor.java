@@ -135,7 +135,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             return clientSpan;
 
         } catch (Exception e) {
-            log.error("startTrace error ", e);
+            log.error("Client startTrace error ", e);
         }
         return null;
     }
@@ -161,7 +161,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             // collect the span
             TraceContext.addSpan(clientSpan);
         } catch (Exception e1) {
-            log.error("endTrace error ", e1);
+            log.error("Client endTrace error ", e1);
         }
 
     }

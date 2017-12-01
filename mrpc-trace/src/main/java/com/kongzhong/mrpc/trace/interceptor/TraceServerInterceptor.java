@@ -61,9 +61,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         // prepare trace context
         startTrace(request.getContext());
 
-        if (log.isDebugEnabled()) {
-            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
-        }
+        TraceContext.print();
 
         try {
             Object result = invocation.next();
@@ -93,14 +91,14 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {
-                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(spans));
+                log.debug("Server Send trace data {}.", JacksonSerialize.toJSONString(spans));
             }
         } catch (Exception e) {
-            log.error("发送Trace失败", e);
+            log.error("Server 发送Trace失败", e);
         }
         TraceContext.clear();
         if (log.isDebugEnabled()) {
-            log.debug("Trace clear.");
+            log.debug("Server Trace clear.");
             TraceContext.print();
         }
     }
