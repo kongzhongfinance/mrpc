@@ -7,6 +7,7 @@ import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.utils.ServletPathMatcher;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import com.twitter.zipkin.gen.Annotation;
@@ -15,7 +16,9 @@ import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 /**
  * @author biezhi
@@ -26,6 +29,12 @@ public class BaseFilter {
 
     private AbstractAgent            agent;
     private TraceClientAutoConfigure clientAutoConfigure;
+    private Set<String>              excludesPattern;
+
+    /**
+     * PatternMatcher used in determining which paths to react to for a given request.
+     */
+    private ServletPathMatcher pathMatcher = ServletPathMatcher.getInstance();
 
     public BaseFilter(TraceClientAutoConfigure clientAutoConfigure) {
         try {
@@ -34,6 +43,11 @@ public class BaseFilter {
         } catch (Exception e) {
             log.error("初始化Trace客户端失败", e);
         }
+    }
+
+
+    public void setExcludesPattern(Set<String> excludesPattern) {
+        this.excludesPattern = excludesPattern;
     }
 
     public boolean enabled() {
@@ -57,7 +71,7 @@ public class BaseFilter {
     }
 
     private Span startTrace(HttpServletRequest req, String point) {
-        Span   apiSpan = new Span();
+        Span apiSpan = new Span();
 
         // span basic data
         Long traceId = TraceContext.getTraceId();
@@ -121,6 +135,37 @@ public class BaseFilter {
             log.debug("Trace clear.");
             TraceContext.print();
         }
+    }
+
+    public boolean isExclusion(HttpServletRequest request) {
+        String contextPath = getContextPath(request);
+        String requestURI  = request.getRequestURI();
+        if (excludesPattern == null || requestURI == null) {
+            return false;
+        }
+
+        if (contextPath != null && requestURI.startsWith(contextPath)) {
+            requestURI = requestURI.substring(contextPath.length());
+            if (!requestURI.startsWith("/")) {
+                requestURI = "/" + requestURI;
+            }
+        }
+
+        for (String pattern : excludesPattern) {
+            if (pathMatcher.matches(pattern, requestURI)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String getContextPath(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        if (contextPath == null || contextPath.length() == 0) {
+            contextPath = "/";
+        }
+        return contextPath;
     }
 
 }
