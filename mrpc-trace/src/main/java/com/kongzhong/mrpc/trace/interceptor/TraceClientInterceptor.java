@@ -106,7 +106,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         clientSpan.setId(id);
         clientSpan.setTrace_id(traceId);
         clientSpan.setParent_id(parentId);
-        clientSpan.setName(request.getMethodName());
+        clientSpan.setName(request.getAppId() + "_" + request.getClassName());
 
         long timestamp = TimeUtils.currentMicros();
         clientSpan.setTimestamp(timestamp);
@@ -138,7 +138,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
         String host = RpcContext.getAttachments(Const.SERVER_HOST);
-        int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+        int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
         // cr annotation
         clientSpan.addToAnnotations(
