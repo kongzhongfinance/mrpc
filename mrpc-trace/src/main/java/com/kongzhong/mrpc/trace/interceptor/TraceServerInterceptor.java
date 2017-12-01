@@ -61,9 +61,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         // prepare trace context
         startTrace(request.getContext());
 
-        if (log.isDebugEnabled()) {
-            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
-        }
+        TraceContext.print();
 
         try {
             Object result = invocation.next();

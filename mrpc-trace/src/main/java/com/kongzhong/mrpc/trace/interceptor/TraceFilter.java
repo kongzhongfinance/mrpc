@@ -80,7 +80,7 @@ public class TraceFilter implements Filter {
 
         if (log.isDebugEnabled()) {
             log.debug("Trace filter url: {}", uri);
-            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
+            TraceContext.print();
         }
 
         // prepare trace context
