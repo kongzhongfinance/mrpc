@@ -45,16 +45,15 @@ public class BaseFilter {
         }
     }
 
-
-    public void setExcludesPattern(Set<String> excludesPattern) {
+    void setExcludesPattern(Set<String> excludesPattern) {
         this.excludesPattern = excludesPattern;
     }
 
-    public boolean enabled() {
+    boolean enabled() {
         return clientAutoConfigure.getEnable();
     }
 
-    public void startTrace(HttpServletRequest request) {
+    void startTrace(HttpServletRequest request) {
         try {
             String uri = request.getRequestURI();
             // start root span
@@ -107,9 +106,8 @@ public class BaseFilter {
         return apiSpan;
     }
 
-    public void endTrace(HttpServletRequest request) {
+    void endTrace(HttpServletRequest request) {
         try {
-
             // end root span
             Span rootSpan = TraceContext.getRootSpan();
             if (null != rootSpan) {
@@ -146,7 +144,7 @@ public class BaseFilter {
         }
     }
 
-    public boolean isExclusion(HttpServletRequest request) {
+    boolean isExclusion(HttpServletRequest request) {
         String contextPath = getContextPath(request);
         String requestURI  = request.getRequestURI();
         if (excludesPattern == null || requestURI == null) {
@@ -159,17 +157,15 @@ public class BaseFilter {
                 requestURI = "/" + requestURI;
             }
         }
-
         for (String pattern : excludesPattern) {
             if (pathMatcher.matches(pattern, requestURI)) {
                 return true;
             }
         }
-
         return false;
     }
 
-    public String getContextPath(HttpServletRequest request) {
+    private String getContextPath(HttpServletRequest request) {
         String contextPath = request.getContextPath();
         if (contextPath == null || contextPath.length() == 0) {
             contextPath = "/";
