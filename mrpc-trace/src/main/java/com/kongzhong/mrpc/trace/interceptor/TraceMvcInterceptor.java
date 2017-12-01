@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
@@ -62,7 +63,7 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
         TraceContext.setRootSpan(rootSpan);
         if (log.isDebugEnabled()) {
             log.debug("Trace request url: {}", uri);
-            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
+            TraceContext.print();
         }
         // prepare trace context
         TraceContext.start();
@@ -104,7 +105,7 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
         // sr annotation
         apiSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
-                        Endpoint.create(apiName, ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         // app name
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
@@ -142,7 +143,7 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
         // ss annotation
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
-                        Endpoint.create(span.getName(), ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         span.setDuration(times);
 

@@ -82,6 +82,7 @@ public class TraceServerInterceptor extends BaseFilter implements RpcServerInter
         TraceContext.start();
         TraceContext.setTraceId(traceId);
         TraceContext.setSpanId(parentSpanId);
+
     }
 
     private void endTrace() {
