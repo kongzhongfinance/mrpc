@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
@@ -16,6 +17,7 @@ import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author biezhi
@@ -51,10 +53,7 @@ public class BaseFilter {
                 TraceContext.print();
             }
             // prepare trace context
-            TraceContext.start();
-            TraceContext.setTraceId(rootSpan.getTrace_id());
-            TraceContext.setSpanId(rootSpan.getId());
-            TraceContext.addSpan(rootSpan);
+            TraceContext.addSpanAndUpdate(rootSpan);
         }catch (Exception e){
             log.error("startTrace error ", e);
         }
@@ -71,7 +70,7 @@ public class BaseFilter {
 
         long timestamp = TimeUtils.currentMicros();
 
-        apiSpan.setId(traceId);
+        apiSpan.setId(Ids.get());
         apiSpan.setTrace_id(traceId);
         apiSpan.setName(point);
         apiSpan.setTimestamp(timestamp);
@@ -79,7 +78,7 @@ public class BaseFilter {
         // sr annotation
         apiSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
-                        Endpoint.create(System.getenv("APPID"), ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         // app name
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
@@ -102,6 +101,8 @@ public class BaseFilter {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
                 endTrace(request, rootSpan, times);
             }
+            // clear trace context
+            TraceContext.clear();
         }catch (Exception e){
             log.error("endTrace error ", e);
         }
@@ -111,23 +112,23 @@ public class BaseFilter {
         // ss annotation
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
-                        Endpoint.create(System.getenv("APPID"), ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         span.setDuration(times);
 
         // send trace spans
         try {
-            agent.send(TraceContext.getSpans());
+            List<Span> spans = TraceContext.getSpans();
+            agent.send(spans);
             if (log.isDebugEnabled()) {
-                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
+                log.debug("Filter Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
             }
         } catch (Exception e) {
-            log.error("发送到Trace失败", e);
+            log.error("Filter 发送到Trace失败", e);
         }
-        // clear trace context
-        TraceContext.clear();
+
         if (log.isDebugEnabled()) {
-            log.debug("Trace clear.");
+            log.debug("Filter Trace clear.");
             TraceContext.print();
         }
     }

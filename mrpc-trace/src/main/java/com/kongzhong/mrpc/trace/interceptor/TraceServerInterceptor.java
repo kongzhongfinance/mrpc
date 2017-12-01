@@ -1,15 +1,22 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
+import com.google.common.base.Stopwatch;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.AppConfiguration;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
+import com.kongzhong.mrpc.utils.Ids;
+import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.TimeUtils;
+import com.twitter.zipkin.gen.Annotation;
+import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ServerTraceInterceptor
@@ -53,55 +61,87 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         log.debug("Trace Server Interceptor");
 
         RpcRequest request = invocation.getRequest();
-        String     traceId = request.getContext().get(TraceConstants.TRACE_ID);
+        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
         if (null == traceId) {
             // don't need tracing
             return invocation.next();
         }
 
-        // prepare trace context
-        startTrace(request.getContext());
+        Stopwatch watch = Stopwatch.createStarted();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
-        }
+        // prepare trace context
+        Span span = startTrace(request);
+
+        TraceContext.print();
 
         try {
             Object result = invocation.next();
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
-            this.endTrace();
+            this.endTrace(request, span, watch);
             return result;
         } catch (Exception e) {
-            this.endTrace();
+            this.endTrace(request, span, watch);
             throw e;
         }
     }
 
-    private void startTrace(Map<String, String> attaches) {
+    private Span startTrace(RpcRequest rpcRequest) {
+        Map<String, String> attaches = rpcRequest.getContext();
 
-        long traceId      = Long.parseLong(attaches.get(TraceConstants.TRACE_ID));
+        long traceId = Long.parseLong(attaches.get(TraceConstants.TRACE_ID));
         long parentSpanId = Long.parseLong(attaches.get(TraceConstants.SPAN_ID));
 
         // start tracing
-        TraceContext.start();
-        TraceContext.setTraceId(traceId);
-        TraceContext.setSpanId(parentSpanId);
 
+        Span span = new Span();
+        long timestamp = TimeUtils.currentMicros();
+
+        span.setId(Ids.get());
+        span.setTrace_id(traceId);
+        span.setParent_id(parentSpanId);
+        span.setName(rpcRequest.getMethodName());
+        span.setTimestamp(timestamp);
+
+        // sr annotation
+        int providerHost = NetUtils.ip2Num(attaches.get(Const.SERVER_HOST));
+        int providerPort = Integer.parseInt(attaches.get(Const.SERVER_PORT));
+
+        span.addToAnnotations(
+                Annotation.create(timestamp, TraceConstants.ANNO_SR,
+                        Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
+
+        TraceContext.addSpanAndUpdate(span);
+        return span;
     }
 
-    private void endTrace() {
+    private void endTrace(RpcRequest rpcRequest, Span span, Stopwatch watch) {
         try {
+            Map<String, String> attaches = rpcRequest.getContext();
+
+            if (span == null) {
+                return;
+            }
+            span.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
+
+            // ss annotation
+            int providerHost = NetUtils.ip2Num(attaches.get(Const.SERVER_HOST));
+            int providerPort = Integer.parseInt(attaches.get(Const.SERVER_PORT));
+
+            span.addToAnnotations(
+                    Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
+                            Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
+
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {
-                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(spans));
+                log.debug("Server Send trace data {}.", JacksonSerialize.toJSONString(spans));
             }
         } catch (Exception e) {
-            log.error("发送Trace失败", e);
+            log.error("Server发送Trace失败", e);
         }
         TraceContext.clear();
         if (log.isDebugEnabled()) {
-            log.debug("Trace clear.");
+            log.debug("TraceServerInterceptor Trace clear.");
             TraceContext.print();
         }
     }

@@ -5,12 +5,14 @@ import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.utils.Ids;
@@ -24,6 +26,7 @@ import com.twitter.zipkin.gen.Span;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -93,17 +96,15 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             Span clientSpan = new Span();
 
             Long traceId = TraceContext.getTraceId();
-            Long id, parentId;
+            Long parentId;
             if (null == traceId) {
                 traceId = Ids.get();
-                id = traceId;
                 parentId = traceId;
             } else {
-                id = Ids.get();
                 parentId = TraceContext.getSpanId();
             }
 
-            clientSpan.setId(id);
+            clientSpan.setId(Ids.get());
             clientSpan.setTrace_id(traceId);
             clientSpan.setParent_id(parentId);
             clientSpan.setName(request.getMethodName());
@@ -117,7 +118,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             clientSpan.addToAnnotations(
                     Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, System.getenv("APPID")), providerHost, providerPort)));
+                            Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
             String owners = request.getContext().get(Const.SERVER_OWNER);
             if (StringUtils.isNotEmpty(owners)) {
@@ -131,6 +132,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
             request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
 
+            TraceContext.setTraceId(traceId);
+            TraceContext.setSpanId(clientSpan.getId());
             return clientSpan;
 
         } catch (Exception e) {
@@ -141,6 +144,9 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
     private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
         try {
+            if (clientSpan == null) {
+                return;
+            }
             clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
             String host = RpcContext.getAttachments(Const.SERVER_HOST);
@@ -149,7 +155,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             // cr annotation
             clientSpan.addToAnnotations(
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                            Endpoint.create(System.getenv("APPID"), NetUtils.ip2Num(host), port)));
+                            Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(host), port)));
 
             if (null != e) {
                 // attach exception
@@ -157,11 +163,13 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                         "Exception", Throwables.getStackTraceAsString(e), null));
             }
 
-            // collect the span
-            TraceContext.addSpan(clientSpan);
+            List<Span> spans = TraceContext.getSpans();
+            agent.send(spans);
+            if (log.isDebugEnabled()) {
+                log.debug("Client Send trace data {}.", JacksonSerialize.toJSONString(spans));
+            }
         } catch (Exception e1) {
             log.error("endTrace error ", e1);
         }
-
     }
 }
