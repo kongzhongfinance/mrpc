@@ -67,19 +67,17 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         // start the watch
         Span consumeSpan = this.startTrace(request);
 
-        log.info("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), TraceContext.getTraceId(), TraceContext.getSpanId());
-
         log.debug("consumer invoke before: ");
         TraceContext.print();
 
         try {
             Object result = invoker.invoke();
 
-            log.debug("consumer invoke after: ");
-            TraceContext.print();
-
-            log.debug("sr time: {}", RpcContext.getAttachments(TraceConstants.SR_TIME));
-            log.debug("ss time: {}", RpcContext.getAttachments(TraceConstants.SS_TIME));
+            if (log.isDebugEnabled()) {
+                log.debug("consumer invoke after: ");
+                TraceContext.print();
+                log.debug("consumeSpan={} sr time: {} , ss time: {}", consumeSpan.getId(), RpcContext.getAttachments(TraceConstants.SR_TIME), RpcContext.getAttachments(TraceConstants.SS_TIME));
+            }
 
             this.endTrace(request, consumeSpan, watch, null);
             return result;
@@ -140,7 +138,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
         String host = RpcContext.getAttachments(Const.SERVER_HOST);
-        int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+        int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
         // cr annotation
         clientSpan.addToAnnotations(

@@ -71,7 +71,6 @@ public class TraceFilter implements Filter {
             return;
         }
 
-        log.info("Trace filter url: {}", uri);
 
         // do trace
         Stopwatch watch = Stopwatch.createStarted();
@@ -79,7 +78,10 @@ public class TraceFilter implements Filter {
         // start root span
         Span rootSpan = startTrace(req, uri);
 
-        log.info("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), TraceContext.getTraceId(), TraceContext.getSpanId());
+        if (log.isDebugEnabled()) {
+            log.debug("Trace filter url: {}", uri);
+            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
+        }
 
         // prepare trace context
         TraceContext.start();

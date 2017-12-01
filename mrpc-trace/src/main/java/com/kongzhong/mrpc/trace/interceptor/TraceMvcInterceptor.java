@@ -54,14 +54,14 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        log.info("Trace request url: {}", uri);
 
         // start root span
         Span rootSpan = startTrace(request, uri);
         TraceContext.setRootSpan(rootSpan);
-
-        log.info("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
-
+        if (log.isDebugEnabled()) {
+            log.debug("Trace request url: {}", uri);
+            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
+        }
         // prepare trace context
         TraceContext.start();
         TraceContext.setTraceId(rootSpan.getTrace_id());
