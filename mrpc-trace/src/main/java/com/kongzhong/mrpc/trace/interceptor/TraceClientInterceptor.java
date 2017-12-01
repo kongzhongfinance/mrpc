@@ -88,71 +88,80 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
     }
 
     private Span startTrace(RpcRequest request) {
+        try {
+            // start client span
+            Span clientSpan = new Span();
 
-        // start client span
-        Span clientSpan = new Span();
+            Long traceId = TraceContext.getTraceId();
+            Long id, parentId;
+            if (null == traceId) {
+                traceId = Ids.get();
+                id = traceId;
+                parentId = traceId;
+            } else {
+                id = Ids.get();
+                parentId = TraceContext.getSpanId();
+            }
 
-        Long traceId = TraceContext.getTraceId();
-        Long id, parentId;
-        if (null == traceId) {
-            traceId = Ids.get();
-            id = traceId;
-            parentId = traceId;
-        } else {
-            id = Ids.get();
-            parentId = TraceContext.getSpanId();
+            clientSpan.setId(id);
+            clientSpan.setTrace_id(traceId);
+            clientSpan.setParent_id(parentId);
+            clientSpan.setName(request.getMethodName());
+
+            long timestamp = TimeUtils.currentMicros();
+            clientSpan.setTimestamp(timestamp);
+
+            // cs annotation
+            int providerHost = NetUtils.ip2Num(request.getContext().get(Const.SERVER_HOST));
+            int providerPort = Integer.parseInt(request.getContext().get(Const.SERVER_PORT));
+
+            clientSpan.addToAnnotations(
+                    Annotation.create(timestamp, TraceConstants.ANNO_CS,
+                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, System.getenv("APPID")), providerHost, providerPort)));
+
+            String owners = request.getContext().get(Const.SERVER_OWNER);
+            if (StringUtils.isNotEmpty(owners)) {
+                // app owner
+                clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                        "owner", owners, null
+                ));
+            }
+
+            // attach trace data
+            request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
+            request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
+
+            return clientSpan;
+
+        } catch (Exception e) {
+            log.error("startTrace error ", e);
         }
-
-        clientSpan.setId(id);
-        clientSpan.setTrace_id(traceId);
-        clientSpan.setParent_id(parentId);
-        clientSpan.setName(request.getAppId() + "_" + request.getClassName());
-
-        long timestamp = TimeUtils.currentMicros();
-        clientSpan.setTimestamp(timestamp);
-
-        // cs annotation
-        int providerHost = NetUtils.ip2Num(request.getContext().get(Const.SERVER_HOST));
-        int providerPort = Integer.parseInt(request.getContext().get(Const.SERVER_PORT));
-
-        clientSpan.addToAnnotations(
-                Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                        Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, System.getenv("APPID")), providerHost, providerPort)));
-
-        String owners = request.getContext().get(Const.SERVER_OWNER);
-        if (StringUtils.isNotEmpty(owners)) {
-            // app owner
-            clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "owner", owners, null
-            ));
-        }
-
-        // attach trace data
-        request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
-        request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
-
-        return clientSpan;
+        return null;
     }
 
     private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
-        clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
+        try {
+            clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
-        String host = RpcContext.getAttachments(Const.SERVER_HOST);
-        int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+            String host = RpcContext.getAttachments(Const.SERVER_HOST);
+            int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
-        // cr annotation
-        clientSpan.addToAnnotations(
-                Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                        Endpoint.create(System.getenv("APPID"), NetUtils.ip2Num(host), port)));
+            // cr annotation
+            clientSpan.addToAnnotations(
+                    Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
+                            Endpoint.create(System.getenv("APPID"), NetUtils.ip2Num(host), port)));
 
-        if (null != e) {
-            // attach exception
-            clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                    "Exception", Throwables.getStackTraceAsString(e), null));
+            if (null != e) {
+                // attach exception
+                clientSpan.addToBinary_annotations(BinaryAnnotation.create(
+                        "Exception", Throwables.getStackTraceAsString(e), null));
+            }
+
+            // collect the span
+            TraceContext.addSpan(clientSpan);
+        } catch (Exception e1) {
+            log.error("endTrace error ", e1);
         }
-
-        // collect the span
-        TraceContext.addSpan(clientSpan);
 
     }
 }
