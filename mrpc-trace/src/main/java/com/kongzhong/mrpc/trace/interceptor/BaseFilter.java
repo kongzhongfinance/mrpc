@@ -55,19 +55,23 @@ public class BaseFilter {
     }
 
     public void startTrace(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        // start root span
-        Span rootSpan = startTrace(request, uri);
-        TraceContext.setRootSpan(rootSpan);
-        if (log.isDebugEnabled()) {
-            log.debug("Trace request url: {}", uri);
-            TraceContext.print();
+        try {
+            String uri = request.getRequestURI();
+            // start root span
+            Span rootSpan = startTrace(request, uri);
+            TraceContext.setRootSpan(rootSpan);
+            if (log.isDebugEnabled()) {
+                log.debug("Trace request url: {}", uri);
+                TraceContext.print();
+            }
+            // prepare trace context
+            TraceContext.start();
+            TraceContext.setTraceId(rootSpan.getTrace_id());
+            TraceContext.setSpanId(rootSpan.getId());
+            TraceContext.addSpan(rootSpan);
+        }catch (Exception e){
+            log.error("startTrace error ", e);
         }
-        // prepare trace context
-        TraceContext.start();
-        TraceContext.setTraceId(rootSpan.getTrace_id());
-        TraceContext.setSpanId(rootSpan.getId());
-        TraceContext.addSpan(rootSpan);
     }
 
     private Span startTrace(HttpServletRequest req, String point) {
@@ -104,11 +108,16 @@ public class BaseFilter {
     }
 
     public void endTrace(HttpServletRequest request) {
-        // end root span
-        Span rootSpan = TraceContext.getRootSpan();
-        if (null != rootSpan) {
-            long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
-            endTrace(request, rootSpan, times);
+        try {
+
+            // end root span
+            Span rootSpan = TraceContext.getRootSpan();
+            if (null != rootSpan) {
+                long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
+                endTrace(request, rootSpan, times);
+            }
+        }catch (Exception e){
+            log.error("endTrace error ", e);
         }
     }
 
