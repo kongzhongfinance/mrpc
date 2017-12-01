@@ -77,7 +77,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             if (log.isDebugEnabled()) {
                 log.debug("consumer invoke after: ");
                 TraceContext.print();
-                log.debug("consumeSpan={} sr time: {} , ss time: {}", Long.toHexString(consumeSpan.getId()), RpcContext.getAttachments(TraceConstants.SR_TIME), RpcContext.getAttachments(TraceConstants.SS_TIME));
+                log.debug("consumeSpan={} sr time: {} , ss time: {}", consumeSpan == null ? null : Long.toHexString(consumeSpan.getId()), RpcContext.getAttachments(TraceConstants.SR_TIME), RpcContext.getAttachments(TraceConstants.SS_TIME));
             }
 
             this.endTrace(request, consumeSpan, watch, null);
