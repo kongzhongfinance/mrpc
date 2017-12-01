@@ -39,7 +39,6 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             } catch (Exception e) {
                 log.error("初始化Trace服务端失败", e);
             }
-
         }
     }
 

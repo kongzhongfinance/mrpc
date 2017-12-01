@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
@@ -92,7 +93,7 @@ public class BaseFilter {
         // sr annotation
         apiSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
-                        Endpoint.create(System.getenv("APPID"), ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         // app name
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
@@ -123,7 +124,7 @@ public class BaseFilter {
         // ss annotation
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
-                        Endpoint.create(System.getenv("APPID"), ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         span.setDuration(times);
 
