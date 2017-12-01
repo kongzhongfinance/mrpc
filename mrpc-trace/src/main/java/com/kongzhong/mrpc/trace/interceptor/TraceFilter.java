@@ -170,7 +170,10 @@ public class TraceFilter implements Filter {
         }
         // clear trace context
         TraceContext.clear();
-
+        if (log.isDebugEnabled()) {
+            log.debug("Trace clear.");
+            TraceContext.print();
+        }
     }
 
     @Override

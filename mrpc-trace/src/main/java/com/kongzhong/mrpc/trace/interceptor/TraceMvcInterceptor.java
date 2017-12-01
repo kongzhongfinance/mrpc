@@ -155,7 +155,10 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
         }
         // clear trace context
         TraceContext.clear();
-
+        if (log.isDebugEnabled()) {
+            log.debug("Trace clear.");
+            TraceContext.print();
+        }
     }
 
 }

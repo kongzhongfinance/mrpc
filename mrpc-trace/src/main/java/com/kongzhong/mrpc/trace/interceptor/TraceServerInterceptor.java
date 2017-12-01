@@ -99,6 +99,10 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             log.error("发送Trace失败", e);
         }
         TraceContext.clear();
+        if (log.isDebugEnabled()) {
+            log.debug("Trace clear.");
+            TraceContext.print();
+        }
     }
 
 
