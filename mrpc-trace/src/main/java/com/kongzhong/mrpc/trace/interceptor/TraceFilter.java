@@ -16,7 +16,13 @@ import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
@@ -116,7 +122,7 @@ public class TraceFilter implements Filter {
         // sr annotation
         apiSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
-                        Endpoint.create(apiName, ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         // app name
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
@@ -155,7 +161,7 @@ public class TraceFilter implements Filter {
         // ss annotation
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
-                        Endpoint.create(span.getName(), ServerInfo.IP4, req.getLocalPort())));
+                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         span.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 

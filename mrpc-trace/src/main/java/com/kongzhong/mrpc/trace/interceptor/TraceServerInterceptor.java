@@ -61,7 +61,9 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         // prepare trace context
         startTrace(request.getContext());
 
-        TraceContext.print();
+        if (log.isDebugEnabled()) {
+            log.debug("Current thread: [{}], trace context: traceId={}, spanId={}", Thread.currentThread().getName(), Long.toHexString(TraceContext.getTraceId()), Long.toHexString(TraceContext.getSpanId()));
+        }
 
         try {
             Object result = invocation.next();
@@ -84,6 +86,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         TraceContext.start();
         TraceContext.setTraceId(traceId);
         TraceContext.setSpanId(parentSpanId);
+
     }
 
     private void endTrace() {
