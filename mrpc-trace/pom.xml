@@ -50,6 +50,11 @@
             <version>4.3.10.RELEASE</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.kongzhong.finance.basic</groupId>
+            <artifactId>constant</artifactId>
+            <version>0.2.2-RELEASE</version>
+        </dependency>
 
     </dependencies>
 

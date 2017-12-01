@@ -5,7 +5,6 @@ import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
-import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
@@ -118,7 +117,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             clientSpan.addToAnnotations(
                     Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, AppConfiguration.getAppId()), providerHost, providerPort)));
+                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, System.getenv("APPID")), providerHost, providerPort)));
 
             String owners = request.getContext().get(Const.SERVER_OWNER);
             if (StringUtils.isNotEmpty(owners)) {
@@ -150,7 +149,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             // cr annotation
             clientSpan.addToAnnotations(
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                            Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(host), port)));
+                            Endpoint.create(System.getenv("APPID"), NetUtils.ip2Num(host), port)));
 
             if (null != e) {
                 // attach exception
@@ -163,5 +162,6 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         } catch (Exception e1) {
             log.error("endTrace error ", e1);
         }
+
     }
 }

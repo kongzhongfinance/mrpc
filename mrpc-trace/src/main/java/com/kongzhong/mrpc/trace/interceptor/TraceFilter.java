@@ -1,35 +1,17 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
-import com.google.common.base.Stopwatch;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
-import com.kongzhong.basic.zipkin.util.AppConfiguration;
-import com.kongzhong.basic.zipkin.util.ServerInfo;
-import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.ServletPathMatcher;
-import com.kongzhong.mrpc.utils.Ids;
-import com.kongzhong.mrpc.utils.TimeUtils;
-import com.twitter.zipkin.gen.Annotation;
-import com.twitter.zipkin.gen.BinaryAnnotation;
-import com.twitter.zipkin.gen.Endpoint;
-import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * TraceFilter
@@ -38,11 +20,9 @@ import java.util.concurrent.TimeUnit;
 public class TraceFilter implements Filter {
 
     private static final String PARAM_NAME_EXCLUSIONS = "exclusions";
-
-    private TraceClientAutoConfigure clientAutoConfigure;
-    private AbstractAgent            agent;
-    private Set<String>              excludesPattern;
-    private String                   contextPath;
+    private BaseFilter  baseFilter;
+    private Set<String> excludesPattern;
+    private String      contextPath;
 
     /**
      * PatternMatcher used in determining which paths to react to for a given request.
@@ -50,8 +30,7 @@ public class TraceFilter implements Filter {
     private ServletPathMatcher pathMatcher = ServletPathMatcher.getInstance();
 
     public TraceFilter(TraceClientAutoConfigure clientAutoConfigure, AbstractAgent agent) {
-        this.clientAutoConfigure = clientAutoConfigure;
-        this.agent = agent;
+        this.baseFilter = new BaseFilter(clientAutoConfigure);
     }
 
     @Override
@@ -65,7 +44,7 @@ public class TraceFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!clientAutoConfigure.getEnable()) {
+        if (!baseFilter.enabled()) {
             chain.doFilter(request, response);
             return;
         }
@@ -79,62 +58,13 @@ public class TraceFilter implements Filter {
         }
 
 
-        // do trace
-        Stopwatch watch = Stopwatch.createStarted();
-
-        // start root span
-        Span rootSpan = startTrace(req, uri);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Trace filter url: {}", uri);
-            TraceContext.print();
-        }
-
-        // prepare trace context
-        TraceContext.start();
-        TraceContext.setTraceId(rootSpan.getTrace_id());
-        TraceContext.setSpanId(rootSpan.getId());
-        TraceContext.addSpan(rootSpan);
+        baseFilter.startTrace(req);
 
         // executor other filters
         chain.doFilter(request, response);
 
         // end root span
-        endTrace(req, rootSpan, watch);
-    }
-
-    private Span startTrace(HttpServletRequest req, String point) {
-
-        String apiName = req.getRequestURI();
-        Span   apiSpan = new Span();
-
-        // span basic data
-        Long traceId = TraceContext.getTraceId();
-        if (null == traceId) {
-            traceId = Ids.get();
-        }
-
-        apiSpan.setId(traceId);
-        apiSpan.setTrace_id(traceId);
-        apiSpan.setName(point);
-        long timestamp = TimeUtils.currentMicros();
-        apiSpan.setTimestamp(timestamp);
-
-        // sr annotation
-        apiSpan.addToAnnotations(
-                Annotation.create(timestamp, TraceConstants.ANNO_SR,
-                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
-
-        // app name
-        apiSpan.addToBinary_annotations(BinaryAnnotation.create(
-                "name", clientAutoConfigure.getName(), null
-        ));
-
-        // app owner
-        apiSpan.addToBinary_annotations(BinaryAnnotation.create(
-                "负责人", clientAutoConfigure.getOwner(), null
-        ));
-        return apiSpan;
+        baseFilter.endTrace(req);
     }
 
     public boolean isExclusion(String requestURI) {
@@ -156,31 +86,6 @@ public class TraceFilter implements Filter {
         }
 
         return false;
-    }
-
-    private void endTrace(HttpServletRequest req, Span span, Stopwatch watch) {
-        // ss annotation
-        span.addToAnnotations(
-                Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
-                        Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
-
-        span.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
-
-        // send trace spans
-        try {
-            agent.send(TraceContext.getSpans());
-            if (log.isDebugEnabled()) {
-                log.debug("Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
-            }
-        } catch (Exception e) {
-            log.error("发送到Trace失败", e);
-        }
-        // clear trace context
-        TraceContext.clear();
-        if (log.isDebugEnabled()) {
-            log.debug("Trace clear.");
-            TraceContext.print();
-        }
     }
 
     @Override
@@ -209,5 +114,6 @@ public class TraceFilter implements Filter {
             return null;
         }
     }
+
 
 }

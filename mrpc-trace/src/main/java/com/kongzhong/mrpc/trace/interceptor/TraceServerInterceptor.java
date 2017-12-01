@@ -39,6 +39,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             } catch (Exception e) {
                 log.error("初始化Trace服务端失败", e);
             }
+
         }
     }
 
@@ -68,13 +69,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         try {
             Object result = invocation.next();
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
-            endTrace();
+            this.endTrace();
             return result;
         } catch (Exception e) {
-            endTrace();
+            this.endTrace();
             throw e;
         }
-
     }
 
     private void startTrace(Map<String, String> attaches) {
