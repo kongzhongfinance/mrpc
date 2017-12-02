@@ -110,6 +110,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
                         Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
+        TraceContext.addSpanAndUpdate(span);
         return span;
     }
 
@@ -129,8 +130,6 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             span.addToAnnotations(
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                             Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
-
-            TraceContext.addSpanAndUpdate(span);
 
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);

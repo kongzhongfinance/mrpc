@@ -132,6 +132,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
             request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
 
+            TraceContext.addSpanAndUpdate(clientSpan);
             return clientSpan;
 
         } catch (Exception e) {
@@ -160,8 +161,6 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 clientSpan.addToBinary_annotations(BinaryAnnotation.create(
                         "Exception", Throwables.getStackTraceAsString(e), null));
             }
-
-            TraceContext.addSpanAndUpdate(clientSpan);
 
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
