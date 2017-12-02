@@ -110,7 +110,6 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
                         Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
-        TraceContext.addSpanAndUpdate(span);
         return span;
     }
 
@@ -131,6 +130,8 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                             Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
+            TraceContext.addSpanAndUpdate(span);
+
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {
@@ -141,7 +142,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         }
         TraceContext.clear();
         if (log.isDebugEnabled()) {
-            log.debug("TraceServerInterceptor Trace clear.");
+            log.debug("TraceServerInterceptor Trace clear. traceId={}", TraceContext.getTraceId());
             TraceContext.print();
         }
     }

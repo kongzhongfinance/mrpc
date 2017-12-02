@@ -89,6 +89,7 @@ public class BaseFilter {
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
                 "负责人", clientAutoConfigure.getOwner(), null
         ));
+
         return apiSpan;
     }
 
@@ -116,6 +117,7 @@ public class BaseFilter {
 
         span.setDuration(times);
 
+        TraceContext.addSpanAndUpdate(span);
         // send trace spans
         try {
             List<Span> spans = TraceContext.getSpans();
@@ -128,7 +130,7 @@ public class BaseFilter {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("Filter Trace clear.");
+            log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
             TraceContext.print();
         }
     }
