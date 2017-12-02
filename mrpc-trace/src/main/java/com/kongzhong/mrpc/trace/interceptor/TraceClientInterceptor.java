@@ -107,7 +107,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             clientSpan.setId(Ids.get());
             clientSpan.setTrace_id(traceId);
             clientSpan.setParent_id(parentId);
-            clientSpan.setName(request.getMethodName());
+            clientSpan.setName(request.getClassName() + "_" + request.getMethodName());
 
             long timestamp = TimeUtils.currentMicros();
             clientSpan.setTimestamp(timestamp);

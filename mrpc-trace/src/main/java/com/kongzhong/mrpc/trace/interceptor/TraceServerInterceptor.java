@@ -99,7 +99,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         span.setId(Ids.get());
         span.setTrace_id(traceId);
         span.setParent_id(parentSpanId);
-        span.setName(rpcRequest.getMethodName());
+        span.setName(rpcRequest.getClassName() + "_" + rpcRequest.getMethodName());
         span.setTimestamp(timestamp);
 
         // sr annotation
