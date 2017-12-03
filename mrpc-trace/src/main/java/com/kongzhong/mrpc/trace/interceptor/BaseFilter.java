@@ -4,6 +4,7 @@ import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
+import com.kongzhong.basic.zipkin.util.NetUtils;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
@@ -75,6 +76,11 @@ public class BaseFilter {
         apiSpan.setName(point);
         apiSpan.setTimestamp(timestamp);
 
+        // cs annotation
+        apiSpan.addToAnnotations(
+                Annotation.create(timestamp, TraceConstants.ANNO_CS,
+                        Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(req.getRemoteHost()), req.getLocalPort())));
+
         // sr annotation
         apiSpan.addToAnnotations(
                 Annotation.create(timestamp, TraceConstants.ANNO_SR,
@@ -114,6 +120,12 @@ public class BaseFilter {
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                         Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
+
+        // cr annotation
+        span.addToAnnotations(
+                Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
+                        Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(req.getRemoteHost()), req.getLocalPort())));
+
 
         span.setDuration(times);
 
