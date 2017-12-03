@@ -64,15 +64,11 @@ public class BaseFilter {
         Span   apiSpan = new Span();
 
         // span basic data
-        Long traceId = TraceContext.getTraceId();
-        if (null == traceId) {
-            traceId = Ids.get();
-        }
-
         long timestamp = TimeUtils.currentMicros();
 
-        apiSpan.setId(Ids.get());
-        apiSpan.setTrace_id(traceId);
+        long id = Ids.get();
+        apiSpan.setId(id);
+        apiSpan.setTrace_id(id);
         apiSpan.setName(point);
         apiSpan.setTimestamp(timestamp);
 
