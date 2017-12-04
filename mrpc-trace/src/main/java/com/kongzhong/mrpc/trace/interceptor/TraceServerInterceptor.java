@@ -52,7 +52,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     }
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         if (!this.traceServerAutoConfigure.getEnable()) {
             // not enable tracing
             return invocation.next();

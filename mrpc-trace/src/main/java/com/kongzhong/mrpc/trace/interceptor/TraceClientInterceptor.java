@@ -54,7 +54,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
     }
 
     @Override
-    public Object execute(ClientInvocation invocation) throws Exception {
+    public Object execute(ClientInvocation invocation) throws Throwable {
 
         if (!traceClientAutoConfigure.getEnable()) {
             // not need tracing

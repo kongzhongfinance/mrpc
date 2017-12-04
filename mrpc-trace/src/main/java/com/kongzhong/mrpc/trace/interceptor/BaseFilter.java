@@ -4,11 +4,11 @@ import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
-import com.kongzhong.basic.zipkin.util.NetUtils;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.utils.ServletPathMatcher;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import com.twitter.zipkin.gen.Annotation;
@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author biezhi
@@ -29,6 +30,12 @@ public class BaseFilter {
 
     private AbstractAgent            agent;
     private TraceClientAutoConfigure clientAutoConfigure;
+    private Set<String>              excludesPattern;
+
+    /**
+     * PatternMatcher used in determining which paths to react to for a given request.
+     */
+    private ServletPathMatcher pathMatcher = ServletPathMatcher.getInstance();
 
     public BaseFilter(TraceClientAutoConfigure clientAutoConfigure) {
         try {
@@ -39,7 +46,11 @@ public class BaseFilter {
         }
     }
 
-    public boolean enabled() {
+    void setExcludesPattern(Set<String> excludesPattern) {
+        this.excludesPattern = excludesPattern;
+    }
+
+    boolean enabled() {
         return clientAutoConfigure.getEnable();
     }
 
@@ -71,11 +82,6 @@ public class BaseFilter {
         apiSpan.setTrace_id(id);
         apiSpan.setName(point);
         apiSpan.setTimestamp(timestamp);
-
-        // cs annotation
-        apiSpan.addToAnnotations(
-                Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                        Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(req.getRemoteHost()), req.getLocalPort())));
 
         // sr annotation
         apiSpan.addToAnnotations(
@@ -117,12 +123,6 @@ public class BaseFilter {
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                         Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
-        // cr annotation
-        span.addToAnnotations(
-                Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                        Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(req.getRemoteHost()), req.getLocalPort())));
-
-
         span.setDuration(times);
 
         TraceContext.addSpanAndUpdate(span);
@@ -141,6 +141,35 @@ public class BaseFilter {
             log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
             TraceContext.print();
         }
+    }
+
+    boolean isExclusion(HttpServletRequest request) {
+        String contextPath = getContextPath(request);
+        String requestURI  = request.getRequestURI();
+        if (excludesPattern == null || requestURI == null) {
+            return false;
+        }
+
+        if (contextPath != null && requestURI.startsWith(contextPath)) {
+            requestURI = requestURI.substring(contextPath.length());
+            if (!requestURI.startsWith("/")) {
+                requestURI = "/" + requestURI;
+            }
+        }
+        for (String pattern : excludesPattern) {
+            if (pathMatcher.matches(pattern, requestURI)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getContextPath(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        if (contextPath == null || contextPath.length() == 0) {
+            contextPath = "/";
+        }
+        return contextPath;
     }
 
 }
