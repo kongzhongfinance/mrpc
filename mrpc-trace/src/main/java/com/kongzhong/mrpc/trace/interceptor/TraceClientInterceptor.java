@@ -114,9 +114,11 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 TraceContext.setSpanId(id);
             }
 
+            String serviceName = RequestUtils.getServerName(request.getClassName(), request.getMethodName());
+
             clientSpan.setId(id);
             clientSpan.setTrace_id(traceId);
-            clientSpan.setName(request.getMethodName());
+            clientSpan.setName(serviceName);
 
             long timestamp = TimeUtils.currentMicros();
             clientSpan.setTimestamp(timestamp);
@@ -127,7 +129,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             clientSpan.addToAnnotations(
                     Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, AppConfiguration.getAppId()), providerHost, providerPort)));
+                            Endpoint.create(serviceName, providerHost, providerPort)));
 
             String owners = request.getContext().get(Const.SERVER_OWNER);
             if (StringUtils.isNotEmpty(owners)) {
@@ -159,7 +161,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             // cr annotation
             clientSpan.addToAnnotations(
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                            Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(host), port)));
+                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, AppConfiguration.getAppId()), NetUtils.ip2Num(host), port)));
 
             if (null != e) {
                 // attach exception

@@ -4,6 +4,8 @@ import com.google.common.base.Stopwatch;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
+import com.kongzhong.basic.zipkin.util.AppConfiguration;
+import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
@@ -11,8 +13,10 @@ import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
 import com.kongzhong.mrpc.utils.Ids;
+import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import com.twitter.zipkin.gen.Annotation;
+import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,11 +85,11 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         try {
             Object result = invocation.next();
 
-            this.endTrace(span, watch);
+            this.endTrace(request, span, watch);
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
             return result;
         } catch (Exception e) {
-            this.endTrace(span, watch);
+            this.endTrace(request, span, watch);
             throw e;
         }
     }
@@ -99,22 +103,34 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         long parentSpanId = Long.parseLong(attaches.get(TraceConstants.SPAN_ID));
         providerSpan.setTrace_id(traceId);
         providerSpan.setParent_id(parentSpanId);
-        providerSpan.setName(request.getClassName() + "." + request.getMethodName());
+
+        String serviceName = RequestUtils.getServerName(request.getClassName(), request.getMethodName());
+        providerSpan.setName(serviceName);
+
+        int providerHost = NetUtils.ip2Num(request.getContext().get(Const.SERVER_HOST));
+        int providerPort = Integer.parseInt(request.getContext().get(Const.SERVER_PORT));
 
         // sr annotation
         providerSpan.addToAnnotations(
-                Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SR, null));
+                Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SR,
+                        Endpoint.create(serviceName, providerHost, providerPort)));
 
         return providerSpan;
     }
 
-    private void endTrace(Span span, Stopwatch watch) {
+    private void endTrace(RpcRequest request, Span span, Stopwatch watch) {
         try {
             span.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
+            String serviceName = RequestUtils.getServerName(request.getClassName(), request.getMethodName());
+
+            int providerHost = NetUtils.ip2Num(request.getContext().get(Const.SERVER_HOST));
+            int providerPort = Integer.parseInt(request.getContext().get(Const.SERVER_PORT));
+
             // ss annotation
             span.addToAnnotations(
-                    Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS, null));
+                    Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
+                            Endpoint.create(serviceName, providerHost, providerPort)));
 
             TraceContext.addSpan(span);
 

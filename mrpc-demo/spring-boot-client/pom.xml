@@ -68,11 +68,11 @@
             <artifactId>mrpc-trace</artifactId>
             <version>${parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.kongzhong.finance.basic</groupId>
-            <artifactId>klog</artifactId>
-            <version>${klog.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.kongzhong.finance.basic</groupId>-->
+            <!--<artifactId>klog</artifactId>-->
+            <!--<version>${klog.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <dependencyManagement>
