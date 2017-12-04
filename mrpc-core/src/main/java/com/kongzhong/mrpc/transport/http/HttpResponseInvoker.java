@@ -17,7 +17,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 import java.util.Map;
 
@@ -62,7 +61,6 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             ServiceStatusTable.me().addErrorInvoke(request.getClassName());
         } finally {
             RpcContext.remove();
-            MDC.remove(TraceConstants.TRACE_ID);
         }
         String  body    = JacksonSerialize.toJSONString(rpcResponse);
         ByteBuf byteBuf = Unpooled.wrappedBuffer(body.getBytes(CharsetUtil.UTF_8));
