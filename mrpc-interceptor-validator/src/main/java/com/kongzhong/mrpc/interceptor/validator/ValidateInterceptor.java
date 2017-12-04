@@ -23,7 +23,7 @@ public class ValidateInterceptor implements RpcServerInterceptor {
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         Object[] parameters = invocation.getParameters();
         for (Object arg : parameters) {
             //参数为空不校验

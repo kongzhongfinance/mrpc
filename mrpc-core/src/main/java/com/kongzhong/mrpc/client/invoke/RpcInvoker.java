@@ -28,7 +28,7 @@ public class RpcInvoker {
         this.request.getContext().put(Const.SERVER_PORT, address.split(":")[1]);
     }
 
-    public Object invoke() throws Exception {
+    public Object invoke() throws Throwable {
         if (!clientHandler.getChannel().isActive()) {
             throw new ConnectException(String.format("Server channel %s unActive.", clientHandler.getChannel()));
         }

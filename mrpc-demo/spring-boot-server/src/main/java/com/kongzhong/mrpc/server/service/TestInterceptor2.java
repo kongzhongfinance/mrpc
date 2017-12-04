@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class TestInterceptor2 implements RpcServerInterceptor {
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         log.info("test interceptor2 execute.");
         Object obj = invocation.next();
         log.info("test interceptor2 execute, sleep 3s.");

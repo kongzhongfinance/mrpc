@@ -119,4 +119,8 @@ public interface UserService {
         return time;
     }
 
+    default void testError(){
+        System.out.println("test-------");
+        throw new ExceptionInInitializerError("omg.");
+    }
 }

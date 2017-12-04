@@ -30,13 +30,13 @@ public class ClientInvocation implements Invocation {
     }
 
     @Override
-    public Object next() throws Exception {
+    public Object next() throws Throwable {
         if (this.currentIndex == this.interceptors.size() - 1) {
             try {
                 return rpcInvoker.invoke();
             } catch (Exception e) {
                 if (e instanceof InvocationTargetException) {
-                    throw (Exception) e.getCause();
+                    throw e.getCause();
                 }
                 throw e;
             }

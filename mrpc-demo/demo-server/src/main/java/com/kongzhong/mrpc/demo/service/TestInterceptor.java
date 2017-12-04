@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TestInterceptor implements RpcServerInterceptor {
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         log.info("test interceptor execute before.");
         Object obj = invocation.next();
         log.info("test interceptor execute after.");

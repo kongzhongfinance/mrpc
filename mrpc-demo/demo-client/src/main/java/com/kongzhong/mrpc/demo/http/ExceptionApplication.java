@@ -21,8 +21,9 @@ public class ExceptionApplication {
         try {
 //             userService.testNormalExp();
 //            userService.testBizExp(2333);
-            userService.testNoArgException();
-        } catch (Exception e) {
+//            userService.testNoArgException();
+            userService.testError();
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 

@@ -13,9 +13,9 @@ import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 @FunctionalInterface
 public interface HaStrategy {
 
-    Object call(RpcRequest request, LoadBalance loadBalance) throws Exception;
+    Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable;
 
-    default Object invoke(RpcRequest request, LoadBalance loadBalance) throws Exception {
+    default Object invoke(RpcRequest request, LoadBalance loadBalance) throws Throwable {
         SimpleClientHandler clientHandler = loadBalance.next(request.getAppId(), request.getClassName());
         clientHandler.addHit();
         RpcInvoker rpcInvoker = new RpcInvoker(request, clientHandler);

@@ -50,7 +50,7 @@ public class MetricsInterceptor implements RpcServerInterceptor {
     }
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         Class<?> clazz  = invocation.getTarget().getClass();
         String   method = invocation.getFastMethod().getName();
         long     begin  = System.currentTimeMillis();

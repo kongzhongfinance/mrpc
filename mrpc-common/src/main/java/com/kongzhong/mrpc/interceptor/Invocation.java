@@ -7,6 +7,6 @@ package com.kongzhong.mrpc.interceptor;
  */
 public interface Invocation {
 
-    Object next() throws Exception;
+    Object next() throws Throwable;
 
 }

@@ -13,7 +13,7 @@ import com.kongzhong.mrpc.model.RpcRequest;
 public class FailFastHaStrategy implements HaStrategy {
 
     @Override
-    public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
+    public Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable {
         return invoke(request, loadBalance);
     }
 
