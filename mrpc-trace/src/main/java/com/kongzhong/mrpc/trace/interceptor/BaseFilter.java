@@ -78,16 +78,11 @@ public class BaseFilter {
         Span apiSpan = new Span();
 
         // span basic data
-        Long traceId = TraceContext.getTraceId();
-        if (null == traceId) {
-            traceId = Ids.get();
-        }
-
-        long timestamp = TimeUtils.currentMicros();
-
-        apiSpan.setId(traceId);
-        apiSpan.setTrace_id(traceId);
+        long id = Ids.get();
+        apiSpan.setId(id);
+        apiSpan.setTrace_id(id);
         apiSpan.setName(point);
+        long timestamp = TimeUtils.currentMicros();
         apiSpan.setTimestamp(timestamp);
 
         // sr annotation
@@ -115,8 +110,6 @@ public class BaseFilter {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
                 endTrace(request, rootSpan, times);
             }
-            // clear trace context
-            TraceContext.clear();
             if (log.isDebugEnabled()) {
                 log.debug("Filter Trace clear.");
                 TraceContext.print();
@@ -140,6 +133,8 @@ public class BaseFilter {
             if (log.isDebugEnabled()) {
                 log.debug("Filter Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
             }
+            // clear trace context
+            TraceContext.clear();
         } catch (Exception e) {
             log.error("Filter发送到Trace失败", e);
         }

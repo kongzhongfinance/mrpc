@@ -25,6 +25,7 @@ import com.twitter.zipkin.gen.Span;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,8 +66,11 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         // start the watch
         Stopwatch watch = Stopwatch.createStarted();
 
+        List<Span> rootSpans = TraceContext.getSpans();
+        boolean    fromUrl   = (rootSpans != null && rootSpans.isEmpty() == false);
+
         // start the watch
-        Span consumeSpan = this.startTrace(request);
+        Span consumeSpan = this.startTrace(request, fromUrl);
 
         log.debug("consumer invoke before: ");
         TraceContext.print();
@@ -80,33 +84,38 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 log.debug("consumeSpan={} sr time: {} , ss time: {}", consumeSpan == null ? null : Long.toHexString(consumeSpan.getId()), RpcContext.getAttachments(TraceConstants.SR_TIME), RpcContext.getAttachments(TraceConstants.SS_TIME));
             }
 
-            this.endTrace(request, consumeSpan, watch, null);
+            this.endTrace(request, consumeSpan, watch, null, fromUrl);
             return result;
         } catch (Exception e) {
-            this.endTrace(request, consumeSpan, watch, e);
+            this.endTrace(request, consumeSpan, watch, e, false);
             throw e;
         }
     }
 
-    private Span startTrace(RpcRequest request) {
+    private Span startTrace(RpcRequest request, boolean fromUrl) {
         try {
             // start client span
             Span clientSpan = new Span();
 
-            Long traceId = TraceContext.getTraceId();
-            Long id, parentId;
-            if (null == traceId) {
-                traceId = Ids.get();
-                id = traceId;
-                parentId = traceId;
-            } else {
-                id = Ids.get();
+            long id       = Ids.get();
+            long traceId  = id;
+            long parentId = id;
+
+            // 判断是不是要创建新的span
+            if (fromUrl) {
+                // 来源于url,直接继承
+                traceId = TraceContext.getTraceId();
                 parentId = TraceContext.getSpanId();
+                clientSpan.setParent_id(parentId); // 这个使用不当,如果放在else分支,会导致zipkin ui js溢出
+            } else {
+                // 开始span
+                TraceContext.start();
+                TraceContext.setTraceId(id);
+                TraceContext.setSpanId(id);
             }
 
             clientSpan.setId(id);
             clientSpan.setTrace_id(traceId);
-            clientSpan.setParent_id(parentId);
             clientSpan.setName(request.getMethodName());
 
             long timestamp = TimeUtils.currentMicros();
@@ -132,8 +141,6 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
             request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
 
-            TraceContext.setTraceId(traceId);
-            TraceContext.setSpanId(clientSpan.getId());
             return clientSpan;
 
         } catch (Exception e) {
@@ -142,12 +149,12 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         return null;
     }
 
-    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e, boolean fromUrl) {
         try {
             clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
             String host = RpcContext.getAttachments(Const.SERVER_HOST);
-            int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+            int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
             // cr annotation
             clientSpan.addToAnnotations(
@@ -162,6 +169,13 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             // collect the span
             TraceContext.addSpan(clientSpan);
+
+            // 来源于url的span,在本地发送
+            if (!fromUrl) {
+                // 将span发送出去
+                agent.send(TraceContext.getSpans());
+                TraceContext.clear();
+            }
         } catch (Exception e1) {
             log.error("Client endTrace error ", e1);
         }

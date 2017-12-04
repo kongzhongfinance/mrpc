@@ -25,8 +25,9 @@ public class UserServiceImpl implements UserService {
     public String testTrace() {
         log.info("进入 UserService");
         log.info("开始调用 OtherService");
-        String s = otherService.waitTime(3);
-        return benchmarkService.echoService("hello:" + s).toString();
+//        String s = otherService.waitTime(3);
+//        return benchmarkService.echoService("hello:" + s).toString();
+        return "aaa";
     }
 
 }
