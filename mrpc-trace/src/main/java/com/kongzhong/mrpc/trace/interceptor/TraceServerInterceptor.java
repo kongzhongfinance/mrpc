@@ -81,11 +81,11 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         try {
             Object result = invocation.next();
 
-            this.endTrace(span, request.getContext(), watch);
+            this.endTrace(span, watch);
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
             return result;
         } catch (Exception e) {
-            this.endTrace(null, request.getContext(), null);
+            this.endTrace(span, watch);
             throw e;
         }
     }
@@ -108,7 +108,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         return providerSpan;
     }
 
-    private void endTrace(Span span, Map<String, String> attaches, Stopwatch watch) {
+    private void endTrace(Span span, Stopwatch watch) {
         try {
             span.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
@@ -125,9 +125,6 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             if (log.isDebugEnabled()) {
                 log.debug("Server Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
             }
-
-            TraceContext.clear();
-
         } catch (Exception e) {
             log.error("Server 发送Trace失败", e);
         }
