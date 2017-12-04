@@ -7,7 +7,7 @@
     <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
 
     <modules>
         <module>mrpc-common</module>
@@ -21,7 +21,6 @@
         <module>mrpc-interceptor-validator</module>
         <module>mrpc-hystrix</module>
         <module>mrpc-trace</module>
-        <module>mrpc-ktrace</module>
     </modules>
 
     <properties>
