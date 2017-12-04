@@ -15,6 +15,7 @@ import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.utils.RequestUtils;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -107,7 +108,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             clientSpan.setId(Ids.get());
             clientSpan.setTrace_id(traceId);
             clientSpan.setParent_id(parentId);
-            clientSpan.setName(request.getClassName() + "_" + request.getMethodName());
+            clientSpan.setName(RequestUtils.getServerName(request.getClassName(), request.getMethodName()));
 
             long timestamp = TimeUtils.currentMicros();
             clientSpan.setTimestamp(timestamp);

@@ -12,6 +12,7 @@ import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
+import com.kongzhong.mrpc.trace.utils.RequestUtils;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.TimeUtils;
@@ -99,7 +100,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         span.setId(Ids.get());
         span.setTrace_id(traceId);
         span.setParent_id(parentSpanId);
-        span.setName(rpcRequest.getClassName() + "_" + rpcRequest.getMethodName());
+        span.setName(RequestUtils.getServerName(rpcRequest.getClassName(), rpcRequest.getMethodName()));
         span.setTimestamp(timestamp);
 
         // sr annotation
