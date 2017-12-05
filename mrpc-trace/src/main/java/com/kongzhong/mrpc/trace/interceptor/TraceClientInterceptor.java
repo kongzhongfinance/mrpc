@@ -12,8 +12,10 @@ import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.utils.RequestUtils;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
@@ -66,11 +68,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         // start the watch
         Stopwatch watch = Stopwatch.createStarted();
 
-        List<Span> rootSpans = TraceContext.getSpans();
-        boolean    fromUrl   = (rootSpans != null && rootSpans.isEmpty() == false);
-
         // start the watch
-        Span consumeSpan = this.startTrace(request, fromUrl);
+        Span consumeSpan = this.startTrace(request);
 
         log.debug("consumer invoke before: ");
         TraceContext.print();
@@ -84,41 +83,32 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 log.debug("consumeSpan={} sr time: {} , ss time: {}", consumeSpan == null ? null : Long.toHexString(consumeSpan.getId()), RpcContext.getAttachments(TraceConstants.SR_TIME), RpcContext.getAttachments(TraceConstants.SS_TIME));
             }
 
-            this.endTrace(request, consumeSpan, watch, null, fromUrl);
+            this.endTrace(request, consumeSpan, watch, null);
             return result;
         } catch (Exception e) {
-            this.endTrace(request, consumeSpan, watch, e, false);
+            this.endTrace(request, consumeSpan, watch, e);
             throw e;
         }
     }
 
-    private Span startTrace(RpcRequest request, boolean fromUrl) {
+    private Span startTrace(RpcRequest request) {
         try {
             // start client span
             Span clientSpan = new Span();
 
-            long id       = Ids.get();
-            long traceId  = id;
-            long parentId = id;
-
-            // 判断是不是要创建新的span
-            if (fromUrl) {
-                // 来源于url,直接继承
-                traceId = TraceContext.getTraceId();
-                parentId = TraceContext.getSpanId();
-                clientSpan.setParent_id(parentId); // 这个使用不当,如果放在else分支,会导致zipkin ui js溢出
+            Long traceId = TraceContext.getTraceId();
+            Long parentId;
+            if (null == traceId) {
+                traceId = Ids.get();
+                parentId = traceId;
             } else {
-                // 开始span
-                TraceContext.start();
-                TraceContext.setTraceId(id);
-                TraceContext.setSpanId(id);
+                parentId = TraceContext.getSpanId();
             }
 
-            String serviceName = RequestUtils.getServerName(request.getClassName(), request.getMethodName());
-
-            clientSpan.setId(id);
+            clientSpan.setId(Ids.get());
             clientSpan.setTrace_id(traceId);
-            clientSpan.setName(serviceName);
+            clientSpan.setParent_id(parentId);
+            clientSpan.setName(RequestUtils.getServerName(request.getClassName(), request.getMethodName()));
 
             long timestamp = TimeUtils.currentMicros();
             clientSpan.setTimestamp(timestamp);
@@ -129,7 +119,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             clientSpan.addToAnnotations(
                     Annotation.create(timestamp, TraceConstants.ANNO_CS,
-                            Endpoint.create(serviceName, providerHost, providerPort)));
+                            Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
             String owners = request.getContext().get(Const.SERVER_OWNER);
             if (StringUtils.isNotEmpty(owners)) {
@@ -143,25 +133,29 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             request.addContext(TraceConstants.TRACE_ID, String.valueOf(clientSpan.getTrace_id()));
             request.addContext(TraceConstants.SPAN_ID, String.valueOf(clientSpan.getId()));
 
+            TraceContext.addSpanAndUpdate(clientSpan);
             return clientSpan;
 
         } catch (Exception e) {
-            log.error("Client startTrace error ", e);
+            log.error("startTrace error ", e);
         }
         return null;
     }
 
-    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e, boolean fromUrl) {
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
         try {
+            if (clientSpan == null) {
+                return;
+            }
             clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
             String host = RpcContext.getAttachments(Const.SERVER_HOST);
-            int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+            int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
             // cr annotation
             clientSpan.addToAnnotations(
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_CR,
-                            Endpoint.create(request.getContext().getOrDefault(Const.SERVER_NAME, AppConfiguration.getAppId()), NetUtils.ip2Num(host), port)));
+                            Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(host), port)));
 
             if (null != e) {
                 // attach exception
@@ -169,18 +163,13 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                         "Exception", Throwables.getStackTraceAsString(e), null));
             }
 
-            // collect the span
-            TraceContext.addSpan(clientSpan);
-
-            // 来源于url的span,在本地发送
-            if (!fromUrl) {
-                // 将span发送出去
-                agent.send(TraceContext.getSpans());
-                TraceContext.clear();
+            List<Span> spans = TraceContext.getSpans();
+            agent.send(spans);
+            if (log.isDebugEnabled()) {
+                log.debug("Client Send trace data {}.", JacksonSerialize.toJSONString(spans));
             }
         } catch (Exception e1) {
-            log.error("Client endTrace error ", e1);
+            log.error("endTrace error ", e1);
         }
-
     }
 }

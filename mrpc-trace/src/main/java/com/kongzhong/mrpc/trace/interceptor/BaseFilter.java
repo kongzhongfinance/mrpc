@@ -17,8 +17,8 @@ import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,7 +54,7 @@ public class BaseFilter {
         return clientAutoConfigure.getEnable();
     }
 
-    void startTrace(HttpServletRequest request) {
+    public void startTrace(HttpServletRequest request) {
         try {
             String uri = request.getRequestURI();
             // start root span
@@ -65,24 +65,22 @@ public class BaseFilter {
                 TraceContext.print();
             }
             // prepare trace context
-            TraceContext.start();
-            TraceContext.setTraceId(rootSpan.getTrace_id());
-            TraceContext.setSpanId(rootSpan.getId());
-            TraceContext.addSpan(rootSpan);
+            TraceContext.addSpanAndUpdate(rootSpan);
         }catch (Exception e){
             log.error("startTrace error ", e);
         }
     }
 
     private Span startTrace(HttpServletRequest req, String point) {
-        Span apiSpan = new Span();
+        Span   apiSpan = new Span();
 
         // span basic data
+        long timestamp = TimeUtils.currentMicros();
+
         long id = Ids.get();
         apiSpan.setId(id);
         apiSpan.setTrace_id(id);
         apiSpan.setName(point);
-        long timestamp = TimeUtils.currentMicros();
         apiSpan.setTimestamp(timestamp);
 
         // sr annotation
@@ -99,23 +97,23 @@ public class BaseFilter {
         apiSpan.addToBinary_annotations(BinaryAnnotation.create(
                 "负责人", clientAutoConfigure.getOwner(), null
         ));
+
         return apiSpan;
     }
 
-    void endTrace(HttpServletRequest request) {
+    public void endTrace(HttpServletRequest request) {
         try {
+
             // end root span
             Span rootSpan = TraceContext.getRootSpan();
             if (null != rootSpan) {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
                 endTrace(request, rootSpan, times);
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Filter Trace clear.");
-                TraceContext.print();
-            }
+            // clear trace context
+            TraceContext.clear();
         }catch (Exception e){
-            log.error("Filter endTrace error ", e);
+            log.error("endTrace error ", e);
         }
     }
 
@@ -127,16 +125,21 @@ public class BaseFilter {
 
         span.setDuration(times);
 
+        TraceContext.addSpanAndUpdate(span);
         // send trace spans
         try {
-            agent.send(TraceContext.getSpans());
+            List<Span> spans = TraceContext.getSpans();
+            agent.send(spans);
             if (log.isDebugEnabled()) {
                 log.debug("Filter Send trace data {}.", JacksonSerialize.toJSONString(TraceContext.getSpans()));
             }
-            // clear trace context
-            TraceContext.clear();
         } catch (Exception e) {
-            log.error("Filter发送到Trace失败", e);
+            log.error("Filter 发送到Trace失败", e);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
+            TraceContext.print();
         }
     }
 
