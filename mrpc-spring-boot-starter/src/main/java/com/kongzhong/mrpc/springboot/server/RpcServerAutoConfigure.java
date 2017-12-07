@@ -99,6 +99,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             super.weight = rpcServerProperties.getWeight();
             super.elasticIp = rpcServerProperties.getElasticIp();
             super.poolName = rpcServerProperties.getPoolName();
+            SimpleRpcServer.PRINT_ERROR_LOG = rpcServerProperties.getPrintErrorLog();
 
             // netty参数配置
             super.nettyConfig = new NettyConfig();

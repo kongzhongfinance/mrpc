@@ -60,6 +60,8 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 @ToString(exclude = {"rpcMapping", "transferSelector"})
 public abstract class SimpleRpcServer {
 
+    public static Boolean PRINT_ERROR_LOG = false;
+
     /**
      * RPC服务映射
      */

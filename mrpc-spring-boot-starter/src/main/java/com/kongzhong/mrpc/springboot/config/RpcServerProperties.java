@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * mrpc服务端配置
  *
  * @author biezhi
- *         2017/5/13
+ * 2017/5/13
  */
 @ConfigurationProperties("mrpc.server")
 @Data
@@ -36,6 +36,9 @@ public class RpcServerProperties {
 
     // 服务负责人
     private String owner;
+
+    // 是否打印 RPC 调用错误日志
+    private Boolean printErrorLog = Boolean.FALSE;
 
     // 负责人邮箱
     private String ownerEmail;
