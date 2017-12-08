@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
+import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
@@ -10,7 +11,6 @@ import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.RequestUtils;
 import com.kongzhong.mrpc.utils.Ids;

@@ -41,6 +41,16 @@
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.kongzhong.basic</groupId>
+            <artifactId>zipkin-trace</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kongzhong.basic</groupId>
+            <artifactId>zipkin-trace</artifactId>
+            <version>RELEASE</version>
+        </dependency>
 
     </dependencies>
 

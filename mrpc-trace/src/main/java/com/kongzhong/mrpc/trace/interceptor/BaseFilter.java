@@ -1,12 +1,12 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
+import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.ServletPathMatcher;
 import com.kongzhong.mrpc.utils.Ids;

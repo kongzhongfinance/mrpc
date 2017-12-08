@@ -9,7 +9,6 @@ import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.AbstractResponseInvoker;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -45,7 +44,6 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
             if (null != rpcResponse.getContext()) {
                 rpcResponse.getContext().putIfAbsent(Const.APP_NAME, SimpleRpcServer.getContext(Const.APP_NAME));
                 rpcResponse.getContext().putIfAbsent(Const.SERVER_OWNER, SimpleRpcServer.getContext(Const.SERVER_OWNER));
-                rpcResponse.getContext().put(TraceConstants.SR_TIME, TimeUtils.currentMicrosString());
             }
             Object result = super.invokeMethod(request);
             rpcResponse.setResult(result);
@@ -53,7 +51,6 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
             rpcResponse.setSuccess(true);
-            rpcResponse.getContext().put(TraceConstants.SS_TIME, TimeUtils.currentMicrosString());
             ServiceStatusTable.me().addSuccessInvoke(request.getClassName());
         } catch (Throwable e) {
             e = buildErrorResponse(e, rpcResponse);
