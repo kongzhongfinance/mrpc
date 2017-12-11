@@ -58,6 +58,15 @@ public class TraceClientAutoConfigure {
         if (StringUtils.isEmpty(enable)) {
             return null;
         }
+        TraceClientAutoConfigure traceClientAutoConfigure = parse(environment);
+        return new TraceClientInterceptor(traceClientAutoConfigure);
+    }
+
+    public static TraceClientAutoConfigure parse(Environment environment) {
+        String enable = environment.getProperty("mrpc.client.trace.enable");
+        if (StringUtils.isEmpty(enable)) {
+            return null;
+        }
         String url   = environment.getProperty("mrpc.client.trace.url");
         String topic = environment.getProperty("mrpc.client.trace.topic");
         String owner = environment.getProperty("mrpc.client.trace.owner");
@@ -66,12 +75,11 @@ public class TraceClientAutoConfigure {
         TraceClientAutoConfigure traceClientAutoConfigure = new TraceClientAutoConfigure();
         traceClientAutoConfigure.setEnable(Boolean.valueOf(enable));
         traceClientAutoConfigure.setUrl(url);
-        if(null != topic){
+        if (null != topic) {
             traceClientAutoConfigure.setTopic(topic);
         }
         traceClientAutoConfigure.setOwner(owner);
         traceClientAutoConfigure.setName(name);
-        return new TraceClientInterceptor(traceClientAutoConfigure);
+        return traceClientAutoConfigure;
     }
-
 }

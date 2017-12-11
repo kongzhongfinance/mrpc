@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
+import com.kongzhong.basic.zipkin.agent.InitializeAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
@@ -38,11 +39,12 @@ public class BaseFilter {
     private ServletPathMatcher pathMatcher = ServletPathMatcher.getInstance();
 
     public BaseFilter(TraceClientAutoConfigure clientAutoConfigure) {
-        try {
-            this.clientAutoConfigure = clientAutoConfigure;
-            this.agent = new KafkaAgent(clientAutoConfigure.getUrl(), clientAutoConfigure.getTopic());
-        } catch (Exception e) {
-            log.error("初始化Trace客户端失败", e);
+        this.clientAutoConfigure = clientAutoConfigure;
+        AbstractAgent agent = InitializeAgent.getAgent();
+        if (null == agent) {
+            this.agent = InitializeAgent.initAndGetAgent(clientAutoConfigure.getUrl(), clientAutoConfigure.getTopic());
+        } else {
+            this.agent = agent;
         }
     }
 
@@ -66,13 +68,13 @@ public class BaseFilter {
             }
             // prepare trace context
             TraceContext.addSpanAndUpdate(rootSpan);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("startTrace error ", e);
         }
     }
 
     private Span startTrace(HttpServletRequest req, String point) {
-        Span   apiSpan = new Span();
+        Span apiSpan = new Span();
 
         // span basic data
         long timestamp = TimeUtils.currentMicros();
@@ -112,7 +114,7 @@ public class BaseFilter {
             }
             // clear trace context
             TraceContext.clear();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("endTrace error ", e);
         }
     }

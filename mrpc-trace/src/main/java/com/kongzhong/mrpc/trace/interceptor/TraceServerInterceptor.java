@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
+import com.kongzhong.basic.zipkin.agent.InitializeAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.mrpc.Const;
@@ -43,12 +44,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         if (null == traceServerAutoConfigure) {
             this.traceServerAutoConfigure = new TraceServerAutoConfigure();
         } else {
-            try {
-                this.agent = new KafkaAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
-            } catch (Exception e) {
-                log.error("初始化Trace服务端失败", e);
+            AbstractAgent agent = InitializeAgent.getAgent();
+            if (null == agent) {
+                this.agent = InitializeAgent.initAndGetAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+            } else {
+                this.agent = agent;
             }
-
         }
     }
 

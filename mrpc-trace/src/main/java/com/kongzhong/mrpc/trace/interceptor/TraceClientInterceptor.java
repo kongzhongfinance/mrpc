@@ -5,6 +5,7 @@ import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
+import com.kongzhong.basic.zipkin.agent.InitializeAgent;
 import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.mrpc.Const;
@@ -46,10 +47,11 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             this.traceClientAutoConfigure = new TraceClientAutoConfigure();
         } else {
             this.traceClientAutoConfigure = traceClientAutoConfigure;
-            try {
-                this.agent = new KafkaAgent(traceClientAutoConfigure.getUrl(), traceClientAutoConfigure.getTopic());
-            } catch (Exception e) {
-                log.error("初始化Trace客户端失败", e);
+            AbstractAgent agent = InitializeAgent.getAgent();
+            if (null == agent) {
+                this.agent = InitializeAgent.initAndGetAgent(traceClientAutoConfigure.getUrl(), traceClientAutoConfigure.getTopic());
+            } else {
+                this.agent = agent;
             }
         }
     }
@@ -150,7 +152,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
             String host = RpcContext.getAttachments(Const.SERVER_HOST);
-            int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+            int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
             // cr annotation
             clientSpan.addToAnnotations(
