@@ -20,11 +20,6 @@ public class OtherServerApplication {
         return new Referers().add(PayService.class);
     }
 
-//    @Bean
-//    public TraceServerInterceptor serverTraceInterceptor(){
-//        return new TraceServerInterceptor();
-//    }
-
     public static void main(String[] args) {
         SpringApplication.run(OtherServerApplication.class, args);
     }

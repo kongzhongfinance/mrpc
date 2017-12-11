@@ -4,11 +4,10 @@ import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.InitializeAgent;
-import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.basic.zipkin.util.ServerInfo;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.config.TraceAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.ServletPathMatcher;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.TimeUtils;
@@ -29,16 +28,16 @@ import java.util.Set;
 @Slf4j
 public class BaseFilter {
 
-    private AbstractAgent            agent;
-    private TraceClientAutoConfigure clientAutoConfigure;
-    private Set<String>              excludesPattern;
+    private AbstractAgent      agent;
+    private TraceAutoConfigure clientAutoConfigure;
+    private Set<String>        excludesPattern;
 
     /**
      * PatternMatcher used in determining which paths to react to for a given request.
      */
     private ServletPathMatcher pathMatcher = ServletPathMatcher.getInstance();
 
-    public BaseFilter(TraceClientAutoConfigure clientAutoConfigure) {
+    public BaseFilter(TraceAutoConfigure clientAutoConfigure) {
         this.clientAutoConfigure = clientAutoConfigure;
         AbstractAgent agent = InitializeAgent.getAgent();
         if (null == agent) {

@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.trace.config;
 
 import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
+import com.kongzhong.mrpc.trace.interceptor.TraceServerInterceptor;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,9 @@ import javax.annotation.PostConstruct;
  */
 @Data
 @Slf4j
-@ConfigurationProperties("mrpc.client.trace")
-@ConditionalOnExpression("'${mrpc.client.trace.enable}'=='true'")
-public class TraceClientAutoConfigure {
+@ConfigurationProperties("mrpc.trace")
+@ConditionalOnExpression("'${mrpc.trace.enable}'=='true'")
+public class TraceAutoConfigure {
 
     /**
      * Enable the trace or not
@@ -49,37 +50,42 @@ public class TraceClientAutoConfigure {
 
     @PostConstruct
     public void init() {
-        log.info("[config] TraceClientAutoConfigure 加载完成 {}", this.toString());
+        log.info("[config] TraceAutoConfigure 加载完成 {}", this.toString());
     }
 
     @Bean
     public TraceClientInterceptor clientTraceInterceptor(@Autowired Environment environment) {
-        String enable = environment.getProperty("mrpc.client.trace.enable");
+        String enable = environment.getProperty("mrpc.trace.enable");
         if (StringUtils.isEmpty(enable)) {
             return null;
         }
-        TraceClientAutoConfigure traceClientAutoConfigure = parse(environment);
-        return new TraceClientInterceptor(traceClientAutoConfigure);
+        TraceAutoConfigure traceAutoConfigure = parse(environment);
+        return new TraceClientInterceptor(traceAutoConfigure);
     }
 
-    public static TraceClientAutoConfigure parse(Environment environment) {
-        String enable = environment.getProperty("mrpc.client.trace.enable");
+    @Bean
+    public TraceServerInterceptor serverTraceInterceptor(){
+        return new TraceServerInterceptor();
+    }
+
+    public static TraceAutoConfigure parse(Environment environment) {
+        String enable = environment.getProperty("mrpc.trace.enable");
         if (StringUtils.isEmpty(enable)) {
             return null;
         }
-        String url   = environment.getProperty("mrpc.client.trace.url");
-        String topic = environment.getProperty("mrpc.client.trace.topic");
-        String owner = environment.getProperty("mrpc.client.trace.owner");
-        String name  = environment.getProperty("mrpc.client.trace.name");
+        String url   = environment.getProperty("mrpc.trace.url");
+        String topic = environment.getProperty("mrpc.trace.topic");
+        String owner = environment.getProperty("mrpc.trace.owner");
+        String name  = environment.getProperty("mrpc.trace.name");
 
-        TraceClientAutoConfigure traceClientAutoConfigure = new TraceClientAutoConfigure();
-        traceClientAutoConfigure.setEnable(Boolean.valueOf(enable));
-        traceClientAutoConfigure.setUrl(url);
+        TraceAutoConfigure traceAutoConfigure = new TraceAutoConfigure();
+        traceAutoConfigure.setEnable(Boolean.valueOf(enable));
+        traceAutoConfigure.setUrl(url);
         if (null != topic) {
-            traceClientAutoConfigure.setTopic(topic);
+            traceAutoConfigure.setTopic(topic);
         }
-        traceClientAutoConfigure.setOwner(owner);
-        traceClientAutoConfigure.setName(name);
-        return traceClientAutoConfigure;
+        traceAutoConfigure.setOwner(owner);
+        traceAutoConfigure.setName(name);
+        return traceAutoConfigure;
     }
 }

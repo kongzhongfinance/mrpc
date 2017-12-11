@@ -5,14 +5,13 @@ import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.InitializeAgent;
-import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.config.TraceServerAutoConfigure;
+import com.kongzhong.mrpc.trace.config.TraceAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.RequestUtils;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
@@ -37,12 +36,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     private AbstractAgent agent;
 
     @Resource
-    private TraceServerAutoConfigure traceServerAutoConfigure;
+    private TraceAutoConfigure traceServerAutoConfigure;
 
     @PostConstruct
     public void init() {
         if (null == traceServerAutoConfigure) {
-            this.traceServerAutoConfigure = new TraceServerAutoConfigure();
+            this.traceServerAutoConfigure = new TraceAutoConfigure();
         } else {
             AbstractAgent agent = InitializeAgent.getAgent();
             if (null == agent) {

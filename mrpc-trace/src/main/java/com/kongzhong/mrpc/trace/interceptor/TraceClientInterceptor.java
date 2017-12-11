@@ -6,7 +6,6 @@ import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
 import com.kongzhong.basic.zipkin.agent.InitializeAgent;
-import com.kongzhong.basic.zipkin.agent.KafkaAgent;
 import com.kongzhong.basic.zipkin.util.AppConfiguration;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.invoke.ClientInvocation;
@@ -15,7 +14,7 @@ import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.config.TraceAutoConfigure;
 import com.kongzhong.mrpc.trace.utils.RequestUtils;
 import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
@@ -40,16 +39,16 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
     private AbstractAgent agent;
 
-    private TraceClientAutoConfigure traceClientAutoConfigure;
+    private TraceAutoConfigure traceAutoConfigure;
 
-    public TraceClientInterceptor(TraceClientAutoConfigure traceClientAutoConfigure) {
-        if (null == traceClientAutoConfigure) {
-            this.traceClientAutoConfigure = new TraceClientAutoConfigure();
+    public TraceClientInterceptor(TraceAutoConfigure traceAutoConfigure) {
+        if (null == traceAutoConfigure) {
+            this.traceAutoConfigure = new TraceAutoConfigure();
         } else {
-            this.traceClientAutoConfigure = traceClientAutoConfigure;
+            this.traceAutoConfigure = traceAutoConfigure;
             AbstractAgent agent = InitializeAgent.getAgent();
             if (null == agent) {
-                this.agent = InitializeAgent.initAndGetAgent(traceClientAutoConfigure.getUrl(), traceClientAutoConfigure.getTopic());
+                this.agent = InitializeAgent.initAndGetAgent(traceAutoConfigure.getUrl(), traceAutoConfigure.getTopic());
             } else {
                 this.agent = agent;
             }
@@ -59,7 +58,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
     @Override
     public Object execute(ClientInvocation invocation) throws Throwable {
 
-        if (!traceClientAutoConfigure.getEnable()) {
+        if (!traceAutoConfigure.getEnable()) {
             // not need tracing
             return invocation.next();
         }

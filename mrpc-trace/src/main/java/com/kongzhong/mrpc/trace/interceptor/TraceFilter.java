@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.trace.interceptor;
 
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
-import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.config.TraceAutoConfigure;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.*;
@@ -20,7 +20,7 @@ public class TraceFilter implements Filter {
     private static final String PARAM_NAME_EXCLUSIONS = "exclusions";
     private BaseFilter baseFilter;
 
-    public TraceFilter(TraceClientAutoConfigure clientAutoConfigure, AbstractAgent agent) {
+    public TraceFilter(TraceAutoConfigure clientAutoConfigure, AbstractAgent agent) {
         this.baseFilter = new BaseFilter(clientAutoConfigure);
     }
 

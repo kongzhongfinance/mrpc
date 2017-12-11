@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.client;
 
-import com.kongzhong.mrpc.trace.config.TraceClientAutoConfigure;
+import com.kongzhong.mrpc.trace.config.TraceAutoConfigure;
 import com.kongzhong.mrpc.trace.interceptor.TraceClientInterceptor;
 import com.kongzhong.mrpc.trace.interceptor.TraceMvcInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
-    @ConditionalOnClass(TraceClientAutoConfigure.class)
+    @ConditionalOnClass(TraceAutoConfigure.class)
     public TraceMvcInterceptor traceMvcInterceptor(@Autowired TraceClientInterceptor traceClientInterceptor){
-        return new TraceMvcInterceptor(traceClientInterceptor.getTraceClientAutoConfigure());
+        return new TraceMvcInterceptor(traceClientInterceptor.getTraceAutoConfigure());
     }
 
     @Override
