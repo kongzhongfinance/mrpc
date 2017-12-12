@@ -21,11 +21,6 @@ public class ServerApplication {
         return new Referers().add(OtherService.class);
     }
 
-    @Bean
-    public TraceServerInterceptor serverTraceInterceptor(){
-        return new TraceServerInterceptor();
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
     }
