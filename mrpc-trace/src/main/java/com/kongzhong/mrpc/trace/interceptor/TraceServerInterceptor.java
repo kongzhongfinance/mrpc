@@ -36,28 +36,26 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
 
     private AbstractAgent agent;
 
-    private TraceAutoConfigure traceServerAutoConfigure;
+    private TraceAutoConfigure traceAutoConfigure;
 
-    @Autowired
-    private Environment environment;
-
-    @PostConstruct
-    public void init() {
-        if (null == this.traceServerAutoConfigure) {
-            this.traceServerAutoConfigure = TraceAutoConfigure.parse(environment);
-        }
-        AbstractAgent agent = InitializeAgent.getAgent();
-        if (null == agent) {
-            this.agent = InitializeAgent.initAndGetAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+    public TraceServerInterceptor(TraceAutoConfigure traceAutoConfigure) {
+        this.traceAutoConfigure = traceAutoConfigure;
+        if (null == traceAutoConfigure) {
+            this.traceAutoConfigure = new TraceAutoConfigure();
         } else {
-            this.agent = agent;
+            this.traceAutoConfigure = traceAutoConfigure;
+            AbstractAgent agent = InitializeAgent.getAgent();
+            if (null == agent) {
+                this.agent = InitializeAgent.initAndGetAgent(traceAutoConfigure.getUrl(), traceAutoConfigure.getTopic());
+            } else {
+                this.agent = agent;
+            }
         }
-        log.info("TraceServerInterceptor 初始化: {}", this.traceServerAutoConfigure);
     }
 
     @Override
     public Object execute(ServerInvocation invocation) throws Throwable {
-        if (!this.traceServerAutoConfigure.getEnable()) {
+        if (!this.traceAutoConfigure.getEnable()) {
             // not enable tracing
             return invocation.next();
         }
