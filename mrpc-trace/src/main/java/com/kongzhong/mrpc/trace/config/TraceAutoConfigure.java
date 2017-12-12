@@ -71,6 +71,7 @@ public class TraceAutoConfigure {
 
     public static TraceAutoConfigure parse(Environment environment) {
         String enable = environment.getProperty("mrpc.trace.enable");
+        log.info("mrpc.trace.enable={}",enable);
         if (StringUtils.isEmpty(enable)) {
             return null;
         }
@@ -87,6 +88,7 @@ public class TraceAutoConfigure {
         }
         traceAutoConfigure.setOwner(owner);
         traceAutoConfigure.setName(name);
+        log.info("TraceAutoConfigure.parse ={}",traceAutoConfigure);
         return traceAutoConfigure;
     }
 }
