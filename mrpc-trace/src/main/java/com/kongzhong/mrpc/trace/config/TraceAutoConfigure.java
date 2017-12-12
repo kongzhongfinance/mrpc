@@ -65,6 +65,7 @@ public class TraceAutoConfigure {
 
     @Bean
     public TraceServerInterceptor serverTraceInterceptor(){
+        log.info("加载 TraceServerInterceptor");
         return new TraceServerInterceptor();
     }
 

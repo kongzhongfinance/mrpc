@@ -20,9 +20,10 @@ import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -35,21 +36,23 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
 
     private AbstractAgent agent;
 
-    @Resource
     private TraceAutoConfigure traceServerAutoConfigure;
+
+    @Autowired
+    private Environment environment;
 
     @PostConstruct
     public void init() {
-        if (null == traceServerAutoConfigure) {
-            this.traceServerAutoConfigure = new TraceAutoConfigure();
-        } else {
-            AbstractAgent agent = InitializeAgent.getAgent();
-            if (null == agent) {
-                this.agent = InitializeAgent.initAndGetAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
-            } else {
-                this.agent = agent;
-            }
+        if (null == this.traceServerAutoConfigure) {
+            this.traceServerAutoConfigure = TraceAutoConfigure.parse(environment);
         }
+        AbstractAgent agent = InitializeAgent.getAgent();
+        if (null == agent) {
+            this.agent = InitializeAgent.initAndGetAgent(traceServerAutoConfigure.getUrl(), traceServerAutoConfigure.getTopic());
+        } else {
+            this.agent = agent;
+        }
+        log.info("TraceServerInterceptor 初始化: {}", this.traceServerAutoConfigure);
     }
 
     @Override
@@ -62,7 +65,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         log.debug("Trace Server Interceptor");
 
         RpcRequest request = invocation.getRequest();
-        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
+        String     traceId = request.getContext().get(TraceConstants.TRACE_ID);
         if (null == traceId) {
             // don't need tracing
             return invocation.next();
@@ -89,12 +92,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     private Span startTrace(RpcRequest rpcRequest) {
         Map<String, String> attaches = rpcRequest.getContext();
 
-        long traceId = Long.parseLong(attaches.get(TraceConstants.TRACE_ID));
+        long traceId      = Long.parseLong(attaches.get(TraceConstants.TRACE_ID));
         long parentSpanId = Long.parseLong(attaches.get(TraceConstants.SPAN_ID));
 
         // start tracing
 
-        Span span = new Span();
+        Span span      = new Span();
         long timestamp = TimeUtils.currentMicros();
 
         span.setId(Ids.get());
