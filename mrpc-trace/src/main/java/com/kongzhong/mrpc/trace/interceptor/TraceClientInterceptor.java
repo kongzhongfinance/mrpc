@@ -53,6 +53,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 this.agent = agent;
             }
         }
+        log.info("TraceClientInterceptor 初始化完毕 config={}", this.traceAutoConfigure);
     }
 
     @Override

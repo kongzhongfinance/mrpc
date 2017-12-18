@@ -66,7 +66,6 @@ public class TraceAutoConfigure {
 
     @Bean
     public TraceServerInterceptor serverTraceInterceptor(@Autowired Environment environment){
-        log.info("加载 TraceServerInterceptor");
         String enable = environment.getProperty("mrpc.trace.enable");
         if (StringUtils.isEmpty(enable)) {
             return null;

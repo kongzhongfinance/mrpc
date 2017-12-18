@@ -24,6 +24,7 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
     public TraceMvcInterceptor(TraceAutoConfigure clientAutoConfigure) {
         baseFilter = new BaseFilter(clientAutoConfigure);
         baseFilter.setExcludesPattern(Exclusions.defaultExclusions().getExclusions());
+        log.info("TraceMvcInterceptor 初始化完毕 config={}", clientAutoConfigure);
     }
 
     @Override
