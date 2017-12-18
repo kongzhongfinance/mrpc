@@ -53,6 +53,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 this.agent = agent;
             }
         }
+        log.info("初始化 TraceClientInterceptor");
     }
 
     @Override

@@ -51,6 +51,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                 this.agent = agent;
             }
         }
+        log.info("初始化 TraceServerInterceptor");
     }
 
     @Override

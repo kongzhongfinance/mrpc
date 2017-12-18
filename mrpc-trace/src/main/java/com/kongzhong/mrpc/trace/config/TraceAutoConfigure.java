@@ -58,6 +58,9 @@ public class TraceAutoConfigure {
         log.info("加载 TraceClientInterceptor");
         String enable = environment.getProperty("mrpc.trace.enable");
         if (StringUtils.isEmpty(enable)) {
+            if (StringUtils.isNotEmpty(url)) {
+                return new TraceClientInterceptor(this);
+            }
             return null;
         }
         TraceAutoConfigure traceAutoConfigure = parse(environment);
@@ -65,10 +68,13 @@ public class TraceAutoConfigure {
     }
 
     @Bean
-    public TraceServerInterceptor serverTraceInterceptor(@Autowired Environment environment){
+    public TraceServerInterceptor serverTraceInterceptor(@Autowired Environment environment) {
         log.info("加载 TraceServerInterceptor");
         String enable = environment.getProperty("mrpc.trace.enable");
         if (StringUtils.isEmpty(enable)) {
+            if (StringUtils.isNotEmpty(url)) {
+                return new TraceServerInterceptor(this);
+            }
             return null;
         }
         TraceAutoConfigure traceAutoConfigure = parse(environment);
@@ -77,7 +83,7 @@ public class TraceAutoConfigure {
 
     public static TraceAutoConfigure parse(Environment environment) {
         String enable = environment.getProperty("mrpc.trace.enable");
-        log.info("mrpc.trace.enable={}",enable);
+        log.info("mrpc.trace.enable={}", enable);
         if (StringUtils.isEmpty(enable)) {
             return null;
         }
@@ -94,7 +100,7 @@ public class TraceAutoConfigure {
         }
         traceAutoConfigure.setOwner(owner);
         traceAutoConfigure.setName(name);
-        log.info("TraceAutoConfigure.parse ={}",traceAutoConfigure);
+        log.info("TraceAutoConfigure.parse ={}", traceAutoConfigure);
         return traceAutoConfigure;
     }
 }
