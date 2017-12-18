@@ -31,7 +31,7 @@
 <meta property="og:site_name" content="mrpc - 轻量级、分布式服务治理框架">
 <meta property="og:description" content="1. 基础配置1.1 暴露地址作为 rpc 服务端，需将服务绑定在某个进程上运行，因为通过网络进行通信，所以这里需要暴露一个 ip:port 出去。 Spring配置 &amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;       xmln">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2017-07-17T07:01:14.000Z">
+<meta property="og:updated_time" content="2017-12-18T11:42:18.950Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务端配置">
 <meta name="twitter:description" content="1. 基础配置1.1 暴露地址作为 rpc 服务端，需将服务绑定在某个进程上运行，因为通过网络进行通信，所以这里需要暴露一个 ip:port 出去。 Spring配置 &amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;       xmln">
@@ -111,6 +111,14 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mrpc.server.serialize=protostuff</div></pre></td></tr></table></figure>
 <blockquote class="note info"><strong class="note-title">注意添加依赖</strong><p>修改序列化配置后请查看依赖中是否包含相应的序列化实现。</p>
 </blockquote>
+<h3 id="1-3-业务线程池" class="article-heading"><a href="#1-3-业务线程池" class="headerlink" title="1.3 业务线程池"></a>1.3 业务线程池<a class="article-anchor" href="#1-3-业务线程池" aria-hidden="true"></a></h3><p>默认情况下使用服务器 <code>CPU * 2</code> 个线程，可配置。</p>
+<p><strong>Spring配置</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></div><div class="line">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">       <span class="attr">xmlns:mrpc</span>=<span class="string">"http://mrpc.kongzhong.com/schema/mrpc"</span></div><div class="line">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></div><div class="line">       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd"&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:nettyConfig</span> <span class="attr">businessThreadPoolSize</span>=<span class="string">"16"</span> /&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>SpringBoot配置</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mrpc.netty.businessThreadPoolSize=16</div></pre></td></tr></table></figure>
+<h3 id="1-4-是否输出服务端异常日志" class="article-heading"><a href="#1-4-是否输出服务端异常日志" class="headerlink" title="1.4 是否输出服务端异常日志"></a>1.4 是否输出服务端异常日志<a class="article-anchor" href="#1-4-是否输出服务端异常日志" aria-hidden="true"></a></h3><p>默认情况下服务调用异常不会输出，可通过配置打开。</p>
+<p><strong>SpringBoot配置</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mrpc.server.printErrorLog=true</div></pre></td></tr></table></figure>
 <h2 id="2-服务器权重" class="article-heading"><a href="#2-服务器权重" class="headerlink" title="2. 服务器权重"></a>2. 服务器权重<a class="article-anchor" href="#2-服务器权重" aria-hidden="true"></a></h2><p>当您用到加权负载均衡的时候，可以为不同服务器分配权重，根据资源占用等情况进行调整。</p>
 <p><strong>Spring配置</strong></p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></div><div class="line">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">       <span class="attr">xmlns:mrpc</span>=<span class="string">"http://mrpc.kongzhong.com/schema/mrpc"</span></div><div class="line">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></div><div class="line">       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd"&gt;</div><div class="line">    </div><div class="line">    <span class="tag">&lt;<span class="name">mrpc:serverConfig</span> <span class="attr">address</span>=<span class="string">"127.0.0.1:5067"</span> <span class="attr">weight</span>=<span class="string">"2"</span>/&gt;</span></div><div class="line">    </div><div class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></div></pre></td></tr></table></figure>
@@ -119,7 +127,7 @@
 
               </div>
               <footer class="article-footer">
-                <time class="article-footer-updated" datetime="2017-07-17T07:01:14.000Z" itemprop="dateModified">上次更新：2017-07-17</time>
+                <time class="article-footer-updated" datetime="2017-12-18T11:42:18.950Z" itemprop="dateModified">上次更新：2017-12-18</time>
                 <a href="client-config.html" class="article-footer-prev" title="客户端配置"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="interceptor.html" class="article-footer-next" title="拦截器机制"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
               </footer>
               
@@ -128,7 +136,7 @@
           <aside id="article-toc" role="navigation">
             <div id="article-toc-inner">
               <strong class="sidebar-title">目录</strong>
-              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-基础配置"><span class="toc-text">1. 基础配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-暴露地址"><span class="toc-text">1.1 暴露地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-传输协议"><span class="toc-text">1.1 传输协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-序列化"><span class="toc-text">1.2 序列化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-服务器权重"><span class="toc-text">2. 服务器权重</span></a></li></ol>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-基础配置"><span class="toc-text">1. 基础配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-暴露地址"><span class="toc-text">1.1 暴露地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-传输协议"><span class="toc-text">1.1 传输协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-序列化"><span class="toc-text">1.2 序列化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-业务线程池"><span class="toc-text">1.3 业务线程池</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-是否输出服务端异常日志"><span class="toc-text">1.4 是否输出服务端异常日志</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-服务器权重"><span class="toc-text">2. 服务器权重</span></a></li></ol>
               <a href="#" id="article-toc-top">回到顶部</a>
             </div>
           </aside>

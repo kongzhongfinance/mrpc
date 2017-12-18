@@ -2,6 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/12/18/mrpc-0.1.2-snapshot/</loc>
+    
+    <lastmod>2017-12-18T11:45:38.296Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/server-config.html</loc>
+    
+    <lastmod>2017-12-18T11:42:18.950Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/11/09/mrpc-0.1.1-snapshot/</loc>
+    
+    <lastmod>2017-11-09T08:00:33.999Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/</loc>
+    
+    <lastmod>2017-08-08T06:00:27.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/ktrace.html</loc>
     
     <lastmod>2017-08-08T05:58:42.000Z</lastmod>
@@ -12,13 +40,6 @@
     <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/hystrix.html</loc>
     
     <lastmod>2017-07-26T10:14:44.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/</loc>
-    
-    <lastmod>2017-07-26T09:19:15.000Z</lastmod>
     
   </url>
   
@@ -37,14 +58,14 @@
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
     
     <lastmod>2017-07-19T08:00:44.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/contribute/index.html</loc>
+    <loc>https://kongzhongfinance.github.io/mrpc/news/2017/07/07/mrpc-0.0.9-snapshot/</loc>
     
     <lastmod>2017-07-19T08:00:44.000Z</lastmod>
     
@@ -54,13 +75,6 @@
     <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/metric_influxdb.html</loc>
     
     <lastmod>2017-07-19T03:37:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://kongzhongfinance.github.io/mrpc/zh-cn/docs/server-config.html</loc>
-    
-    <lastmod>2017-07-17T07:01:14.000Z</lastmod>
     
   </url>
   

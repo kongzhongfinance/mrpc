@@ -5,7 +5,7 @@
   <link href="/mrpc/atom.xml" rel="self"/>
   
   <link href="https://kongzhongfinance.github.io/mrpc/"/>
-  <updated>2017-07-26T09:19:15.000Z</updated>
+  <updated>2017-12-18T11:45:38.296Z</updated>
   <id>https://kongzhongfinance.github.io/mrpc/</id>
   
   <author>
@@ -16,17 +16,70 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>mrpc 0.1.2-SNAPSHOT</title>
+    <link href="https://kongzhongfinance.github.io/mrpc/news/2017/12/18/mrpc-0.1.2-snapshot/"/>
+    <id>https://kongzhongfinance.github.io/mrpc/news/2017/12/18/mrpc-0.1.2-snapshot/</id>
+    <published>2017-12-18T00:00:00.000Z</published>
+    <updated>2017-12-18T11:45:38.296Z</updated>
+    
+    <content type="html"><![CDATA[<ol>
+<li>服务端异常日志可配置开关</li>
+<li>添加 <code>zipkin</code> trace 支持</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ol&gt;
+&lt;li&gt;服务端异常日志可配置开关&lt;/li&gt;
+&lt;li&gt;添加 &lt;code&gt;zipkin&lt;/code&gt; trace 支持&lt;/li&gt;
+&lt;/ol&gt;
+
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>mrpc 0.1.1-SNAPSHOT</title>
+    <link href="https://kongzhongfinance.github.io/mrpc/news/2017/11/09/mrpc-0.1.1-snapshot/"/>
+    <id>https://kongzhongfinance.github.io/mrpc/news/2017/11/09/mrpc-0.1.1-snapshot/</id>
+    <published>2017-11-09T00:00:00.000Z</published>
+    <updated>2017-11-09T08:00:33.999Z</updated>
+    
+    <content type="html"><![CDATA[<ol>
+<li>支持接口自定义 <code>appId</code></li>
+<li>支持配置业务线程池大小</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ol&gt;
+&lt;li&gt;支持接口自定义 &lt;code&gt;appId&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持配置业务线程池大小&lt;/li&gt;
+&lt;/ol&gt;
+
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>mrpc 0.1.0-SNAPSHOT</title>
     <link href="https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/"/>
     <id>https://kongzhongfinance.github.io/mrpc/news/2017/07/26/mrpc-0.1.0-snapshot/</id>
     <published>2017-07-26T00:00:00.000Z</published>
-    <updated>2017-07-26T09:19:15.000Z</updated>
+    <updated>2017-08-08T06:00:27.000Z</updated>
     
     <content type="html"><![CDATA[<ol>
 <li>简化异常处理</li>
 <li>添加最少连接负载策略</li>
 <li>添加Admin后台</li>
 <li>添加服务降级、熔断</li>
+<li>添加ktrace支持</li>
 </ol>
 ]]></content>
     
@@ -37,6 +90,7 @@
 &lt;li&gt;添加最少连接负载策略&lt;/li&gt;
 &lt;li&gt;添加Admin后台&lt;/li&gt;
 &lt;li&gt;添加服务降级、熔断&lt;/li&gt;
+&lt;li&gt;添加ktrace支持&lt;/li&gt;
 &lt;/ol&gt;
 
     
