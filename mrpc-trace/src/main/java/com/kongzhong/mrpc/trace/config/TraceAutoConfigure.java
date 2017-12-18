@@ -68,7 +68,7 @@ public class TraceAutoConfigure {
     }
 
     @Bean
-    public TraceServerInterceptor serverTraceInterceptor(@Autowired Environment environment) {
+    public TraceServerInterceptor serverTraceInterceptor(@Autowired Environment environment){
         log.info("加载 TraceServerInterceptor");
         String enable = environment.getProperty("mrpc.trace.enable");
         if (StringUtils.isEmpty(enable)) {
@@ -100,7 +100,7 @@ public class TraceAutoConfigure {
         }
         traceAutoConfigure.setOwner(owner);
         traceAutoConfigure.setName(name);
-        log.info("TraceAutoConfigure.parse ={}", traceAutoConfigure);
+        log.info("TraceAutoConfigure.parse ={}",traceAutoConfigure);
         return traceAutoConfigure;
     }
 }

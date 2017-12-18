@@ -51,7 +51,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                 this.agent = agent;
             }
         }
-        log.info("初始化 TraceServerInterceptor");
+        log.info("TraceServerInterceptor 初始化完毕 config={}", this.traceAutoConfigure);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         log.debug("Trace Server Interceptor");
 
         RpcRequest request = invocation.getRequest();
-        String     traceId = request.getContext().get(TraceConstants.TRACE_ID);
+        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
         if (null == traceId) {
             // don't need tracing
             return invocation.next();
@@ -91,12 +91,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     private Span startTrace(RpcRequest rpcRequest) {
         Map<String, String> attaches = rpcRequest.getContext();
 
-        long traceId      = Long.parseLong(attaches.get(TraceConstants.TRACE_ID));
+        long traceId = Long.parseLong(attaches.get(TraceConstants.TRACE_ID));
         long parentSpanId = Long.parseLong(attaches.get(TraceConstants.SPAN_ID));
 
         // start tracing
 
-        Span span      = new Span();
+        Span span = new Span();
         long timestamp = TimeUtils.currentMicros();
 
         span.setId(Ids.get());
