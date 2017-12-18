@@ -116,6 +116,16 @@ mrpc.server.serialize=protostuff
 mrpc.netty.businessThreadPoolSize=16
 ```
 
+### 1.4 是否输出服务端异常日志
+
+默认情况下服务调用异常不会输出，可通过配置打开。
+
+**SpringBoot配置**
+
+```properties
+mrpc.server.printErrorLog=true
+```
+
 ## 2. 服务器权重
 
 当您用到加权负载均衡的时候，可以为不同服务器分配权重，根据资源占用等情况进行调整。
