@@ -20,10 +20,7 @@ import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +61,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         log.debug("Trace Server Interceptor");
 
         RpcRequest request = invocation.getRequest();
-        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
+        String traceId = request.getContext() == null ? null : request.getContext().get(TraceConstants.TRACE_ID);
         if (null == traceId) {
             // don't need tracing
             return invocation.next();
