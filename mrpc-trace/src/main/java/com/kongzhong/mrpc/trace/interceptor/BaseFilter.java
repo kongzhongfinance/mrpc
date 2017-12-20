@@ -28,9 +28,10 @@ import java.util.Set;
 @Slf4j
 public class BaseFilter {
 
-    private AbstractAgent      agent;
+    private AbstractAgent agent;
     private TraceAutoConfigure clientAutoConfigure;
-    private Set<String>        excludesPattern;
+    private Set<String> excludesPattern;
+    private boolean agentInited;
 
     /**
      * PatternMatcher used in determining which paths to react to for a given request.
@@ -45,6 +46,8 @@ public class BaseFilter {
         } else {
             this.agent = agent;
         }
+
+        this.agentInited = this.agent != null;
     }
 
     void setExcludesPattern(Set<String> excludesPattern) {
@@ -127,6 +130,10 @@ public class BaseFilter {
         span.setDuration(times);
 
         TraceContext.addSpanAndUpdate(span);
+
+        if (!this.agentInited) {
+            return;
+        }
         // send trace spans
         try {
             List<Span> spans = TraceContext.getSpans();
@@ -146,7 +153,7 @@ public class BaseFilter {
 
     boolean isExclusion(HttpServletRequest request) {
         String contextPath = getContextPath(request);
-        String requestURI  = request.getRequestURI();
+        String requestURI = request.getRequestURI();
         if (excludesPattern == null || requestURI == null) {
             return false;
         }

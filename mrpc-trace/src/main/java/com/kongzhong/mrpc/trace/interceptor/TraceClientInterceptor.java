@@ -41,6 +41,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
     private TraceAutoConfigure traceAutoConfigure;
 
+    private boolean agentInited;
+
     public TraceClientInterceptor(TraceAutoConfigure traceAutoConfigure) {
         if (null == traceAutoConfigure) {
             this.traceAutoConfigure = new TraceAutoConfigure();
@@ -53,7 +55,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 this.agent = agent;
             }
         }
-        log.info("TraceClientInterceptor 初始化完毕 config={}", this.traceAutoConfigure);
+        this.agentInited = this.agent != null;
+        log.info("TraceClientInterceptor 初始化完毕 agentInited={} config={}", this.agentInited, this.traceAutoConfigure);
     }
 
     @Override
@@ -152,7 +155,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
             String host = RpcContext.getAttachments(Const.SERVER_HOST);
-            int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+            int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
             // cr annotation
             clientSpan.addToAnnotations(
@@ -165,6 +168,9 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                         "Exception", Throwables.getStackTraceAsString(e), null));
             }
 
+            if(!this.agentInited){
+                return;
+            }
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {

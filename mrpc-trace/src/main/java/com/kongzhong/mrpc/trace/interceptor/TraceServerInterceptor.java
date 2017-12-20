@@ -35,6 +35,8 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
 
     private TraceAutoConfigure traceAutoConfigure;
 
+    private boolean agentInited;
+
     public TraceServerInterceptor(TraceAutoConfigure traceAutoConfigure) {
         this.traceAutoConfigure = traceAutoConfigure;
         if (null == traceAutoConfigure) {
@@ -48,7 +50,9 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                 this.agent = agent;
             }
         }
-        log.info("TraceServerInterceptor 初始化完毕 config={}", this.traceAutoConfigure);
+
+        this.agentInited = this.agent != null;
+        log.info("TraceServerInterceptor 初始化完毕 agentInited={} config={}", this.agentInited, this.traceAutoConfigure);
     }
 
     @Override
@@ -131,6 +135,9 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                             Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
+            if(!this.agentInited){
+               return;
+            }
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {
