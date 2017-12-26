@@ -90,7 +90,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             this.endTrace(request, consumeSpan, watch, null);
             return result;
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             this.endTrace(request, consumeSpan, watch, e);
             throw e;
         }
@@ -147,7 +147,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         return null;
     }
 
-    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Throwable e) {
         try {
             if (clientSpan == null) {
                 return;
@@ -163,12 +163,15 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                             Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(host), port)));
 
             if (null != e) {
+                String error = RequestUtils.getServerName(request.getClassName(), request.getMethodName()) + "\n" +
+                        Throwables.getStackTraceAsString(e);
+
                 // attach exception
                 clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                        "Exception", Throwables.getStackTraceAsString(e), null));
+                        "Exception", error, null));
             }
 
-            if(!this.agentInited){
+            if (!this.agentInited) {
                 return;
             }
             List<Span> spans = TraceContext.getSpans();
