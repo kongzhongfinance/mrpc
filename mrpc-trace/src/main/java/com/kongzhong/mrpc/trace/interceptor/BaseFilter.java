@@ -107,17 +107,21 @@ public class BaseFilter {
 
     public void endTrace(HttpServletRequest request) {
         try {
-
             // end root span
             Span rootSpan = TraceContext.getRootSpan();
             if (null != rootSpan) {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
                 endTrace(request, rootSpan, times);
             }
-            // clear trace context
-            TraceContext.clear();
         } catch (Exception e) {
             log.error("endTrace error ", e);
+        } finally {
+            // clear trace context
+            TraceContext.clear();
+            if (log.isDebugEnabled()) {
+                log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
+                TraceContext.print();
+            }
         }
     }
 
@@ -143,11 +147,6 @@ public class BaseFilter {
             }
         } catch (Exception e) {
             log.error("Filter 发送到Trace失败", e);
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
-            TraceContext.print();
         }
     }
 

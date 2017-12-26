@@ -86,6 +86,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         } catch (Exception e) {
             this.endTrace(request, span, watch);
             throw e;
+        } finally {
+            TraceContext.clear();
+            if (log.isDebugEnabled()) {
+                log.debug("TraceServerInterceptor Trace clear. traceId={}", TraceContext.getTraceId());
+                TraceContext.print();
+            }
         }
     }
 
@@ -135,8 +141,8 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                             Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
-            if(!this.agentInited){
-               return;
+            if (!this.agentInited) {
+                return;
             }
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
@@ -145,11 +151,6 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             }
         } catch (Exception e) {
             log.error("Server发送Trace失败", e);
-        }
-        TraceContext.clear();
-        if (log.isDebugEnabled()) {
-            log.debug("TraceServerInterceptor Trace clear. traceId={}", TraceContext.getTraceId());
-            TraceContext.print();
         }
     }
 
