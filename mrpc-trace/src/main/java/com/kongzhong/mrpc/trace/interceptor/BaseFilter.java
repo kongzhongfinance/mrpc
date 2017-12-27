@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
+import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
@@ -106,12 +107,16 @@ public class BaseFilter {
     }
 
     public void endTrace(HttpServletRequest request) {
+        endTrace(request, null);
+    }
+
+    public void endTrace(HttpServletRequest request, Throwable throwable) {
         try {
             // end root span
             Span rootSpan = TraceContext.getRootSpan();
             if (null != rootSpan) {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
-                endTrace(request, rootSpan, times);
+                endTrace(request, rootSpan, times, throwable);
             }
         } catch (Exception e) {
             log.error("endTrace error ", e);
@@ -125,13 +130,19 @@ public class BaseFilter {
         }
     }
 
-    private void endTrace(HttpServletRequest req, Span span, long times) {
+    private void endTrace(HttpServletRequest req, Span span, long times, Throwable throwable) {
         // ss annotation
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                         Endpoint.create(AppConfiguration.getAppId(), ServerInfo.IP4, req.getLocalPort())));
 
         span.setDuration(times);
+
+        if (null != throwable) {
+            // attach exception
+            span.addToBinary_annotations(BinaryAnnotation.create(
+                    "Exception", Throwables.getStackTraceAsString(throwable), null));
+        }
 
         TraceContext.addSpanAndUpdate(span);
 

@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
@@ -17,6 +18,7 @@ import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import com.twitter.zipkin.gen.Annotation;
+import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
@@ -83,8 +85,8 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
             this.endTrace(request, span, watch);
             return result;
-        } catch (Exception e) {
-            this.endTrace(request, span, watch);
+        } catch (Exception | Error e) {
+            this.endTrace(request, span, watch, e);
             throw e;
         } finally {
             TraceContext.clear();
@@ -125,6 +127,10 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     }
 
     private void endTrace(RpcRequest rpcRequest, Span span, Stopwatch watch) {
+        endTrace(rpcRequest, span, watch, null);
+    }
+
+    private void endTrace(RpcRequest rpcRequest, Span span, Stopwatch watch, Throwable throwable) {
         try {
             Map<String, String> attaches = rpcRequest.getContext();
 
@@ -140,6 +146,12 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             span.addToAnnotations(
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                             Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
+
+            if (null != throwable) {
+                // attach exception
+                span.addToBinary_annotations(BinaryAnnotation.create(
+                        "Exception", Throwables.getStackTraceAsString(throwable), null));
+            }
 
             if (!this.agentInited) {
                 return;
