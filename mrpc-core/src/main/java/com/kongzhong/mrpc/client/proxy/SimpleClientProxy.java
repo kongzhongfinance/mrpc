@@ -55,9 +55,38 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     private List<RpcClientInterceptor> interceptors;
 
     /**
+     * 代理接口超时时长
+     */
+    private Integer waitTimeout;
+
+    /**
      * 配置文件全局APPID，标识一个应用
      */
     private String appId;
+
+    public SimpleClientProxy(Integer waitTimeout, List<RpcClientInterceptor> interceptors) {
+        this.waitTimeout = waitTimeout;
+        this.appId = ClientConfig.me().getAppId();
+
+        LbStrategyEnum lbStrategy = ClientConfig.me().getLbStrategy();
+        if (null == lbStrategy) {
+            throw new SystemException("LoadBalance strategy not is null.");
+        }
+
+        this.interceptors = interceptors;
+        this.loadBalance = LoadBalanceFactory.getLoadBalance(lbStrategy);
+
+        if (null != interceptors && !interceptors.isEmpty()) {
+            hasInterceptors = true;
+            int pos = interceptors.size();
+            log.info("Add interceptor {}", interceptors.toString());
+            for (RpcClientInterceptor rpcClientInterceptor : interceptors) {
+                InterceptorChain interceptorChain = new InterceptorChain();
+                interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcClientInterceptor);
+            }
+        }
+    }
+
 
     public SimpleClientProxy(List<RpcClientInterceptor> interceptors) {
         this.appId = ClientConfig.me().getAppId();
@@ -159,7 +188,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
             return timeout;
         }
         Command command = method.getAnnotation(Command.class);
-        timeout = ClientConfig.me().getWaitTimeout();
+        timeout = this.waitTimeout != null ? this.waitTimeout : ClientConfig.me().getWaitTimeout();
         if (null != command) {
             return command.waitTimeout();
         }

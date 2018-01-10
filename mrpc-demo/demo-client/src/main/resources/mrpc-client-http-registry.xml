@@ -10,7 +10,7 @@
 
     <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181"/>
 
-    <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>
+    <mrpc:referer id="userService" waitTimeout="600000" interface="com.kongzhong.mrpc.demo.service.UserService"/>
     <mrpc:referer id="benchmarkService" interface="com.kongzhong.mrpc.demo.service.BenchmarkService"/>
 
 </beans>
