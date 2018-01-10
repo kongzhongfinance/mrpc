@@ -16,10 +16,12 @@ public class DiscoveryClientApplication {
         UserService userService = ctx.getBean(UserService.class);
         TimeUnit.SECONDS.sleep(1);
 
-        int index = 1;
-        while (true) {
-            System.out.println(userService.add(10, index++));
-            Thread.sleep(3000);
-        }
+        userService.testTimeout(99999999);
+
+//        int index = 1;
+//        while (true) {
+//            System.out.println(userService.add(10, index++));
+//            Thread.sleep(3000);
+//        }
     }
 }

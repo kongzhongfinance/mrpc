@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
+import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
@@ -28,9 +29,10 @@ import java.util.Set;
 @Slf4j
 public class BaseFilter {
 
-    private AbstractAgent      agent;
+    private AbstractAgent agent;
     private TraceAutoConfigure clientAutoConfigure;
-    private Set<String>        excludesPattern;
+    private Set<String> excludesPattern;
+    private boolean agentInited;
 
     /**
      * PatternMatcher used in determining which paths to react to for a given request.
@@ -45,6 +47,8 @@ public class BaseFilter {
         } else {
             this.agent = agent;
         }
+
+        this.agentInited = this.agent != null;
     }
 
     void setExcludesPattern(Set<String> excludesPattern) {
@@ -103,22 +107,30 @@ public class BaseFilter {
     }
 
     public void endTrace(HttpServletRequest request) {
-        try {
+        endTrace(request, null);
+    }
 
+    public void endTrace(HttpServletRequest request, Throwable throwable) {
+        try {
             // end root span
             Span rootSpan = TraceContext.getRootSpan();
             if (null != rootSpan) {
                 long times = TimeUtils.currentMicros() - rootSpan.getTimestamp();
-                endTrace(request, rootSpan, times);
+                endTrace(request, rootSpan, times, throwable);
             }
-            // clear trace context
-            TraceContext.clear();
         } catch (Exception e) {
             log.error("endTrace error ", e);
+        } finally {
+            // clear trace context
+            TraceContext.clear();
+            if (log.isDebugEnabled()) {
+                log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
+                TraceContext.print();
+            }
         }
     }
 
-    private void endTrace(HttpServletRequest req, Span span, long times) {
+    private void endTrace(HttpServletRequest req, Span span, long times, Throwable throwable) {
         // ss annotation
         span.addToAnnotations(
                 Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
@@ -126,7 +138,17 @@ public class BaseFilter {
 
         span.setDuration(times);
 
+        if (null != throwable) {
+            // attach exception
+            span.addToBinary_annotations(BinaryAnnotation.create(
+                    "Exception", Throwables.getStackTraceAsString(throwable), null));
+        }
+
         TraceContext.addSpanAndUpdate(span);
+
+        if (!this.agentInited) {
+            return;
+        }
         // send trace spans
         try {
             List<Span> spans = TraceContext.getSpans();
@@ -137,16 +159,11 @@ public class BaseFilter {
         } catch (Exception e) {
             log.error("Filter 发送到Trace失败", e);
         }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Filter Trace clear. traceId={}", TraceContext.getTraceId());
-            TraceContext.print();
-        }
     }
 
     boolean isExclusion(HttpServletRequest request) {
         String contextPath = getContextPath(request);
-        String requestURI  = request.getRequestURI();
+        String requestURI = request.getRequestURI();
         if (excludesPattern == null || requestURI == null) {
             return false;
         }

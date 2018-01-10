@@ -19,12 +19,14 @@ public class ClientBeanDefinitionParser extends AbstractBeanDefinitionParser {
         String version = element.getAttribute("version");
         String directAddress = element.getAttribute("directAddress");
         String registry = element.getAttribute("registry");
+        String waitTimeout = element.getAttribute("waitTimeout");
 
         builder.addPropertyValue("id", id);
         builder.addPropertyValue("serviceName", interfaceName);
         builder.addPropertyValue("version", version);
         builder.addPropertyValue("serviceClass", ReflectUtils.from(interfaceName));
         builder.addPropertyValue("directAddress", directAddress);
+        builder.addPropertyValue("waitTimeout", Integer.valueOf(waitTimeout));
         builder.addPropertyValue("registry", registry);
         return builder.getBeanDefinition();
     }

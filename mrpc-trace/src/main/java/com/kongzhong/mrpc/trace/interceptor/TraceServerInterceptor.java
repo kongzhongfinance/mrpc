@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.trace.interceptor;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Throwables;
 import com.kongzhong.basic.zipkin.TraceConstants;
 import com.kongzhong.basic.zipkin.TraceContext;
 import com.kongzhong.basic.zipkin.agent.AbstractAgent;
@@ -17,13 +18,11 @@ import com.kongzhong.mrpc.utils.Ids;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.TimeUtils;
 import com.twitter.zipkin.gen.Annotation;
+import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +37,8 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
 
     private TraceAutoConfigure traceAutoConfigure;
 
+    private boolean agentInited;
+
     public TraceServerInterceptor(TraceAutoConfigure traceAutoConfigure) {
         this.traceAutoConfigure = traceAutoConfigure;
         if (null == traceAutoConfigure) {
@@ -51,7 +52,9 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                 this.agent = agent;
             }
         }
-        log.info("TraceServerInterceptor 初始化完毕 config={}", this.traceAutoConfigure);
+
+        this.agentInited = this.agent != null;
+        log.info("TraceServerInterceptor 初始化完毕 agentInited={} config={}", this.agentInited, this.traceAutoConfigure);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
         log.debug("Trace Server Interceptor");
 
         RpcRequest request = invocation.getRequest();
-        String traceId = request.getContext().get(TraceConstants.TRACE_ID);
+        String traceId = request.getContext() == null ? null : request.getContext().get(TraceConstants.TRACE_ID);
         if (null == traceId) {
             // don't need tracing
             return invocation.next();
@@ -82,9 +85,15 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             request.getContext().put(TraceConstants.SS_TIME, String.valueOf(TimeUtils.currentMicros()));
             this.endTrace(request, span, watch);
             return result;
-        } catch (Exception e) {
-            this.endTrace(request, span, watch);
+        } catch (Exception | Error e) {
+            this.endTrace(request, span, watch, e);
             throw e;
+        } finally {
+            TraceContext.clear();
+            if (log.isDebugEnabled()) {
+                log.debug("TraceServerInterceptor Trace clear. traceId={}", TraceContext.getTraceId());
+                TraceContext.print();
+            }
         }
     }
 
@@ -118,6 +127,10 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
     }
 
     private void endTrace(RpcRequest rpcRequest, Span span, Stopwatch watch) {
+        endTrace(rpcRequest, span, watch, null);
+    }
+
+    private void endTrace(RpcRequest rpcRequest, Span span, Stopwatch watch, Throwable throwable) {
         try {
             Map<String, String> attaches = rpcRequest.getContext();
 
@@ -134,6 +147,15 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
                     Annotation.create(TimeUtils.currentMicros(), TraceConstants.ANNO_SS,
                             Endpoint.create(AppConfiguration.getAppId(), providerHost, providerPort)));
 
+            if (null != throwable) {
+                // attach exception
+                span.addToBinary_annotations(BinaryAnnotation.create(
+                        "Exception", Throwables.getStackTraceAsString(throwable), null));
+            }
+
+            if (!this.agentInited) {
+                return;
+            }
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {
@@ -141,11 +163,6 @@ public class TraceServerInterceptor implements RpcServerInterceptor {
             }
         } catch (Exception e) {
             log.error("Server发送Trace失败", e);
-        }
-        TraceContext.clear();
-        if (log.isDebugEnabled()) {
-            log.debug("TraceServerInterceptor Trace clear. traceId={}", TraceContext.getTraceId());
-            TraceContext.print();
         }
     }
 

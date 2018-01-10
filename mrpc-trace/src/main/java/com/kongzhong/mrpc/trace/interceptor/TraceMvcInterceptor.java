@@ -41,8 +41,6 @@ public class TraceMvcInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         super.afterCompletion(request, response, handler, ex);
         // end root span
-        baseFilter.endTrace(request);
+        baseFilter.endTrace(request, ex);
     }
-
-
 }

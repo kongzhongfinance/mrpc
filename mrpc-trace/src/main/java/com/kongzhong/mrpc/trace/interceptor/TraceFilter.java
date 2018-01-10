@@ -41,8 +41,14 @@ public class TraceFilter implements Filter {
         }
 
         baseFilter.startTrace(req);
-        // executor other filters
-        chain.doFilter(request, response);
+        try {
+            // executor other filters
+            chain.doFilter(request, response);
+        } catch (Exception | Error e) {
+            baseFilter.endTrace(req, e);
+            throw e;
+        }
+
         // end root span
         baseFilter.endTrace(req);
     }

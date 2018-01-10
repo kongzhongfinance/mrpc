@@ -41,6 +41,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
     private TraceAutoConfigure traceAutoConfigure;
 
+    private boolean agentInited;
+
     public TraceClientInterceptor(TraceAutoConfigure traceAutoConfigure) {
         if (null == traceAutoConfigure) {
             this.traceAutoConfigure = new TraceAutoConfigure();
@@ -53,7 +55,8 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                 this.agent = agent;
             }
         }
-        log.info("TraceClientInterceptor 初始化完毕 config={}", this.traceAutoConfigure);
+        this.agentInited = this.agent != null;
+        log.info("TraceClientInterceptor 初始化完毕 agentInited={} config={}", this.agentInited, this.traceAutoConfigure);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
 
             this.endTrace(request, consumeSpan, watch, null);
             return result;
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             this.endTrace(request, consumeSpan, watch, e);
             throw e;
         }
@@ -144,7 +147,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
         return null;
     }
 
-    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Exception e) {
+    private void endTrace(RpcRequest request, Span clientSpan, Stopwatch watch, Throwable e) {
         try {
             if (clientSpan == null) {
                 return;
@@ -152,7 +155,7 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
             clientSpan.setDuration(watch.stop().elapsed(TimeUnit.MICROSECONDS));
 
             String host = RpcContext.getAttachments(Const.SERVER_HOST);
-            int    port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
+            int port = Integer.parseInt(RpcContext.getAttachments(Const.SERVER_PORT));
 
             // cr annotation
             clientSpan.addToAnnotations(
@@ -160,11 +163,17 @@ public class TraceClientInterceptor implements RpcClientInterceptor {
                             Endpoint.create(AppConfiguration.getAppId(), NetUtils.ip2Num(host), port)));
 
             if (null != e) {
+                String error = RequestUtils.getServerName(request.getClassName(), request.getMethodName()) + "\n" +
+                        Throwables.getStackTraceAsString(e);
+
                 // attach exception
                 clientSpan.addToBinary_annotations(BinaryAnnotation.create(
-                        "Exception", Throwables.getStackTraceAsString(e), null));
+                        "Exception", error, null));
             }
 
+            if (!this.agentInited) {
+                return;
+            }
             List<Span> spans = TraceContext.getSpans();
             agent.send(spans);
             if (log.isDebugEnabled()) {
