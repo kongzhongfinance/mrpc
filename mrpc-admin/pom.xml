@@ -21,7 +21,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
-        <mrpc.version>0.1.2-RELEASE</mrpc.version>
+        <mrpc.version>0.1.2.RELEASE</mrpc.version>
 
         <!-- dependency version -->
         <lombok.version>1.16.18</lombok.version>
