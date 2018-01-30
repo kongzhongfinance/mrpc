@@ -259,6 +259,8 @@ public abstract class SimpleRpcClient {
         this.rpcClientInterceptors.add(inteceptor);
     }
 
+    private static final int DEFAULT_CLIENT_TIMEOUT = 10000;
+
     /**
      * 初始化客户端引用
      *
@@ -269,6 +271,9 @@ public abstract class SimpleRpcClient {
         String   serviceName  = clientBean.getServiceName();
         Class<?> serviceClass = clientBean.getServiceClass();
         try {
+            if (clientBean.getWaitTimeout().equals(DEFAULT_CLIENT_TIMEOUT)) {
+                clientBean.setWaitTimeout(ClientConfig.me().getWaitTimeout());
+            }
             Object object = this.getProxyBean(clientBean.getWaitTimeout(), serviceClass);
             if (null != beanFactory) {
                 beanFactory.registerSingleton(serviceName, object);
@@ -281,7 +286,7 @@ public abstract class SimpleRpcClient {
                 if (null == serviceDiscovery) {
                     throw new SystemException(String.format("Client referer [%s] not found registry [%s]", serviceName, clientBean.getRegistry()));
                 }
-                if (StringUtils.isEmpty(clientBean.getAppId())){
+                if (StringUtils.isEmpty(clientBean.getAppId())) {
                     clientBean.setAppId(ClientConfig.me().getAppId());
                 }
                 ClientConfig.me().getServiceDiscoveryMap().put(serviceName, serviceDiscovery);
