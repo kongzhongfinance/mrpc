@@ -56,27 +56,22 @@ public class TraceAutoConfigure {
     @Bean
     public TraceClientInterceptor traceClientInterceptor(@Autowired Environment environment) {
         log.info("加载 TraceClientInterceptor");
-        String enable = environment.getProperty("mrpc.trace.enable");
-        if (StringUtils.isEmpty(enable)) {
-            if (StringUtils.isNotEmpty(url)) {
-                return new TraceClientInterceptor(this);
-            }
+        if (null == enable || !enable) {
             return null;
         }
+
         TraceAutoConfigure traceAutoConfigure = parse(environment);
         return new TraceClientInterceptor(traceAutoConfigure);
     }
 
     @Bean
-    public TraceServerInterceptor traceServerInterceptor(@Autowired Environment environment){
+    public TraceServerInterceptor traceServerInterceptor(@Autowired Environment environment) {
         log.info("加载 TraceServerInterceptor");
-        String enable = environment.getProperty("mrpc.trace.enable");
-        if (StringUtils.isEmpty(enable)) {
-            if (StringUtils.isNotEmpty(url)) {
-                return new TraceServerInterceptor(this);
-            }
+
+        if (null == enable || !enable) {
             return null;
         }
+
         TraceAutoConfigure traceAutoConfigure = parse(environment);
         return new TraceServerInterceptor(traceAutoConfigure);
     }
@@ -84,9 +79,11 @@ public class TraceAutoConfigure {
     public static TraceAutoConfigure parse(Environment environment) {
         String enable = environment.getProperty("mrpc.trace.enable");
         log.info("mrpc.trace.enable={}", enable);
-        if (StringUtils.isEmpty(enable)) {
+
+        if (StringUtils.isEmpty(enable) || "false".equals(enable)) {
             return null;
         }
+
         String url   = environment.getProperty("mrpc.trace.url");
         String topic = environment.getProperty("mrpc.trace.topic");
         String owner = environment.getProperty("mrpc.trace.owner");
@@ -100,7 +97,8 @@ public class TraceAutoConfigure {
         }
         traceAutoConfigure.setOwner(owner);
         traceAutoConfigure.setName(name);
-        log.info("TraceAutoConfigure.parse ={}",traceAutoConfigure);
+        log.info("TraceAutoConfigure.parse ={}", traceAutoConfigure);
         return traceAutoConfigure;
     }
+
 }
