@@ -24,6 +24,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
 
@@ -77,7 +78,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
         // 客户端拦截器
         Map<String, RpcClientInterceptor> rpcClientInterceptorMap = beanFactory.getBeansOfType(RpcClientInterceptor.class);
         if (null != rpcClientInterceptorMap) {
-            rpcClientInterceptorMap.values().forEach(super::addInterceptor);
+            rpcClientInterceptorMap.values().stream()
+                    .filter(Objects::nonNull).forEach(super::addInterceptor);
         }
 
         this.customServiceMap = commonProperties.getCustom();
