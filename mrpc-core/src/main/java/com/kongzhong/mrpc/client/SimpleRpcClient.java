@@ -122,6 +122,8 @@ public abstract class SimpleRpcClient {
      */
     private Map<String, List<ClientBean>> directAddressList = Maps.newHashMap();
 
+    private static final Integer DEFAULT_CLIENT_TIMEOUT = 10000;
+
     /**
      * appId
      */
@@ -259,8 +261,6 @@ public abstract class SimpleRpcClient {
         this.rpcClientInterceptors.add(inteceptor);
     }
 
-    private static final int DEFAULT_CLIENT_TIMEOUT = 10000;
-
     /**
      * 初始化客户端引用
      *
@@ -271,7 +271,7 @@ public abstract class SimpleRpcClient {
         String   serviceName  = clientBean.getServiceName();
         Class<?> serviceClass = clientBean.getServiceClass();
         try {
-            if (clientBean.getWaitTimeout().equals(DEFAULT_CLIENT_TIMEOUT)) {
+            if (DEFAULT_CLIENT_TIMEOUT.equals(clientBean.getWaitTimeout())) {
                 clientBean.setWaitTimeout(ClientConfig.me().getWaitTimeout());
             }
             Object object = this.getProxyBean(clientBean.getWaitTimeout(), serviceClass);
