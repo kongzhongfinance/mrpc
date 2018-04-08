@@ -48,8 +48,6 @@ public class PropertiesParse {
 
         clientProperties.setAppId(env.getProperty(CLINET_APP_ID_STYLE1, env.getProperty(CLINET_APP_ID_STYLE2, "default")));
 
-        clientProperties.setTransport(env.getProperty(TRANSPORT_CLIENT, "tcp"));
-
         clientProperties.setSerialize(env.getProperty(SERIALIZE_CLIENT, "kyro"));
 
         clientProperties.setLbStrategy(env.getProperty(LB_STRATEGY_STYLE1_CLIENT, env.getProperty(LB_STRATEGY_STYLE2_CLIENT, LbStrategyEnum.ROUND.name())));

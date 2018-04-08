@@ -6,7 +6,7 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
 
-    <mrpc:clientConfig appId="demo" transport="tcp" directAddress="127.0.0.1:5066"/>
+    <mrpc:clientConfig appId="demo" transport="http" directAddress="127.0.0.1:5066"/>
 
     <mrpc:referer id="userService" interface="com.kongzhong.mrpc.demo.service.UserService"/>
     <mrpc:referer id="benchmarkService" interface="com.kongzhong.mrpc.demo.service.BenchmarkService"/>

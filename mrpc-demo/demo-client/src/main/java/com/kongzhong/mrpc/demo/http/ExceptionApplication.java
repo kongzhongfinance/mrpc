@@ -13,7 +13,6 @@ public class ExceptionApplication {
 
     public static void main(String[] args) throws InterruptedException {
         RpcSpringClient rpcClient = new RpcSpringClient();
-        rpcClient.setTransport("http");
         rpcClient.setDirectAddress("127.0.0.1:5066");
 
         UserService userService = rpcClient.getProxyReferer(UserService.class);

@@ -54,12 +54,6 @@ public abstract class SimpleRpcClient {
     protected String serialize;
 
     /**
-     * 传输协议，默认tcp协议
-     */
-    @Setter
-    protected String transport;
-
-    /**
      * 客户端是否已经初始化
      */
     boolean isInit;
@@ -186,9 +180,6 @@ public abstract class SimpleRpcClient {
         if (null == serialize) {
             serialize = "kyro";
         }
-        if (null == transport) {
-            transport = "tcp";
-        }
         if (null == lbStrategy) {
             lbStrategy = LbStrategyEnum.ROUND.name();
         }
@@ -205,7 +196,6 @@ public abstract class SimpleRpcClient {
         }
 
         LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
-        TransportEnum  transportEnum  = TransportEnum.valueOf(this.transport.toUpperCase());
         HaStrategyEnum haStrategyEnum = HaStrategyEnum.valueOf(this.haStrategy.toUpperCase());
 
         ClientConfig.me().setAppId(appId);
@@ -217,7 +207,6 @@ public abstract class SimpleRpcClient {
         ClientConfig.me().setRetryCount(retryCount);
         ClientConfig.me().setWaitTimeout(waitTimeout);
         ClientConfig.me().setPingInterval(pingInterval);
-        ClientConfig.me().setTransport(transportEnum);
 
         log.info("{}", ClientConfig.me());
 

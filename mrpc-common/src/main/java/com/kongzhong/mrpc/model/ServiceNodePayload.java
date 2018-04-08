@@ -1,7 +1,6 @@
 package com.kongzhong.mrpc.model;
 
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import lombok.*;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class ServiceNodePayload {
     private String appId;
     private String address;
     private NodeAliveStateEnum aliveState;
-    private TransportEnum transport;
     private List<ServiceStatus> services;
 
 }

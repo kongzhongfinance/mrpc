@@ -29,7 +29,6 @@ public class RpcSpringServerTest extends AbstractJUnit4SpringContextTests {
         assertThat(rpcSpringServer.getPoolName(), is("mrpc-server"));
         assertThat(rpcSpringServer.getSerialize(), is("kyro"));
         assertThat(rpcSpringServer.getTest(), is("true"));
-        assertThat(rpcSpringServer.getTransport(), is("tcp"));
     }
 
     @Test

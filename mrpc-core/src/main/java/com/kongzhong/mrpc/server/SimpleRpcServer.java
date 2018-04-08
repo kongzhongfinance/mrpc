@@ -13,7 +13,6 @@ import com.kongzhong.mrpc.embedded.ConfigServiceImpl;
 import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.InitializeException;
@@ -119,13 +118,6 @@ public abstract class SimpleRpcServer {
     protected String serialize;
 
     /**
-     * 传输协议，默认tcp协议
-     */
-    @Getter
-    @Setter
-    protected String transport;
-
-    /**
      * appId
      */
     @Getter
@@ -192,10 +184,6 @@ public abstract class SimpleRpcServer {
         if (null == nettyConfig) {
             nettyConfig = new NettyConfig(128, true);
         }
-
-        if (null == transport) {
-            transport = "tcp";
-        }
         if (null == serialize) {
             serialize = "kyro";
         }
@@ -239,7 +227,7 @@ public abstract class SimpleRpcServer {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-                    .childHandler(transferSelector.getServerChannelHandler(transport))
+                    .childHandler(transferSelector.getServerChannelHandler())
                     .option(ChannelOption.SO_BACKLOG, nettyConfig.getBacklog())
                     .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
@@ -374,7 +362,6 @@ public abstract class SimpleRpcServer {
                 .address(this.address)
                 .appId(this.appId)
                 .aliveState(aliveState)
-                .transport(TransportEnum.valueOf(this.transport.toUpperCase()))
                 .services(ServiceStatusTable.me().getServiceStatus())
                 .build();
 
