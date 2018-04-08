@@ -18,6 +18,8 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -48,7 +50,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      */
     @Override
     public RpcCallbackFuture asyncSendRequest(RpcRequest rpcRequest) {
-        if(isShutdown){
+        if (isShutdown) {
             throw new SystemException("Rpc client has been shutdown.");
         }
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
@@ -81,7 +83,17 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             this.setChannelRequestId(rpcRequest.getRequestId());
 
-            channel.writeAndFlush(req);
+            channel.writeAndFlush(req).addListener(new GenericFutureListener<Future<? super Void>>() {
+                @Override
+                public void operationComplete(Future<? super Void> future) throws Exception {
+                    if (future.isSuccess()) {
+                        log.debug("Client requestId [{}] send success.", rpcRequest.getRequestId());
+                    } else {
+                        log.debug("Client requestId [{}] send fail.", rpcRequest.getRequestId());
+                    }
+                }
+            });
+
         } catch (Exception e) {
             log.error("Client send request error", e);
         }
