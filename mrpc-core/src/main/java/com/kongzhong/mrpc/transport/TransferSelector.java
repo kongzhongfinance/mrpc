@@ -23,7 +23,6 @@ public class TransferSelector {
     /**
      * 根据传输协议获取一个服务端处理handler
      *
-     * @param transport @see TransportEnum
      * @return NettyChannelHandler
      */
     public ChannelHandler getServerChannelHandler() throws RpcException {

@@ -27,7 +27,6 @@ public class ClientConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
         String pingInterval = element.getAttribute("pingInterval");
 
         builder.addPropertyValue("appId", appId);
-        builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
         builder.addPropertyValue("directAddress", directAddress);
         builder.addPropertyValue("haStrategy", haStrategy);

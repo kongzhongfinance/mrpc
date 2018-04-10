@@ -1,6 +1,7 @@
 package com.kongzhong.mrpc.demo.http;
 
 import com.kongzhong.mrpc.client.RpcSpringClient;
+import com.kongzhong.mrpc.demo.exception.BizException;
 import com.kongzhong.mrpc.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,11 +20,16 @@ public class ExceptionApplication {
 
         try {
 //             userService.testNormalExp();
-//            userService.testBizExp(2333);
+            userService.testBizExp(2333);
 //            userService.testNoArgException();
             userService.testError();
         } catch (Throwable e) {
             e.printStackTrace();
+            if (e instanceof BizException) {
+                BizException bizException = (BizException) e;
+                System.out.println(bizException.getCode());
+                System.out.println(bizException.getMsg());
+            }
         }
 
         rpcClient.shutdown();

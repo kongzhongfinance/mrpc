@@ -38,9 +38,6 @@ public interface Const {
     String TEST_KEY                            = "mrpc.test";
     // 测试环境
     String TEST_ENV                            = "mrpc.test=true";
-    // 客户端传输协议
-    String TRANSPORT_CLIENT                    = "mrpc.client.transport";
-    String SERVER_TRANSPORT                    = "mrpc.server.transport";
     String SERVER_ADDRESS                      = "mrpc.server.address";
     // 客户端appId
     String CLINET_APP_ID_STYLE1                = "mrpc.client.appId";
