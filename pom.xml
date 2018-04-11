@@ -32,7 +32,7 @@
         <protostuff.version>1.5.2</protostuff.version>
         <objenesis.version>2.6</objenesis.version>
         <lombok.version>1.16.18</lombok.version>
-        <netty.version>4.1.16.Final</netty.version>
+        <netty.version>4.1.22.Final</netty.version>
         <spring.version>5.0.3.RELEASE</spring.version>
         <spring-boot.version>2.0.0.RELEASE</spring-boot.version>
         <guava.version>19.0</guava.version>
