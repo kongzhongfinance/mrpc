@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 @Data
 @Slf4j
 @ConfigurationProperties("mrpc.trace")
-@ConditionalOnExpression("'${mrpc.trace.enable}'=='true'")
 public class TraceAutoConfigure {
 
     /**
