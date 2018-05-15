@@ -24,7 +24,7 @@ public class MetricsUtils {
 
         if (clazz != null) {
             tagMap.put("class", clazz.getName());
-            metrics += "_" + "{" + clazz.getName().replaceAll("\\.", "_") + "}";
+            metrics += "_" + clazz.getName().replaceAll("\\.", "_");
         }
         if (StringUtils.isNotEmpty(method)) {
             tagMap.put("method", method);

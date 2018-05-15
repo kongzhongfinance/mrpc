@@ -7,7 +7,7 @@
     <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.5-SNAPSHOT</version>
 
     <modules>
         <module>mrpc-common</module>
@@ -34,7 +34,7 @@
         <lombok.version>1.16.18</lombok.version>
         <netty.version>4.1.22.Final</netty.version>
         <spring.version>5.0.3.RELEASE</spring.version>
-        <spring-boot.version>2.0.0.RELEASE</spring-boot.version>
+        <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
         <guava.version>19.0</guava.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <zookeeper.version>3.4.8</zookeeper.version>
