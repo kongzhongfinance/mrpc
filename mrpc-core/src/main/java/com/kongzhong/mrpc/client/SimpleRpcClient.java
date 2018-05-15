@@ -243,11 +243,10 @@ public abstract class SimpleRpcClient {
      * @param inteceptor 客户端拦截器
      */
     public void addInterceptor(RpcClientInterceptor inteceptor) {
-        if (null == inteceptor) {
-            throw new IllegalArgumentException("RpcClientInterceptor not is null");
+        if (null != inteceptor) {
+            log.info("Add interceptor [{}]", inteceptor.toString());
+            this.rpcClientInterceptors.add(inteceptor);
         }
-        log.info("Add interceptor [{}]", inteceptor.toString());
-        this.rpcClientInterceptors.add(inteceptor);
     }
 
     /**
