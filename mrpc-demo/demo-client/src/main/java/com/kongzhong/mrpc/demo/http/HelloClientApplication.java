@@ -20,7 +20,8 @@ public class HelloClientApplication {
         UserService userService = rpcClient.getProxyReferer(UserService.class);
 
         try {
-            userService.testTimeout(14);
+//            userService.testTimeout(14);
+            userService.testServerCustomException();
         } catch (Exception e){
             e.printStackTrace();
         }
