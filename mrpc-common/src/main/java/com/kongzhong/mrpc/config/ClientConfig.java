@@ -3,7 +3,6 @@ package com.kongzhong.mrpc.config;
 import com.google.common.collect.Maps;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.Data;
@@ -27,7 +26,6 @@ public class ClientConfig {
     private HaStrategyEnum haStrategy = HaStrategyEnum.FAILOVER;
     private RpcSerialize rpcSerialize;
     private LbStrategyEnum lbStrategy = LbStrategyEnum.RANDOM;
-    private TransportEnum transport = TransportEnum.TCP;
     private Map<String, ServiceDiscovery> serviceDiscoveryMap = Maps.newHashMap();
 
     /**

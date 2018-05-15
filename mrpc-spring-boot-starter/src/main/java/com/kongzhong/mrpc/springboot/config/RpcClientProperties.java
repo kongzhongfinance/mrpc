@@ -16,9 +16,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ToString
 public class RpcClientProperties {
 
-    // 服务端传输协议，默认tcp
-    private String transport;
-
     // 服务所属appId
     private String appId;
 

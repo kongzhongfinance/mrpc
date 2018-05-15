@@ -110,7 +110,6 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
 
             super.test = StringUtils.isNotEmpty(commonProperties.getTest()) ? commonProperties.getTest() : rpcServerProperties.getTest();
 
-            super.transport = rpcServerProperties.getTransport();
             super.serialize = rpcServerProperties.getSerialize();
 
             configurableBeanFactory.registerSingleton("rpcMapping", rpcMapping);

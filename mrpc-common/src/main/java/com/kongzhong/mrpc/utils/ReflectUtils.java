@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.exception.SystemException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -44,7 +45,7 @@ public class ReflectUtils {
      * @param className
      * @return
      */
-    public static Class<?> from(String className) {
+    public static Class<?> from(String className) throws ClassNotFoundException {
         try {
             if (CLASS_CONCURRENT_MAP.containsKey(className)) {
                 return CLASS_CONCURRENT_MAP.get(className);
@@ -53,7 +54,7 @@ public class ReflectUtils {
             CLASS_CONCURRENT_MAP.put(className, clzzz);
             return clzzz;
         } catch (Exception e) {
-            return null;
+            throw e;//new SystemException(e);
         }
     }
 
@@ -418,12 +419,12 @@ public class ReflectUtils {
      * @param type
      * @return
      */
-    public static Class<?> getClassType(String type) {
-        if (isBasic(type)) {
-            return getBasicType(type);
-        }
-        return from(type);
-    }
+//    public static Class<?> getClassType(String type) {
+//        if (isBasic(type)) {
+//            return getBasicType(type);
+//        }
+//        return from(type);
+//    }
 
     /**
      * 根据类名创建一个无参构造函数的对象

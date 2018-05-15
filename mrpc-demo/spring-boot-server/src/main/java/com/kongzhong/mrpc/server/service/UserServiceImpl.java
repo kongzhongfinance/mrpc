@@ -28,6 +28,11 @@ public class UserServiceImpl implements UserService, PayService {
     }
 
     @Override
+    public String testServerCustomException() {
+        return "23333";
+    }
+
+    @Override
     public String pay(String msg, BigDecimal money) {
         return null;
     }

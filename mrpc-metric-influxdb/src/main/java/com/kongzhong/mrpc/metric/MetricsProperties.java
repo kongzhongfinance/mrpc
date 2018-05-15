@@ -26,6 +26,5 @@ public class MetricsProperties {
     private String database;
     private int    actions         = 1000;
     private int    flushDuration   = 100;
-    private String retentionPolicy = "autogen";
 
 }

@@ -1,12 +1,14 @@
 package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.exception.TimeoutException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -46,8 +48,17 @@ public class RpcCallbackFuture {
                 if (response.getSuccess()) {
                     return response.getResult();
                 } else {
-                    Class<?> expType = ReflectUtils.from(response.getReturnType());
-                    Object   object  = JacksonSerialize.parseObject(response.getException(), expType);
+                    Object object = null;
+                    try {
+                        Class<?> expType = ReflectUtils.from(response.getReturnType());
+                        object = JacksonSerialize.parseObject(response.getException(), expType);
+                    } catch (ClassNotFoundException e) {
+                        if (StringUtils.isNotEmpty(context.get(Const.SERVER_EXCEPTION))) {
+                            object = JacksonSerialize.parseObject(response.getException(), SystemException.class);
+                        } else {
+                            object = e;
+                        }
+                    }
                     if (object instanceof Exception) {
                         throw (Exception) object;
                     }

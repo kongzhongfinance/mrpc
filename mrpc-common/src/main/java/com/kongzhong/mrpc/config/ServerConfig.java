@@ -1,6 +1,5 @@
 package com.kongzhong.mrpc.config;
 
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -21,7 +20,6 @@ public class ServerConfig {
     private String       appId;
     private String       elasticIp;
     private RpcSerialize rpcSerialize;
-    private TransportEnum transport = TransportEnum.TCP;
 
     private static final class ServerConfigHolder {
         private static final ServerConfig INSTANCE = new ServerConfig();

@@ -88,7 +88,7 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="transport" type="xsd:string" use="optional" default="tcp">
+            <xsd:attribute name="transport" type="xsd:string" use="optional" default="http">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 传输协议tcp/http ]]></xsd:documentation>
                 </xsd:annotation>
@@ -125,7 +125,7 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="transport" type="xsd:string" use="optional" default="tcp">
+            <xsd:attribute name="transport" type="xsd:string" use="optional" default="http">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[ 传输协议tcp/http ]]></xsd:documentation>
                 </xsd:annotation>

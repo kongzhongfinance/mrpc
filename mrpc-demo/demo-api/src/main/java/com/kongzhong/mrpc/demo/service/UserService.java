@@ -123,4 +123,7 @@ public interface UserService {
         System.out.println("test-------");
         throw new ExceptionInInitializerError("omg.");
     }
+
+    String testServerCustomException();
+
 }

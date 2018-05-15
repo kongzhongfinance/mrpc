@@ -1,11 +1,9 @@
 package com.kongzhong.mrpc.transport;
 
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
-import com.kongzhong.mrpc.transport.tcp.TcpServerChannelInitializer;
 import io.netty.channel.ChannelHandler;
 
 /**
@@ -25,18 +23,13 @@ public class TransferSelector {
     /**
      * 根据传输协议获取一个服务端处理handler
      *
-     * @param transport @see TransportEnum
      * @return NettyChannelHandler
      */
-    public ChannelHandler getServerChannelHandler(String transport) throws RpcException {
-        TransportEnum transportEnum = TransportEnum.valueOf(transport.toUpperCase());
-        if (transportEnum.equals(TransportEnum.TCP)) {
-            return new TcpServerChannelInitializer(rpcSerialize);
+    public ChannelHandler getServerChannelHandler() throws RpcException {
+        if (null == rpcSerialize) {
+            throw new InitializeException("rpc server serialize is null.");
         }
-        if (transportEnum.equals(TransportEnum.HTTP)) {
-            return new HttpServerChannelInitializer();
-        }
-        throw new InitializeException("transfer type is null.");
+        return new HttpServerChannelInitializer();
     }
 
 }

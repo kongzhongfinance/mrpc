@@ -21,8 +21,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     @ConditionalOnClass(TraceAutoConfigure.class)
-    public TraceMvcInterceptor traceMvcInterceptor(@Autowired TraceClientInterceptor traceClientInterceptor){
-        return new TraceMvcInterceptor(traceClientInterceptor.getTraceAutoConfigure());
+    public TraceMvcInterceptor traceMvcInterceptor(@Autowired TraceAutoConfigure traceAutoConfigure) {
+        return new TraceMvcInterceptor(traceAutoConfigure);
     }
 
     @Override

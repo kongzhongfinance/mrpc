@@ -3,15 +3,12 @@ package com.kongzhong.mrpc.transport.netty;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.model.ServiceStatus;
 import com.kongzhong.mrpc.model.ServiceStatusTable;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
-import com.kongzhong.mrpc.transport.tcp.TcpClientChannelInitializer;
-import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
 import com.kongzhong.mrpc.utils.HttpRequest;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.bootstrap.Bootstrap;
@@ -58,9 +55,6 @@ public class NettyClient {
 
     private NettyConfig nettyConfig;
 
-    @Setter
-    private TransportEnum transport = ClientConfig.me().getTransport();
-
     /**
      * Channel调度map
      */
@@ -84,11 +78,7 @@ public class NettyClient {
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnTimeout())
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
-        if (this.transport.equals(TransportEnum.HTTP)) {
-            bootstrap.handler(new HttpClientChannelInitializer(this));
-        } else {
-            bootstrap.handler(new TcpClientChannelInitializer(this));
-        }
+        bootstrap.handler(new HttpClientChannelInitializer(this));
         return bootstrap;
     }
 
@@ -113,10 +103,8 @@ public class NettyClient {
 
             log.info("Connect {} success.", channel);
 
-            boolean isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
-
             //和服务器连接成功后, 获取MessageSendHandler对象
-            Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
+            Class<? extends SimpleClientHandler> clientHandler = HttpClientHandler.class;
             SimpleClientHandler                  handler       = channel.pipeline().get(clientHandler);
 
             // 设置节点状态为存活状态
@@ -128,7 +116,7 @@ public class NettyClient {
                 this.weight = serviceStatus.getWeight();
             }
 
-            if (isHttp && ClientConfig.me().getPingInterval() > 0) {
+            if (ClientConfig.me().getPingInterval() > 0) {
                 this.enabledPing(channel);
             }
             return channel;

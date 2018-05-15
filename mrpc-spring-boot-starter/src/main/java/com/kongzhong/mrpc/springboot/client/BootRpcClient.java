@@ -86,7 +86,6 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
         super.nettyConfig = commonProperties.getNetty();
 
         super.appId = clientConfig.getAppId();
-        super.transport = clientConfig.getTransport();
         super.lbStrategy = clientConfig.getLbStrategy();
         super.haStrategy = clientConfig.getHaStrategy();
         super.serialize = clientConfig.getSerialize();
