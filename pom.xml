@@ -7,7 +7,7 @@
     <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.1.4-SNAPSHOT</version>
 
     <modules>
         <module>mrpc-common</module>
@@ -38,7 +38,7 @@
         <guava.version>19.0</guava.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <zookeeper.version>3.4.8</zookeeper.version>
-        <jackson.version>2.7.0</jackson.version>
+        <jackson.version>2.9.4</jackson.version>
         <consul-api.version>1.2.3</consul-api.version>
         <zipkin.trace.version>0.0.3-SNAPSHOT</zipkin.trace.version>
         <!--<klog.version>0.2.6-SNAPSHOT</klog.version>-->
