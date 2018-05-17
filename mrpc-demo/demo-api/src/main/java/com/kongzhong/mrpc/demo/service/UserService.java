@@ -119,11 +119,16 @@ public interface UserService {
         return time;
     }
 
-    default void testError(){
+    default void testError() {
         System.out.println("test-------");
         throw new ExceptionInInitializerError("omg.");
     }
 
     String testServerCustomException();
 
+    default Optional<XXDto> testOptional() {
+        XXDto xxDto = new XXDto();
+        xxDto.setAge(22);
+        return Optional.ofNullable(xxDto);
+    }
 }

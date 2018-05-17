@@ -2,12 +2,15 @@ package com.kongzhong.mrpc.serialize.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kongzhong.mrpc.exception.SerializeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.zapodot.jackson.java8.JavaOptionalModule;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -30,6 +33,7 @@ public class JacksonSerialize {
 
     static {
         MAPPER.registerModule(initModule());
+        MAPPER.registerModule(new JavaOptionalModule());
         MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         MAPPER.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
@@ -115,4 +119,5 @@ public class JacksonSerialize {
             return null;
         }
     }
+
 }
