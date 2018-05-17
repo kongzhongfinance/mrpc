@@ -559,10 +559,10 @@ public abstract class SimpleRpcServer {
                 return;
             }
             log.info("UnRegistering mrpc server on shutdown");
+            isClosed = true;
 
             // 拒绝连接
             SimpleServerHandler.shutdown();
-
             EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
 
             for (ListenableFuture listenableFuture : listenableFutures) {
@@ -585,7 +585,6 @@ public abstract class SimpleRpcServer {
                 }
             });
         } finally {
-            isClosed = true;
             lock.unlock();
         }
     }
