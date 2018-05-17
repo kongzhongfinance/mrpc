@@ -2,10 +2,12 @@ package com.kongzhong.mrpc.demo.http;
 
 import com.kongzhong.mrpc.client.RpcSpringClient;
 import com.kongzhong.mrpc.demo.model.Person;
+import com.kongzhong.mrpc.demo.model.XXDto;
 import com.kongzhong.mrpc.demo.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author biezhi
@@ -21,7 +23,8 @@ public class HelloClientApplication {
 
         try {
 //            userService.testTimeout(14);
-            userService.testServerCustomException();
+            Optional<XXDto> xxDto = userService.testOptional();
+            System.out.println(xxDto);
         } catch (Exception e){
             e.printStackTrace();
         }

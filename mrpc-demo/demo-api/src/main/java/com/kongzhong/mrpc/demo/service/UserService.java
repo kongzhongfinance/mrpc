@@ -126,6 +126,15 @@ public interface UserService {
 
     String testServerCustomException();
 
+    default String testRestart() {
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "Hello";
+    }
+
     default Optional<XXDto> testOptional() {
         XXDto xxDto = new XXDto();
         xxDto.setAge(22);
