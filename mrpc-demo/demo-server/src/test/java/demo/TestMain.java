@@ -28,7 +28,6 @@ public class TestMain {
 
         Book book1 = JacksonSerialize.parseObject(result, Book.class);
         System.out.println(book1);
-
     }
 
 }
