@@ -39,4 +39,12 @@ public class IndexController {
         String t1 = userService.testTrace();
         return t1;
     }
+
+    @GetMapping("/restart")
+    public String restart() {
+        String t1 = userService.testRestart();
+        System.out.println("t1: " + t1);
+        return t1;
+    }
+
 }
