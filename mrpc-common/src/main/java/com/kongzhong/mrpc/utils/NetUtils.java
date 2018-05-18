@@ -4,10 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
+import java.net.*;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -132,11 +129,13 @@ public class NetUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(protocol).append("://");
         sb.append(host);
-        if (context.charAt(0) != '/')
+        if (context.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(context);
-        if (path.charAt(0) != '/')
+        if (path.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(path);
         return sb.toString();
     }
@@ -152,8 +151,9 @@ public class NetUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(protocol).append("://");
         sb.append(host).append(':').append(port);
-        if (path.charAt(0) != '/')
+        if (path.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(path);
         return sb.toString();
     }
@@ -169,11 +169,13 @@ public class NetUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(protocol).append("://");
         sb.append(host).append(':').append(port);
-        if (context.charAt(0) != '/')
+        if (context.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(context);
-        if (path.charAt(0) != '/')
+        if (path.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(path);
         return sb.toString();
     }
@@ -183,8 +185,9 @@ public class NetUtils {
     }
 
     private static boolean isValidAddress(InetAddress address) {
-        if (address == null || address.isLoopbackAddress())
+        if (address == null || address.isLoopbackAddress()) {
             return false;
+        }
         String name = address.getHostAddress();
         return (name != null
                 && !ANYHOST.equals(name)
@@ -210,8 +213,9 @@ public class NetUtils {
      * @return 本地网卡IP
      */
     public static InetAddress getLocalAddress() {
-        if (LOCAL_ADDRESS != null)
+        if (LOCAL_ADDRESS != null) {
             return LOCAL_ADDRESS;
+        }
         InetAddress localAddress = getLocalAddress0();
         LOCAL_ADDRESS = localAddress;
         return localAddress;
@@ -259,31 +263,94 @@ public class NetUtils {
         return localAddress;
     }
 
-    public static String findAddressFromUrl(String url) {
-        String address = "";
-        Pattern ADDRESS_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}\\:\\d{1,5}");
-        Matcher matcher = ADDRESS_PATTERN.matcher(url);
-        if (matcher.find()) {
-            matcher.reset();
-            while (matcher.find()) {// 找到匹配的字符串
-                address = matcher.group(0);
-                break;
+    /**
+     * 获取主机名
+     * @return 主机名
+     */
+    public static String getHostName() {
+
+        String name = null;
+        try {
+            Enumeration<NetworkInterface> infs = NetworkInterface.getNetworkInterfaces();
+            while (infs.hasMoreElements() && (name == null)) {
+                NetworkInterface net = infs.nextElement();
+                if (net.isLoopback()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addr = net.getInetAddresses();
+                while (addr.hasMoreElements()) {
+
+                    InetAddress inet = addr.nextElement();
+
+                    if (inet.isSiteLocalAddress()) {
+                        name = inet.getHostAddress();
+                    }
+
+                    if (!inet.getCanonicalHostName().equalsIgnoreCase(inet.getHostAddress())) {
+                        name = inet.getCanonicalHostName();
+                        break;
+                    }
+                }
             }
+        } catch (SocketException e) {
+            name = "localhost";
         }
-        return address;
+        return name;
     }
 
-    public static String findIpFromUrl(String url) {
-        String address = "";
-        Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}");
-        Matcher matcher = IP_PATTERN.matcher(url);
-        if (matcher.find()) {
-            matcher.reset();
-            while (matcher.find()) {// 找到匹配的字符串
-                address = matcher.group(0);
-                break;
+    /**
+     * 获取内网IP
+     * @return 内网IP
+     */
+    public static String getSiteIp() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface network = interfaces.nextElement();
+                Enumeration<InetAddress> addresses = network.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (address.isSiteLocalAddress()) {
+                        return address.getHostAddress();
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return address;
+        return "127.0.0.1";
     }
+
+    /**
+     * 把IP按点号分4段，每段一整型就一个字节来表示，通过左移位来实现。
+     * 第一段放到最高的8位，需要左移24位，依此类推即可
+     *
+     * @param ipStr ip地址
+     * @return 整形
+     */
+    public static Integer ip2Num(String ipStr) {
+        if (ipStr == null || "".equals(ipStr)) {
+            return -1;
+        }
+
+        if (ipStr.contains(":")) {
+            //ipv6的地址，不解析，返回127.0.0.1
+            ipStr = "127.0.0.1";
+        }
+
+        String[] ips = ipStr.split("\\.");
+
+        return (Integer.parseInt(ips[0]) << 24) + (Integer.parseInt(ips[1]) << 16) + (Integer.parseInt(ips[2]) << 8) + Integer.parseInt(ips[3]);
+    }
+
+    /**
+     * 把整数分为4个字节，通过右移位得到IP地址中4个点分段的值
+     *
+     * @param ipNum ip int value
+     * @return ip str
+     */
+    public static String num2Ip(int ipNum) {
+        return ((ipNum >> 24) & 0xFF) + "." + ((ipNum >> 16) & 0xFF) + "." + ((ipNum >> 8) & 0xFF) + "." + (ipNum & 0xFF);
+    }
+
 }

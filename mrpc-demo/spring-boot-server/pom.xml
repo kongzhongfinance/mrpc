@@ -6,7 +6,7 @@
     <parent>
         <artifactId>mrpc-demo</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.1.4-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -21,6 +21,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -33,22 +39,37 @@
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-spring-boot-starter</artifactId>
-            <version>${mrpc-starter.version}</version>
+            <version>${parent.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-metric-influxdb</artifactId>
-            <version>${mrpc-metric.version}</version>
+            <version>${parent.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-trace</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.16</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -63,5 +84,24 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <!-- 可执行Jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- 发布跳过 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

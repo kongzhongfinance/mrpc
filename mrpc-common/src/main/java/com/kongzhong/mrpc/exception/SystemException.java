@@ -1,15 +1,15 @@
 package com.kongzhong.mrpc.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Runtime异常
  *
  * @author biezhi
  *         2017/4/20
  */
-public class SystemException extends RuntimeException {
-
-    public SystemException() {
-    }
+@NoArgsConstructor
+public class SystemException extends RpcException {
 
     public SystemException(String message) {
         super(message);

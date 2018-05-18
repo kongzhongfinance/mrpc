@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mrpc-demo</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.1.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -40,22 +40,44 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-spring-boot-starter</artifactId>
-            <version>${mrpc-starter.version}</version>
+            <version>${parent.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-hystrix</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kongzhong.mrpc</groupId>
+            <artifactId>mrpc-trace</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.kongzhong.finance.basic</groupId>-->
+            <!--<artifactId>klog</artifactId>-->
+            <!--<version>${klog.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
-
 
     <dependencyManagement>
         <dependencies>

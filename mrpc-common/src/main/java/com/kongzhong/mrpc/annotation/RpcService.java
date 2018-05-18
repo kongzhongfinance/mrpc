@@ -17,6 +17,13 @@ import java.lang.annotation.Target;
 public @interface RpcService {
 
     /**
+     * 服务暴露出的名称，默认为Spring容器生成的名称
+     *
+     * @return
+     */
+    String name() default "";
+
+    /**
      * 服务实现的接口
      *
      * @return
@@ -24,18 +31,25 @@ public @interface RpcService {
     Class<?> value() default NoInterface.class;
 
     /**
+     * 当前服务版本
+     *
+     * @return
+     */
+    String version() default "";
+
+    /**
      * 服务所属APPID（服务分组）
      *
      * @return
      */
-    String appId() default "default";
+    String appId() default "";
 
     /**
      * 注册中心
      *
      * @return
      */
-    String registry() default "default";
+    String registry() default "";
 
     /**
      * 服务绑定地址
@@ -50,4 +64,5 @@ public @interface RpcService {
      * @return
      */
     String elasticIp() default "";
+
 }

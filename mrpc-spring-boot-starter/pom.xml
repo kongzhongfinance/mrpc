@@ -5,44 +5,42 @@
     <parent>
         <artifactId>mrpc</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.1.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mrpc-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
-    <version>${parent.version}</version>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!--mrpc-->
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-common</artifactId>
-            <version>${mrpc-common.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-core</artifactId>
-            <version>${mrpc-core.version}</version>
+            <version>${parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-serialize-kryo</artifactId>
-            <version>${mrpc-serialize-kryo.version}</version>
+            <version>${parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-registry-zk</artifactId>
-            <version>${mrpc-zk.version}</version>
+            <version>${parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
 
     </dependencies>
@@ -53,7 +51,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

@@ -1,11 +1,13 @@
 package com.kongzhong.mrpc.client;
 
-import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.interceptor.RpcClientInteceptor;
+import com.google.common.collect.Sets;
+import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.model.RegistryBean;
-import com.kongzhong.mrpc.registry.DefaultDiscovery;
-import com.kongzhong.mrpc.registry.ServiceDiscovery;
+import com.kongzhong.mrpc.utils.CollectionUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -16,8 +18,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Map;
-
-import static com.kongzhong.mrpc.Const.MRPC_CLIENT_DISCOVERY_PREFIX;
 
 /**
  * RPC客户端
@@ -34,58 +34,78 @@ public class RpcSpringClient extends SimpleRpcClient implements ApplicationConte
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        System.out.println(Const.CLIENT_BANNER);
+
+        if (super.skipBind) {
+            log.info("RPC client skip bind service.");
+            return;
+        }
+
         // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
-        if (null != registryBeanMap) {
-            registryBeanMap.values().forEach(registryBean -> serviceDiscoveryMap.put(MRPC_CLIENT_DISCOVERY_PREFIX + registryBean.getName(), parseRegistry(registryBean)));
+        if (CollectionUtils.isNotEmpty(registryBeanMap)) {
+            registryBeanMap.values().forEach(registryBean -> serviceDiscoveryMap.put(registryBean.getName(), this.parseRegistry(registryBean)));
         }
 
         // 客户端拦截器
-        Map<String, RpcClientInteceptor> rpcClientInteceptorMap = ctx.getBeansOfType(RpcClientInteceptor.class);
-        if (null != rpcClientInteceptorMap) {
-            rpcClientInteceptorMap.values().forEach(super::addInterceptor);
+        Map<String, RpcClientInterceptor> interceptorMap = ctx.getBeansOfType(RpcClientInterceptor.class);
+        if (CollectionUtils.isNotEmpty(interceptorMap)) {
+            interceptorMap.values().forEach(super::addInterceptor);
         }
+
+        Map<String, NettyConfig> nettyConfigMap = ctx.getBeansOfType(NettyConfig.class);
+        if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
+            this.nettyConfig = nettyConfigMap.values().stream().findFirst().orElse(new NettyConfig());
+        }
+
+        super.init();
 
         // 客户端引用
         Map<String, ClientBean> clientBeanMap = ctx.getBeansOfType(ClientBean.class);
 
         ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
-        DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) context.getBeanFactory();
+        DefaultListableBeanFactory     dbf     = (DefaultListableBeanFactory) context.getBeanFactory();
 
-        super.init();
-
-        if (clientBeanMap != null && !clientBeanMap.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(clientBeanMap)) {
             clientBeanMap.values().forEach(clientBean -> super.initReferer(clientBean, dbf));
         }
 
         // 初始化引用
-        referers.forEach(referer -> super.initReferer(referer, dbf));
+        clientBeans.forEach(referer -> super.initReferer(referer, dbf));
+
         super.directConnect();
+
+        log.info("Bind services finished.");
+        Runtime.getRuntime().addShutdownHook(new Thread( () -> this.close()));
+    }
+
+    /***
+     * 动态代理,获得代理后的对象
+     *
+     * @param rpcInterface Rpc服务接口
+     * @param <T>   服务类型
+     * @return 获取一个服务代理对象
+     */
+    public <T> T getProxyReferer(Class<T> rpcInterface) {
+        if (!isInit) {
+            try {
+                super.init();
+            } catch (Exception e) {
+                log.error("RPC client init error", e);
+            }
+        }
+        if (null == ctx && StringUtils.isNotEmpty(directAddress)) {
+            String[] directAddressArr = directAddress.split(",");
+            // 同步直连
+            Connections.me().syncDirectConnect(Sets.newHashSet(rpcInterface.getName()), Sets.newHashSet(directAddressArr));
+        }
+        return this.getProxyBean(rpcInterface);
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         ctx = applicationContext;
-    }
-
-    protected ServiceDiscovery parseRegistry(RegistryBean registryBean) {
-        String type = registryBean.getType();
-        if (RegistryEnum.DEFAULT.getName().equals(type)) {
-            ServiceDiscovery serviceDiscovery = new DefaultDiscovery();
-            return serviceDiscovery;
-        }
-        if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-            String zkAddr = registryBean.getAddress();
-            log.info("RPC server connect zookeeper address: {}", zkAddr);
-            try {
-                Object zookeeperDiscovery = Class.forName("com.kongzhong.mrpc.discover.ZookeeperServiceDiscovery").getConstructor(String.class).newInstance(zkAddr);
-                ServiceDiscovery serviceDiscovery = (ServiceDiscovery) zookeeperDiscovery;
-                return serviceDiscovery;
-            } catch (Exception e) {
-                log.error("", e);
-            }
-        }
-        return null;
+        beanFactory = ctx;
     }
 
 }

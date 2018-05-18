@@ -10,17 +10,17 @@
         $("#wrapper").addClass("forced");
 
         if (localStorage.sidemenuState == 0 || typeof(localStorage.sidemenuState) == 'undefined') {
-            //收缩左侧菜单
-            $("body").removeClass("fixed-left").addClass("fixed-left-void");
-            localStorage.sidemenuState = 1;
+        	//收缩左侧菜单
+        	$("body").removeClass("fixed-left").addClass("fixed-left-void");
+        	localStorage.sidemenuState = 1;
         } else if (localStorage.sidemenuState == 1) {
-            //展开左侧菜单
-            $("body").removeClass("fixed-left-void").addClass("fixed-left");
-            $(".subdrop").siblings("ul:first").show();
-            localStorage.sidemenuState = 0;
+        	//展开左侧菜单
+        	$("body").removeClass("fixed-left-void").addClass("fixed-left");
+        	$(".subdrop").siblings("ul:first").show();
+        	localStorage.sidemenuState = 0;
         }
 
-        if ($("#wrapper").hasClass("enlarged")) {
+        if($("#wrapper").hasClass("enlarged")) {
             $(".left ul").removeAttr("style");
         } else {
             $(".subdrop").siblings("ul:first").show();
@@ -57,14 +57,14 @@
         //init sidemenu
         Sidemenu.prototype.init = function () {
             var $this = this;
-
+            
             //左侧菜单处于收缩状态时跳转页面
             if (localStorage.sidemenuState == 1) {
-                $("#wrapper").toggleClass("enlarged");
-                $("#wrapper").addClass("forced");
-                $("body").removeClass("fixed-left").addClass("fixed-left-void");
+            	$("#wrapper").toggleClass("enlarged");
+            	$("#wrapper").addClass("forced");
+            	$("body").removeClass("fixed-left").addClass("fixed-left-void");
             }
-
+            
             //bind on click
             $(".open-left").click(function (e) {
                 e.stopPropagation();
@@ -76,7 +76,7 @@
 
             // NAVIGATION HIGHLIGHT & OPEN PARENT
             $("#sidebar-menu ul li.has_sub a.active").parents("li:last").children("a:first").addClass("active").trigger("click");
-            if ($('li.has_sub a.active').length > 0) {
+            if($('li.has_sub a.active').length > 0){
                 $('li.has_sub a.active:eq(0)').trigger("click");
             }
         },
@@ -277,7 +277,7 @@ function resizeitems() {
 
 function toggle_slimscroll(item) {
     if ($("#wrapper").hasClass("enlarged")) {
-        $(item).removeAttr("style").parent().removeAttr("style");
+    	$(item).removeAttr("style").parent().removeAttr("style");
         $(item).siblings(".slimScrollBar").css("visibility", "hidden");
     } else {
         $(item).css("overflow", "hidden").parent().css("overflow", "hidden");

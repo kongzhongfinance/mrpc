@@ -94,8 +94,8 @@ public class ZkServer {
 
             // single zk server
             LOG.info("Start single zookeeper server...");
-            LOG.info("data dir: " + dataDir.getAbsolutePath());
-            LOG.info("data log dir: " + dataLogDir.getAbsolutePath());
+            LOG.info("rows dir: " + dataDir.getAbsolutePath());
+            LOG.info("rows log dir: " + dataLogDir.getAbsolutePath());
             startSingleZkServer(_tickTime, dataDir, dataLogDir, port);
         } else {
             throw new IllegalStateException("Zookeeper port " + port + " was already in use. Running in single machine mode?");

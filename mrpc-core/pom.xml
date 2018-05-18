@@ -5,22 +5,22 @@
     <parent>
         <artifactId>mrpc</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.1.4-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mrpc-core</artifactId>
-    <version>${parent.version}</version>
+    <packaging>jar</packaging>
 
     <dependencies>
 
         <dependency>
             <groupId>com.kongzhong.mrpc</groupId>
             <artifactId>mrpc-common</artifactId>
-            <version>${mrpc-common.version}</version>
+            <version>${parent.version}</version>
         </dependency>
 
-        <!--json序列化-->
+        <!-- jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -28,12 +28,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- netty4 -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>${netty.version}</version>
         </dependency>
 
+        <!-- springframework -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -41,10 +43,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>1.4.0.RELEASE</version>
-            <scope>provided</scope>
+            <groupId>com.kongzhong.basic</groupId>
+            <artifactId>zipkin-trace-core</artifactId>
         </dependency>
 
     </dependencies>

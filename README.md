@@ -1,46 +1,64 @@
-# mrpc (v2)
+# mrpc 
+
+mrpc是一款简洁易用的分布式服务化治理框架。
 
 ## 特性
 
-- 调用透明
+- 调用透明,像调用本地方法一样使用RPC服务
 - 高性能
-- 支持分布式(服务注册和发现)
-- 集成Spring/SpringBoot
-- 支持TCP/HTTP通讯
-- 负载均衡策略
-- 容错处理(FailOver/FailFast)
+- 支持分布式,基于 Zookeeper 的服务注册和发现
+- 完美集成 Spring/SpringBoot 项目
+- HTTP传输协议
+- 多种负载均衡策略
+- 集群下的容错处理(FailOver/FailFast)
 - 拦截器处理, 插件式扩展
-- 客户端断线重连，自动恢复
+- 客户端自动恢复
 - 动态注册/卸载服务
-- 秒级监控
+- Admin后台动态修改配置
+- 秒级监控，使用 statsd-influxdb-grafana 打点
 - 服务调用链查看
 
 ## 快速入门
 
-### 创建服务端
-
-```java
-public interface UserService {
-    String hello(String name);
-}
-
-// 服务实现
-@RpcService
-public class UserServiceImpl implements UserService{
-    
-    @Override
-    public String sayHello(String name){
-        return "Hello " + name;
-    }
-    
-}
-```
+[文档](https://kongzhongfinance.github.io/mrpc/)
 
 ### 更多例子
 
 [这里](/mrpc-demo)有更多的使用案例。
 
 ### 更新日志
+
+### 0.1.4-SNAPSHOT
+
+1. 支持 `Optional` 类型
+
+### 0.1.1-SNAPSHOT
+
+1. 支持接口自定义 `appId`
+2. 支持配置业务线程池大小
+
+#### 0.1.0-SNAPSHOT
+
+1. 简化异常处理
+2. 添加最少连接负载策略
+3. 添加Admin后台
+4. 添加服务降级、熔断
+
+#### 0.0.9-SNAPSHOT
+
+1. 重新本地服务缓存实现
+2. 添加服务端定时推送数据到 `admin`
+3. 支持自动发现本地`IP`
+4. 支持无序启动服务
+5. 添加客户端定时 `ping` 功能
+
+#### 0.0.8-SNAPSHOT
+
+1. 客户端断线自动重连
+2. 允许跳过启动绑定服务
+3. 允许自定义异常
+4. 支持方法级别的高可用策略配置
+5. 修复本地服务缓存bug
 
 #### 0.0.7-SNAPSHOT (2017/06/22)
 

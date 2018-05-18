@@ -1,20 +1,30 @@
 package com.kongzhong.mrpc.demo.model;
 
 import lombok.ToString;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+
 @ToString
 public class Person implements Serializable {
+    @NotBlank(message = "姓名不能为空")
     private String name;
+    @Valid
+    @NotNull(message = "全名不能为空")
     private FullName fullName;
     private Date birthday;
     private List<String> phoneNumber;
     private List<String> email;
     private Map<String, String> address;
+    @Valid
+    @NotEmpty(message = "朋友不能为空")
     private List<Person> friends;
 
     public Person() {

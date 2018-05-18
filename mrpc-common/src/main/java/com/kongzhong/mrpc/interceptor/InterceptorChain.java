@@ -20,7 +20,7 @@ public class InterceptorChain {
 
     }
 
-    public InterceptorChain addLast(String name, RpcInteceptor interceptor) {
+    public InterceptorChain addLast(String name, RpcInterceptor interceptor) {
         lock.lock();
         try {
             checkDuplicateName(name);
@@ -32,7 +32,7 @@ public class InterceptorChain {
         }
     }
 
-    public InterceptorChain addFirst(String name, RpcInteceptor interceptor) {
+    public InterceptorChain addFirst(String name, RpcInterceptor interceptor) {
         lock.lock();
         try {
             checkDuplicateName(name);
@@ -44,13 +44,14 @@ public class InterceptorChain {
         }
     }
 
-    public InterceptorChain addBefore(String baseName, String name, RpcInteceptor interceptor) {
+    public InterceptorChain addBefore(String baseName, String name, RpcInterceptor interceptor) {
         lock.lock();
         try {
             checkDuplicateName(name);
             int index = getInterceptorIndex(baseName);
-            if (index == -1)
+            if (index == -1) {
                 throw new NoSuchElementException(baseName);
+            }
             Entry entry = new Entry(name, interceptor);
             register(index, entry);
             return this;
@@ -59,13 +60,14 @@ public class InterceptorChain {
         }
     }
 
-    public InterceptorChain addAfter(String baseName, String name, RpcInteceptor interceptor) {
+    public InterceptorChain addAfter(String baseName, String name, RpcInterceptor interceptor) {
         lock.lock();
         try {
             checkDuplicateName(name);
             int index = getInterceptorIndex(baseName);
-            if (index == -1)
+            if (index == -1) {
                 throw new NoSuchElementException(baseName);
+            }
             Entry entry = new Entry(name, interceptor);
             register(index + 1, entry);
             return this;
@@ -96,9 +98,9 @@ public class InterceptorChain {
         }
     }
 
-    public List<RpcInteceptor> getInterceptors() {
+    public List<RpcInterceptor> getInterceptors() {
         if (null != interceptors && !interceptors.isEmpty()) {
-            List<RpcInteceptor> list = new ArrayList<>(this.interceptors.size());
+            List<RpcInterceptor> list = new ArrayList<>(this.interceptors.size());
             for (Entry entry : this.interceptors) {
                 list.add(entry.interceptor);
             }
@@ -110,9 +112,9 @@ public class InterceptorChain {
 
     static class Entry {
         private String name;
-        private RpcInteceptor interceptor;
+        private RpcInterceptor interceptor;
 
-        public Entry(String name, RpcInteceptor interceptor) {
+        public Entry(String name, RpcInterceptor interceptor) {
             this.name = name;
             this.interceptor = interceptor;
         }

@@ -1,13 +1,23 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.kongzhong.mrpc.transport.netty.NettyClient;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponseDecoder;
 
 /**
  * http客户端ChannelInitializer
  */
 public class HttpClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+    private NettyClient nettyClient;
+
+    public HttpClientChannelInitializer(NettyClient nettyClient) {
+        this.nettyClient = nettyClient;
+    }
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -19,6 +29,6 @@ public class HttpClientChannelInitializer extends ChannelInitializer<SocketChann
                 // 客户端发送的是httprequest，所以要使用HttpRequestEncoder进行编码
                 .addLast(new HttpRequestEncoder())
                 .addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
-                .addLast(new HttpClientHandler());
+                .addLast(new HttpClientHandler(nettyClient));
     }
 }

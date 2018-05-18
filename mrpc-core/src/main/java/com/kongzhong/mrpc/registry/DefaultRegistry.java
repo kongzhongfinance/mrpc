@@ -3,9 +3,8 @@ package com.kongzhong.mrpc.registry;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.kongzhong.mrpc.model.ServiceBean;
-import com.kongzhong.mrpc.utils.JSONUtils;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.StringUtils;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -21,12 +20,15 @@ import java.util.Map;
  *         2017/4/27
  */
 @Slf4j
-@NoArgsConstructor
 public class DefaultRegistry implements ServiceRegistry {
 
     public static final String DEFAULT_SWAP_NAME = "mrpc_registry_swap.lock";
 
     private File file = new File(DEFAULT_SWAP_NAME);
+
+    public DefaultRegistry() {
+        this(false);
+    }
 
     public DefaultRegistry(boolean append) {
         try {
@@ -42,7 +44,7 @@ public class DefaultRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void register(ServiceBean serviceBean) {
+    public boolean register(ServiceBean serviceBean) {
         try {
             String data = serviceBean.getServiceName();
             String address = serviceBean.getAddress();
@@ -52,23 +54,25 @@ public class DefaultRegistry implements ServiceRegistry {
             if (StringUtils.isEmpty(content)) {
                 array = new ArrayList<>();
             } else {
-                array = JSONUtils.parseObject(content, List.class);
+                array = JacksonSerialize.parseObject(content, List.class);
             }
             array.add(this.getReg(address, data));
-            Files.write(JSONUtils.toJSONString(array), file, Charsets.UTF_8);
+            Files.write(JacksonSerialize.toJSONString(array), file, Charsets.UTF_8);
+            return true;
         } catch (Exception e) {
             log.error("register fail", e);
+            return false;
         }
     }
 
     @Override
-    public void unregister(ServiceBean serviceBean) {
+    public void unRegister(ServiceBean serviceBean) {
         try {
             String data = serviceBean.getServiceName();
             if (file.exists() && file.isFile()) {
                 String content = Files.readFirstLine(file, Charsets.UTF_8);
                 if (StringUtils.isNotEmpty(content)) {
-                    List<Map<String, String>> array = JSONUtils.parseObject(content, List.class);
+                    List<Map<String, String>> array = JacksonSerialize.parseObject(content, List.class);
                     List<Map<String, String>> newArr = new ArrayList<>();
                     for (int i = 0, len = array.size(); i < len; i++) {
                         if (!data.equals(array.get(i).get("service"))) {
@@ -76,14 +80,14 @@ public class DefaultRegistry implements ServiceRegistry {
                         }
                     }
                     if (newArr.size() > 0) {
-                        Files.write(JSONUtils.toJSONString(newArr), file, Charsets.UTF_8);
+                        Files.write(JacksonSerialize.toJSONString(newArr), file, Charsets.UTF_8);
                     } else {
                         Files.write("", file, Charsets.UTF_8);
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("unregister fail", e);
+            log.error("unRegister fail", e);
         }
     }
 

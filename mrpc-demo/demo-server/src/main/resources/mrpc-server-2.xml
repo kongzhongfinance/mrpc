@@ -9,7 +9,7 @@
        http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
 
 
-    <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181"/>
+    <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"/>
 
     <mrpc:serverConfig address="127.0.0.1:5068" appId="demo"/>
 

@@ -1,7 +1,5 @@
 package com.kongzhong.mrpc.interceptor;
 
-import com.kongzhong.mrpc.model.RpcRequest;
-
 /**
  * 拦截器执行器
  * <p>
@@ -9,8 +7,6 @@ import com.kongzhong.mrpc.model.RpcRequest;
  */
 public interface Invocation {
 
-    RpcRequest rpcRequest();
-
-    Object next() throws Exception;
+    Object next() throws Throwable;
 
 }

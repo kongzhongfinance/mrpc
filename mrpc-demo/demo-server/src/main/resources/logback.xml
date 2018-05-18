@@ -11,9 +11,9 @@
         </encoder>
     </appender>
 
-    <logger name="com.kongzhong.mrpc" level="debug"/>
+    <!--<logger name="com.kongzhong.mrpc" level="DEBUG"/>-->
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </root>
 

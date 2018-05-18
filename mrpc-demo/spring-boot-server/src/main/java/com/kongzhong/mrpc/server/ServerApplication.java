@@ -1,10 +1,11 @@
 package com.kongzhong.mrpc.server;
 
+import com.kongzhong.mrpc.client.Referers;
+import com.kongzhong.mrpc.demo.service.OtherService;
+import com.kongzhong.mrpc.trace.interceptor.TraceServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -12,25 +13,13 @@ import org.springframework.context.annotation.Bean;
  *         2017/5/15
  */
 @Slf4j
-@SpringBootApplication
-// metrics
-//@EnableConfigurationProperties(value = {MetricsProperties.class})
+@SpringBootApplication(scanBasePackages = "com.kongzhong.mrpc.server.service")
 public class ServerApplication {
 
-    /*@Autowired
-    private MetricsProperties metricsProperties;
-
     @Bean
-    public MetricsClient metricsClient() {
-        log.info("{}", metricsProperties);
-        return new MetricsClient(metricsProperties);
+    public Referers referers(){
+        return new Referers().add(OtherService.class);
     }
-
-    @Bean
-    public MetricsInterceptor metricInterceptor() {
-        MetricsInterceptor metricsInterceptor = new MetricsInterceptor(metricsClient());
-        return metricsInterceptor;
-    }*/
 
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);

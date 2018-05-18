@@ -1,43 +1,44 @@
 package com.kongzhong.mrpc.springboot.server;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.*;
-import com.kongzhong.mrpc.common.thread.RpcThreadPool;
+import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.interceptor.RpcServerInteceptor;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
+import com.kongzhong.mrpc.springboot.config.AdminProperties;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
+import com.kongzhong.mrpc.springboot.config.NettyProperties;
 import com.kongzhong.mrpc.springboot.config.RpcServerProperties;
 import com.kongzhong.mrpc.utils.StringUtils;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpResponse;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.annotation.Order;
 
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 import static com.kongzhong.mrpc.Const.MRPC_SERVER_REGISTRY_PREFIX;
 
-
-@EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class})
-@ConditionalOnProperty("mrpc.server.transport")
+/**
+ * RPC服务端自动配置
+ *
+ * @author biezhi
+ * 2017/5/13
+ */
+@Conditional(ServerEnvironmentCondition.class)
+@EnableConfigurationProperties({CommonProperties.class, RpcServerProperties.class, NettyProperties.class, AdminProperties.class})
 @Slf4j
+@ToString(callSuper = true, exclude = {"commonProperties", "rpcServerProperties", "nettyProperties", "configurableBeanFactory", "customServiceMap"})
 public class RpcServerAutoConfigure extends SimpleRpcServer {
 
     @Autowired
@@ -47,6 +48,12 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
     private RpcServerProperties rpcServerProperties;
 
     @Autowired
+    private NettyProperties nettyProperties;
+
+    @Autowired
+    private AdminProperties adminProperties;
+
+    @Autowired
     private ConfigurableBeanFactory configurableBeanFactory;
 
     /**
@@ -54,26 +61,14 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
      */
     private Map<String, Map<String, String>> customServiceMap = Maps.newHashMap();
 
-    /**
-     * 拦截器列表, 默认添加性能监控拦截器
-     */
-    private List<RpcServerInteceptor> interceptorList;
-
-    /**
-     * netty服务端配置
-     */
-    private NettyConfig nettyConfig;
-
-    private static final ListeningExecutorService LISTENING_EXECUTOR_SERVICE = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
-
     @Bean
-    public InitBean initBean() {
-        log.debug("Initializing rpc server bean");
-        return new InitBean(rpcMapping);
+    public ServiceBeanProcessor initBean() {
+        System.out.println(Const.SERVER_BANNER);
+        return new ServiceBeanProcessor(rpcMapping);
     }
 
     @Bean
-    @ConditionalOnBean(InitBean.class)
+    @ConditionalOnBean(ServiceBeanProcessor.class)
     public BeanFactoryAware beanFactoryAware() {
         return (beanFactory) -> {
             log.debug("Initializing rpc server beanFactoryAware ");
@@ -83,243 +78,96 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
                     ServiceRegistry serviceRegistry = super.mapToRegistry(map);
                     serviceRegistryMap.put(registryName, serviceRegistry);
                     configurableBeanFactory.registerSingleton(MRPC_SERVER_REGISTRY_PREFIX + registryName, serviceRegistry);
-                    usedRegistry = true;
+                    super.usedRegistry = true;
                 });
             }
             if (null != commonProperties.getCustom()) {
                 customServiceMap = commonProperties.getCustom();
             }
 
+            System.out.println();
+
+            log.debug(commonProperties.toString());
+            log.debug(rpcServerProperties.toString() + "\n");
+
             super.appId = rpcServerProperties.getAppId();
+            setContext(Const.APP_ID, rpcServerProperties.getAppId());
+            setContext(Const.APP_NAME, rpcServerProperties.getAppName());
+            setContext(Const.SERVER_OWNER, rpcServerProperties.getOwner());
+
             super.address = rpcServerProperties.getAddress();
+            super.weight = rpcServerProperties.getWeight();
             super.elasticIp = rpcServerProperties.getElasticIp();
             super.poolName = rpcServerProperties.getPoolName();
-            super.test = rpcServerProperties.getTest();
-            super.transport = rpcServerProperties.getTransport();
+            SimpleRpcServer.PRINT_ERROR_LOG = rpcServerProperties.getPrintErrorLog();
+
+            // netty参数配置
+            super.nettyConfig = new NettyConfig();
+            super.adminConfig = new AdminConfig();
+
+            BeanUtils.copyProperties(nettyProperties, super.nettyConfig);
+            BeanUtils.copyProperties(adminProperties, super.adminConfig);
+
+            super.test = StringUtils.isNotEmpty(commonProperties.getTest()) ? commonProperties.getTest() : rpcServerProperties.getTest();
+
             super.serialize = rpcServerProperties.getSerialize();
 
-            super.startServer();
+            configurableBeanFactory.registerSingleton("rpcMapping", rpcMapping);
         };
     }
 
-    /*private ServiceRegistry mapToRegistry(Map<String, String> map) {
-        String type = map.get("type");
-        if (RegistryEnum.DEFAULT.getName().equals(type)) {
-            ServiceRegistry serviceRegistry = new DefaultRegistry();
-            return serviceRegistry;
-        }
-        if (RegistryEnum.ZOOKEEPER.getName().equals(type)) {
-            String zkAddr = map.getOrDefault("address", "127.0.0.1:2181");
-            log.info("RPC server connect zookeeper address: {}", zkAddr);
-            try {
-                Object zookeeperServiceRegistry = Class.forName("com.kongzhong.mrpc.registry.ZookeeperServiceRegistry").getConstructor(String.class).newInstance(zkAddr);
-                ServiceRegistry serviceRegistry = (ServiceRegistry) zookeeperServiceRegistry;
-                return serviceRegistry;
-            } catch (Exception e) {
-                log.error("", e);
-            }
-        }
-        return null;
-    }*/
-
-    /**
-     * 提交任务,异步获取结果.
-     *
-     * @param task
-     * @param ctx
-     * @param request
-     * @param response
-     */
-    public static void submit(Callable<Boolean> task, final ChannelHandlerContext ctx, final RpcRequest request, final RpcResponse response) {
-
-        //提交任务, 异步获取结果
-        ListenableFuture<Boolean> listenableFuture = LISTENING_EXECUTOR_SERVICE.submit(task);
-
-        //注册回调函数, 在task执行完之后 异步调用回调函数
-        Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
-                ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
-                    /**
-                     * 服务端回显 request已经处理完毕
-                     * @param channelFuture
-                     * @throws Exception
-                     */
-                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Request id [{}] success.", request.getRequestId());
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                log.error("", t);
-            }
-        }, LISTENING_EXECUTOR_SERVICE);
+    @Bean
+    @Order(-1)
+    public CommandLineRunner rpcDaemon() {
+        return args -> super.startServer();
     }
-
-    public static void submit(Callable<FullHttpResponse> task, final ChannelHandlerContext ctx) {
-        //提交任务, 异步获取结果
-        ListenableFuture<FullHttpResponse> listenableFuture = LISTENING_EXECUTOR_SERVICE.submit(task);
-        //注册回调函数, 在task执行完之后 异步调用回调函数
-        Futures.addCallback(listenableFuture, new FutureCallback<FullHttpResponse>() {
-            @Override
-            public void onSuccess(FullHttpResponse response) {
-                //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
-                ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
-                    /**
-                     * 服务端回显 request已经处理完毕
-                     * @param channelFuture
-                     * @throws Exception
-                     */
-                    @Override
-                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        log.debug("Request id [{}] success.", response.headers().get(HEADER_REQUEST_ID));
-                    }
-
-                });
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                log.error("", t);
-            }
-        }, LISTENING_EXECUTOR_SERVICE);
-    }
-
-    /*protected void startServer() {
-        String transport = rpcServerProperties.getTransport();
-
-        if (null == nettyConfig) {
-            nettyConfig = DefaultConfig.nettyServerConfig();
-        }
-
-        if (null == serialize) {
-            serialize = DefaultConfig.serialize();
-        }
-
-        RpcSerialize rpcSerialize = null;
-        if (serialize.equalsIgnoreCase("kyro")) {
-            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
-        }
-        if (serialize.equalsIgnoreCase("protostuff")) {
-            rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
-        }
-
-        transferSelector = new TransferSelector(rpcSerialize);
-
-        ThreadFactory threadRpcFactory = new NamedThreadFactory(rpcServerProperties.getPoolName());
-        int parallel = Runtime.getRuntime().availableProcessors() * 2;
-
-        EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup(parallel, threadRpcFactory, SelectorProvider.provider());
-
-        try {
-
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-                    .childHandler(transferSelector.getServerChannelHandler(transport))
-                    .option(ChannelOption.SO_BACKLOG, nettyConfig.getBacklog())
-                    .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
-                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
-
-            String[] ipAddr = rpcServerProperties.getAddress().split(":");
-            if (ipAddr.length == 2) {
-                //获取服务器IP地址和端口
-                String host = ipAddr[0];
-                int port = Integer.parseInt(ipAddr[1]);
-
-                ServerCommonConfig.me().setElasticIp(rpcServerProperties.getElasticIp());
-
-                if (null != rpcServerProperties.getAppId()) {
-                    ServerCommonConfig.me().setAppId(rpcServerProperties.getAppId());
-                }
-
-                ChannelFuture future = bootstrap.bind(host, port).sync();
-
-                //注册服务
-                rpcMapping.getServiceBeanMap().values().forEach(serviceBean -> {
-                    String serviceName = serviceBean.getServiceName();
-                    String address = this.getAddress(serviceBean);
-                    if (usedRegistry) {
-                        // 查找该服务的注册中心
-                        ServiceRegistry serviceRegistry = this.getRegistry(serviceBean);
-                        try {
-                            serviceBean.setAppId(rpcServerProperties.getAppId());
-                            serviceBean.setAddress(address);
-                            serviceRegistry.register(serviceBean);
-                        } catch (RpcException e) {
-                            log.error("Service register error", e);
-                        }
-                    }
-                    log.info("Register => [{}] - [{}]", serviceName, address);
-                });
-
-                log.info("Publish services finished!");
-//                log.info("RPC server start with => {}", port);
-
-                if (usedRegistry) {
-                    this.listenDestroy();
-                }
-
-                if ("true".equals(commonProperties.getTest())) {
-                    new Thread(() -> {
-                        try {
-                            future.channel().closeFuture().sync();
-                        } catch (Exception e) {
-                            log.error("", e);
-                        }
-                    }).start();
-                } else {
-                    future.channel().closeFuture().sync();
-                }
-            } else {
-                log.warn("RPC server start fail.");
-            }
-        } catch (Exception e) {
-            log.error("RPC server start error", e);
-        } finally {
-            worker.shutdownGracefully();
-            boss.shutdownGracefully();
-        }
-    }*/
 
     /**
      * 获取服务暴露的地址 ip:port
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回服务绑定的地址
      */
     @Override
-    public String getAddress(ServiceBean serviceBean) {
-        String address = rpcServerProperties.getAddress();
-        if (StringUtils.isNotEmpty(rpcServerProperties.getElasticIp())) {
-            address = rpcServerProperties.getElasticIp();
-        }
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+    public String getBindAddress(ServiceBean serviceBean) {
+        String              address = super.getBindAddress(serviceBean);
+        Map<String, String> custom  = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("address")) {
             address = custom.get("address");
         }
-        address = StringUtils.isNotEmpty(serviceBean.getAddress()) ? serviceBean.getAddress() : address;
         return address;
+    }
+
+    @Override
+    public String getRegisterElasticIp(ServiceBean serviceBean) {
+        String              elasticIp = super.getRegisterElasticIp(serviceBean);
+        Map<String, String> custom    = customServiceMap.get(serviceBean.getBeanName());
+        if (null != custom) {
+            if (custom.containsKey("elasticIp")) {
+                elasticIp = custom.get("elasticIp");
+            }
+            if (custom.containsKey("elastic-ip")) {
+                elasticIp = custom.get("elastic-ip");
+            }
+        }
+        return elasticIp;
     }
 
     /**
      * 获取服务使用的注册中心
      *
-     * @param serviceBean
-     * @return
+     * @param serviceBean 服务Bean
+     * @return 返回该服务的注册中心
      */
     @Override
     public ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        String registryName = null;
-        Map<String, String> custom = customServiceMap.get(serviceBean.getServiceName());
+        ServiceRegistry     serviceRegistry = super.getRegistry(serviceBean);
+        Map<String, String> custom          = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("registry")) {
-            registryName = custom.get("registry");
+            String registryName = custom.get("registry");
+            return serviceRegistryMap.get(registryName);
         }
-        registryName = StringUtils.isNotEmpty(serviceBean.getRegistry()) ? serviceBean.getRegistry() : registryName;
-        return serviceRegistryMap.get(registryName);
+        return serviceRegistry;
     }
 
 }

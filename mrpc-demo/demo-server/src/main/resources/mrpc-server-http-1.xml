@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mrpc="http://mrpc.kongzhong.com/schema/mrpc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
+       http://mrpc.kongzhong.com/schema/mrpc http://mrpc.kongzhong.com/schema/mrpc.xsd">
+
+    <mrpc:registry name="default" type="zookeeper" address="127.0.0.1:2181"/>
+
+    <mrpc:serverConfig address="127.0.0.1:5067" appId="demo" transport="http"/>
+
+    <bean id="userService" class="com.kongzhong.mrpc.demo.service.UserServiceImpl"/>
+
+    <mrpc:service interface="com.kongzhong.mrpc.demo.service.UserService" ref="userService"/>
+
+</beans>

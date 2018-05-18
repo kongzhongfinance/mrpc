@@ -1,0 +1,82 @@
+#include('./header.html',{active:'serverConfig', title:'服务端配置'})
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">服务端配置</h4>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">服务节点列表</label>
+                            <div class="col-sm-9">
+                                <select id="nodeSelect" class="form-control">
+                                    #for(item : nodes)
+                                    <option appId="${item.appId}" transport="${item.transport}" value="${item.address}">
+                                        ${item.address}
+                                    </option>
+                                    #end
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">业务线程池数</label>
+                            <div class="col-sm-7">
+                                <input id="businessThreadPoolSize" type="number" class="form-control"
+                                       placeholder="业务线程池数"/>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-info waves-effect waves-light"
+                                        onclick="setBusinessThreadPoolSize()">修改
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div> <!-- panel-body -->
+        </div>
+    </div>
+</div>
+#include('./footer.html')
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var first = $("#nodeSelect option:eq(0)");
+        var param = {
+            appId: first.attr('appId'),
+            address: first.val(),
+            transport: first.attr('transport')
+        };
+        $.post('/api/config/server', param, function (data) {
+            if (data) {
+                $('#businessThreadPoolSize').val(data.businessThreadPoolSize);
+            } else {
+                alert('获取[' + first.val() + ']配置失败');
+            }
+        });
+    });
+
+    function setBusinessThreadPoolSize() {
+        var value = $("#businessThreadPoolSize").val();
+        setConfig("setBusinessThreadPoolSize", value);
+    }
+
+    function setConfig(method, value) {
+        var first = $("#nodeSelect option:selected");
+        var param = {
+            appId: first.attr('appId'),
+            address: first.val(),
+            transport: first.attr('transport'),
+            method: method,
+            value: value
+        };
+        $.post('/api/config/server/update', param, function (data) {
+
+        });
+    }
+</script>
+</body>
+</html>

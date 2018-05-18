@@ -1,11 +1,7 @@
 package com.kongzhong.mrpc.client.cluster.ha;
 
-import com.kongzhong.mrpc.client.RpcInvoker;
-import com.kongzhong.mrpc.client.SimpleRpcInvoker;
 import com.kongzhong.mrpc.client.cluster.HaStrategy;
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
-import com.kongzhong.mrpc.exception.RpcException;
-import com.kongzhong.mrpc.exception.ServiceException;
 import com.kongzhong.mrpc.model.RpcRequest;
 
 /**
@@ -17,16 +13,8 @@ import com.kongzhong.mrpc.model.RpcRequest;
 public class FailFastHaStrategy implements HaStrategy {
 
     @Override
-    public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
-        RpcInvoker invoker = loadBalance.getInvoker(request.getClassName());
-        try {
-            return invoker.invoke(request);
-        } catch (Throwable e) {
-            if (e instanceof ServiceException) {
-                throw (Exception) e.getCause();
-            }
-            throw new RpcException(e);
-        }
+    public Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable {
+        return invoke(request, loadBalance);
     }
 
 }

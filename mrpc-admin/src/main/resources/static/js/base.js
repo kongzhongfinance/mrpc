@@ -4,10 +4,10 @@
 $.extend({
     tale: function () {
     },
-    constant: function () { //常量池
-        return {
+    constant:function(){ //常量池
+        return{
             ///-------文件常量----------
-            MAX_FILES: 10,//一次队列最大文件数
+            MAX_FILES:10,//一次队列最大文件数
         }
     }
 
@@ -18,7 +18,7 @@ $.extend({
  * @param options
  */
 $.tale.prototype.alertOk = function (options) {
-    options = options.length ? {text: options} : ( options || {} );
+    options = options.length ? {text:options} : ( options || {} );
     options.title = options.title || '操作成功';
     options.text = options.text;
     options.showCancelButton = false;
@@ -32,13 +32,11 @@ $.tale.prototype.alertOk = function (options) {
  * @param text
  */
 $.tale.prototype.alertOkAndReload = function (text) {
-    this.alertOk({
-        text: text, then: function () {
-            setTimeout(function () {
-                window.location.reload();
-            }, 700);
-        }
-    });
+    this.alertOk({text:text, then:function () {
+        setTimeout(function () {
+            window.location.reload();
+        }, 700);
+    }});
 };
 
 /**
@@ -46,7 +44,7 @@ $.tale.prototype.alertOkAndReload = function (text) {
  * @param options
  */
 $.tale.prototype.alertWarn = function (options) {
-    options = options.length ? {text: options} : ( options || {} );
+    options = options.length ? {text:options} : ( options || {} );
     options.title = options.title || '警告信息';
     options.text = options.text;
     options.timer = 3000;
@@ -72,7 +70,7 @@ $.tale.prototype.alertConfirm = function (options) {
  * @param options
  */
 $.tale.prototype.alertError = function (options) {
-    options = options.length ? {text: options} : ( options || {} );
+    options = options.length ? {text:options} : ( options || {} );
     options.title = options.title || '错误信息';
     options.text = options.text;
     options.type = 'error';

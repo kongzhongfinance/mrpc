@@ -8,11 +8,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class NamedThreadFactory implements ThreadFactory {
 
-    private static final AtomicInteger threadNumber = new AtomicInteger(1);
-
     private final AtomicInteger mThreadNum = new AtomicInteger(1);
 
-    //前缀
+    /**
+     * 前缀
+     */
     private final String prefix;
 
     /**
@@ -48,6 +48,7 @@ public class NamedThreadFactory implements ThreadFactory {
      * @param runnable 传入一个任务task
      * @return
      */
+    @Override
     public Thread newThread(Runnable runnable) {
         String name = prefix + mThreadNum.getAndIncrement();
         Thread ret = new Thread(threadGroup, runnable, name, 0);

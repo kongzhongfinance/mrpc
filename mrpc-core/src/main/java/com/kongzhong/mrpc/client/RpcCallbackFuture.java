@@ -1,100 +1,86 @@
 package com.kongzhong.mrpc.client;
 
-import com.kongzhong.mrpc.exception.ServiceException;
-import com.kongzhong.mrpc.model.ExceptionMeta;
+import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.exception.SystemException;
+import com.kongzhong.mrpc.exception.TimeoutException;
+import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Constructor;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * RPC客户端回调
  *
  * @author biezhi
- *         2017/4/29
+ * 2017/4/29
  */
+@Slf4j
 public class RpcCallbackFuture {
 
-    private RpcRequest request;
-    private RpcResponse response;
-    private Lock lock = new ReentrantLock();
-    private Condition finish = lock.newCondition();
+    private RpcRequest     request;
+    private RpcResponse    response;
+    private CountDownLatch latch;
+    private long           beginTime;
 
     public RpcCallbackFuture(RpcRequest request) {
         this.request = request;
+        this.latch = new CountDownLatch(1);
+        this.beginTime = System.currentTimeMillis();
     }
 
-    public Object get() throws Exception {
-        return this.get(request.getWaitTimeout());
-    }
-
-    public Object get(int seconds) throws Exception {
-        try {
-            lock.lock();
-            finish.await(seconds, TimeUnit.SECONDS);
+    public Object get(int milliseconds) throws Throwable {
+        if (latch.await(milliseconds, TimeUnit.MILLISECONDS)) {
             if (null != response) {
-                if (!response.getSuccess()) {
-                    throwException();
+                Map<String, String> context = response.getContext();
+                // TODO: 兼容期，过后删除
+                if (null != context) {
+                    context.put(Const.SERVER_HOST, this.request.getContext().get(Const.SERVER_HOST));
+                    context.put(Const.SERVER_PORT, this.request.getContext().get(Const.SERVER_PORT));
+                    RpcContext.setAttachments(context);
                 }
-                return response.getResult();
-            }
-            return null;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void done(RpcResponse reponse) {
-        try {
-            lock.lock();
-            finish.signal();
-            this.response = reponse;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * 抛异常
-     *
-     * @throws Exception
-     */
-    private void throwException() throws Exception {
-        Class<?> expType = Class.forName(response.getReturnType());
-        Exception exception = null;
-        if (null != response.getResult()) {
-            List exceptionResults = (List) response.getResult();
-            Class<?>[] types = new Class[exceptionResults.size()];
-            Object[] values = new Object[exceptionResults.size()];
-            for (int i = 0; i < exceptionResults.size(); i++) {
-                Object exceptionResult = exceptionResults.get(i);
-                if (exceptionResult instanceof Map) {
-                    Map map = (Map) exceptionResult;
-                    Class<?> ftype = ReflectUtils.getClassType(map.get("type").toString());
-                    types[i] = ftype;
-                    values[i] = map.get("data");
-                } else if (exceptionResult instanceof ExceptionMeta) {
-                    ExceptionMeta exceptionMeta = (ExceptionMeta) exceptionResult;
-                    Class<?> ftype = ReflectUtils.getClassType(exceptionMeta.getType());
-                    types[i] = ftype;
-                    values[i] = exceptionMeta.getData();
+                if (response.getSuccess()) {
+                    return response.getResult();
+                } else {
+                    Object object = null;
+                    try {
+                        Class<?> expType = ReflectUtils.from(response.getReturnType());
+                        object = JacksonSerialize.parseObject(response.getException(), expType);
+                    } catch (ClassNotFoundException e) {
+                        if (StringUtils.isNotEmpty(context.get(Const.SERVER_EXCEPTION))) {
+                            object = JacksonSerialize.parseObject(response.getException(), SystemException.class);
+                        } else {
+                            object = e;
+                        }
+                    }
+                    if (object instanceof Exception) {
+                        throw (Exception) object;
+                    }
+                    if (object instanceof Throwable) {
+                        throw (Throwable) object;
+                    }
                 }
             }
-            Constructor constructor = ReflectUtils.getConstructor(expType, types);
-            exception = (Exception) constructor.newInstance(values);
         } else {
-            Constructor constructor = ReflectUtils.getConstructor(expType, String.class);
-            exception = (Exception) constructor.newInstance(response.getException());
+            long waitTime = System.currentTimeMillis() - beginTime;
+            log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
+            log.warn("RequestId: {}", request.getRequestId());
+            log.warn("Invoke time: {}ms", waitTime);
+            String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
+            throw new TimeoutException(msg);
         }
-        throw new ServiceException(exception);
+        return null;
     }
 
+    public void done(RpcResponse response) {
+        this.response = response;
+        latch.countDown();
+    }
 
 }
