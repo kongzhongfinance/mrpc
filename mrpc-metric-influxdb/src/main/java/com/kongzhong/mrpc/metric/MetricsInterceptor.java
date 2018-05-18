@@ -4,6 +4,7 @@ import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.interceptor.ServerInvocation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,9 @@ public class MetricsInterceptor implements RpcServerInterceptor {
     @Resource
     private MetricsProperties metricsProperties;
 
+    @Value("${common.appId}")
+    private String appId;
+
     public MetricsInterceptor() {
     }
 
@@ -39,7 +43,7 @@ public class MetricsInterceptor implements RpcServerInterceptor {
         if (null != metricsProperties) {
             log.info("{}", metricsProperties);
             this.classLevel = metricsProperties.getParticle().equalsIgnoreCase(ParticleLevel.CLASS.name());
-            this.metricsClient = new MetricsClient(metricsProperties);
+            this.metricsClient = new MetricsClient(metricsProperties, appId);
             this.initMetricsUtils();
         }
     }
