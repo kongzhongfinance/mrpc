@@ -14,13 +14,12 @@ import javax.annotation.Resource;
  * 监控拦截器
  *
  * @author biezhi
- *         2017/4/24
+ * 2017/4/24
  */
 @EnableConfigurationProperties(MetricsProperties.class)
 @Slf4j
 public class MetricsInterceptor implements RpcServerInterceptor {
 
-    private boolean       classLevel    = true;
     private MetricsClient metricsClient = null;
     private MetricsUtils  metricsUtils  = null;
 
@@ -42,7 +41,6 @@ public class MetricsInterceptor implements RpcServerInterceptor {
     public void postConstr() {
         if (null != metricsProperties) {
             log.info("{}", metricsProperties);
-            this.classLevel = metricsProperties.getParticle().equalsIgnoreCase(ParticleLevel.CLASS.name());
             this.metricsClient = new MetricsClient(metricsProperties, appId);
             this.initMetricsUtils();
         }
@@ -55,29 +53,25 @@ public class MetricsInterceptor implements RpcServerInterceptor {
 
     @Override
     public Object execute(ServerInvocation invocation) throws Throwable {
-        Class<?> clazz  = invocation.getTarget().getClass();
-        String   method = invocation.getFastMethod().getName();
-        long     begin  = System.currentTimeMillis();
+        String className = invocation.getRequest().getClassName();
+        long   begin     = System.currentTimeMillis();
         try {
             Object bean = invocation.next();
-            if (classLevel) {
-                method = null;
-            }
             try {
-                metricsUtils.success(clazz, method, "", begin);
+                metricsUtils.generalServers("success", 1, System.currentTimeMillis() - begin);
+                metricsUtils.success(className, null, "", begin);
             } catch (Exception e) {
                 log.error("Metrics调用失败", e);
             }
             return bean;
         } catch (Exception e) {
-            if (classLevel) {
-                method = null;
-            }
             try {
                 if (e instanceof SystemException) {
-                    metricsUtils.systemFail(clazz, method, "", begin);
+                    metricsUtils.generalServers("systemFail", 1, System.currentTimeMillis() - begin);
+                    metricsUtils.systemFail(className, null, "", begin);
                 } else {
-                    metricsUtils.serviceFail(clazz, method, "", begin);
+                    metricsUtils.generalServers("serviceFail", 1, System.currentTimeMillis() - begin);
+                    metricsUtils.serviceFail(className, null, "", begin);
                 }
             } catch (Exception e2) {
                 log.error("Metrics调用失败", e2);
