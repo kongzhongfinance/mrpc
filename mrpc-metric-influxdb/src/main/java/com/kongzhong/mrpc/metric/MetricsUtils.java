@@ -18,7 +18,7 @@ public class MetricsUtils {
     public void generalServers(String type, long count, long time, Map.Entry<String, String>... tags) {
         Map<String, String> tagMap = new HashMap<>();
 
-        String metrics = "[RPC]_SERVERS";
+        String metrics = "[RPC_SERVERS]";
 
         tagMap.put("appId", appId);
         if (StringUtils.isNotEmpty(type)) {
