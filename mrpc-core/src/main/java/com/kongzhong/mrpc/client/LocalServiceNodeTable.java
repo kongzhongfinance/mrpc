@@ -9,6 +9,7 @@ import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import sun.jvm.hotspot.opto.Node;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -58,6 +59,13 @@ public class LocalServiceNodeTable {
         return SERVICE_NODES.stream()
                 .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
                 .flatMap(node -> node.getServices().stream())
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<String> getAliveAddress() {
+        return SERVICE_NODES.stream()
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .map(ServiceNode::getServerAddress)
                 .collect(Collectors.toSet());
     }
 

@@ -91,7 +91,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     }
 
     private Set<String> discoveryService(String appId, String serviceName) {
-        String path  = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
+        String path = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
         // 发现地址列表
         Set<String> addressSet = new HashSet<>();
         if (zkClient.exists(path)) {
@@ -119,22 +119,37 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
         } else {
 
-            Set<String> deadServices = LocalServiceNodeTable.getDeadServices();
+            Set<String>              deadServices = LocalServiceNodeTable.getDeadServices();
+            Map<String, Set<String>> serviceMap   = new HashMap<>();
+
             if (CollectionUtils.isNotEmpty(deadServices)) {
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
                 log.debug("Dead service changed: {}", serviceList);
 
-                Map<String, Set<String>> serviceMap = new HashMap<>();
                 for (String service : serviceList) {
                     Set<String> address = this.discoveryService(appId, service);
                     if (null != address && !address.isEmpty()) {
                         serviceMap.put(service, address);
                     }
                 }
-                // update node list
-                if (CollectionUtils.isNotEmpty(serviceMap.values())) {
-                    log.debug("Update node list: {}", serviceMap.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+            } else {
+
+                for (String service : serviceList) {
+                    Set<String> address = this.discoveryService(appId, service);
+                    if (null != address && !address.isEmpty()) {
+                        address.removeAll(LocalServiceNodeTable.getAliveAddress());
+                        serviceMap.put(service, address);
+                    }
                 }
+            }
+
+            // update node list
+            long count = serviceMap.values().stream().flatMap(Collection::stream).distinct().count();
+            if (count > 0) {
+                // 另一台节点
+                log.debug("New node online.");
+
+                log.debug("Update node list: {}", serviceMap.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList()));
                 Connections.me().recoverConnect(serviceMap);
             }
         }
