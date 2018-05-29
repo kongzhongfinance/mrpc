@@ -133,7 +133,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                     }
                 }
             } else {
-
                 for (String service : serviceList) {
                     Set<String> address = this.discoveryService(appId, service);
                     if (null != address && !address.isEmpty()) {
@@ -146,9 +145,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             // update node list
             long count = serviceMap.values().stream().flatMap(Collection::stream).distinct().count();
             if (count > 0) {
-                // 另一台节点
-                log.debug("New node online.");
-
                 log.debug("Update node list: {}", serviceMap.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList()));
                 Connections.me().recoverConnect(serviceMap);
             }
