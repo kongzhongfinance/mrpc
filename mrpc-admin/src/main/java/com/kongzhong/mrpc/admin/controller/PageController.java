@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.admin.controller;
 
 import com.blade.mvc.annotation.GetRoute;
 import com.blade.mvc.annotation.Path;
+import com.blade.mvc.annotation.PathParam;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 
@@ -23,9 +24,9 @@ public class PageController {
         response.redirect("/login");
     }
 
-    @GetRoute("admin/index")
-    public String adminHome() {
-        return "admin/index.html";
+    @GetRoute("admin/:page.html")
+    public String adminHome(@PathParam String page) {
+        return page;
     }
 
 }

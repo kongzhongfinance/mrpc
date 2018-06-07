@@ -1,21 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Stellar Admin</title>
-    <!-- plugins:css -->
+    <title>MRPC Admin</title>
     <link rel="stylesheet" href="/static/plugins/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/static/plugins/simple-line-icons/css/simple-line-icons.css">
     <link rel="stylesheet" href="/static/plugins/flag-icon-css/css/flag-icon.min.css">
-    <!-- endinject -->
-    <!-- plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
     <link rel="stylesheet" href="/static/css/style.css">
-    <!-- endinject -->
     <link rel="shortcut icon" href="/static/images/favicon.png"/>
 </head>
 <body>
@@ -102,7 +94,7 @@
                     dataType: "json",
                     success: function (result) {
                         if (result.success) {
-                            window.location.href = '/admin/index';
+                            window.location.href = '/admin/index.html';
                         } else {
                             vm.error = true;
                             vm.errorMsg = result.msg;
