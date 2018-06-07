@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Stellar Admin</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="/static/plugins/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/static/plugins/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="/static/plugins/flag-icon-css/css/flag-icon.min.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="/static/images/favicon.png"/>
+</head>
+<body>
+
+<div id="app" class="container-scroller" v-cloak>
+    <div class="container-fluid page-body-wrapper">
+        <div class="row">
+            <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-full-bg">
+                <div class="row w-100">
+                    <div class="col-lg-4 mx-auto">
+                        <div class="auth-form-dark text-left p-5">
+                            <h2>Login</h2>
+                            <h4 class="font-weight-light">登录 mrpc 管理后台</h4>
+                            <form class="pt-5">
+                                <form>
+                                    <div v-if="error" class="alert alert-danger alert-dismissible">
+                                        <h4 style="margin-bottom: 0px;font-size:13px;">
+                                            <i class="fa fa-exclamation-triangle"></i> {{ errorMsg }}
+                                        </h4>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">用户名</label>
+                                        <input type="text" class="form-control" v-model="username" placeholder="请输入用户名">
+                                        <i class="mdi mdi-account"></i>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">密码</label>
+                                        <input type="password" class="form-control" v-model="password"
+                                               placeholder="请输入密码">
+                                        <i class="mdi mdi-eye"></i>
+                                    </div>
+                                    <div class="mt-5">
+                                        <a class="btn btn-block btn-warning btn-lg font-weight-medium"
+                                           @click="login">登录</a>
+                                    </div>
+                                    <!--<div class="mt-3 text-center">-->
+                                    <!--<a href="#" class="auth-link text-white">Forgot password?</a>-->
+                                    <!--</div>-->
+                                </form>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- plugins:js -->
+<script src="/static/plugins/jquery/dist/jquery.min.js"></script>
+<script src="/static/plugins/popper.js/dist/umd/popper.min.js"></script>
+<script src="/static/plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/plugins/vue/vue.min.js"></script>
+<!-- endinject -->
+<!-- inject:js -->
+<script src="/static/js/off-canvas.js"></script>
+<script src="/static/js/misc.js"></script>
+<!-- endinject -->
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            username: 'admin',
+            password: '123456',
+            error: false,
+            errorMsg: ''
+        },
+        methods: {
+            login: function (event) {
+                if (vm.username === '') {
+                    vm.error = true;
+                    vm.errorMsg = '用户名不能为空';
+                    return false;
+                }
+                if (vm.password === '') {
+                    vm.error = true;
+                    vm.errorMsg = '密码不能为空';
+                    return false;
+                }
+                var data = "username=" + vm.username + "&password=" + vm.password;
+                $.ajax({
+                    type: "POST",
+                    url: "/auth/login",
+                    data: data,
+                    dataType: "json",
+                    success: function (result) {
+                        if (result.success) {
+                            window.location.href = '/admin/index';
+                        } else {
+                            vm.error = true;
+                            vm.errorMsg = result.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

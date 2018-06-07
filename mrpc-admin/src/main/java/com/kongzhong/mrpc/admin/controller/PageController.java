@@ -23,4 +23,9 @@ public class PageController {
         response.redirect("/login");
     }
 
+    @GetRoute("admin/index")
+    public String adminHome() {
+        return "admin/index.html";
+    }
+
 }
