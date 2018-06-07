@@ -29,4 +29,9 @@ public class PageController {
         return page;
     }
 
+    @GetRoute("admin/server/:id")
+    public String serverDetail(@PathParam Long id) {
+        return "detail.html";
+    }
+
 }
