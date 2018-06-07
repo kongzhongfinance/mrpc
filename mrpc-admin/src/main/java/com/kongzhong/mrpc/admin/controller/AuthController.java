@@ -4,6 +4,7 @@ import com.blade.ioc.annotation.Inject;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.PostRoute;
 import com.blade.mvc.ui.RestResponse;
+import com.kongzhong.mrpc.admin.model.SysUser;
 import com.kongzhong.mrpc.admin.params.LoginParam;
 import com.kongzhong.mrpc.admin.service.UserService;
 
@@ -20,9 +21,8 @@ public class AuthController {
     private UserService userService;
 
     @PostRoute("login")
-    public RestResponse login(LoginParam loginParam) {
-        userService.login(loginParam);
-        return RestResponse.ok();
+    public RestResponse<SysUser> login(LoginParam loginParam) {
+        return userService.login(loginParam);
     }
 
 }

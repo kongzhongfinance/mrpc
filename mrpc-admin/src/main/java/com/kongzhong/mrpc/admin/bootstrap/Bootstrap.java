@@ -3,6 +3,11 @@ package com.kongzhong.mrpc.admin.bootstrap;
 import com.blade.Blade;
 import com.blade.event.BeanProcessor;
 import com.blade.ioc.annotation.Bean;
+import com.blade.mvc.view.template.JetbrickTemplateEngine;
+import com.blade.validator.Validators;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import io.github.biezhi.anima.Anima;
 
 /**
  * @author biezhi
@@ -13,7 +18,24 @@ public class Bootstrap implements BeanProcessor {
 
     @Override
     public void processor(Blade blade) {
+        Validators.useChinese();
 
+        JetbrickTemplateEngine templateEngine = new JetbrickTemplateEngine();
+
+        blade.templateEngine(templateEngine);
+
+        // JDBC
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(blade.environment().getOrNull("jdbc.url"));
+        config.setUsername(blade.environment().getOrNull("jdbc.username"));
+        config.setPassword(blade.environment().getOrNull("jdbc.password"));
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        HikariDataSource dataSource = new HikariDataSource(config);
+
+        Anima.open(dataSource);
     }
 
 }
