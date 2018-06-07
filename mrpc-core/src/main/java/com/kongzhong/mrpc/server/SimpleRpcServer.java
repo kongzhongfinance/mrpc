@@ -278,7 +278,7 @@ public abstract class SimpleRpcServer {
                         serviceBean.setElasticIp(elasticIp);
                         serviceRegistry.register(serviceBean);
 
-                        ServiceStatusTable.me().createServiceStatus(serviceBean, weight);
+                        ServiceStatusTable.me().addService(serviceBean, weight);
                     } catch (RpcException e) {
                         log.error("Service register error", e);
                     }
@@ -333,14 +333,8 @@ public abstract class SimpleRpcServer {
 
             this.sendStartService();
 
-            // 有客户端连接
-            EventManager.me().addEventListener(EventType.SERVER_CLIENT_CONNECTED, e -> ServiceStatusTable.me().addClient());
-
-            // 有客户端断开
-            EventManager.me().addEventListener(EventType.SERVER_CLIENT_DISCONNECT, e -> ServiceStatusTable.me().removeClient());
-
             // 停止服务
-            EventManager.me().addEventListener(EventType.SHUTDOWN_SERVER, e -> {
+            EventManager.me().addEventListener(EventType.SERVER_OFFLINE, e -> {
                 cancelAdminSchedule();
                 sendServerStatus(NodeAliveStateEnum.DEAD);
             });
@@ -363,6 +357,13 @@ public abstract class SimpleRpcServer {
 
     private void sendStartService() {
         log.info("服务端启动，发送启动信息到 admin");
+        sendServerStatus(NodeAliveStateEnum.ALIVE);
+    }
+
+    /**
+     * 发送服务状态给后台
+     */
+    private void sendServerStatus(NodeAliveStateEnum aliveState) {
         String url = adminConfig.getUrl() + "/api/server";
 
         RpcServer rpcServer = new RpcServer();
@@ -376,8 +377,11 @@ public abstract class SimpleRpcServer {
             rpcServer.setAppAlias(appName);
         }
         rpcServer.setPid(NetUtils.getPID());
-        rpcServer.setStatus(NodeAliveStateEnum.ALIVE.toString());
+        rpcServer.setStatus(aliveState.toString());
         rpcServer.setOnlineTime(LocalDateTime.now());
+
+        rpcServer.setServices(ServiceStatusTable.me().getServices());
+
 
         String body = JacksonSerialize.toJSONString(rpcServer);
         try {
@@ -386,40 +390,7 @@ public abstract class SimpleRpcServer {
                     .connectTimeout(10_000)
                     .readTimeout(5000)
                     .header("notice_type", NoticeType.SERVER_ONLINE.toString())
-                    .basic(adminConfig.getUsername(), adminConfig.getPassword())
-                    .send(body).code();
-
-            log.debug("Response code: {}", code);
-        } catch (HttpRequest.HttpRequestException e) {
-            log.debug("连接失败");
-        } catch (Exception e) {
-            log.error("Send error", e);
-            cancelAdminSchedule();
-        }
-    }
-
-    /**
-     * 发送服务状态给后台
-     */
-    private void sendServerStatus(NodeAliveStateEnum aliveState) {
-        String url = adminConfig.getUrl() + "/api/server";
-        ServiceNodePayload serviceNodePayload = ServiceNodePayload.builder()
-                .address(this.address)
-                .appId(this.appId)
-                .aliveState(aliveState)
-                .services(ServiceStatusTable.me().getServiceStatus())
-                .build();
-
-        String body = JacksonSerialize.toJSONString(serviceNodePayload);
-        log.debug("Request URL\t: {}", url);
-        log.debug("Send body\t\t: {}", body);
-
-        try {
-            int code = HttpRequest.post(url)
-                    .contentType("application/json;charset=utf-8")
-                    .connectTimeout(10_000)
-                    .readTimeout(5000)
-                    .header("notice_type", NoticeType.SERVER_HEART.toString())
+                    .header("address", NetUtils.getSiteIp() + ":" + Integer.valueOf(address.split(":")[1]))
                     .basic(adminConfig.getUsername(), adminConfig.getPassword())
                     .send(body).code();
 
@@ -609,7 +580,7 @@ public abstract class SimpleRpcServer {
 
             // 拒绝连接
             SimpleServerHandler.shutdown();
-            EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
+            EventManager.me().fireEvent(EventType.SERVER_OFFLINE, Event.builder().rpcContext(RpcContext.get()).build());
 
             for (ListenableFuture listenableFuture : listenableFutures) {
                 while (!listenableFuture.isDone()) {

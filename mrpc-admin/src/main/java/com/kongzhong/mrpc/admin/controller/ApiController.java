@@ -5,10 +5,13 @@ import com.blade.kit.JsonKit;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.PostRoute;
 import com.blade.mvc.http.Request;
+import com.kongzhong.mrpc.admin.model.RpcNotice;
 import com.kongzhong.mrpc.admin.model.RpcServer;
 import com.kongzhong.mrpc.admin.service.ServerService;
 import com.kongzhong.mrpc.enums.NoticeType;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
 
 /**
  * @author biezhi
@@ -26,13 +29,22 @@ public class ApiController {
         String noticeType = request.header("notice_type");
         String content    = request.bodyToString();
 
+        RpcNotice rpcNotice = new RpcNotice();
+        rpcNotice.setApiType("server");
+        rpcNotice.setAddress(request.header("address"));
+        rpcNotice.setNoticeType(noticeType);
+        rpcNotice.setCreatedTime(LocalDateTime.now());
+        rpcNotice.setContent(content);
+        rpcNotice.save();
+
         log.info("接收到: [{}] - {}", noticeType, content);
+        RpcServer rpcServer = JsonKit.formJson(content, RpcServer.class);
 
         if (NoticeType.SERVER_ONLINE.toString().equals(noticeType)) {
-            RpcServer rpcServer = JsonKit.formJson(content, RpcServer.class);
-            serverService.saveServer(rpcServer);
+            serverService.saveServices(rpcServer.getAppId(), rpcServer.getServices());
         }
 
+        serverService.saveServer(rpcServer);
     }
 
     @PostRoute("client")

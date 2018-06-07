@@ -4,9 +4,6 @@ import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.exception.ConnectException;
-import com.kongzhong.mrpc.model.ServiceStatus;
-import com.kongzhong.mrpc.model.ServiceStatusTable;
-import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.http.HttpClientChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.utils.HttpRequest;
@@ -16,9 +13,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.internal.SocketUtils;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -63,7 +58,7 @@ public class NettyClient {
     public NettyClient(NettyConfig nettyConfig, String address) {
         this.nettyConfig = nettyConfig;
         this.address = address;
-        this.weight = ServiceStatusTable.me().getServerWeight(address);
+//        this.weight = ServiceStatusTable.me().getServerWeight(address);
 
         String host = address.split(":")[0];
         int    port = Integer.parseInt(address.split(":")[1]);
@@ -110,11 +105,11 @@ public class NettyClient {
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
 
-            String result = getServerStatus();
-            if (StringUtils.isNotEmpty(result)) {
-                ServiceStatus serviceStatus = JacksonSerialize.parseObject(result, ServiceStatus.class);
-                this.weight = serviceStatus.getWeight();
-            }
+//            String result = getServerStatus();
+//            if (StringUtils.isNotEmpty(result)) {
+//                ServiceStatus serviceStatus = JacksonSerialize.parseObject(result, ServiceStatus.class);
+//                this.weight = serviceStatus.getWeight();
+//            }
 
             if (ClientConfig.me().getPingInterval() > 0) {
                 this.enabledPing(channel);

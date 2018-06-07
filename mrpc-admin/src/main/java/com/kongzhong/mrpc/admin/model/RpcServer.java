@@ -1,9 +1,11 @@
 package com.kongzhong.mrpc.admin.model;
 
 import io.github.biezhi.anima.Model;
+import io.github.biezhi.anima.annotation.Ignore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * @author biezhi
@@ -24,5 +26,8 @@ public class RpcServer extends Model {
     private LocalDateTime onlineTime;
     private LocalDateTime offlineTime;
     private LocalDateTime updatedTime;
+
+    @Ignore
+    private Set<String> services;
 
 }

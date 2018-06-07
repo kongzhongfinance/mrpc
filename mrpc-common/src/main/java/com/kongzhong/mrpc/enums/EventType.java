@@ -14,7 +14,7 @@ public enum EventType {
     SERVER_CLIENT_DISCONNECT("客户端断开连接后"),
     SERVER_ACCEPT("服务端收到请求后"),
     SERVER_PRE_RESPONSE("服务端发送响应前"),
-    SHUTDOWN_SERVER("停止服务时");
+    SERVER_OFFLINE("停止下线时");
 
     private String desc;
 

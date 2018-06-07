@@ -37,7 +37,6 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(request.getRequestId());
         try {
-            // TODO: 兼容期，过后删除
             if (null != request.getContext()) {
                 rpcResponse.getContext().putAll(request.getContext());
             }
@@ -51,13 +50,11 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
                 rpcResponse.setReturnType(request.getReturnType().getName());
             }
             rpcResponse.setSuccess(true);
-            ServiceStatusTable.me().addSuccessInvoke(request.getClassName());
         } catch (Throwable e) {
             e = buildErrorResponse(e, rpcResponse);
             if (SimpleRpcServer.PRINT_ERROR_LOG) {
                 log.error("Service method invoke error", e);
             }
-            ServiceStatusTable.me().addErrorInvoke(request.getClassName());
         } finally {
             RpcContext.remove();
         }

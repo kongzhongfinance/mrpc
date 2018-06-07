@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.model;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 public class RpcServer {
@@ -20,4 +21,5 @@ public class RpcServer {
     private LocalDateTime offlineTime;
     private LocalDateTime updatedTime;
 
+    private Set<String> services;
 }

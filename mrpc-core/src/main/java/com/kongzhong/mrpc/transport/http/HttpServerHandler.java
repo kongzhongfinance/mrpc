@@ -5,7 +5,10 @@ import com.kongzhong.mrpc.enums.MediaTypeEnum;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.model.*;
+import com.kongzhong.mrpc.model.RequestBody;
+import com.kongzhong.mrpc.model.RpcRequest;
+import com.kongzhong.mrpc.model.RpcResponse;
+import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
@@ -56,17 +59,18 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         if ("/status".equals(path)) {
             log.debug("Rpc receive ping for {}", ctx.channel());
+            String           address      = ctx.channel().localAddress().toString();
+            ByteBuf          byteBuf      = Unpooled.copiedBuffer(address, CharsetUtil.UTF_8);
+            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
+            httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+            ctx.write(httpResponse);
+            return;
+        }
 
-            String           address       = ctx.channel().localAddress().toString();
-            ServiceStatus    serviceStatus = ServiceStatusTable.me().getServiceStatus(address.substring(1));
-            FullHttpResponse httpResponse;
-            if (null != serviceStatus) {
-                ByteBuf byteBuf = Unpooled.copiedBuffer(JacksonSerialize.toJSONString(serviceStatus), CharsetUtil.UTF_8);
-                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
-            } else {
-                ByteBuf byteBuf = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
-                httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, byteBuf, false);
-            }
+        if ("/offline".equals(path)) {
+            SimpleServerHandler.shutdown();
+            ByteBuf          byteBuf      = Unpooled.copiedBuffer("offline", CharsetUtil.UTF_8);
+            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
             return;
@@ -126,8 +130,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         // 解析请求
-        Class<?> targetClass = AopUtils.getTargetClass(bean);
-        RpcRequest rpcRequest = this.parseParams(ctx, httpRequest, requestBody, targetClass);
+        Class<?>   targetClass = AopUtils.getTargetClass(bean);
+        RpcRequest rpcRequest  = this.parseParams(ctx, httpRequest, requestBody, targetClass);
         if (null != rpcRequest) {
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK,
                     Unpooled.copiedBuffer("", CharsetUtil.UTF_8), false);
