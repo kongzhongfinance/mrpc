@@ -42,7 +42,7 @@ public class LocalServiceNodeTable {
         List<SimpleClientHandler> clientHandlers = new ArrayList<>();
 
         addresses.forEach(address -> SERVICE_NODES.stream()
-                .filter(node -> address.equals(node.getServerAddress()) && node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .filter(node -> address.equals(node.getServerAddress()) && node.getAliveState() == NodeAliveStateEnum.ONLINE)
                 .findFirst()
                 .ifPresent(node -> clientHandlers.add(node.getClientHandler())));
 
@@ -56,14 +56,14 @@ public class LocalServiceNodeTable {
      */
     public static Set<String> getAliveServices() {
         return SERVICE_NODES.stream()
-                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ONLINE)
                 .flatMap(node -> node.getServices().stream())
                 .collect(Collectors.toSet());
     }
 
     public static Set<String> getAliveAddress() {
         return SERVICE_NODES.stream()
-                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ONLINE)
                 .map(ServiceNode::getServerAddress)
                 .collect(Collectors.toSet());
     }
@@ -75,7 +75,7 @@ public class LocalServiceNodeTable {
      */
     public static Set<String> getDeadServices() {
         return SERVICE_NODES.stream()
-                .filter(node -> node.getAliveState() == NodeAliveStateEnum.DEAD)
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.OFFLINE)
                 .flatMap(node -> node.getServices().stream())
                 .collect(Collectors.toSet());
     }
@@ -132,7 +132,7 @@ public class LocalServiceNodeTable {
     public static void setNodeDead(String serverAddress) {
         updateNode(serverAddress, (node) -> {
             node.setClientHandler(null);
-            node.setAliveState(NodeAliveStateEnum.DEAD);
+            node.setAliveState(NodeAliveStateEnum.OFFLINE);
         });
         SERVICE_MAPPINGS.values().stream()
                 .flatMap(Collection::stream)
@@ -149,7 +149,7 @@ public class LocalServiceNodeTable {
         String address = clientHandler.getNettyClient().getAddress();
         updateNode(address, (node) -> {
             node.setClientHandler(clientHandler);
-            node.setAliveState(NodeAliveStateEnum.ALIVE);
+            node.setAliveState(NodeAliveStateEnum.ONLINE);
         });
     }
 
@@ -184,7 +184,7 @@ public class LocalServiceNodeTable {
         Optional<ServiceNode> serviceNode = SERVICE_NODES.stream()
                 .filter(node -> node.getServerAddress().equals(address))
                 .findFirst();
-        return serviceNode.isPresent() && serviceNode.get().getAliveState() == NodeAliveStateEnum.ALIVE;
+        return serviceNode.isPresent() && serviceNode.get().getAliveState() == NodeAliveStateEnum.ONLINE;
     }
 
     /**

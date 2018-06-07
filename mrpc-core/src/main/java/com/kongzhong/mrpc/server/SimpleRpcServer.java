@@ -336,10 +336,10 @@ public abstract class SimpleRpcServer {
             // 停止服务
             EventManager.me().addEventListener(EventType.SERVER_OFFLINE, e -> {
                 cancelAdminSchedule();
-                sendServerStatus(NodeAliveStateEnum.DEAD);
+                sendServerStatus(NodeAliveStateEnum.OFFLINE);
             });
 
-            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> sendServerStatus(NodeAliveStateEnum.ALIVE), 30000, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
+            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> sendServerStatus(NodeAliveStateEnum.ONLINE), 30000, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
         }
 
         if ("true".equals(this.test)) {
@@ -357,7 +357,7 @@ public abstract class SimpleRpcServer {
 
     private void sendStartService() {
         log.info("服务端启动，发送启动信息到 admin");
-        sendServerStatus(NodeAliveStateEnum.ALIVE);
+        sendServerStatus(NodeAliveStateEnum.ONLINE);
     }
 
     /**
