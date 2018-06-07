@@ -25,7 +25,8 @@ public class IndexController {
     @GetMapping("/hello")
     public String index(String msg, Integer timeout) {
         if (null != timeout) {
-            userService.testTimeout(timeout);
+            String result = userService.testTimeout(timeout);
+            System.out.println("result:" + result);
             return "ok";
         }
         Optional<XXDto> xxDto = userService.testOptional();
