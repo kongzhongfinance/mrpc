@@ -200,11 +200,6 @@ var vm = new Vue({
                 return '离线';
             }
             return value;
-        },
-        removeT: function (value) {
-            if (!value) return ''
-            value = value.toString()
-            return value.replace('T', ' ');
         }
     },
     methods : {

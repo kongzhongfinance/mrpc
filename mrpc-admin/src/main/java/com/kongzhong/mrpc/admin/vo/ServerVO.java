@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.admin.vo;
 
-import com.blade.kit.json.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class ServerVO {
     private String  status;
     private String  owner;
 
-    @JsonFormat("yyyy/MM/dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy/MM/dd HH:mm:ss")
     private LocalDateTime onlineTime;
 
 }
