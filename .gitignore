@@ -135,7 +135,6 @@ atlassian-ide-plugin.xml
 nbproject/private/
 build/
 nbbuild/
-dist/
 nbdist/
 .nb-gradle/
 
