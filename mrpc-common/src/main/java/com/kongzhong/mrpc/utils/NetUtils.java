@@ -16,17 +16,17 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NetUtils {
 
-    public static final String LOCALHOST = "127.0.0.1";
-    public static final String ANYHOST = "0.0.0.0";
-    private static final Random RANDOM = new Random(System.currentTimeMillis());
-    private static final int RND_PORT_START = 30000;
-    private static final int RND_PORT_RANGE = 10000;
-    private static final int MIN_PORT = 0;
-    private static final int MAX_PORT = 65535;
-    private static volatile InetAddress LOCAL_ADDRESS = null;
-    private static final Pattern ADDRESS_PATTERN = Pattern.compile("^\\d{1,3}(\\.\\d{1,3}){3}\\:\\d{1,5}$");
-    private static final Pattern LOCAL_IP_PATTERN = Pattern.compile("127(\\.\\d{1,3}){3}$");
-    private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
+    public static final     String      LOCALHOST        = "127.0.0.1";
+    public static final     String      ANYHOST          = "0.0.0.0";
+    private static final    Random      RANDOM           = new Random(System.currentTimeMillis());
+    private static final    int         RND_PORT_START   = 30000;
+    private static final    int         RND_PORT_RANGE   = 10000;
+    private static final    int         MIN_PORT         = 0;
+    private static final    int         MAX_PORT         = 65535;
+    private static volatile InetAddress LOCAL_ADDRESS    = null;
+    private static final    Pattern     ADDRESS_PATTERN  = Pattern.compile("^\\d{1,3}(\\.\\d{1,3}){3}\\:\\d{1,5}$");
+    private static final    Pattern     LOCAL_IP_PATTERN = Pattern.compile("127(\\.\\d{1,3}){3}$");
+    private static final    Pattern     IP_PATTERN       = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
 
     /**
      * @Title: getRandomPort @Description: 获取随机端口 @param @return int @throws
@@ -94,7 +94,7 @@ public class NetUtils {
         if (listenPort < 0 || listenPort > 65536) {
             throw new IllegalArgumentException("无效的端口: " + listenPort);
         }
-        ServerSocket ss = null;
+        ServerSocket   ss = null;
         DatagramSocket ds = null;
         try {
             ss = new ServerSocket(listenPort);
@@ -265,6 +265,7 @@ public class NetUtils {
 
     /**
      * 获取主机名
+     *
      * @return 主机名
      */
     public static String getHostName() {
@@ -300,13 +301,14 @@ public class NetUtils {
 
     /**
      * 获取内网IP
+     *
      * @return 内网IP
      */
     public static String getSiteIp() {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
-                NetworkInterface network = interfaces.nextElement();
+                NetworkInterface         network   = interfaces.nextElement();
                 Enumeration<InetAddress> addresses = network.getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     InetAddress address = addresses.nextElement();
@@ -351,6 +353,25 @@ public class NetUtils {
      */
     public static String num2Ip(int ipNum) {
         return ((ipNum >> 24) & 0xFF) + "." + ((ipNum >> 16) & 0xFF) + "." + ((ipNum >> 8) & 0xFF) + "." + (ipNum & 0xFF);
+    }
+
+    public static int getPID() {
+        try {
+            java.lang.management.RuntimeMXBean runtime =
+                    java.lang.management.ManagementFactory.getRuntimeMXBean();
+            java.lang.reflect.Field jvm = runtime.getClass().getDeclaredField("jvm");
+            jvm.setAccessible(true);
+            sun.management.VMManagement mgmt =
+                    (sun.management.VMManagement) jvm.get(runtime);
+            java.lang.reflect.Method pid_method =
+                    mgmt.getClass().getDeclaredMethod("getProcessId");
+            pid_method.setAccessible(true);
+
+            int pid = (Integer) pid_method.invoke(mgmt);
+            return pid;
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
 }

@@ -1,0 +1,73 @@
+{
+  "name": "服务列表",
+  "children": [
+    {
+      "name": "预备知识",
+      "children": [
+        {
+          "name": "HTML & CSS"
+        },
+        {
+          "name": "JavaScript"
+        },
+        {
+          "name": "DOM"
+        },
+        {
+          "name": "SVG"
+        }
+      ]
+    },
+    {
+      "name": "安装",
+      "children": [
+        {
+          "name": "记事本软件"
+        },
+        {
+          "name": "服务器软件"
+        },
+        {
+          "name": "下载D3.js"
+        }
+      ]
+    },
+    {
+      "name": "入门",
+      "children": [
+        {
+          "name": "选择集"
+        },
+        {
+          "name": "绑定数据"
+        },
+        {
+          "name": "添加删除元素"
+        },
+        {
+          "name": "简单图形"
+        },
+        {
+          "name": "比例尺"
+        },
+        {
+          "name": "生成器"
+        },
+        {
+          "name": "过渡"
+        }
+      ]
+    },
+    {
+      "name": "进阶",
+      "children": [
+        {
+          "name": "布局的应用"
+        },
+        {
+          "name": "地图"
+        }
+      ]
+    }
+  ]
+}

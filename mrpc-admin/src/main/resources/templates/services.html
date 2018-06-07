@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+#include("./partials/_head.html")
+<style>
+    .node circle {
+        cursor: pointer;
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+
+    .node text {
+        font-size: 12px;
+    }
+
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+</style>
+<body>
+<div class="container-scroller">
+    #include("./partials/_navbar.html")
+    <div class="container-fluid page-body-wrapper">
+        <div class="row row-offcanvas row-offcanvas-right">
+            #include("./partials/_sidebar.html")
+            <div class="content-wrapper">
+                <div class="row">
+                    <div id="serviceNode"></div>
+                </div>
+                <!-- ROW ENDS -->
+                <div class="row">
+                    <div class="col-lg-12 grid-margin">
+                        <div class="card performance-cards">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col d-flex flex-row justify-content-center align-items-center">
+                                        <div class="wrapper icon-circle bg-success">
+                                            <i class="icon-rocket icons"></i>
+                                        </div>
+                                        <div class="wrapper text-wrapper">
+                                            <p class="text-dark">8954</p>
+                                            <p>Lifetime total sales</p>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex flex-row justify-content-center align-items-center">
+                                        <div class="wrapper icon-circle bg-danger">
+                                            <i class="icon-briefcase icons"></i>
+                                        </div>
+                                        <div class="wrapper text-wrapper">
+                                            <p class="text-dark">7841</p>
+                                            <p>Income amounts</p>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex flex-row justify-content-center align-items-center">
+                                        <div class="wrapper icon-circle bg-warning">
+                                            <i class="icon-umbrella icons"></i>
+                                        </div>
+                                        <div class="wrapper text-wrapper">
+                                            <p class="text-dark">6521</p>
+                                            <p>Total users</p>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex flex-row justify-content-center align-items-center">
+                                        <div class="wrapper icon-circle bg-primary">
+                                            <i class="icon-check icons"></i>
+                                        </div>
+                                        <div class="wrapper text-wrapper">
+                                            <p class="text-dark">325</p>
+                                            <p>Total visits</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ROW ENDS -->
+                <div class="row">
+                    <div class="col-md-6 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-0">Statistics</h4>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-inline-block pt-3">
+                                        <div class="d-flex">
+                                            <h2 class="mb-0">$10,200</h2>
+                                            <div class="d-flex align-items-center ml-2">
+                                                <i class="mdi mdi-clock text-muted"></i>
+                                                <small class=" ml-1 mb-0">Updated: 9:10am</small>
+                                            </div>
+                                        </div>
+                                        <small class="text-gray">Raised from 89 orders.</small>
+                                    </div>
+                                    <div class="d-inline-block">
+                                        <div class="bg-success px-4 py-2 rounded">
+                                            <i class="mdi mdi-buffer text-white icon-lg"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-0">Daily Order</h4>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-inline-block pt-3">
+                                        <div class="d-flex">
+                                            <h2 class="mb-0">$2256</h2>
+                                            <div class="d-flex align-items-center ml-2">
+                                                <i class="mdi mdi-clock text-muted"></i>
+                                                <small class=" ml-1 mb-0">Updated: 05:42pm</small>
+                                            </div>
+                                        </div>
+                                        <small class="text-gray">hey, let’s have lunch together</small>
+                                    </div>
+                                    <div class="d-inline-block">
+                                        <div class="bg-warning px-4 py-2 rounded">
+                                            <i class="mdi mdi-wallet text-white icon-lg"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ROW ENDS -->
+                <div class="row">
+                    <div class="col-lg-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">Manage Users</h2>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Position</th>
+                                            <th>Office</th>
+                                            <th>Age</th>
+                                            <th>Start Date</th>
+                                            <th>Assign</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Airi Satou</td>
+                                            <td>Accountant</td>
+                                            <td>Tokyo</td>
+                                            <td>55</td>
+                                            <td>2009/10/09</td>
+                                            <td>$162,700</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Angelica Ramos</td>
+                                            <td>Chief Executive Officer (CEO)</td>
+                                            <td>London</td>
+                                            <td>30</td>
+                                            <td>2009/10/09</td>
+                                            <td>$190,500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ashton Cox</td>
+                                            <td>Regional Director</td>
+                                            <td>San Francisco</td>
+                                            <td>36</td>
+                                            <td>2004/12/02</td>
+                                            <td>$62,700</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Angelica Ramos</td>
+                                            <td>Chief Executive Officer (CEO)</td>
+                                            <td>London</td>
+                                            <td>30</td>
+                                            <td>2011/07/25</td>
+                                            <td>$190,500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ashton Cox</td>
+                                            <td>Regional Director</td>
+                                            <td>San Francisco</td>
+                                            <td>32</td>
+                                            <td>2004/12/02</td>
+                                            <td>$62,700</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Angelica Ramos</td>
+                                            <td>Chief Executive Officer (CEO)</td>
+                                            <td>London</td>
+                                            <td>31</td>
+                                            <td>2011/07/25</td>
+                                            <td>$190,500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ashton Cox</td>
+                                            <td>Regional Director</td>
+                                            <td>Tokyo</td>
+                                            <td>39</td>
+                                            <td>2004/12/02</td>
+                                            <td>$62,700</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                    <p class="mb-0">Showing 1 to 10 of 57 entries</p>
+                                    <nav>
+                                        <ul class="pagination rounded-separated pagination-info mt-3">
+                                            <li class="page-item"><a class="page-link" href="#"><i
+                                                    class="mdi mdi-chevron-left"></i></a></li>
+                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                            <li class="page-item"><a class="page-link" href="#"><i
+                                                    class="mdi mdi-chevron-right"></i></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            #include("./partials/_footer.html")
+        </div>
+    </div>
+</div>
+#include("./partials/_footer_js.html")
+<script src="/static/plugins/d3/d3.v3.min.js"></script>
+<script type="text/javascript">
+    var width = 600;
+    var height = 500;
+
+    //边界空白
+    var padding = {left: 80, right: 50, top: 20, bottom: 20};
+
+    var svg = d3.select("#serviceNode")
+        .append("svg")
+        .attr("width", width + padding.left + padding.right)
+        .attr("height", height + padding.top + padding.bottom)
+        .append("g")
+        .attr("transform", "translate(" + padding.left + "," + padding.top + ")");
+
+    //树状图布局
+    var tree = d3.layout.tree()
+        .size([height, width]);
+
+    //对角线生成器
+    var diagonal = d3.svg.diagonal()
+        .projection(function (d) {
+            return [d.y, d.x];
+        });
+
+
+    d3.json("/static/json/data.json", function (error, root) {
+
+        //给第一个节点添加初始坐标x0和x1
+        root.x0 = height / 2;
+        root.y0 = 0;
+
+        //以第一个节点为起始节点，重绘
+        redraw(root);
+
+        //重绘函数
+        function redraw(source) {
+
+            /*
+            （1） 计算节点和连线的位置
+            */
+
+            //应用布局，计算节点和连线
+            var nodes = tree.nodes(root);
+            var links = tree.links(nodes);
+
+            //重新计算节点的y坐标
+            nodes.forEach(function (d) {
+                d.y = d.depth * 180;
+            });
+
+            /*
+            （2） 节点的处理
+            */
+
+            //获取节点的update部分
+            var nodeUpdate = svg.selectAll(".node")
+                .data(nodes, function (d) {
+                    return d.name;
+                });
+
+            //获取节点的enter部分
+            var nodeEnter = nodeUpdate.enter();
+
+            //获取节点的exit部分
+            var nodeExit = nodeUpdate.exit();
+
+            //1. 节点的 Enter 部分的处理办法
+            var enterNodes = nodeEnter.append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    return "translate(" + source.y0 + "," + source.x0 + ")";
+                })
+                .on("click", function (d) {
+                    toggle(d);
+                    redraw(d);
+                });
+
+            enterNodes.append("circle")
+                .attr("r", 0)
+                .style("fill", function (d) {
+                    return d._children ? "lightsteelblue" : "#fff";
+                });
+
+            enterNodes.append("text")
+                .attr("x", function (d) {
+                    return d.children || d._children ? -14 : 14;
+                })
+                .attr("dy", ".35em")
+                .attr("text-anchor", function (d) {
+                    return d.children || d._children ? "end" : "start";
+                })
+                .text(function (d) {
+                    return d.name;
+                })
+                .style("fill-opacity", 0);
+
+
+            //2. 节点的 Update 部分的处理办法
+            var updateNodes = nodeUpdate.transition()
+                .duration(500)
+                .attr("transform", function (d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+
+            updateNodes.select("circle")
+                .attr("r", 8)
+                .style("fill", function (d) {
+                    return d._children ? "lightsteelblue" : "#fff";
+                });
+
+            updateNodes.select("text")
+                .style("fill-opacity", 1);
+
+            //3. 节点的 Exit 部分的处理办法
+            var exitNodes = nodeExit.transition()
+                .duration(500)
+                .attr("transform", function (d) {
+                    return "translate(" + source.y + "," + source.x + ")";
+                })
+                .remove();
+
+            exitNodes.select("circle")
+                .attr("r", 0);
+
+            exitNodes.select("text")
+                .style("fill-opacity", 0);
+
+            /*
+            （3） 连线的处理
+            */
+
+            //获取连线的update部分
+            var linkUpdate = svg.selectAll(".link")
+                .data(links, function (d) {
+                    return d.target.name;
+                });
+
+            //获取连线的enter部分
+            var linkEnter = linkUpdate.enter();
+
+            //获取连线的exit部分
+            var linkExit = linkUpdate.exit();
+
+            //1. 连线的 Enter 部分的处理办法
+            linkEnter.insert("path", ".node")
+                .attr("class", "link")
+                .attr("d", function (d) {
+                    var o = {x: source.x0, y: source.y0};
+                    return diagonal({source: o, target: o});
+                })
+                .transition()
+                .duration(500)
+                .attr("d", diagonal);
+
+            //2. 连线的 Update 部分的处理办法
+            linkUpdate.transition()
+                .duration(500)
+                .attr("d", diagonal);
+
+            //3. 连线的 Exit 部分的处理办法
+            linkExit.transition()
+                .duration(500)
+                .attr("d", function (d) {
+                    var o = {x: source.x, y: source.y};
+                    return diagonal({source: o, target: o});
+                })
+                .remove();
+
+
+            /*
+            （4） 将当前的节点坐标保存在变量x0、y0里，以备更新时使用
+            */
+            nodes.forEach(function (d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+
+        }
+
+        //切换开关，d 为被点击的节点
+        function toggle(d) {
+            if (d.children) { //如果有子节点
+                d._children = d.children; //将该子节点保存到 _children
+                d.children = null;  //将子节点设置为null
+            } else {  //如果没有子节点
+                d.children = d._children; //从 _children 取回原来的子节点
+                d._children = null; //将 _children 设置为 null
+            }
+        }
+
+    });
+
+</script>
+</body>
+</html>

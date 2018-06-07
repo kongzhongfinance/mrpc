@@ -12,6 +12,7 @@ import com.kongzhong.mrpc.embedded.ConfigService;
 import com.kongzhong.mrpc.embedded.ConfigServiceImpl;
 import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
+import com.kongzhong.mrpc.enums.NoticeType;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
@@ -37,6 +38,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -131,6 +133,10 @@ public abstract class SimpleRpcServer {
     @Getter
     @Setter
     protected String owner;
+
+    @Getter
+    @Setter
+    protected String ownerEmail;
 
     /**
      * 是否是测试环境，如果 "true" 则在启动后不会挂起程序
@@ -325,6 +331,8 @@ public abstract class SimpleRpcServer {
 
         if (null != adminConfig && adminConfig.isEnabled()) {
 
+            this.sendStartService();
+
             // 有客户端连接
             EventManager.me().addEventListener(EventType.SERVER_CLIENT_CONNECTED, e -> ServiceStatusTable.me().addClient());
 
@@ -337,7 +345,7 @@ public abstract class SimpleRpcServer {
                 sendServerStatus(NodeAliveStateEnum.DEAD);
             });
 
-            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> sendServerStatus(NodeAliveStateEnum.ALIVE), 500, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
+            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> sendServerStatus(NodeAliveStateEnum.ALIVE), 30000, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
         }
 
         if ("true".equals(this.test)) {
@@ -353,11 +361,48 @@ public abstract class SimpleRpcServer {
         }
     }
 
+    private void sendStartService() {
+        log.info("服务端启动，发送启动信息到 admin");
+        String url = adminConfig.getUrl() + "/api/server";
+
+        RpcServer rpcServer = new RpcServer();
+        rpcServer.setAppId(appId);
+        rpcServer.setHost(NetUtils.getSiteIp());
+        rpcServer.setPort(Integer.valueOf(address.split(":")[1]));
+        rpcServer.setOnlineTime(LocalDateTime.now());
+        rpcServer.setOwner(owner);
+        rpcServer.setOwnerEmail(ownerEmail);
+        if (StringUtils.isNotEmpty(appName)) {
+            rpcServer.setAppAlias(appName);
+        }
+        rpcServer.setPid(NetUtils.getPID());
+        rpcServer.setStatus(NodeAliveStateEnum.ALIVE.toString());
+        rpcServer.setOnlineTime(LocalDateTime.now());
+
+        String body = JacksonSerialize.toJSONString(rpcServer);
+        try {
+            int code = HttpRequest.post(url)
+                    .contentType("application/json;charset=utf-8")
+                    .connectTimeout(10_000)
+                    .readTimeout(5000)
+                    .header("notice_type", NoticeType.SERVER_ONLINE.toString())
+                    .basic(adminConfig.getUsername(), adminConfig.getPassword())
+                    .send(body).code();
+
+            log.debug("Response code: {}", code);
+        } catch (HttpRequest.HttpRequestException e) {
+            log.debug("连接失败");
+        } catch (Exception e) {
+            log.error("Send error", e);
+            cancelAdminSchedule();
+        }
+    }
+
     /**
      * 发送服务状态给后台
      */
     private void sendServerStatus(NodeAliveStateEnum aliveState) {
-        String url = adminConfig.getUrl() + "/api/service";
+        String url = adminConfig.getUrl() + "/api/server";
         ServiceNodePayload serviceNodePayload = ServiceNodePayload.builder()
                 .address(this.address)
                 .appId(this.appId)
@@ -374,6 +419,7 @@ public abstract class SimpleRpcServer {
                     .contentType("application/json;charset=utf-8")
                     .connectTimeout(10_000)
                     .readTimeout(5000)
+                    .header("notice_type", NoticeType.SERVER_HEART.toString())
                     .basic(adminConfig.getUsername(), adminConfig.getPassword())
                     .send(body).code();
 

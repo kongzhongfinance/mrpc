@@ -91,6 +91,10 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             log.debug(rpcServerProperties.toString() + "\n");
 
             super.appId = rpcServerProperties.getAppId();
+            super.appName = rpcServerProperties.getAppName();
+            super.owner = rpcServerProperties.getOwner();
+            super.ownerEmail = rpcServerProperties.getOwnerEmail();
+
             setContext(Const.APP_ID, rpcServerProperties.getAppId());
             setContext(Const.APP_NAME, rpcServerProperties.getAppName());
             setContext(Const.SERVER_OWNER, rpcServerProperties.getOwner());
