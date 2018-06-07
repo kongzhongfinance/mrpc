@@ -1,0 +1,130 @@
+{
+  "name": "如何学习D3",
+  "children": [
+    {
+      "name": "预备知识",
+      "children": [
+        {
+          "name": "HTML & CSS"
+        },
+        {
+          "name": "JavaScript"
+        },
+        {
+          "name": "DOM"
+        },
+        {
+          "name": "SVG"
+        }
+      ]
+    },
+    {
+      "name": "安装",
+      "children": [
+        {
+          "name": "记事本软件",
+          "children": [
+            {
+              "name": "Notepad++"
+            },
+            {
+              "name": "EditPlus"
+            },
+            {
+              "name": "Sublime Text"
+            }
+          ]
+        },
+        {
+          "name": "服务器软件",
+          "children": [
+            {
+              "name": "Apache Http Server"
+            },
+            {
+              "name": "Tomcat"
+            }
+          ]
+        },
+        {
+          "name": "下载D3.js"
+        }
+      ]
+    },
+    {
+      "name": "入门",
+      "children": [
+        {
+          "name": "选择集",
+          "children": [
+            {
+              "name": "select"
+            },
+            {
+              "name": "selectAll"
+            }
+          ]
+        },
+        {
+          "name": "绑定数据",
+          "children": [
+            {
+              "name": "datum"
+            },
+            {
+              "name": "data"
+            }
+          ]
+        },
+        {
+          "name": "添加删除元素"
+        },
+        {
+          "name": "简单图形",
+          "children": [
+            {
+              "name": "柱形图"
+            },
+            {
+              "name": "折线图"
+            },
+            {
+              "name": "散点图"
+            }
+          ]
+        },
+        {
+          "name": "比例尺"
+        },
+        {
+          "name": "生成器"
+        },
+        {
+          "name": "过渡"
+        }
+      ]
+    },
+    {
+      "name": "进阶",
+      "children": [
+        {
+          "name": "布局的应用",
+          "children": [
+            {
+              "name": "饼状图"
+            },
+            {
+              "name": "树状图"
+            },
+            {
+              "name": "矩阵树图"
+            }
+          ]
+        },
+        {
+          "name": "地图"
+        }
+      ]
+    }
+  ]
+}

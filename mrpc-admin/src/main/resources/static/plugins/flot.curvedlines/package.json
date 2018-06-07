@@ -1,0 +1,25 @@
+{
+  "name": "flot.curvedlines",
+  "version": "1.1.1",
+  "description": "CurvedLines is a plugin for flot, which displays lines in a smooth curved way",
+  "main": "curvedLines.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no automated test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daothanh/CurvedLines.git"
+  },
+  "author": "Michael Zinsmaier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daothanh/CurvedLines/issues"
+  },
+  "homepage": "https://github.com/daothanh/CurvedLines#readme",
+  "_from": "flot.curvedlines@1.1.1",
+  "_resolved": "http://registry.npm.taobao.org/flot.curvedlines/download/flot.curvedlines-1.1.1.tgz"
+}
