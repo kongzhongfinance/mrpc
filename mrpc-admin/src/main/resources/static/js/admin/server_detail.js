@@ -1,5 +1,5 @@
 var vm = new Vue({
-    el:'#app',
+    el: '#app',
     data: {
         server: {}
     },
@@ -10,19 +10,21 @@ var vm = new Vue({
         toStatus: function (value) {
             if (!value) return ''
             value = value.toString()
-            if(value === 'ONLINE'){
-                return '在线';
+            if (value === 'ONLINE') {
+                return '在线'
             }
-            if(value === 'OFFLINE'){
-                return '离线';
+            if (value === 'OFFLINE') {
+                return '离线'
             }
-            return value;
+            return value
         }
     },
-    methods : {
-        load: function() {
+    methods: {
+        load: function () {
             var $vm = this;
-            axios.get('/admin/server/detail/4').then(function (response) {
+            var pos = window.location.toString().lastIndexOf("/");
+            var id = window.location.toString().substring(pos + 1)
+            axios.get('/admin/server/detail/' + id).then(function (response) {
                 $vm.server = response.data.payload;
             }).catch(function (error) {
                 console.log(error);
