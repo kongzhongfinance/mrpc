@@ -22,6 +22,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -145,9 +146,12 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Client receive body error", cause);
-        super.sendError(ctx, cause);
-//        ctx.close();
+        if (IOException.class.isInstance(cause) && cause.getMessage().contains("Connection reset by peer")) {
+
+        } else {
+            log.error("Client receive body error", cause);
+            super.sendError(ctx, cause);
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.utils.NetUtils;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.AccessLevel;
@@ -27,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 客户端连接管理
  *
  * @author biezhi
- *         2017/4/22
+ * 2017/4/22
  */
 @Slf4j
 @Data
@@ -155,9 +156,16 @@ public class Connections {
 
         // 把services绑定的服务修改为addresses
         serviceMap.forEach((serviceName, addresses) -> addresses.forEach(address -> {
-            LocalServiceNodeTable.addIfNotPresent(address);
-            LocalServiceNodeTable.reConnecting(address);
-            LocalServiceNodeTable.updateServiceNode(serviceName, address);
+            String  host = address.split(":")[0];
+            Integer port = Integer.valueOf(address.split(":")[1]);
+            // ping 服务端
+            if (NetUtils.pingHost(host, port, 2000)) {
+                LocalServiceNodeTable.addIfNotPresent(address);
+                LocalServiceNodeTable.reConnecting(address);
+                LocalServiceNodeTable.updateServiceNode(serviceName, address);
+            } else {
+                addresses.remove(address);
+            }
         }));
 
         // 连接
@@ -192,7 +200,6 @@ public class Connections {
 
     /**
      * 休眠
-     *
      */
     private void sleep() {
         try {
