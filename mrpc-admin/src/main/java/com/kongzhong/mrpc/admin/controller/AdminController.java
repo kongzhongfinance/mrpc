@@ -37,7 +37,7 @@ public class AdminController {
         return RestResponse.ok(serverService.getServerDetail(id));
     }
 
-    @PostRoute("server/delete/:id")
+    @PostRoute("server/delete")
     public RestResponse deleteNode(@BodyParam RpcServer rpcServer) {
         pingTask.removeUrl(rpcServer.getHost()+":"+rpcServer.getPort());
         return RestResponse.ok(Anima.deleteById(RpcServer.class, rpcServer.getId()));

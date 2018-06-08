@@ -215,11 +215,12 @@ var vm = new Vue({
                 }
             });
         },
-        rename: function (id) {
+        rename: function (id, appAlias) {
             var $vm = this;
             swal({
                 title: '请输入新的别名',
                 input: 'text',
+                inputValue: appAlias || '',
                 inputAttributes: {
                     autocapitalize: 'off'
                 },

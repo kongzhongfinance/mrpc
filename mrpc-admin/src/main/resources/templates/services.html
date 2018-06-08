@@ -69,7 +69,7 @@
                                             <td>{{ item.owner }}</td>
                                             <td>{{ item.onlineTime }}</td>
                                             <td>
-                                                <button type="button" class="btn btn-inverse-info btn-fw" @click="rename(item.id)">重命名</button>
+                                                <button type="button" class="btn btn-inverse-info btn-fw" @click="rename(item.id, item.appAlias)">重命名</button>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -88,6 +88,5 @@
 <script src="/static/plugins/d3/d3.v3.min.js"></script>
 <script src="/static/plugins/axios/axios.min.js"></script>
 <script src="/static/js/admin/services.js"></script>
-
 </body>
 </html>

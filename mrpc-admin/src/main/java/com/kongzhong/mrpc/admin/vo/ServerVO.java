@@ -14,12 +14,13 @@ public class ServerVO {
 
     private Long    id;
     private String  name;
+    private String  appAlias;
     private String  address;
     private Integer pid;
     private String  status;
     private String  owner;
 
-    @JsonFormat(pattern="yyyy/MM/dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime onlineTime;
 
 }

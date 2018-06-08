@@ -78,6 +78,7 @@ public class ServerService {
             serverVO.setName(rpcServer.getAppId());
         }
         serverVO.setId(rpcServer.getId());
+        serverVO.setAppAlias(rpcServer.getAppAlias());
         serverVO.setPid(rpcServer.getPid());
         serverVO.setAddress(rpcServer.getHost() + ":" + rpcServer.getPort());
         serverVO.setOwner(rpcServer.getOwner());
