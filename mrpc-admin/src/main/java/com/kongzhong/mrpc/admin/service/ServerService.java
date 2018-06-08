@@ -91,6 +91,10 @@ public class ServerService {
 
         RpcServer rpcServer = select().from(RpcServer.class).byId(id);
 
+        if (null == rpcServer) {
+            return serverDetailVO;
+        }
+
         serverDetailVO.setId(id);
         serverDetailVO.setOwner(rpcServer.getOwner());
 

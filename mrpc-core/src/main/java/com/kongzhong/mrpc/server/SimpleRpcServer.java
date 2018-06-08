@@ -37,6 +37,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -359,20 +360,21 @@ public abstract class SimpleRpcServer {
         rpcServer.setAppId(appId);
         rpcServer.setHost(NetUtils.getSiteIp());
         rpcServer.setPort(Integer.valueOf(address.split(":")[1]));
-        rpcServer.setOnlineTime(LocalDateTime.now());
         rpcServer.setOwner(owner);
         rpcServer.setOwnerEmail(ownerEmail);
-        if (StringUtils.isNotEmpty(appName)) {
-            rpcServer.setAppAlias(appName);
-        }
         rpcServer.setPid(NetUtils.getPID());
         rpcServer.setStatus(nodeStatus.toString());
-        rpcServer.setOnlineTime(LocalDateTime.now());
+        if (nodeStatus == NodeStatusEnum.ONLINE) {
+            rpcServer.setOnlineTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+        }
+        if (nodeStatus == NodeStatusEnum.OFFLINE) {
+            rpcServer.setOfflineTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+        }
 
         rpcServer.setServices(ServiceStatusTable.me().getServices());
 
-        String body = JacksonSerialize.toJSONString(rpcServer);
         try {
+            String body = JacksonSerialize.toJSONString(rpcServer);
             int code = HttpRequest.post(url)
                     .contentType("application/json;charset=utf-8")
                     .connectTimeout(10_000)

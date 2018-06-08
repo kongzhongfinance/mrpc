@@ -204,12 +204,44 @@ var vm = new Vue({
     methods : {
         load: function() {
             var $vm = this;
-            axios.get('/admin/server/list').then(function (response) {
-                $vm.servers = response.data.payload;
-            }).catch(function (error) {
-                console.log(error);
-                alert(result.msg || '数据加载失败');
+            sendGET({
+                url: '/admin/server/list',
+                success:function (data) {
+                    $vm.servers = data.payload;
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert(result.msg || '数据加载失败');
+                }
             });
+        },
+        rename: function (id) {
+            var $vm = this;
+            swal({
+                title: '请输入新的别名',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: '修改别名',
+                showLoaderOnConfirm: true
+            }).then(function(result) {
+                if (result.value) {
+                    sendPOST({
+                        url: '/admin/server/update',
+                        data: {id: id, appAlias: result.value},
+                        success: function (result) {
+                            if (result.success) {
+                                swal('操作成功!', '别名修改成功', 'success')
+                                $vm.load();
+                            } else {
+                                alert(result.msg || '操作失败')
+                            }
+                        }
+                    })
+                }
+            })
         }
     }
 })

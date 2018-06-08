@@ -1,6 +1,6 @@
 package com.kongzhong.mrpc.admin.model;
 
-import com.blade.kit.json.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.biezhi.anima.Model;
 import io.github.biezhi.anima.annotation.Table;
 import lombok.Data;
@@ -20,10 +20,10 @@ public class SysUser extends Model {
     private String  remark;
     private Long    createdId;
 
-    @JsonFormat("yyyy/MM/dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime createdTime;
 
-    @JsonFormat("yyyy/MM/dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime modifiedTime;
 
 }

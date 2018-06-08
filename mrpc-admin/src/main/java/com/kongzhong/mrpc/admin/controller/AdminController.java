@@ -1,16 +1,13 @@
 package com.kongzhong.mrpc.admin.controller;
 
 import com.blade.ioc.annotation.Inject;
-import com.blade.mvc.annotation.GetRoute;
-import com.blade.mvc.annotation.Path;
-import com.blade.mvc.annotation.PathParam;
+import com.blade.mvc.annotation.*;
 import com.blade.mvc.ui.RestResponse;
+import com.kongzhong.mrpc.admin.model.RpcServer;
 import com.kongzhong.mrpc.admin.service.ServerService;
-import com.kongzhong.mrpc.admin.vo.ServerDetailVO;
+import com.kongzhong.mrpc.admin.tasks.PingTask;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
-import com.kongzhong.mrpc.admin.vo.ServerVO;
-
-import java.util.List;
+import io.github.biezhi.anima.Anima;
 
 /**
  * @author biezhi
@@ -21,6 +18,9 @@ public class AdminController {
 
     @Inject
     private ServerService serverService;
+
+    @Inject
+    private PingTask pingTask;
 
     @GetRoute("server/map")
     public ServerMap serverMap() {
@@ -36,4 +36,16 @@ public class AdminController {
     public RestResponse serverDetail(@PathParam Long id) {
         return RestResponse.ok(serverService.getServerDetail(id));
     }
+
+    @PostRoute("server/delete/:id")
+    public RestResponse deleteNode(@BodyParam RpcServer rpcServer) {
+        pingTask.removeUrl(rpcServer.getHost()+":"+rpcServer.getPort());
+        return RestResponse.ok(Anima.deleteById(RpcServer.class, rpcServer.getId()));
+    }
+
+    @PostRoute("server/update")
+    public RestResponse rename(@BodyParam RpcServer rpcServer) {
+        return RestResponse.ok(rpcServer.update());
+    }
+
 }

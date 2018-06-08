@@ -6,11 +6,9 @@ import com.blade.task.annotation.Schedule;
 import com.kongzhong.mrpc.admin.service.ServerService;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
 import com.kongzhong.mrpc.utils.HttpRequest;
+import com.kongzhong.mrpc.utils.NetUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +36,10 @@ public class PingTask {
         this.addresses.add(address);
     }
 
+    public void removeUrl(String url) {
+        addresses.remove(url);
+    }
+
     @Schedule(name = "pingServer", cron = "*/30 * * * * ?", delay = 10_000L)
     public void pingServer() {
         log.info("ping server");
@@ -50,10 +52,11 @@ public class PingTask {
             String  host = address.split(":")[0];
             Integer port = Integer.valueOf(address.split(":")[1]);
 
-            if (!pingHost(host, port, DEFAULT_TIME_OUT)) {
+            if (!NetUtils.pingHost(host, port, DEFAULT_TIME_OUT)) {
                 serverService.updateStatus(host, port, NodeStatusEnum.OFFLINE);
             } else {
                 int code = HttpRequest.get(url).connectTimeout(DEFAULT_TIME_OUT).readTimeout(DEFAULT_TIME_OUT).code();
+                log.info("Code: {}", code);
                 if (code == 200) {
                     serverService.updateStatus(host, port, NodeStatusEnum.ONLINE);
                 } else {
@@ -62,15 +65,6 @@ public class PingTask {
             }
         } catch (Exception e) {
             log.error("执行出错了", e);
-        }
-    }
-
-    public boolean pingHost(String host, int port, int timeout) {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host, port), timeout);
-            return true;
-        } catch (IOException e) {
-            return false; // Either timeout or unreachable or failed DNS lookup.
         }
     }
 

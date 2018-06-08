@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.admin.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.biezhi.anima.Model;
 import io.github.biezhi.anima.annotation.Ignore;
 import lombok.Data;
@@ -23,8 +24,14 @@ public class RpcServer extends Model {
     private String        status;
     private String        owner;
     private String        ownerEmail;
+
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime onlineTime;
+
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime offlineTime;
+
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime updatedTime;
 
     @Ignore
