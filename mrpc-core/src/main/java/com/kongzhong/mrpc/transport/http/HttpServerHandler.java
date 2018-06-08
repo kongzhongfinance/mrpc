@@ -66,7 +66,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         if ("/offline".equals(path)) {
-            SimpleServerHandler.shutdown();
+            SimpleServerHandler.offline();
             ByteBuf          byteBuf      = Unpooled.copiedBuffer("offline", CharsetUtil.UTF_8);
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());

@@ -27,7 +27,6 @@ function initServerMap() {
         });
 
     d3.json("/admin/server/map", function (error, root) {
-
         //给第一个节点添加初始坐标x0和x1
         root.x0 = height / 2;
         root.y0 = 0;
@@ -206,7 +205,7 @@ var vm = new Vue({
         load: function() {
             var $vm = this;
             axios.get('/admin/server/list').then(function (response) {
-                $vm.servers = response.data;
+                $vm.servers = response.data.payload;
             }).catch(function (error) {
                 console.log(error);
                 alert(result.msg || '数据加载失败');

@@ -1,7 +1,6 @@
 package com.kongzhong.mrpc.event;
 
 import com.kongzhong.mrpc.enums.EventType;
-import com.kongzhong.mrpc.model.RpcContext;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,9 +25,9 @@ public class EventManager {
         listenerMap.get(type).add(listener);
     }
 
-    public void fireEvent(EventType type, Event event) {
-        listenerMap.get(type).stream()
-                .forEach(listener -> listener.trigger(event));
+    public static void fireEvent(EventType type) {
+        me().listenerMap.get(type).stream()
+                .forEach(listener -> listener.trigger());
     }
 
     private static final class EventManagerHolder {

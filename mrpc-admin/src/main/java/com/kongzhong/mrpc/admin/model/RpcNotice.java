@@ -15,7 +15,6 @@ public class RpcNotice extends Model {
     private Long          id;
     private String        address;
     private String        apiType;
-    private String        noticeType;
     private String        content;
     private LocalDateTime createdTime;
 

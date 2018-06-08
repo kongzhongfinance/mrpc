@@ -8,7 +8,7 @@ import com.blade.mvc.http.Request;
 import com.kongzhong.mrpc.admin.model.RpcNotice;
 import com.kongzhong.mrpc.admin.model.RpcServer;
 import com.kongzhong.mrpc.admin.service.ServerService;
-import com.kongzhong.mrpc.enums.NoticeType;
+import com.kongzhong.mrpc.enums.NodeStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -26,21 +26,21 @@ public class ApiController {
 
     @PostRoute("server")
     public void server(Request request) {
-        String noticeType = request.header("notice_type");
+        String nodeStatus = request.header("notice_status");
         String content    = request.bodyToString();
 
         RpcNotice rpcNotice = new RpcNotice();
         rpcNotice.setApiType("server");
         rpcNotice.setAddress(request.header("address"));
-        rpcNotice.setNoticeType(noticeType);
         rpcNotice.setCreatedTime(LocalDateTime.now());
         rpcNotice.setContent(content);
         rpcNotice.save();
 
-        log.info("接收到: [{}] - {}", noticeType, content);
+        log.info("接收到: [{}] - {}", nodeStatus, content);
         RpcServer rpcServer = JsonKit.formJson(content, RpcServer.class);
 
-        if (NoticeType.SERVER_ONLINE.toString().equals(noticeType)) {
+        // 上线则更新接口列表
+        if (NodeStatusEnum.ONLINE.toString().equals(nodeStatus)) {
             serverService.saveServices(rpcServer.getAppId(), rpcServer.getServices());
         }
 

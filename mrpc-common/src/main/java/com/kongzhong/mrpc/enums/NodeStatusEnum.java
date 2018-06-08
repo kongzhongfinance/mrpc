@@ -6,7 +6,7 @@ package com.kongzhong.mrpc.enums;
  * @author biezhi
  * 29/06/2017
  */
-public enum NodeAliveStateEnum {
+public enum NodeStatusEnum {
 
     ONLINE("存活"),
     OFFLINE("离线"),
@@ -14,7 +14,7 @@ public enum NodeAliveStateEnum {
 
     private final String state;
 
-    NodeAliveStateEnum(String state) {
+    NodeStatusEnum(String state) {
         this.state = state;
     }
 

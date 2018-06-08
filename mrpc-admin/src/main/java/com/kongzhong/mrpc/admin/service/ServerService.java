@@ -4,9 +4,10 @@ import com.blade.ioc.annotation.Bean;
 import com.blade.kit.StringKit;
 import com.kongzhong.mrpc.admin.model.RpcServer;
 import com.kongzhong.mrpc.admin.model.RpcService;
+import com.kongzhong.mrpc.admin.vo.ServerDetailVO;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
 import com.kongzhong.mrpc.admin.vo.ServerVO;
-import io.github.biezhi.anima.Anima;
+import com.kongzhong.mrpc.enums.NodeStatusEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static io.github.biezhi.anima.Anima.delete;
 import static io.github.biezhi.anima.Anima.select;
+import static io.github.biezhi.anima.Anima.update;
 
 /**
  * @author biezhi
@@ -84,4 +86,43 @@ public class ServerService {
         return serverVO;
     }
 
+    public ServerDetailVO getServerDetail(Long id) {
+        ServerDetailVO serverDetailVO = new ServerDetailVO();
+
+        RpcServer rpcServer = select().from(RpcServer.class).byId(id);
+
+        serverDetailVO.setId(id);
+        serverDetailVO.setOwner(rpcServer.getOwner());
+
+        if (StringKit.isNotEmpty(rpcServer.getAppAlias())) {
+            serverDetailVO.setName(rpcServer.getAppAlias());
+        } else {
+            serverDetailVO.setName(rpcServer.getAppId());
+        }
+
+        List<RpcServer> nodes = select().from(RpcServer.class).where(RpcServer::getAppId, rpcServer.getAppId()).all();
+        serverDetailVO.setNodes(nodes);
+
+        Set<String> services = select().from(RpcService.class).where(RpcService::getAppId, rpcServer.getAppId())
+                .map(RpcService::getServiceId).collect(Collectors.toSet());
+
+        serverDetailVO.setServices(services);
+        return serverDetailVO;
+    }
+
+    public void updateStatus(String host, Integer port, NodeStatusEnum nodeStatus) {
+        String status = nodeStatus.toString();
+        long count = select().from(RpcServer.class).where(RpcServer::getHost, host)
+                .and(RpcServer::getPort, port)
+                .and(RpcServer::getStatus, status)
+                .count();
+
+        if (count == 0) {
+            update().from(RpcServer.class).set(RpcServer::getStatus, status)
+                    .where(RpcServer::getHost, host)
+                    .and(RpcServer::getPort, Integer.valueOf(port))
+                    .execute();
+        }
+
+    }
 }

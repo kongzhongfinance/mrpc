@@ -1,9 +1,7 @@
 package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.enums.EventType;
-import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
-import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.server.RpcMapping;
 import io.netty.channel.ChannelHandlerContext;
@@ -38,10 +36,16 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
     @Override
     public abstract void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
 
-    public static void shutdown() {
-        log.info("Shutdown now.");
+    public static void offline() {
+        log.info("Offline now.");
         IS_SHUTDOWN = true;
-        EventManager.me().fireEvent(EventType.SERVER_OFFLINE, null);
+        EventManager.me().fireEvent(EventType.SERVER_OFFLINE);
+    }
+
+    public static void online() {
+        log.info("Online now.");
+        IS_SHUTDOWN = false;
+        EventManager.me().fireEvent(EventType.SERVER_ONLINE);
     }
 
 }

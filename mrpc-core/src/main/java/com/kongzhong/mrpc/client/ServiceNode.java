@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Sets;
-import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
+import com.kongzhong.mrpc.enums.NodeStatusEnum;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import lombok.*;
 
@@ -31,7 +31,7 @@ public class ServiceNode {
     /**
      * 节点存活状态
      */
-    private NodeAliveStateEnum  aliveState;
+    private NodeStatusEnum      aliveState;
     /**
      * 是否开始尝试连接
      */
@@ -39,6 +39,6 @@ public class ServiceNode {
     /**
      * 该节点下都服务列表
      */
-    private Set<String> services = Sets.newHashSet();
+    private Set<String>         services = Sets.newHashSet();
 
 }

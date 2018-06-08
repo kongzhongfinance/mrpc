@@ -11,10 +11,8 @@ import com.kongzhong.mrpc.config.ServerConfig;
 import com.kongzhong.mrpc.embedded.ConfigService;
 import com.kongzhong.mrpc.embedded.ConfigServiceImpl;
 import com.kongzhong.mrpc.enums.EventType;
-import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
-import com.kongzhong.mrpc.enums.NoticeType;
+import com.kongzhong.mrpc.enums.NodeStatusEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.InitializeException;
 import com.kongzhong.mrpc.exception.RpcException;
@@ -42,9 +40,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -173,8 +169,6 @@ public abstract class SimpleRpcServer {
 
     private static List<ListenableFuture> listenableFutures = Lists.newCopyOnWriteArrayList();
 
-    private ScheduledFuture adminSchedule;
-
     private volatile boolean isClosed = false;
     private          Lock    lock     = new ReentrantLock();
 
@@ -221,8 +215,12 @@ public abstract class SimpleRpcServer {
 
     private void bindRpcServer() {
 
-        // 服务启动时
-        EventManager.me().fireEvent(EventType.SERVER_STARTING, Event.builder().rpcContext(RpcContext.get()).build());
+        if (enableAdmin()) {
+            // 启动服务后触发
+            EventManager.me().addEventListener(EventType.SERVER_ONLINE, () -> {
+                sendServerStatus(NodeStatusEnum.ONLINE);
+            });
+        }
 
 //        ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
 //        int parallel = Runtime.getRuntime().availableProcessors() * 2;
@@ -288,14 +286,12 @@ public abstract class SimpleRpcServer {
                 } else {
                     log.info("Register => [{}] - [{}]", serviceName, address);
                 }
-                // 服务注册后
-                EventManager.me().fireEvent(EventType.SERVER_SERVICE_REGISTER, Event.builder().rpcContext(RpcContext.get()).build());
             });
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
 
             // 服务启动后
-            EventManager.me().fireEvent(EventType.SERVER_STARTED, Event.builder().rpcContext(RpcContext.get()).build());
+            EventManager.fireEvent(EventType.SERVER_ONLINE);
 
             Runtime.getRuntime().addShutdownHook(new Thread(this::close));
 
@@ -324,22 +320,19 @@ public abstract class SimpleRpcServer {
         rpcMapping.addServiceBean(configServiceBean);
     }
 
+    private boolean enableAdmin() {
+        return null != adminConfig && adminConfig.isEnabled();
+    }
+
     /**
      * 后台监听
      */
     private void channelSync(ChannelFuture future) throws InterruptedException {
-
-        if (null != adminConfig && adminConfig.isEnabled()) {
-
-            this.sendStartService();
-
+        if (enableAdmin()) {
             // 停止服务
-            EventManager.me().addEventListener(EventType.SERVER_OFFLINE, e -> {
-                cancelAdminSchedule();
-                sendServerStatus(NodeAliveStateEnum.OFFLINE);
+            EventManager.me().addEventListener(EventType.SERVER_OFFLINE, () -> {
+                sendServerStatus(NodeStatusEnum.OFFLINE);
             });
-
-            adminSchedule = future.channel().eventLoop().scheduleAtFixedRate(() -> sendServerStatus(NodeAliveStateEnum.ONLINE), 30000, adminConfig.getPeriod(), TimeUnit.MILLISECONDS);
         }
 
         if ("true".equals(this.test)) {
@@ -355,17 +348,13 @@ public abstract class SimpleRpcServer {
         }
     }
 
-    private void sendStartService() {
-        log.info("服务端启动，发送启动信息到 admin");
-        sendServerStatus(NodeAliveStateEnum.ONLINE);
-    }
-
     /**
      * 发送服务状态给后台
      */
-    private void sendServerStatus(NodeAliveStateEnum aliveState) {
+    private void sendServerStatus(NodeStatusEnum nodeStatus) {
         String url = adminConfig.getUrl() + "/api/server";
 
+        log.info("发送: {}", url);
         RpcServer rpcServer = new RpcServer();
         rpcServer.setAppId(appId);
         rpcServer.setHost(NetUtils.getSiteIp());
@@ -377,11 +366,10 @@ public abstract class SimpleRpcServer {
             rpcServer.setAppAlias(appName);
         }
         rpcServer.setPid(NetUtils.getPID());
-        rpcServer.setStatus(aliveState.toString());
+        rpcServer.setStatus(nodeStatus.toString());
         rpcServer.setOnlineTime(LocalDateTime.now());
 
         rpcServer.setServices(ServiceStatusTable.me().getServices());
-
 
         String body = JacksonSerialize.toJSONString(rpcServer);
         try {
@@ -389,7 +377,7 @@ public abstract class SimpleRpcServer {
                     .contentType("application/json;charset=utf-8")
                     .connectTimeout(10_000)
                     .readTimeout(5000)
-                    .header("notice_type", NoticeType.SERVER_ONLINE.toString())
+                    .header("notice_status", nodeStatus.toString())
                     .header("address", NetUtils.getSiteIp() + ":" + Integer.valueOf(address.split(":")[1]))
                     .basic(adminConfig.getUsername(), adminConfig.getPassword())
                     .send(body).code();
@@ -399,12 +387,7 @@ public abstract class SimpleRpcServer {
             log.debug("连接失败");
         } catch (Exception e) {
             log.error("Send error", e);
-            cancelAdminSchedule();
         }
-    }
-
-    private void cancelAdminSchedule() {
-        adminSchedule.cancel(true);
     }
 
     /**
@@ -502,9 +485,7 @@ public abstract class SimpleRpcServer {
         Futures.addCallback(listenableFuture, new FutureCallback<FullHttpResponse>() {
             @Override
             public void onSuccess(FullHttpResponse response) {
-                // 服务端响应前
-                EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, Event.builder().rpcContext(RpcContext.get()).build());
-                //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
+                //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用
                 String requestId = response.headers().get(HEADER_REQUEST_ID);
                 ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
                     if (channelFuture.isSuccess()) {
@@ -579,8 +560,7 @@ public abstract class SimpleRpcServer {
             isClosed = true;
 
             // 拒绝连接
-            SimpleServerHandler.shutdown();
-            EventManager.me().fireEvent(EventType.SERVER_OFFLINE, Event.builder().rpcContext(RpcContext.get()).build());
+            SimpleServerHandler.offline();
 
             for (ListenableFuture listenableFuture : listenableFutures) {
                 while (!listenableFuture.isDone()) {

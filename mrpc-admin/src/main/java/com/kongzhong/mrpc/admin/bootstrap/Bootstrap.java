@@ -3,13 +3,20 @@ package com.kongzhong.mrpc.admin.bootstrap;
 import com.blade.Blade;
 import com.blade.event.BeanProcessor;
 import com.blade.ioc.annotation.Bean;
+import com.blade.ioc.annotation.Inject;
 import com.blade.kit.JsonKit;
 import com.blade.kit.json.JacksonSupport;
 import com.blade.mvc.view.template.JetbrickTemplateEngine;
 import com.blade.validator.Validators;
+import com.kongzhong.mrpc.admin.model.RpcServer;
+import com.kongzhong.mrpc.admin.tasks.PingTask;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.biezhi.anima.Anima;
+
+import java.util.stream.Collectors;
+
+import static io.github.biezhi.anima.Anima.select;
 
 /**
  * @author biezhi
@@ -17,6 +24,11 @@ import io.github.biezhi.anima.Anima;
  */
 @Bean
 public class Bootstrap implements BeanProcessor {
+
+    @Inject
+    private PingTask pingTask;
+
+    private static String apply(RpcServer s) {return s.getHost() + ":" + s.getPort();}
 
     @Override
     public void processor(Blade blade) {
@@ -40,6 +52,9 @@ public class Bootstrap implements BeanProcessor {
         HikariDataSource dataSource = new HikariDataSource(config);
 
         Anima.open(dataSource);
+
+        pingTask.initUrl(select().from(RpcServer.class).map(Bootstrap::apply).collect(Collectors.toSet()));
     }
+
 
 }

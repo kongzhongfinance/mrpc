@@ -13,6 +13,6 @@ public interface EventListener {
      *
      * @param event
      */
-    void trigger(Event event);
+    void trigger();
 
 }
