@@ -7,7 +7,6 @@ import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.*;
-import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
