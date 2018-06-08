@@ -20,7 +20,7 @@ public class PageController {
 
     @GetRoute("logout")
     public void logout(Request request, Response response) {
-        request.session().remove("");
+        request.session().remove(AuthController.SESSION_KEY);
         response.redirect("/login");
     }
 

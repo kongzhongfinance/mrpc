@@ -2,13 +2,11 @@ package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.MediaTypeEnum;
+import com.kongzhong.mrpc.enums.NodeStatusEnum;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SerializeException;
-import com.kongzhong.mrpc.model.RequestBody;
-import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.model.RpcResponse;
-import com.kongzhong.mrpc.model.ServiceBean;
+import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
 import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
@@ -51,15 +49,19 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
-
         String             uri          = httpRequest.uri();
         QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
         String             path         = queryDecoder.path();
 
         if ("/status".equals(path)) {
             log.debug("Rpc receive ping for {}", ctx.channel());
-            String           address      = ctx.channel().localAddress().toString();
-            ByteBuf          byteBuf      = Unpooled.copiedBuffer(address, CharsetUtil.UTF_8);
+
+            RpcServerStatus rpcServerStatus = new RpcServerStatus();
+            rpcServerStatus.setStatus(SimpleServerHandler.IS_OFFLINE ? NodeStatusEnum.OFFLINE.toString() : NodeStatusEnum.ONLINE.toString());
+
+            String content = JacksonSerialize.toJSONString(rpcServerStatus);
+
+            ByteBuf          byteBuf      = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
@@ -68,21 +70,42 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
         if ("/offline".equals(path)) {
             SimpleServerHandler.offline();
-            ByteBuf          byteBuf      = Unpooled.copiedBuffer("offline", CharsetUtil.UTF_8);
+
+            RpcServerStatus rpcServerStatus = new RpcServerStatus();
+            rpcServerStatus.setStatus(NodeStatusEnum.OFFLINE.toString());
+
+            String content = JacksonSerialize.toJSONString(rpcServerStatus);
+
+            ByteBuf          byteBuf      = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
             ctx.write(httpResponse);
             return;
         }
 
-        if (!"/rpc".equals(path)) {
-            log.warn("Client {} request [{}]", ctx.channel(), path);
-            this.sendError(ctx, httpRequest, new RpcException("Bad request"));
+        if ("/online".equals(path)) {
+            SimpleServerHandler.online();
+
+            RpcServerStatus rpcServerStatus = new RpcServerStatus();
+            rpcServerStatus.setStatus(NodeStatusEnum.ONLINE.toString());
+
+            String content = JacksonSerialize.toJSONString(rpcServerStatus);
+
+            ByteBuf          byteBuf      = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
+            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
+            httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+            ctx.write(httpResponse);
             return;
         }
 
-        if (SimpleServerHandler.IS_SHUTDOWN) {
-            this.sendError(ctx, httpRequest, new ConnectException("The server has been shutdown."));
+        if (SimpleServerHandler.IS_OFFLINE) {
+            this.sendError(ctx, httpRequest, new ConnectException("The server has been offline."));
+            return;
+        }
+
+        if (!"/rpc".equals(path)) {
+            log.warn("Client {} request [{}]", ctx.channel(), path);
+            this.sendError(ctx, httpRequest, new RpcException("Bad request"));
             return;
         }
 

@@ -21,7 +21,7 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
 
     protected Map<String, ServiceBean> serviceBeanMap;
 
-    protected static boolean IS_SHUTDOWN = false;
+    protected static boolean IS_OFFLINE = false;
 
     public SimpleServerHandler() {
         this.serviceBeanMap = RpcMapping.me().getServiceBeanMap();
@@ -38,14 +38,13 @@ public abstract class SimpleServerHandler<T> extends SimpleChannelInboundHandler
 
     public static void offline() {
         log.info("Offline now.");
-        IS_SHUTDOWN = true;
+        IS_OFFLINE = true;
         EventManager.me().fireEvent(EventType.SERVER_OFFLINE);
     }
 
     public static void online() {
         log.info("Online now.");
-        IS_SHUTDOWN = false;
-        EventManager.me().fireEvent(EventType.SERVER_ONLINE);
+        IS_OFFLINE = false;
     }
 
 }

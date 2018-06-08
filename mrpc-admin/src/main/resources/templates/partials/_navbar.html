@@ -4,13 +4,14 @@
         <a class="navbar-brand brand-logo-mini" href="/admin/index.html">MRPC ADMIN</a>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center">
-        <p class="page-name d-none d-lg-block">Hi, Dave Mattew</p>
+        <p class="page-name d-none d-lg-block">欢迎您，${login_user.username}</p>
         <ul class="navbar-nav ml-lg-auto">
             <li class="nav-item d-none d-sm-block profile-img">
-                <a class="nav-link profile-image" href="#">
-                    <img src="/static/images/faces/face4.jpg" alt="profile-img">
-                    <span class="online bg-success"></span>
-                </a>
+                <a class="btn btn-link btn-fw" href="/logout">注销登录</a>
+                <!--<a class="nav-link profile-image" href="#">-->
+                    <!--<img src="/static/images/faces/face4.jpg" alt="profile-img">-->
+                    <!--<span class="online bg-success"></span>-->
+                <!--</a>-->
             </li>
         </ul>
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center ml-auto" type="button"

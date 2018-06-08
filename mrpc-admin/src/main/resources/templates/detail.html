@@ -8,7 +8,24 @@
         <div class="row row-offcanvas row-offcanvas-right">
             #include("./partials/_sidebar.html")
             <div class="content-wrapper">
-                <!-- ROW ENDS -->
+                <div class="row">
+                    <div class="col-lg-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">服务详情</h2>
+                                <div>
+                                    <ul class="list-arrow">
+                                        <li>
+                                            服务名称：{{ server.name }}
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-lg-12 grid-margin">
                         <div class="card">
@@ -33,6 +50,8 @@
                                             <td>{{ item.onlineTime }}</td>
                                             <td>
                                                 <button type="button" class="btn btn-inverse-danger btn-fw" @click="deleteNode(item.id, item.host, item.port)">删除</button>
+                                                <button v-if="item.status == 'ONLINE'" type="button" class="btn btn-inverse-dark btn-fw" @click="updateStatus(item.id, item.host, item.port, 'offline')">下线</button>
+                                                <button v-if="item.status == 'OFFLINE'" type="button" class="btn btn-inverse-success btn-fw" @click="updateStatus(item.id, item.host, item.port, 'online')">上线</button>
                                             </td>
                                         </tr>
                                         </tbody>

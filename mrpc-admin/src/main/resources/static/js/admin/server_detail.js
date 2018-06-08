@@ -27,7 +27,7 @@ var vm = new Vue({
 
             sendGET({
                 url: '/admin/server/detail/' + id,
-                success:function (data) {
+                success: function (data) {
                     $vm.server = data.payload;
                 },
                 error: function (error) {
@@ -51,6 +51,28 @@ var vm = new Vue({
                             swal(
                                 '操作成功!',
                                 '已经删除节点',
+                                'success'
+                            )
+                            $vm.load();
+                        } else {
+                            alert(result.msg || '操作失败')
+                        }
+                    }
+                })
+            });
+        },
+        updateStatus: function (id, host, port, status) {
+            var $vm = this;
+            var title = (status === 'online') ? '上线' : '下线';
+            alertConfirm('确定要' + title + '该节点吗？', function () {
+                sendPOST({
+                    url: '/api/' + status,
+                    data: {id: id, host: host, port: port},
+                    success: function (result) {
+                        if (result.success) {
+                            swal(
+                                '操作成功!',
+                                '该节点已' + title,
                                 'success'
                             )
                             $vm.load();

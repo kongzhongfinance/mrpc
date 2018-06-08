@@ -22,7 +22,7 @@ public class PingTask {
 
     private Set<String> addresses = new HashSet<>();
 
-    private static final int DEFAULT_TIME_OUT = 5000;
+    public static final int DEFAULT_TIME_OUT = 5000;
 
     @Inject
     private ServerService serverService;
