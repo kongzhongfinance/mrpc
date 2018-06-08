@@ -22,6 +22,7 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -232,7 +233,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Server io error: {}", ctx.channel(), cause);
+        if (IOException.class.isInstance(cause) && cause.getMessage().contains("Connection reset by peer")) {
+        } else {
+            log.error("Server io error: {}", ctx.channel(), cause);
+        }
     }
 
 }
