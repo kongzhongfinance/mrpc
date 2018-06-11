@@ -8,6 +8,7 @@ import com.kongzhong.mrpc.admin.model.RpcServerCall;
 import com.kongzhong.mrpc.admin.model.RpcService;
 import com.kongzhong.mrpc.admin.vo.ServerDetailVO;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
+import com.kongzhong.mrpc.admin.vo.ServerMind;
 import com.kongzhong.mrpc.admin.vo.ServerVO;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
 
@@ -15,11 +16,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static io.github.biezhi.anima.Anima.delete;
-import static io.github.biezhi.anima.Anima.select;
-import static io.github.biezhi.anima.Anima.update;
+import static io.github.biezhi.anima.Anima.*;
 
 /**
  * @author biezhi
@@ -59,14 +59,43 @@ public class ServerService {
         serverMap.setName("服务列表");
         List<ServerMap> serverMaps = new ArrayList<>(appIdList.size());
 
+        AtomicInteger rootAdder = new AtomicInteger(1);
         for (String appId : appIdList) {
             ServerMap server = new ServerMap();
-            server.setName(appId);
-            // TODO search children
+            server.setName(rootAdder.getAndIncrement() + ". " + appId);
+
+            AtomicInteger ch = new AtomicInteger(1);
+            List<ServerMap> children = select().from(RpcServerCall.class)
+                    .where(RpcServerCall::getProducerAppId, appId)
+                    .map(RpcServerCall::getConsumerAppId)
+                    .map(childAppId -> new ServerMap(rootAdder.get() + "." + ch.getAndIncrement() + " " + childAppId))
+                    .collect(Collectors.toList());
+
+            if (null != children && !children.isEmpty()) {
+                server.setChildren(children);
+            }
             serverMaps.add(server);
         }
         serverMap.setChildren(serverMaps);
         return serverMap;
+    }
+
+    public List<ServerMind> getServerMind() {
+        List<ServerMind> serverMinds = new ArrayList<>();
+        serverMinds.add(ServerMind.builder().id("root").topic("服务列表").isroot(true).build());
+        List<String> appIdList = select().from(RpcServer.class).map(RpcServer::getAppId).distinct().collect(Collectors.toList());
+        for (String appId : appIdList) {
+            serverMinds.add(ServerMind.builder().id(appId).topic(appId).parentid("root").build());
+
+            select().from(RpcServerCall.class)
+                    .where(RpcServerCall::getProducerAppId, appId)
+                    .map(RpcServerCall::getConsumerAppId)
+                    .filter(childAppId -> !appId.equals(childAppId))
+                    .forEach(childAppId -> {
+                        serverMinds.add(ServerMind.builder().id(appId + ":" + childAppId).topic(childAppId).parentid(appId).build());
+                    });
+        }
+        return serverMinds;
     }
 
     public List<ServerVO> getServerList() {

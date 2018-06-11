@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jsMind</title>
+    <link type="text/css" rel="stylesheet" href="/static/plugins/jsmind/jsmind.css" />
+    <style type="text/css">
+        #jsmind_container{
+            width:800px;
+            height:500px;
+            border:solid 1px #ccc;
+            /*background:#f4f4f4;*/
+            background:#f4f4f4;
+        }
+    </style>
+</head>
+<body>
+<div id="jsmind_container"></div>
+<script type="text/javascript" src="/static/plugins/jsmind/jsmind.js"></script>
+<script type="text/javascript" src="/static/plugins/jsmind/jsmind.draggable.js"></script>
+<script type="text/javascript">
+    function load_jsmind(){
+        var mind = {
+            "meta":{
+                "name":"demo",
+                "author":"hizzgdev@163.com",
+                "version":"0.2",
+            },
+            "format":"node_array",
+            "data":[
+                {"id":"root", "isroot":true, "topic":"服务列表"},
+                {"id":"sub1", "parentid":"root", "topic":"accountservice-server"},
+                {"id":"sub11", "parentid":"sub1", "topic":"tradeservice-server"},
+                {"id":"sub12", "parentid":"sub1", "topic":"tradeservice-server"},
+                {"id":"sub13", "parentid":"sub1", "topic":"tradeservice-server"},
+                {"id":"sub2", "parentid":"root", "topic":"sub2"},
+                {"id":"sub21", "parentid":"sub2", "topic":"sub21"},
+                {"id":"sub22", "parentid":"sub2", "topic":"sub22"},
+                {"id":"sub3", "parentid":"root", "topic":"sub3"},
+            ]
+        };
+        var options = {
+            container:'jsmind_container',
+            theme:'primary'
+        }
+        var jm = jsMind.show(options,mind);
+    }
+    load_jsmind();
+</script>
+</body>
+</html>

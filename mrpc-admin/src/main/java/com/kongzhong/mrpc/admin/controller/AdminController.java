@@ -10,8 +10,11 @@ import com.kongzhong.mrpc.admin.params.PageParam;
 import com.kongzhong.mrpc.admin.service.ServerService;
 import com.kongzhong.mrpc.admin.tasks.PingTask;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
+import com.kongzhong.mrpc.admin.vo.ServerMind;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.enums.OrderBy;
+
+import java.util.List;
 
 import static io.github.biezhi.anima.Anima.select;
 
@@ -31,6 +34,11 @@ public class AdminController {
     @GetRoute("server/map")
     public ServerMap serverMap() {
         return serverService.getServerMap();
+    }
+
+    @GetRoute("server/mind")
+    public List<ServerMind> serverMind() {
+        return serverService.getServerMind();
     }
 
     @GetRoute("server/list")

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 #include("./partials/_head.html")
+<link type="text/css" rel="stylesheet" href="/static/plugins/jsmind/jsmind.css" />
 <style>
     .node circle {
         cursor: pointer;
@@ -17,6 +18,11 @@
         stroke: #4caf50;
         stroke-width: 2px;
     }
+
+    #jsmind_container{
+        width: 100%;
+        height: 400px;
+    }
 </style>
 <body>
 <div class="container-scroller">
@@ -31,7 +37,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h2 class="card-title">服务依赖关系图</h2>
-                                <div id="serviceNode"></div>
+                                <div id="jsmind_container"></div>
                             </div>
                         </div>
                     </div>
@@ -87,7 +93,8 @@
     </div>
 </div>
 #include("./partials/_footer_js.html")
-<script src="/static/plugins/d3/d3.v3.min.js"></script>
+<script type="text/javascript" src="/static/plugins/jsmind/jsmind.js"></script>
+<script type="text/javascript" src="/static/plugins/jsmind/jsmind.draggable.js"></script>
 <script src="/static/js/admin/services.js?ver=${version}"></script>
 </body>
 </html>
