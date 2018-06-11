@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="_pass_word" content="${_pass_word}"/>
     <title>MRPC Admin</title>
     <link rel="stylesheet" href="/static/plugins/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/static/plugins/simple-line-icons/css/simple-line-icons.css">
@@ -64,46 +65,8 @@
 <!-- inject:js -->
 <script src="/static/js/off-canvas.js"></script>
 <script src="/static/js/misc.js"></script>
+<script type="text/javascript" src="/static/plugins/sjcl/sjcl.min.js"></script>
 <!-- endinject -->
-<script type="text/javascript">
-    var vm = new Vue({
-        el: '#app',
-        data: {
-            username: '',
-            password: '',
-            error: false,
-            errorMsg: ''
-        },
-        methods: {
-            login: function (event) {
-                if (vm.username === '') {
-                    vm.error = true;
-                    vm.errorMsg = '用户名不能为空';
-                    return false;
-                }
-                if (vm.password === '') {
-                    vm.error = true;
-                    vm.errorMsg = '密码不能为空';
-                    return false;
-                }
-                var data = "username=" + vm.username + "&password=" + vm.password;
-                $.ajax({
-                    type: "POST",
-                    url: "/auth/login",
-                    data: data,
-                    dataType: "json",
-                    success: function (result) {
-                        if (result.success) {
-                            window.location.href = '/admin/index.html';
-                        } else {
-                            vm.error = true;
-                            vm.errorMsg = result.msg;
-                        }
-                    }
-                });
-            }
-        }
-    });
-</script>
+<script type="text/javascript" src="/static/js/admin/login.js?ver=${version}"></script>
 </body>
 </html>

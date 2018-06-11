@@ -1,5 +1,4 @@
-
-$.fn.bootstrapTableEx = function(opt){
+$.fn.bootstrapTableEx = function (opt) {
     var defaults = {
         url: '',
         dataField: "rows",
@@ -13,12 +12,12 @@ $.fn.bootstrapTableEx = function(opt){
         pageList: [10, 20, 30, 40, 50],
         paginationLoop: false,
         sidePagination: 'server',
-        queryParamsType : null,
+        queryParamsType: null,
         columns: []
     }
     var option = $.extend({}, defaults, opt);
-    if(!option.pagination){
-        option.responseHandler = function(res) {
+    if (!option.pagination) {
+        option.responseHandler = function (res) {
             return res.rows;
         }
     }
@@ -36,7 +35,7 @@ function alertConfirm(msg, callback) {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
     }).then(function (result) {
-        if(result.value){
+        if (result.value) {
             callback()
         }
     })
@@ -49,6 +48,7 @@ function sendGET(options) {
         options.error(error)
     });
 }
+
 function sendPOST(options) {
     axios.post(options.url, options.data || {}).then(function (response) {
         options.success(response.data)
@@ -63,3 +63,9 @@ Vue.filter('truncate', function (value, size, append) {
     }
     return value
 });
+
+function logout() {
+    localStorage.removeItem('_MRPC_USERNAME');
+    localStorage.removeItem('_MRPC_PASSWORD');
+    window.top.location.href = '/logout';
+}

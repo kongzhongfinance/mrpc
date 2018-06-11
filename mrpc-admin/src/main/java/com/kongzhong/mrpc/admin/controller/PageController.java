@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.admin.controller;
 
+import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.GetRoute;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.PathParam;
@@ -20,7 +21,8 @@ public class PageController {
     }
 
     @GetRoute("login")
-    public String login() {
+    public String login(Request request) {
+        request.attribute("_pass_word", WebContext.blade().environment().getOrNull("login.password"));
         return "login.html";
     }
 
