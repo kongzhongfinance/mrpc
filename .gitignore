@@ -148,3 +148,4 @@ mrpc_registry_swap.lock
 /mrpc-admin/db/
 
 !mrpc-admin/src/main/resources/
+/copy.sh
