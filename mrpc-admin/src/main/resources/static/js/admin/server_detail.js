@@ -1,10 +1,14 @@
 var vm = new Vue({
     el: '#app',
     data: {
-        server: {}
+        server: {},
+        isLoading: true
     },
     mounted: function () {
         this.load();
+    },
+    beforeCreate: function () {
+        vueLoding = this.$loading.show();
     },
     filters: {
         toStatus: function (value) {
@@ -84,4 +88,9 @@ var vm = new Vue({
             });
         }
     }
-})
+});
+
+$(document).ready(function () {
+    vm.isLoading = false;
+    vueLoding.hide();
+});

@@ -5,6 +5,7 @@
 <div class="container-scroller">
     #include("./partials/_navbar.html")
     <div id="app" class="container-fluid page-body-wrapper" v-cloak>
+        <loading :active.sync="isLoading" :can-cancel="true"></loading>
         <div class="row row-offcanvas row-offcanvas-right">
             #include("./partials/_sidebar.html")
             <div class="content-wrapper">

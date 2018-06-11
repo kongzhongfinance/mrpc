@@ -1,7 +1,11 @@
 var vm = new Vue({
     el: '#app',
     data: {
-        logPage: {}
+        logPage: {},
+        isLoading: true
+    },
+    beforeCreate: function () {
+        vueLoding = this.$loading.show();
     },
     mounted: function () {
         this.load(1);
@@ -22,4 +26,9 @@ var vm = new Vue({
             });
         }
     }
-})
+});
+
+$(document).ready(function () {
+    vm.isLoading = false;
+    vueLoding.hide();
+});

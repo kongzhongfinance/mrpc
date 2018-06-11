@@ -376,7 +376,7 @@ public abstract class SimpleRpcClient {
         log.info("发送: {}", url);
 
         RpcClientNotice rpcClientNotice = new RpcClientNotice();
-        rpcClientNotice.setAppId(appId);
+        rpcClientNotice.setAppId(System.getProperty("APPID", this.appId));
         if (nodeStatus == NodeStatusEnum.ONLINE) {
             rpcClientNotice.setOnlineTime(LocalDateTime.now().format(COMMON_DATE_TIME_FORMATTER));
         }

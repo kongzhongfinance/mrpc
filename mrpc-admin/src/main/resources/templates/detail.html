@@ -5,6 +5,7 @@
 <div class="container-scroller">
     #include("./partials/_navbar.html")
     <div id="app" class="container-fluid page-body-wrapper" v-cloak>
+        <loading :active.sync="isLoading" :can-cancel="true"></loading>
         <div class="row row-offcanvas row-offcanvas-right">
             #include("./partials/_sidebar.html")
             <div class="content-wrapper">
@@ -58,6 +59,13 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="row pl-2 pt-2">
+                                    <div class="alert alert-warning">
+                                        <p>
+                                            <b>注意:</b>&nbsp;&nbsp;&nbsp;<code>删除</code> 操作会删除该节点，不会影响上下线功能。
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

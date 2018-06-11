@@ -57,6 +57,10 @@ function sendPOST(options) {
     });
 }
 
+Vue.use(VueLoading);
+Vue.component('Loading', VueLoading)
+var vueLoding;
+
 Vue.filter('truncate', function (value, size, append) {
     if (value && value.length >= size) {
         return value.substring(0, size) + (append || '...');

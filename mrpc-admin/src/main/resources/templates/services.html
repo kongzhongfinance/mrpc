@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 #include("./partials/_head.html")
-<link href="/static/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet"/>
 <style>
     .node circle {
         cursor: pointer;
@@ -9,7 +8,6 @@
         stroke: #2196f3;
         stroke-width: 2px;
     }
-
     .node text {
         font-size: 14px;
     }
@@ -24,6 +22,7 @@
 <div class="container-scroller">
     #include("./partials/_navbar.html")
     <div id="app" class="container-fluid page-body-wrapper" v-cloak>
+        <loading :active.sync="isLoading" :can-cancel="true"></loading>
         <div class="row row-offcanvas row-offcanvas-right">
             #include("./partials/_sidebar.html")
             <div class="content-wrapper">
@@ -65,7 +64,10 @@
                                             </td>
                                             <td>{{ item.address }}</td>
                                             <td>{{ item.pid }}</td>
-                                            <td>{{ item.status | toStatus }}</td>
+                                            <td>
+                                                <span v-if="item.status == 'ONLINE'">在线</span>
+                                                <span v-if="item.status == 'OFFLINE'">离线</span>
+                                            </td>
                                             <td>{{ item.owner }}</td>
                                             <td>{{ item.onlineTime }}</td>
                                             <td>

@@ -358,7 +358,7 @@ public abstract class SimpleRpcServer {
 
         log.info("发送: {}", url);
         RpcServerNotice rpcServer = new RpcServerNotice();
-        rpcServer.setAppId(appId);
+        rpcServer.setAppId(System.getProperty("APPID", this.appId));
         rpcServer.setHost(NetUtils.getSiteIp());
         rpcServer.setPort(Integer.valueOf(address.split(":")[1]));
         rpcServer.setOwner(owner);

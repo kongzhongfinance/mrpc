@@ -183,23 +183,14 @@ function initServerMap() {
 var vm = new Vue({
     el:'#app',
     data: {
-        servers: []
+        servers: [],
+        isLoading: true
     },
     mounted: function () {
         this.load();
     },
-    filters: {
-        toStatus: function (value) {
-            if (!value) return ''
-            value = value.toString()
-            if(value === 'ONLINE'){
-                return '在线';
-            }
-            if(value === 'OFFLINE'){
-                return '离线';
-            }
-            return value;
-        }
+    beforeCreate: function () {
+        vueLoding = this.$loading.show();
     },
     methods : {
         load: function() {
@@ -245,4 +236,9 @@ var vm = new Vue({
             })
         }
     }
-})
+});
+
+$(document).ready(function () {
+    vm.isLoading = false;
+    vueLoding.hide();
+});
