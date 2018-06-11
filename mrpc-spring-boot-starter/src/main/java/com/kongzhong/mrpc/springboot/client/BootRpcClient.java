@@ -2,20 +2,20 @@ package com.kongzhong.mrpc.springboot.client;
 
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.client.SimpleRpcClient;
+import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
-import com.kongzhong.mrpc.interceptor.RpcServerInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
-import com.kongzhong.mrpc.spring.utils.AopTargetUtils;
+import com.kongzhong.mrpc.springboot.config.AdminProperties;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
 import com.kongzhong.mrpc.utils.CollectionUtils;
-import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -85,6 +85,13 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
         this.customServiceMap = commonProperties.getCustom();
         super.nettyConfig = commonProperties.getNetty();
 
+        // netty参数配置
+        super.nettyConfig = commonProperties.getNetty();
+        super.adminConfig = new AdminConfig();
+
+        AdminProperties adminProperties = PropertiesParse.getAdminProperties(configurableEnvironment);
+        BeanUtils.copyProperties(adminProperties, super.adminConfig);
+
         super.appId = clientConfig.getAppId();
         super.lbStrategy = clientConfig.getLbStrategy();
         super.haStrategy = clientConfig.getHaStrategy();
@@ -113,6 +120,8 @@ public class BootRpcClient extends SimpleRpcClient implements BeanPostProcessor,
             super.directConnect();
 
             log.info("Bind services finished");
+
+            super.startFinish();
 
             Runtime.getRuntime().addShutdownHook(new Thread(this::close));
 

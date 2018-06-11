@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2018/6/8
  */
 @Data
-public class RpcServerStatus {
+public class HttpServerStatus {
 
     private String status;
 

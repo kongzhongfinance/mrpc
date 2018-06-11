@@ -16,6 +16,5 @@ public class AdminProperties {
     private String url;
     private String username;
     private String password;
-    private int period = 10_000;
 
 }

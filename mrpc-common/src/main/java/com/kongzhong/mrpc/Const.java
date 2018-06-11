@@ -1,5 +1,7 @@
 package com.kongzhong.mrpc;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * mrpc常量
  *
@@ -80,6 +82,8 @@ public interface Const {
     String NETTY_BACKLOG                       = "mrpc.netty.backlog";
     // 注册中心
     String REGSITRY_KEY                        = "mrpc.registry";
+    // 后台
+    String ADMIN_KEY                           = "mrpc.admin";
     // 自定义配置
     String CUSTOM_KEY                          = "mrpc.custome";
     // 服务端注册中心bean前缀
@@ -96,4 +100,6 @@ public interface Const {
     String SERVER_OWNER_EMAIL                  = "server_owner_email";
     String SERVER_EXCEPTION                    = "server_exception";
 
+    String            COMMON_DATE_TIME_PATTERN   = "yyyy/MM/dd HH:mm:ss";
+    DateTimeFormatter COMMON_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(COMMON_DATE_TIME_PATTERN);
 }

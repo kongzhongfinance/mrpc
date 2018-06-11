@@ -11,12 +11,18 @@ import java.time.LocalDateTime;
  * @date 2018/6/7
  */
 @Data
-public class RpcNotice extends Model {
+public class RpcClient extends Model {
 
     private Long          id;
-    private String        address;
-    private String        apiType;
-    private String        content;
+    private String        appId;
+    private String        appAlias;
+    private String        host;
+    private Integer       pid;
+    private String        owner;
+    private String        ownerEmail;
+
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    private LocalDateTime onlineTime;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime createdTime;

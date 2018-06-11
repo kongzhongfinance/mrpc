@@ -78,13 +78,43 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-lg-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">消费者列表</h2>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>消费者名称</th>
+                                            <th>主机</th>
+                                            <th>进程ID</th>
+                                            <th>最后上线时间</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="item in server.consumers">
+                                            <td>{{ item.appId }}</td>
+                                            <td>{{ item.host }}</td>
+                                            <td>{{ item.pid }}</td>
+                                            <td>{{ item.onlineTime }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             #include("./partials/_footer.html")
         </div>
     </div>
 </div>
 #include("./partials/_footer_js.html")
-<script src="/static/plugins/axios/axios.min.js"></script>
 <script src="/static/js/admin/server_detail.js"></script>
 </body>
 </html>

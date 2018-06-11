@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-public class RpcServer {
+public class RpcServerNotice {
 
     private Long    id;
     private String  appId;

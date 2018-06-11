@@ -9,8 +9,10 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.ui.RestResponse;
 import com.kongzhong.mrpc.admin.model.RpcNotice;
 import com.kongzhong.mrpc.admin.model.RpcServer;
+import com.kongzhong.mrpc.admin.service.ClientService;
 import com.kongzhong.mrpc.admin.service.ServerService;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
+import com.kongzhong.mrpc.model.RpcClientNotice;
 import com.kongzhong.mrpc.utils.HttpRequest;
 import com.kongzhong.mrpc.utils.NetUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,9 @@ public class ApiController {
 
     @Inject
     private ServerService serverService;
+
+    @Inject
+    private ClientService clientService;
 
     @PostRoute("server")
     public void server(Request request) {
@@ -55,7 +60,23 @@ public class ApiController {
 
     @PostRoute("client")
     public void client(Request request) {
-        System.out.println(request.bodyToString());
+        String nodeStatus = request.header("notice_status");
+        String content    = request.bodyToString();
+
+        RpcNotice rpcNotice = new RpcNotice();
+        rpcNotice.setApiType("client");
+        rpcNotice.setAddress("address");
+        rpcNotice.setCreatedTime(LocalDateTime.now());
+        rpcNotice.setContent(content);
+        rpcNotice.save();
+
+        log.info("接收到: [{}] - {}", nodeStatus, content);
+
+        RpcClientNotice rpcClientNotice = JsonKit.formJson(content, RpcClientNotice.class);
+        if (NodeStatusEnum.ONLINE.toString().equals(nodeStatus)) {
+            clientService.saveClient(rpcClientNotice);
+        }
+        clientService.updateServerCall(rpcClientNotice);
     }
 
     @PostRoute("online")

@@ -1,5 +1,6 @@
 package com.kongzhong.mrpc.admin.vo;
 
+import com.kongzhong.mrpc.admin.model.RpcClient;
 import com.kongzhong.mrpc.admin.model.RpcServer;
 import lombok.Data;
 
@@ -19,5 +20,6 @@ public class ServerDetailVO {
 
     private Set<String>     services;
     private List<RpcServer> nodes;
+    private List<RpcClient> consumers;
 
 }

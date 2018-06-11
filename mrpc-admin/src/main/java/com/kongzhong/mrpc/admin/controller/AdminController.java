@@ -3,11 +3,16 @@ package com.kongzhong.mrpc.admin.controller;
 import com.blade.ioc.annotation.Inject;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.ui.RestResponse;
+import com.kongzhong.mrpc.admin.model.RpcNotice;
 import com.kongzhong.mrpc.admin.model.RpcServer;
+import com.kongzhong.mrpc.admin.params.PageParam;
 import com.kongzhong.mrpc.admin.service.ServerService;
 import com.kongzhong.mrpc.admin.tasks.PingTask;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
 import io.github.biezhi.anima.Anima;
+import io.github.biezhi.anima.page.Page;
+
+import static io.github.biezhi.anima.Anima.select;
 
 /**
  * @author biezhi
@@ -46,6 +51,11 @@ public class AdminController {
     @PostRoute("server/update")
     public RestResponse rename(@BodyParam RpcServer rpcServer) {
         return RestResponse.ok(rpcServer.update());
+    }
+
+    @PostRoute("notice/list")
+    public RestResponse noticeList(@BodyParam PageParam pageParam) {
+        return RestResponse.ok(select().from(RpcNotice.class).page(pageParam.getPage(), pageParam.getLimit()));
     }
 
 }

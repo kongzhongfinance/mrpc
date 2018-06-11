@@ -21,14 +21,14 @@ public class BaseHook implements WebHook {
         Request  request  = signature.request();
         Response response = signature.response();
 
-        String uri = request.uri();
-        if (uri.startsWith("/admin/")) {
-            SysUser sysUser = request.session().attribute(SESSION_KEY);
-            if (null == sysUser) {
-                response.redirect("/login");
-                return false;
-            }
-        }
+//        String uri = request.uri();
+//        if (uri.startsWith("/admin/")) {
+//            SysUser sysUser = request.session().attribute(SESSION_KEY);
+//            if (null == sysUser) {
+//                response.redirect("/login");
+//                return false;
+//            }
+//        }
         return true;
     }
 

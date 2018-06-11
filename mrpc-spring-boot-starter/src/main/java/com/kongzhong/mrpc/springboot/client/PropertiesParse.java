@@ -6,6 +6,7 @@ import com.kongzhong.mrpc.config.NettyConfig;
 import com.kongzhong.mrpc.enums.HaStrategyEnum;
 import com.kongzhong.mrpc.enums.LbStrategyEnum;
 import com.kongzhong.mrpc.exception.SystemException;
+import com.kongzhong.mrpc.springboot.config.AdminProperties;
 import com.kongzhong.mrpc.springboot.config.CommonProperties;
 import com.kongzhong.mrpc.springboot.config.RpcClientProperties;
 import com.kongzhong.mrpc.utils.CollectionUtils;
@@ -27,7 +28,7 @@ import static com.kongzhong.mrpc.Const.*;
  * RPC配置文件解析
  *
  * @author biezhi
- *         21/06/2017
+ * 21/06/2017
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -86,13 +87,13 @@ public class PropertiesParse {
         CommonProperties commonProperties = new CommonProperties();
         commonProperties.setTest(env.getProperty(Const.TEST_KEY));
 
-        Map<String, Map<String, String>> registry = Maps.newHashMap();
-        Map<String, String> registries = getPropertiesStartingWith(env, REGSITRY_KEY);
+        Map<String, Map<String, String>> registry   = Maps.newHashMap();
+        Map<String, String>              registries = getPropertiesStartingWith(env, REGSITRY_KEY);
         registries.forEach((key, value) -> {
             // mrpc.registry[default].type
-            String key_ = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
-            String field = key.substring(key.indexOf(']') + 2);
-            Map<String, String> v = registry.getOrDefault(key_, Maps.newHashMap());
+            String              key_  = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
+            String              field = key.substring(key.indexOf(']') + 2);
+            Map<String, String> v     = registry.getOrDefault(key_, Maps.newHashMap());
             v.put(field, value);
             registry.put(key_, v);
         });
@@ -104,9 +105,9 @@ public class PropertiesParse {
         Map<String, String> customs = getPropertiesStartingWith(env, CUSTOM_KEY);
         customs.forEach((key, value) -> {
             // mrpc.custom[userService].directAddress=10.50.11.221:3921
-            String key_ = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
-            String field = key.substring(key.indexOf(']') + 2);
-            Map<String, String> v = custom.getOrDefault(key_, Maps.newHashMap());
+            String              key_  = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
+            String              field = key.substring(key.indexOf(']') + 2);
+            Map<String, String> v     = custom.getOrDefault(key_, Maps.newHashMap());
             v.put(field, value);
             custom.put(key_, v);
         });
@@ -116,7 +117,7 @@ public class PropertiesParse {
         Map<String, Object> nettyConfigMap = getPropertiesStartingWith(env, NETTY_CONFIG_PREFIX);
         if (CollectionUtils.isNotEmpty(nettyConfigMap)) {
             NettyConfig nettyConfig = new NettyConfig();
-            Object backlog = nettyConfigMap.getOrDefault(NETTY_BACKLOG, 1024);
+            Object      backlog     = nettyConfigMap.getOrDefault(NETTY_BACKLOG, 1024);
             nettyConfig.setBacklog(Integer.valueOf(backlog.toString()));
             commonProperties.setNetty(nettyConfig);
         }
@@ -126,9 +127,24 @@ public class PropertiesParse {
         return commonProperties;
     }
 
+    public static AdminProperties getAdminProperties(ConfigurableEnvironment env) {
+        if (null == env) {
+            throw new SystemException("ConfigurableEnvironment not is null");
+        }
+
+        AdminProperties     adminProperties = new AdminProperties();
+        Map<String, String> admins          = getPropertiesStartingWith(env, ADMIN_KEY);
+        adminProperties.setEnabled(Boolean.valueOf(admins.getOrDefault("mrpc.admin.enabled", "false")));
+        adminProperties.setUrl(admins.get("mrpc.admin.url"));
+
+        log.debug(adminProperties.toString());
+
+        return adminProperties;
+    }
+
     public static <V> Map<String, V> getPropertiesStartingWith(ConfigurableEnvironment aEnv, String aKeyPrefix) {
         Map<String, V> result = new HashMap<>();
-        Map<String, V> map = getAllProperties(aEnv);
+        Map<String, V> map    = getAllProperties(aEnv);
         for (Map.Entry<String, V> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.startsWith(aKeyPrefix)) {

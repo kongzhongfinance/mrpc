@@ -10,23 +10,24 @@ import com.kongzhong.mrpc.admin.vo.ServerDetailVO;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
 import com.kongzhong.mrpc.admin.vo.ServerVO;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
+import com.kongzhong.mrpc.model.RpcClientNotice;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.github.biezhi.anima.Anima.delete;
-import static io.github.biezhi.anima.Anima.select;
-import static io.github.biezhi.anima.Anima.update;
+import static com.kongzhong.mrpc.Const.COMMON_DATE_TIME_FORMATTER;
+import static io.github.biezhi.anima.Anima.*;
 
 /**
  * @author biezhi
  * @date 2018/6/7
  */
 @Bean
-public class ServerService {
+public class ClientService {
 
     public void saveServer(RpcServer rpcServer) {
         RpcServer temp = select().from(RpcServer.class)
@@ -115,15 +116,6 @@ public class ServerService {
                 .map(RpcService::getServiceId).collect(Collectors.toSet());
 
         serverDetailVO.setServices(services);
-        serverDetailVO.setConsumers(Collections.EMPTY_LIST);
-
-        List<String> clientAppIds = select().from(RpcServerCall.class).where(RpcServerCall::getProducerAppId, rpcServer.getAppId())
-                .map(RpcServerCall::getConsumerAppId).collect(Collectors.toList());
-
-        if (null != clientAppIds && !clientAppIds.isEmpty()) {
-            serverDetailVO.setConsumers(select().from(RpcClient.class).where(RpcClient::getAppId).in(clientAppIds).all());
-        }
-
         return serverDetailVO;
     }
 
@@ -142,4 +134,51 @@ public class ServerService {
         }
 
     }
+
+    public void updateServerCall(RpcClientNotice rpcClientNotice) {
+        // 找到 server app_id
+        select().from(RpcService.class).where(RpcService::getServiceId)
+                .in(new ArrayList<>(rpcClientNotice.getServices()))
+                .map(RpcService::getAppId)
+                .distinct()
+                .forEach(appId -> {
+                    saveCall(rpcClientNotice, appId);
+                });
+    }
+
+    private void saveCall(RpcClientNotice rpcClientNotice, String appId) {
+        long count = select().from(RpcServerCall.class).where(RpcServerCall::getProducerAppId, appId)
+                .and(RpcServerCall::getConsumerAppId, rpcClientNotice.getAppId()).count();
+        if (count == 0) {
+            RpcServerCall rpcServerCall = new RpcServerCall();
+            rpcServerCall.setConsumerAppId(rpcClientNotice.getAppId());
+            rpcServerCall.setProducerAppId(appId);
+            rpcServerCall.save();
+        }
+    }
+
+    public void saveClient(RpcClientNotice rpcClientNotice) {
+        RpcClient client = select().from(RpcClient.class)
+                .where(RpcClient::getAppId, rpcClientNotice.getAppId())
+                .and(RpcClient::getHost, rpcClientNotice.getHost())
+                .one();
+        if (null == client) {
+            client = new RpcClient();
+            client.setAppId(rpcClientNotice.getAppId());
+            client.setHost(rpcClientNotice.getHost());
+            client.setOwner(rpcClientNotice.getOwner());
+            client.setOwnerEmail(rpcClientNotice.getOwnerEmail());
+            client.setPid(rpcClientNotice.getPid());
+            client.setOnlineTime(LocalDateTime.parse(rpcClientNotice.getOnlineTime(), COMMON_DATE_TIME_FORMATTER));
+            client.setCreatedTime(LocalDateTime.now());
+            client.save();
+        } else {
+            client.setOwner(rpcClientNotice.getOwner());
+            client.setOwnerEmail(rpcClientNotice.getOwnerEmail());
+            client.setPid(rpcClientNotice.getPid());
+            client.setOnlineTime(LocalDateTime.parse(rpcClientNotice.getOnlineTime(), COMMON_DATE_TIME_FORMATTER));
+            client.update();
+        }
+    }
+
 }

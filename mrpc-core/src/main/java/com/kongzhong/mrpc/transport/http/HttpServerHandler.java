@@ -56,10 +56,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         if ("/status".equals(path)) {
             log.debug("Rpc receive ping for {}", ctx.channel());
 
-            RpcServerStatus rpcServerStatus = new RpcServerStatus();
-            rpcServerStatus.setStatus(SimpleServerHandler.IS_OFFLINE ? NodeStatusEnum.OFFLINE.toString() : NodeStatusEnum.ONLINE.toString());
+            HttpServerStatus httpServerStatus = new HttpServerStatus();
+            httpServerStatus.setStatus(SimpleServerHandler.IS_OFFLINE ? NodeStatusEnum.OFFLINE.toString() : NodeStatusEnum.ONLINE.toString());
 
-            String content = JacksonSerialize.toJSONString(rpcServerStatus);
+            String content = JacksonSerialize.toJSONString(httpServerStatus);
 
             ByteBuf          byteBuf      = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
@@ -71,10 +71,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         if ("/offline".equals(path)) {
             SimpleServerHandler.offline();
 
-            RpcServerStatus rpcServerStatus = new RpcServerStatus();
-            rpcServerStatus.setStatus(NodeStatusEnum.OFFLINE.toString());
+            HttpServerStatus httpServerStatus = new HttpServerStatus();
+            httpServerStatus.setStatus(NodeStatusEnum.OFFLINE.toString());
 
-            String content = JacksonSerialize.toJSONString(rpcServerStatus);
+            String content = JacksonSerialize.toJSONString(httpServerStatus);
 
             ByteBuf          byteBuf      = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);
@@ -86,10 +86,10 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         if ("/online".equals(path)) {
             SimpleServerHandler.online();
 
-            RpcServerStatus rpcServerStatus = new RpcServerStatus();
-            rpcServerStatus.setStatus(NodeStatusEnum.ONLINE.toString());
+            HttpServerStatus httpServerStatus = new HttpServerStatus();
+            httpServerStatus.setStatus(NodeStatusEnum.ONLINE.toString());
 
-            String content = JacksonSerialize.toJSONString(rpcServerStatus);
+            String content = JacksonSerialize.toJSONString(httpServerStatus);
 
             ByteBuf          byteBuf      = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, byteBuf, false);

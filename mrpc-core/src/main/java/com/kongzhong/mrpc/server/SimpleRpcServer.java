@@ -45,6 +45,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.kongzhong.mrpc.Const.COMMON_DATE_TIME_FORMATTER;
 import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 
 /**
@@ -356,7 +357,7 @@ public abstract class SimpleRpcServer {
         String url = adminConfig.getUrl() + "/api/server";
 
         log.info("发送: {}", url);
-        RpcServer rpcServer = new RpcServer();
+        RpcServerNotice rpcServer = new RpcServerNotice();
         rpcServer.setAppId(appId);
         rpcServer.setHost(NetUtils.getSiteIp());
         rpcServer.setPort(Integer.valueOf(address.split(":")[1]));
@@ -365,10 +366,10 @@ public abstract class SimpleRpcServer {
         rpcServer.setPid(NetUtils.getPID());
         rpcServer.setStatus(nodeStatus.toString());
         if (nodeStatus == NodeStatusEnum.ONLINE) {
-            rpcServer.setOnlineTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+            rpcServer.setOnlineTime(LocalDateTime.now().format(COMMON_DATE_TIME_FORMATTER));
         }
         if (nodeStatus == NodeStatusEnum.OFFLINE) {
-            rpcServer.setOfflineTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+            rpcServer.setOfflineTime(LocalDateTime.now().format(COMMON_DATE_TIME_FORMATTER));
         }
 
         rpcServer.setServices(ServiceStatusTable.me().getServices());

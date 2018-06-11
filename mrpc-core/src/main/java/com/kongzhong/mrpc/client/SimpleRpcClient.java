@@ -4,29 +4,37 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.Reflection;
 import com.kongzhong.mrpc.client.proxy.SimpleClientProxy;
+import com.kongzhong.mrpc.config.AdminConfig;
 import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.config.NettyConfig;
-import com.kongzhong.mrpc.enums.*;
-import com.kongzhong.mrpc.event.EventManager;
+import com.kongzhong.mrpc.enums.HaStrategyEnum;
+import com.kongzhong.mrpc.enums.LbStrategyEnum;
+import com.kongzhong.mrpc.enums.NodeStatusEnum;
+import com.kongzhong.mrpc.enums.RegistryEnum;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.ClientBean;
+import com.kongzhong.mrpc.model.RpcClientNotice;
 import com.kongzhong.mrpc.model.RegistryBean;
-import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
-import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
+import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.utils.HttpRequest;
+import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +43,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.kongzhong.mrpc.Const.COMMON_DATE_TIME_FORMATTER;
 
 /**
  * RPC客户端抽象实现
@@ -104,6 +114,13 @@ public abstract class SimpleRpcClient {
      */
     @Setter
     protected int pingInterval = -1;
+
+    /**
+     * 后台配置
+     */
+    @Getter
+    @Setter
+    protected AdminConfig adminConfig;
 
     /**
      * 服务注册实例
@@ -343,6 +360,52 @@ public abstract class SimpleRpcClient {
 
     public static Object getBean(String beanName) {
         return beanFactory.getBean(beanName);
+    }
+
+    protected void startFinish() {
+        if (adminConfig.isEnabled()) {
+            this.sendClientStatus(NodeStatusEnum.ONLINE);
+        }
+    }
+
+    /**
+     * 发送服务状态给后台
+     */
+    private void sendClientStatus(NodeStatusEnum nodeStatus) {
+        String url = adminConfig.getUrl() + "/api/client";
+        log.info("发送: {}", url);
+
+        RpcClientNotice rpcClientNotice = new RpcClientNotice();
+        rpcClientNotice.setAppId(appId);
+        if (nodeStatus == NodeStatusEnum.ONLINE) {
+            rpcClientNotice.setOnlineTime(LocalDateTime.now().format(COMMON_DATE_TIME_FORMATTER));
+        }
+        if (nodeStatus == NodeStatusEnum.OFFLINE) {
+            rpcClientNotice.setOfflineTime(LocalDateTime.now().format(COMMON_DATE_TIME_FORMATTER));
+        }
+        rpcClientNotice.setHost(NetUtils.getSiteIp());
+        rpcClientNotice.setPid(NetUtils.getPID());
+
+        Set<String> services = clientBeans.stream().map(ClientBean::getServiceName).collect(Collectors.toSet());
+        rpcClientNotice.setServices(services);
+
+        try {
+            String body = JacksonSerialize.toJSONString(rpcClientNotice);
+            int code = HttpRequest.post(url)
+                    .contentType("application/json;charset=utf-8")
+                    .connectTimeout(10_000)
+                    .readTimeout(5000)
+                    .header("notice_status", nodeStatus.toString())
+                    .header("address", NetUtils.getSiteIp())
+                    .basic(adminConfig.getUsername(), adminConfig.getPassword())
+                    .send(body).code();
+
+            log.debug("Response code: {}", code);
+        } catch (HttpRequest.HttpRequestException e) {
+            log.debug("连接失败");
+        } catch (Exception e) {
+            log.error("Send error", e);
+        }
     }
 
     /**

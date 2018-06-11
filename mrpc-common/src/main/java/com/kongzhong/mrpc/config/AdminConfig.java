@@ -12,6 +12,5 @@ public class AdminConfig {
     private String url;
     private String username;
     private String password;
-    private int period;
 
 }
