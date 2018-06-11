@@ -5,12 +5,13 @@ import com.blade.mvc.annotation.*;
 import com.blade.mvc.ui.RestResponse;
 import com.kongzhong.mrpc.admin.model.RpcNotice;
 import com.kongzhong.mrpc.admin.model.RpcServer;
+import com.kongzhong.mrpc.admin.model.SysLog;
 import com.kongzhong.mrpc.admin.params.PageParam;
 import com.kongzhong.mrpc.admin.service.ServerService;
 import com.kongzhong.mrpc.admin.tasks.PingTask;
 import com.kongzhong.mrpc.admin.vo.ServerMap;
 import io.github.biezhi.anima.Anima;
-import io.github.biezhi.anima.page.Page;
+import io.github.biezhi.anima.enums.OrderBy;
 
 import static io.github.biezhi.anima.Anima.select;
 
@@ -44,7 +45,7 @@ public class AdminController {
 
     @PostRoute("server/delete")
     public RestResponse deleteNode(@BodyParam RpcServer rpcServer) {
-        pingTask.removeUrl(rpcServer.getHost()+":"+rpcServer.getPort());
+        pingTask.removeUrl(rpcServer.getHost() + ":" + rpcServer.getPort());
         return RestResponse.ok(Anima.deleteById(RpcServer.class, rpcServer.getId()));
     }
 
@@ -55,7 +56,15 @@ public class AdminController {
 
     @PostRoute("notice/list")
     public RestResponse noticeList(@BodyParam PageParam pageParam) {
-        return RestResponse.ok(select().from(RpcNotice.class).page(pageParam.getPage(), pageParam.getLimit()));
+        return RestResponse.ok(select().from(RpcNotice.class).order(RpcNotice::getId, OrderBy.DESC)
+                .page(pageParam.getPage(), pageParam.getLimit()));
     }
+
+    @PostRoute("log/list")
+    public RestResponse logList(@BodyParam PageParam pageParam) {
+        return RestResponse.ok(select().from(SysLog.class).order(SysLog::getId, OrderBy.DESC)
+                .page(pageParam.getPage(), pageParam.getLimit()));
+    }
+
 
 }

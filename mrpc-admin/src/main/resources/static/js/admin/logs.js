@@ -1,7 +1,7 @@
 var vm = new Vue({
     el: '#app',
     data: {
-        noticePage: {}
+        logPage: {}
     },
     mounted: function () {
         this.load(1);
@@ -10,10 +10,10 @@ var vm = new Vue({
         load: function (page) {
             var $vm = this;
             sendPOST({
-                url: '/admin/notice/list',
+                url: '/admin/log/list',
                 data: {page: page},
                 success: function (data) {
-                    $vm.noticePage = data.payload;
+                    $vm.logPage = data.payload;
                 },
                 error: function (error) {
                     console.log(error);

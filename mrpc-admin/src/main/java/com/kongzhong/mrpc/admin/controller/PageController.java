@@ -3,6 +3,7 @@ package com.kongzhong.mrpc.admin.controller;
 import com.blade.mvc.annotation.GetRoute;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.PathParam;
+import com.blade.mvc.annotation.Route;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 
@@ -13,6 +14,11 @@ import com.blade.mvc.http.Response;
 @Path
 public class PageController {
 
+    @GetRoute("/")
+    public void index(Response response) {
+        response.redirect("/login");
+    }
+
     @GetRoute("login")
     public String login() {
         return "login.html";
@@ -22,6 +28,11 @@ public class PageController {
     public void logout(Request request, Response response) {
         request.session().remove(AuthController.SESSION_KEY);
         response.redirect("/login");
+    }
+
+    @Route("/status")
+    public void status(Response response) {
+        response.text("success");
     }
 
     @GetRoute("admin/:page.html")

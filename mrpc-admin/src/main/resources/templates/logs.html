@@ -8,55 +8,61 @@
         <div class="row row-offcanvas row-offcanvas-right">
             #include("./partials/_sidebar.html")
             <div class="content-wrapper">
-                <!-- ROW ENDS -->
                 <div class="row">
                     <div class="col-lg-12 grid-margin">
                         <div class="card">
                             <div class="card-body">
-                                <h2 class="card-title">服务列表</h2>
+                                <h2 class="card-title">操作记录</h2>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                         <tr>
-                                            <th>服务名</th>
-                                            <th>所在节点</th>
-                                            <th>进程ID</th>
-                                            <th>服务状态</th>
-                                            <th>负责人</th>
-                                            <th>最后上线时间</th>
+                                            <th>ID</th>
+                                            <th>操作</th>
+                                            <th>操作人</th>
+                                            <th>详细数据</th>
+                                            <th>操作IP</th>
+                                            <th>操作时间</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="item in servers">
+                                        <tr v-for="item in logPage.rows">
                                             <td>
-                                                <a :href="'/admin/server/' + item.id">
-                                                    {{ item.name }}
-                                                </a>
+                                                {{ item.id }}
                                             </td>
-                                            <td>{{ item.address }}</td>
-                                            <td>{{ item.pid }}</td>
-                                            <td>{{ item.status | toStatus }}</td>
-                                            <td>{{ item.owner }}</td>
-                                            <td>{{ item.onlineTime }}</td>
+                                            <td>{{ item.action }}</td>
+                                            <td>{{ item.username }}</td>
+                                            <td>
+                                                <a class="text-info">{{ item.content | truncate(30) }}</a>
+                                            </td>
+                                            <td>{{ item.ip }}</td>
+                                            <td>{{ item.createdTime }}</td>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <!--<div class="d-flex align-items-center justify-content-between flex-wrap">-->
-                                <!--<p class="mb-0">Showing 1 to 10 of 57 entries</p>-->
-                                <!--<nav>-->
-                                <!--<ul class="pagination rounded-separated pagination-info mt-3">-->
-                                <!--<li class="page-item"><a class="page-link" href="#"><i-->
-                                <!--class="mdi mdi-chevron-left"></i></a></li>-->
-                                <!--<li class="page-item active"><a class="page-link" href="#">1</a></li>-->
-                                <!--<li class="page-item"><a class="page-link" href="#">2</a></li>-->
-                                <!--<li class="page-item"><a class="page-link" href="#">3</a></li>-->
-                                <!--<li class="page-item"><a class="page-link" href="#">4</a></li>-->
-                                <!--<li class="page-item"><a class="page-link" href="#"><i-->
-                                <!--class="mdi mdi-chevron-right"></i></a></li>-->
-                                <!--</ul>-->
-                                <!--</nav>-->
-                                <!--</div>-->
+                                <div v-if="logPage.totalPages > 1" class="d-flex align-items-center justify-content-between flex-wrap">
+                                    <p class="mb-0"></p>
+                                    <nav>
+                                        <ul class="pagination rounded-separated pagination-info mt-3">
+                                            <li v-if="noticePage.hasPrevPage" class="page-item">
+                                                <button type="button" class="page-link" @click="load(logPage.prevPage)">
+                                                    <i class="mdi mdi-chevron-left"></i>
+                                                </button>
+                                            </li>
+                                            <li class="page-item" v-for="num in logPage.navPageNums" v-bind:class="{ active: logPage.pageNum == num }">
+                                                <button type="button" class="page-link" @click="load(num)">
+                                                    {{ num }}</i>
+                                                </button>
+                                            </li>
+                                            <li v-if="logPage.hasNextPage" class="page-item">
+                                                <button type="button" class="page-link" @click="load(logPage.nextPage)">
+                                                    <i class="mdi mdi-chevron-right"></i>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -67,7 +73,6 @@
     </div>
 </div>
 #include("./partials/_footer_js.html")
-<script src="/static/plugins/axios/axios.min.js"></script>
-<script src="/static/js/admin/services.js"></script>
+<script src="/static/js/admin/logs.js"></script>
 </body>
 </html>

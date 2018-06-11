@@ -100,6 +100,7 @@ public class ServerService {
         }
 
         serverDetailVO.setId(id);
+        serverDetailVO.setAppId(rpcServer.getAppId());
         serverDetailVO.setOwner(rpcServer.getOwner());
 
         if (StringKit.isNotEmpty(rpcServer.getAppAlias())) {

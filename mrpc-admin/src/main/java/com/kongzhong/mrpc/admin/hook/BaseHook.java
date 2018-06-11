@@ -7,6 +7,7 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.kongzhong.mrpc.admin.model.SysUser;
 
+import static com.kongzhong.mrpc.admin.controller.AuthController.COOKIE_KEY;
 import static com.kongzhong.mrpc.admin.controller.AuthController.SESSION_KEY;
 
 /**
@@ -21,14 +22,15 @@ public class BaseHook implements WebHook {
         Request  request  = signature.request();
         Response response = signature.response();
 
-//        String uri = request.uri();
-//        if (uri.startsWith("/admin/")) {
-//            SysUser sysUser = request.session().attribute(SESSION_KEY);
-//            if (null == sysUser) {
-//                response.redirect("/login");
-//                return false;
-//            }
-//        }
+        String uri = request.uri();
+        if (uri.startsWith("/admin/")) {
+            SysUser sysUser = request.session().attribute(SESSION_KEY);
+            if (null == sysUser) {
+                String cookie = request.cookie(COOKIE_KEY);
+                response.redirect("/login");
+                return false;
+            }
+        }
         return true;
     }
 

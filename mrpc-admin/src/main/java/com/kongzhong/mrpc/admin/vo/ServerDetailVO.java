@@ -15,6 +15,7 @@ import java.util.Set;
 public class ServerDetailVO {
 
     private Long   id;
+    private String appId;
     private String name;
     private String owner;
 

@@ -36,6 +36,8 @@ public class Bootstrap implements BeanProcessor {
 
         JetbrickTemplateEngine templateEngine = new JetbrickTemplateEngine();
 
+        templateEngine.getGlobalContext().set("version", blade.environment().getOrNull("app.version"));
+
         blade.templateEngine(templateEngine);
 
         // JDBC

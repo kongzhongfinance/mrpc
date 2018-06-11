@@ -19,6 +19,7 @@ import com.kongzhong.mrpc.admin.service.UserService;
 public class AuthController {
 
     public static final String SESSION_KEY = "login_user";
+    public static final String COOKIE_KEY  = "MRPC_USER";
 
     @Inject
     private UserService userService;

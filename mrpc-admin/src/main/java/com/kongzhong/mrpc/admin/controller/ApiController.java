@@ -61,11 +61,12 @@ public class ApiController {
     @PostRoute("client")
     public void client(Request request) {
         String nodeStatus = request.header("notice_status");
+        String address = request.header("address");
         String content    = request.bodyToString();
 
         RpcNotice rpcNotice = new RpcNotice();
         rpcNotice.setApiType("client");
-        rpcNotice.setAddress("address");
+        rpcNotice.setAddress(address);
         rpcNotice.setCreatedTime(LocalDateTime.now());
         rpcNotice.setContent(content);
         rpcNotice.save();

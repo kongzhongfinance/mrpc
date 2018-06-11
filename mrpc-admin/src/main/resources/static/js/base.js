@@ -56,3 +56,10 @@ function sendPOST(options) {
         options.error(error)
     });
 }
+
+Vue.filter('truncate', function (value, size, append) {
+    if (value && value.length >= size) {
+        return value.substring(0, size) + (append || '...');
+    }
+    return value
+});
