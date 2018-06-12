@@ -1,6 +1,5 @@
-
 var vm = new Vue({
-    el:'#app',
+    el: '#app',
     data: {
         servers: [],
         isLoading: true
@@ -11,12 +10,12 @@ var vm = new Vue({
     beforeCreate: function () {
         vueLoding = this.$loading.show();
     },
-    methods : {
-        load: function() {
+    methods: {
+        load: function () {
             var $vm = this;
             sendGET({
                 url: '/admin/server/list',
-                success:function (data) {
+                success: function (data) {
                     $vm.servers = data.payload;
                 },
                 error: function (error) {
@@ -37,7 +36,7 @@ var vm = new Vue({
                 showCancelButton: true,
                 confirmButtonText: '修改别名',
                 showLoaderOnConfirm: true
-            }).then(function(result) {
+            }).then(function (result) {
                 if (result.value) {
                     sendPOST({
                         url: '/admin/server/update',
@@ -61,18 +60,20 @@ $(document).ready(function () {
 
     $.getJSON('/admin/server/mind', function (result) {
         var mind = {
-            "meta":{
-                "name":"demo",
-                "version":"0.2",
+            "meta": {
+                "name": "mrpc",
+                "version": "0.0.1",
             },
-            "format":"node_array",
-            "data":result
+            "format": "node_array",
+            "data": result
         };
         var options = {
-            container:'jsmind_container',
-            theme:'primary'
+            container: 'jsmind_container',
+            theme: 'asphalt'
         }
-        var jm = jsMind.show(options,mind);
+        var jm = jsMind.show(options, mind);
+        var jmHeight = $("#jsmind_container canvas:eq(0)").attr('height');
+        $("#jsmind_container").css('height', jmHeight);
     });
 
     vm.isLoading = false;
