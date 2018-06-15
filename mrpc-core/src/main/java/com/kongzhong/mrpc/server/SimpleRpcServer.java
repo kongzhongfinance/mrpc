@@ -22,7 +22,7 @@ import com.kongzhong.mrpc.registry.DefaultRegistry;
 import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.transport.TransferSelector;
+import com.kongzhong.mrpc.transport.http.HttpServerChannelInitializer;
 import com.kongzhong.mrpc.transport.http.HttpServerHandler;
 import com.kongzhong.mrpc.utils.*;
 import io.netty.bootstrap.ServerBootstrap;
@@ -37,7 +37,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -56,7 +55,7 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
  */
 @Slf4j
 @NoArgsConstructor
-@ToString(exclude = {"rpcMapping", "transferSelector"})
+@ToString(exclude = {"rpcMapping"})
 public abstract class SimpleRpcServer {
 
     public static Boolean PRINT_ERROR_LOG = false;
@@ -74,7 +73,16 @@ public abstract class SimpleRpcServer {
     /**
      * 注册中心列表 [注册中心名->注册中心实现]
      */
-    protected Map<String, ServiceRegistry> serviceRegistryMap = Maps.newHashMap();
+    public static final Map<String, ServiceRegistry> SERVICE_REGISTRY_MAP = Maps.newHashMap();
+
+    private static final Map<String, String> SERVER_CONTEXT = Maps.newHashMap();
+
+    /**
+     * 服务端处理线程池
+     */
+    private static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
+
+    private static List<ListenableFuture> listenableFutures = Lists.newCopyOnWriteArrayList();
 
     /**
      * 服务端拦截器，多个用逗号相隔，顺序拦截
@@ -144,11 +152,6 @@ public abstract class SimpleRpcServer {
     protected String test;
 
     /**
-     * 传输协议选择器
-     */
-    private TransferSelector transferSelector;
-
-    /**
      * netty服务端配置
      */
     @Getter
@@ -161,15 +164,6 @@ public abstract class SimpleRpcServer {
     @Getter
     @Setter
     protected AdminConfig adminConfig;
-
-    private static final Map<String, String> SERVER_CONTEXT = Maps.newHashMap();
-
-    /**
-     * 服务端处理线程池
-     */
-    private static ListeningExecutorService LISTENING_EXECUTOR_SERVICE;
-
-    private static List<ListenableFuture> listenableFutures = Lists.newCopyOnWriteArrayList();
 
     private volatile boolean isClosed = false;
     private          Lock    lock     = new ReentrantLock();
@@ -190,7 +184,7 @@ public abstract class SimpleRpcServer {
             serialize = "kyro";
         }
 
-        if (CollectionUtils.isNotEmpty(serviceRegistryMap)) {
+        if (CollectionUtils.isNotEmpty(SERVICE_REGISTRY_MAP)) {
             usedRegistry = true;
         }
 
@@ -206,7 +200,6 @@ public abstract class SimpleRpcServer {
             throw new InitializeException("RPC server serialize is null.");
         }
 
-        transferSelector = new TransferSelector(rpcSerialize);
         int businessThreadPoolSize = nettyConfig.getBusinessThreadPoolSize();
         setListeningExecutorService(businessThreadPoolSize);
     }
@@ -233,7 +226,7 @@ public abstract class SimpleRpcServer {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-                    .childHandler(transferSelector.getServerChannelHandler())
+                    .childHandler(new HttpServerChannelInitializer())
                     .option(ChannelOption.SO_BACKLOG, nettyConfig.getBacklog())
                     .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
@@ -400,7 +393,7 @@ public abstract class SimpleRpcServer {
      * @return 返回该服务是否使用了注册中心
      */
     private boolean usedRegistry(ServiceBean serviceBean) {
-        return StringUtils.isNotEmpty(serviceBean.getRegistry()) || serviceRegistryMap.containsKey("default");
+        return StringUtils.isNotEmpty(serviceBean.getRegistry()) || SERVICE_REGISTRY_MAP.containsKey("default");
     }
 
     protected String getAppId(ServiceBean serviceBean) {
@@ -440,7 +433,7 @@ public abstract class SimpleRpcServer {
      * @return 返回当前服务的注册中心
      */
     protected ServiceRegistry getRegistry(ServiceBean serviceBean) {
-        return serviceRegistryMap.get(getRegistryName(serviceBean));
+        return SERVICE_REGISTRY_MAP.get(getRegistryName(serviceBean));
     }
 
     private String getRegistryName(ServiceBean serviceBean) {

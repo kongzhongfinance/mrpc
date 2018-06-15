@@ -9,6 +9,7 @@ import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.*;
+import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
@@ -26,10 +27,12 @@ import org.springframework.aop.support.AopUtils;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static com.kongzhong.mrpc.Const.*;
+import static com.kongzhong.mrpc.server.SimpleRpcServer.SERVICE_REGISTRY_MAP;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -86,6 +89,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         if ("/offline".equals(path)) {
             offline();
 
+            ServiceRegistry serviceRegistry = SERVICE_REGISTRY_MAP.values().iterator().next();
+            serviceRegistry.unRegisterList(new ArrayList<>(serviceBeanMap.values()));
+
             HttpServerStatus httpServerStatus = new HttpServerStatus();
             httpServerStatus.setStatus(NodeStatusEnum.OFFLINE.toString());
 
@@ -101,6 +107,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         // 服务上线，添加节点到 zk，接收新请求
         if ("/online".equals(path)) {
             this.online();
+
+            ServiceRegistry serviceRegistry = SERVICE_REGISTRY_MAP.values().iterator().next();
+            serviceRegistry.registerList(new ArrayList<>(serviceBeanMap.values()));
 
             HttpServerStatus httpServerStatus = new HttpServerStatus();
             httpServerStatus.setStatus(NodeStatusEnum.ONLINE.toString());

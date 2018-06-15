@@ -7,6 +7,8 @@ import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 /**
  * 服务注册
  */
@@ -30,6 +32,11 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     }
 
     @Override
+    public void registerList(List<ServiceBean> serviceBeans) {
+        serviceBeans.stream().forEach(this::register);
+    }
+
+    @Override
     public void unRegister(ServiceBean serviceBean) throws RpcException {
         if (null == serviceBean) {
             throw new RpcException("Service bean not is null");
@@ -37,9 +44,14 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         removeNode(serviceBean);
     }
 
+    @Override
+    public void unRegisterList(List<ServiceBean> serviceBeans) {
+        serviceBeans.stream().forEach(this::removeNode);
+    }
+
     private void removeNode(ServiceBean serviceBean) {
-        String appId = serviceBean.getAppId();
-        String node = serviceBean.getServiceName();
+        String appId      = serviceBean.getAppId();
+        String node       = serviceBean.getServiceName();
         String serverAddr = StringUtils.isNotEmpty(serviceBean.getElasticIp()) ? serviceBean.getElasticIp() : serviceBean.getAddress();
 
         // node path = rootPath + appId + node + address
@@ -52,8 +64,8 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     }
 
     private void createNode(ServiceBean serviceBean) {
-        String appId = serviceBean.getAppId();
-        String node = serviceBean.getServiceName();
+        String appId      = serviceBean.getAppId();
+        String node       = serviceBean.getServiceName();
         String serverAddr = StringUtils.isNotEmpty(serviceBean.getElasticIp()) ? serviceBean.getElasticIp() : serviceBean.getAddress();
 
         // node path = rootPath + appId + node + address
