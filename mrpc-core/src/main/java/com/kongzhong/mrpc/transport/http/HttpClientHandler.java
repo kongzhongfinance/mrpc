@@ -197,13 +197,7 @@ public class HttpClientHandler extends SimpleChannelInboundHandler<FullHttpRespo
 
         // 移除客户端Channel
         Connections.me().inActive(this.nettyClient.getAddress());
-
         ctx.channel().close().sync();
-//        if (nettyClient.isRunning()) {
-//            // 断线重连
-//            nettyClient.asyncCreateChannel(ctx.channel().eventLoop());
-//        }
-//        super.channelInactive(ctx);
     }
 
     /**
