@@ -76,7 +76,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
             if (null != commonProperties.getRegistry() && !commonProperties.getRegistry().isEmpty()) {
                 commonProperties.getRegistry().forEach((registryName, map) -> {
                     ServiceRegistry serviceRegistry = super.mapToRegistry(map);
-                    serviceRegistryMap.put(registryName, serviceRegistry);
+                    SERVICE_REGISTRY_MAP.put(registryName, serviceRegistry);
                     configurableBeanFactory.registerSingleton(MRPC_SERVER_REGISTRY_PREFIX + registryName, serviceRegistry);
                     super.usedRegistry = true;
                 });
@@ -169,7 +169,7 @@ public class RpcServerAutoConfigure extends SimpleRpcServer {
         Map<String, String> custom          = customServiceMap.get(serviceBean.getBeanName());
         if (null != custom && custom.containsKey("registry")) {
             String registryName = custom.get("registry");
-            return serviceRegistryMap.get(registryName);
+            return SERVICE_REGISTRY_MAP.get(registryName);
         }
         return serviceRegistry;
     }

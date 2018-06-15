@@ -25,7 +25,9 @@ public interface ServiceRegistry {
      *
      * @param serviceBeans
      */
-    void registerList(List<ServiceBean> serviceBeans);
+    default void registerList(List<ServiceBean> serviceBeans) {
+        serviceBeans.stream().forEach(this::register);
+    }
 
     /**
      * 卸载一个服务
@@ -40,6 +42,8 @@ public interface ServiceRegistry {
      *
      * @param serviceBeans
      */
-    void unRegisterList(List<ServiceBean> serviceBeans);
+    default void unRegisterList(List<ServiceBean> serviceBeans) {
+        serviceBeans.stream().forEach(this::unRegister);
+    }
 
 }

@@ -48,7 +48,7 @@ public class RpcSpringServer extends SimpleRpcServer implements ApplicationConte
         // 注册中心
         Map<String, RegistryBean> registryBeanMap = ctx.getBeansOfType(RegistryBean.class);
         if (null != registryBeanMap) {
-            registryBeanMap.values().forEach(registryBean -> serviceRegistryMap.put(registryBean.getName(), parseRegistry(registryBean)));
+            registryBeanMap.values().forEach(registryBean -> SERVICE_REGISTRY_MAP.put(registryBean.getName(), parseRegistry(registryBean)));
         }
 
         if (StringUtils.isNotEmpty(this.interceptors)) {

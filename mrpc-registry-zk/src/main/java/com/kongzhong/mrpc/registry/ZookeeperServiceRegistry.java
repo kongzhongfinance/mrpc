@@ -7,8 +7,6 @@ import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 /**
  * 服务注册
  */
@@ -32,21 +30,11 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void registerList(List<ServiceBean> serviceBeans) {
-        serviceBeans.stream().forEach(this::register);
-    }
-
-    @Override
     public void unRegister(ServiceBean serviceBean) throws RpcException {
         if (null == serviceBean) {
             throw new RpcException("Service bean not is null");
         }
         removeNode(serviceBean);
-    }
-
-    @Override
-    public void unRegisterList(List<ServiceBean> serviceBeans) {
-        serviceBeans.stream().forEach(this::removeNode);
     }
 
     private void removeNode(ServiceBean serviceBean) {

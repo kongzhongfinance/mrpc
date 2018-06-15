@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.biezhi.anima.Model;
 import io.github.biezhi.anima.annotation.Ignore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -13,6 +14,7 @@ import java.util.Set;
  * @date 2018/6/7
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class RpcServer extends Model {
 
     private Long          id;
