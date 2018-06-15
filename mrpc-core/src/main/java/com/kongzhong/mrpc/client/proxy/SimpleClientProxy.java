@@ -21,7 +21,7 @@ import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
 import com.kongzhong.mrpc.interceptor.RpcClientInterceptor;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,7 +136,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
             return haStrategy.call(request, loadBalance);
         }
 
-        SimpleClientHandler clientHandler = loadBalance.next(appId, request.getClassName());
+        HttpClientHandler clientHandler = loadBalance.next(appId, request.getClassName());
         if (null == clientHandler) {
             log.warn("Local service mappings: {}", LocalServiceNodeTable.SERVICE_MAPPINGS);
             throw new RpcException("Service [" + request.getClassName() + "] not found.");

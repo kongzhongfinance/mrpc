@@ -99,8 +99,8 @@ public class NettyClient {
             log.info("Connect {} success.", channel);
 
             //和服务器连接成功后, 获取MessageSendHandler对象
-            Class<? extends SimpleClientHandler> clientHandler = HttpClientHandler.class;
-            SimpleClientHandler                  handler       = channel.pipeline().get(clientHandler);
+            Class<? extends HttpClientHandler> clientHandler = HttpClientHandler.class;
+            HttpClientHandler                  handler       = channel.pipeline().get(clientHandler);
 
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);

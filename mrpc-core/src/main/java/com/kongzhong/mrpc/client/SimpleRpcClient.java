@@ -21,7 +21,7 @@ import com.kongzhong.mrpc.registry.DefaultDiscovery;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.utils.HttpRequest;
 import com.kongzhong.mrpc.utils.NetUtils;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -425,7 +425,7 @@ public abstract class SimpleRpcClient {
                 return;
             }
             log.info("UnRegistering mrpc client on shutdown");
-            SimpleClientHandler.shutdown();
+            HttpClientHandler.shutdown();
             Connections.me().shutdown();
         } finally {
             isClosed = true;

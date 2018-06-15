@@ -1,30 +1,41 @@
 package com.kongzhong.mrpc.transport.http;
 
+import com.google.common.collect.Maps;
+import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.RpcCallbackFuture;
+import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.atomic.LongAdder;
 
 import static com.kongzhong.mrpc.Const.*;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
@@ -37,10 +48,37 @@ import static io.netty.handler.codec.http.HttpHeaders.Values.GZIP;
  * 2017/4/19
  */
 @Slf4j
-public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
+public class HttpClientHandler extends SimpleChannelInboundHandler<FullHttpResponse> {
+
+    protected NettyConfig nettyConfig;
+
+    @Getter
+    protected volatile Channel channel;
+
+    @Getter
+    @Setter
+    protected NettyClient nettyClient;
+
+    protected static boolean isShutdown;
+
+    protected LongAdder hits = new LongAdder();
+
+    public static final Map<String, RpcCallbackFuture> CALLBACK_FUTURE_MAP = Maps.newConcurrentMap();
 
     HttpClientHandler(NettyClient nettyClient) {
-        super(nettyClient);
+        this.nettyClient = nettyClient;
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        this.channel = ctx.channel();
+        super.channelRegistered(ctx);
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("Channel active: {}", this.channel);
+        super.channelActive(ctx);
     }
 
     /**
@@ -49,7 +87,6 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      * @param rpcRequest RpcRequest
      * @return return RpcCallbackFuture
      */
-    @Override
     public RpcCallbackFuture asyncSendRequest(RpcRequest rpcRequest) {
         if (isShutdown) {
             throw new SystemException("Rpc client has been shutdown.");
@@ -147,11 +184,75 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (IOException.class.isInstance(cause) && cause.getMessage().contains("Connection reset by peer")) {
-
         } else {
             log.error("Client receive body error", cause);
-            super.sendError(ctx, cause);
+            sendError(ctx, cause);
         }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("Channel inActive: {}", ctx.channel());
+        this.nettyClient.cancelSchedule(ctx.channel());
+
+        // 移除客户端Channel
+        Connections.me().inActive(this.nettyClient.getAddress());
+
+        ctx.channel().close().sync();
+//        if (nettyClient.isRunning()) {
+//            // 断线重连
+//            nettyClient.asyncCreateChannel(ctx.channel().eventLoop());
+//        }
+//        super.channelInactive(ctx);
+    }
+
+    /**
+     * 添加一次调用
+     */
+    public void addHit() {
+        hits.add(1);
+    }
+
+    public Long getHits() {
+        return hits.longValue();
+    }
+
+    /**
+     * 客户端关闭时调用
+     */
+    public void close() throws InterruptedException {
+        nettyClient.shutdown();
+        this.nettyClient.cancelSchedule(channel);
+        this.channel.close().sync();
+    }
+
+    /**
+     * 在channel上保存一个requestId
+     *
+     * @param requestId
+     */
+    protected void setChannelRequestId(String requestId) {
+        channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).set(requestId);
+    }
+
+    /**
+     * 错误处理
+     *
+     * @param ctx
+     * @param cause
+     */
+    protected void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
+        Channel           channel           = ctx.channel();
+        String            requestId         = channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).get().toString();
+        RpcCallbackFuture rpcCallbackFuture = CALLBACK_FUTURE_MAP.get(requestId);
+        if (rpcCallbackFuture != null) {
+            CALLBACK_FUTURE_MAP.remove(requestId);
+            rpcCallbackFuture.done(null);
+        }
+    }
+
+    public static void shutdown() {
+        isShutdown = true;
     }
 
 }

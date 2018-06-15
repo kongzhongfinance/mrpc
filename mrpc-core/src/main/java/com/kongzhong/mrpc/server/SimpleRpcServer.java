@@ -23,7 +23,7 @@ import com.kongzhong.mrpc.registry.ServiceRegistry;
 import com.kongzhong.mrpc.serialize.RpcSerialize;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.transport.TransferSelector;
-import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
+import com.kongzhong.mrpc.transport.http.HttpServerHandler;
 import com.kongzhong.mrpc.utils.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -563,7 +563,7 @@ public abstract class SimpleRpcServer {
             isClosed = true;
 
             // 拒绝连接
-            SimpleServerHandler.offline();
+            HttpServerHandler.offline();
 
             for (ListenableFuture listenableFuture : listenableFutures) {
                 while (!listenableFuture.isDone()) {

@@ -6,7 +6,7 @@ import com.kongzhong.mrpc.config.ClientConfig;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.model.ClientBean;
 import com.kongzhong.mrpc.registry.ServiceDiscovery;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +26,7 @@ public interface LoadBalance {
      * @return
      * @throws Exception
      */
-    SimpleClientHandler next(String appId, String serviceName) throws Exception;
+    HttpClientHandler next(String appId, String serviceName) throws Exception;
 
     /**
      * 遍历服务连接列表
@@ -36,8 +36,8 @@ public interface LoadBalance {
      * @return
      * @throws Exception
      */
-    default List<SimpleClientHandler> handlers(String appId, String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
+    default List<HttpClientHandler> handlers(String appId, String serviceName) throws Exception {
+        List<HttpClientHandler> handlers = Connections.me().getHandlers(serviceName);
         if (handlers.size() == 0) {
             ServiceDiscovery serviceDiscovery = ClientConfig.me().getServiceDiscovery(serviceName);
             if (null != serviceDiscovery) {

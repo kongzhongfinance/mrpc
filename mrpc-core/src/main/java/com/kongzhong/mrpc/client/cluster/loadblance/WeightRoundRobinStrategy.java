@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ public class WeightRoundRobinStrategy implements LoadBalance {
     private LongAdder pos = new LongAdder();
 
     @Override
-    public SimpleClientHandler next(String appId, String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = handlers(appId, serviceName);
+    public HttpClientHandler next(String appId, String serviceName) throws Exception {
+        List<HttpClientHandler> handlers = handlers(appId, serviceName);
         if (handlers.size() == 1) {
             return handlers.get(0);
         }
-        List<SimpleClientHandler> serverList = new ArrayList<>();
+        List<HttpClientHandler> serverList = new ArrayList<>();
         handlers.forEach(handler -> {
             int weight = handler.getNettyClient().getWeight();
             for (int i = 0; i < weight; i++) {
@@ -34,9 +34,9 @@ public class WeightRoundRobinStrategy implements LoadBalance {
         if (pos.intValue() > handlers.size()) {
             pos = new LongAdder();
         }
-        SimpleClientHandler simpleClientHandler = serverList.get(pos.intValue());
+        HttpClientHandler httpClientHandler = serverList.get(pos.intValue());
         pos.add(1);
-        return simpleClientHandler;
+        return httpClientHandler;
     }
 
 }

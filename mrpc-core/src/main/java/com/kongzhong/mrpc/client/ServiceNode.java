@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client;
 
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import lombok.*;
 
 import java.util.Set;
@@ -11,7 +11,7 @@ import java.util.Set;
  * 服务节点
  *
  * @author biezhi
- *         29/06/2017
+ * 29/06/2017
  */
 @Data
 @NoArgsConstructor
@@ -23,22 +23,22 @@ public class ServiceNode {
     /**
      * 服务地址，存储在注册中心都地址
      */
-    private String              serverAddress;
+    private String            serverAddress;
     /**
      * 客户端连接
      */
-    private SimpleClientHandler clientHandler;
+    private HttpClientHandler clientHandler;
     /**
      * 节点存活状态
      */
-    private NodeStatusEnum      aliveState;
+    private NodeStatusEnum    aliveState;
     /**
      * 是否开始尝试连接
      */
-    private boolean             connected;
+    private boolean           connected;
     /**
      * 该节点下都服务列表
      */
-    private Set<String>         services = Sets.newHashSet();
+    private Set<String>       services = Sets.newHashSet();
 
 }

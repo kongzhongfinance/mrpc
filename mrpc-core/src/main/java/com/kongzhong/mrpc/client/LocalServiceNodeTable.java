@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.utils.CollectionUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,13 +33,13 @@ public class LocalServiceNodeTable {
      */
     public static final Map<String, Set<String>> SERVICE_MAPPINGS = Maps.newConcurrentMap();
 
-    static List<SimpleClientHandler> getAliveNodes(String serviceName) {
+    static List<HttpClientHandler> getAliveNodes(String serviceName) {
         Set<String> addresses = LocalServiceNodeTable.SERVICE_MAPPINGS.get(serviceName);
         if (CollectionUtils.isEmpty(addresses)) {
             return new ArrayList<>();
         }
 
-        List<SimpleClientHandler> clientHandlers = new ArrayList<>();
+        List<HttpClientHandler> clientHandlers = new ArrayList<>();
 
         addresses.forEach(address -> SERVICE_NODES.stream()
                 .filter(node -> address.equals(node.getServerAddress()) && node.getAliveState() == NodeStatusEnum.ONLINE)
@@ -145,7 +145,7 @@ public class LocalServiceNodeTable {
      *
      * @param clientHandler 客户端连接Handler
      */
-    public static void setNodeAlive(SimpleClientHandler clientHandler) {
+    public static void setNodeAlive(HttpClientHandler clientHandler) {
         String address = clientHandler.getNettyClient().getAddress();
         updateNode(address, (node) -> {
             node.setClientHandler(clientHandler);

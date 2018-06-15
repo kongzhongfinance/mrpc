@@ -1,7 +1,7 @@
 package com.kongzhong.mrpc.client.cluster.loadblance;
 
 import com.kongzhong.mrpc.client.cluster.LoadBalance;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -18,8 +18,8 @@ public class RandomStrategy implements LoadBalance {
     private Random random = new Random();
 
     @Override
-    public SimpleClientHandler next(String appId, String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = handlers(appId, serviceName);
+    public HttpClientHandler next(String appId, String serviceName) throws Exception {
+        List<HttpClientHandler> handlers = handlers(appId, serviceName);
         return handlers.get(random.nextInt(handlers.size()));
     }
 

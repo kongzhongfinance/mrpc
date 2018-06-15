@@ -4,8 +4,8 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.kongzhong.mrpc.common.thread.RpcThreadPool;
 import com.kongzhong.mrpc.config.NettyConfig;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.NetUtils;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -215,7 +215,7 @@ public class Connections {
      * @param serviceName 服务全名称
      * @return 返回查询到的客户端列表
      */
-    public List<SimpleClientHandler> getHandlers(String serviceName) throws Exception {
+    public List<HttpClientHandler> getHandlers(String serviceName) throws Exception {
         return LocalServiceNodeTable.getAliveNodes(serviceName);
     }
 

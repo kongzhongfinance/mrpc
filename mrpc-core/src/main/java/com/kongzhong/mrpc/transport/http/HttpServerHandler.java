@@ -1,20 +1,23 @@
 package com.kongzhong.mrpc.transport.http;
 
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.enums.MediaTypeEnum;
 import com.kongzhong.mrpc.enums.NodeStatusEnum;
+import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.exception.RpcException;
 import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.model.*;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
+import com.kongzhong.mrpc.server.RpcMapping;
 import com.kongzhong.mrpc.server.SimpleRpcServer;
-import com.kongzhong.mrpc.transport.netty.SimpleServerHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
 import com.kongzhong.mrpc.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import static com.kongzhong.mrpc.Const.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
@@ -36,10 +40,20 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * 2017/4/21
  */
 @Slf4j
-public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
+public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
+    private Map<String, ServiceBean> serviceBeanMap;
+
+    private static boolean IS_OFFLINE = false;
 
     HttpServerHandler() {
-        super();
+        this.serviceBeanMap = RpcMapping.me().getServiceBeanMap();
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        log.debug("Channel Inactive {}", ctx.channel());
     }
 
     @Override
@@ -57,7 +71,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             log.debug("Rpc receive ping for {}", ctx.channel());
 
             HttpServerStatus httpServerStatus = new HttpServerStatus();
-            httpServerStatus.setStatus(SimpleServerHandler.IS_OFFLINE ? NodeStatusEnum.OFFLINE.toString() : NodeStatusEnum.ONLINE.toString());
+            httpServerStatus.setStatus(IS_OFFLINE ? NodeStatusEnum.OFFLINE.toString() : NodeStatusEnum.ONLINE.toString());
 
             String content = JacksonSerialize.toJSONString(httpServerStatus);
 
@@ -68,8 +82,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
+        // 服务下线，从 zk 剔除节点，不接收新请求，进程还存活。
         if ("/offline".equals(path)) {
-            SimpleServerHandler.offline();
+            offline();
 
             HttpServerStatus httpServerStatus = new HttpServerStatus();
             httpServerStatus.setStatus(NodeStatusEnum.OFFLINE.toString());
@@ -83,8 +98,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
+        // 服务上线，添加节点到 zk，接收新请求
         if ("/online".equals(path)) {
-            SimpleServerHandler.online();
+            this.online();
 
             HttpServerStatus httpServerStatus = new HttpServerStatus();
             httpServerStatus.setStatus(NodeStatusEnum.ONLINE.toString());
@@ -98,7 +114,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             return;
         }
 
-        if (SimpleServerHandler.IS_OFFLINE) {
+        if (IS_OFFLINE) {
             this.sendError(ctx, httpRequest, new ConnectException("The server has been offline."));
             return;
         }
@@ -260,6 +276,17 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         } else {
             log.error("Server io error: {}", ctx.channel(), cause);
         }
+    }
+
+    public static void offline() {
+        log.info("Offline now.");
+        IS_OFFLINE = true;
+        EventManager.me().fireEvent(EventType.SERVER_OFFLINE);
+    }
+
+    public void online() {
+        log.info("Online now.");
+        IS_OFFLINE = false;
     }
 
 }

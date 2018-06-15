@@ -5,8 +5,7 @@ import com.kongzhong.mrpc.client.RpcCallbackFuture;
 import com.kongzhong.mrpc.exception.ConnectException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
-import lombok.AllArgsConstructor;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 import lombok.Getter;
 
 /**
@@ -17,10 +16,10 @@ import lombok.Getter;
 public class RpcInvoker {
 
     @Getter
-    private RpcRequest          request;
-    private SimpleClientHandler clientHandler;
+    private RpcRequest        request;
+    private HttpClientHandler clientHandler;
 
-    public RpcInvoker(RpcRequest request, SimpleClientHandler clientHandler) {
+    public RpcInvoker(RpcRequest request, HttpClientHandler clientHandler) {
         this.request = request;
         this.clientHandler = clientHandler;
         String address = clientHandler.getNettyClient().getAddress();

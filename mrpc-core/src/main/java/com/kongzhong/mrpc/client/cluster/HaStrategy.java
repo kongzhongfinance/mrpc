@@ -2,7 +2,7 @@ package com.kongzhong.mrpc.client.cluster;
 
 import com.kongzhong.mrpc.client.invoke.RpcInvoker;
 import com.kongzhong.mrpc.model.RpcRequest;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
+import com.kongzhong.mrpc.transport.http.HttpClientHandler;
 
 /**
  * HA策略
@@ -16,7 +16,7 @@ public interface HaStrategy {
     Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable;
 
     default Object invoke(RpcRequest request, LoadBalance loadBalance) throws Throwable {
-        SimpleClientHandler clientHandler = loadBalance.next(request.getAppId(), request.getClassName());
+        HttpClientHandler clientHandler = loadBalance.next(request.getAppId(), request.getClassName());
         clientHandler.addHit();
         RpcInvoker rpcInvoker = new RpcInvoker(request, clientHandler);
         return rpcInvoker.invoke();
