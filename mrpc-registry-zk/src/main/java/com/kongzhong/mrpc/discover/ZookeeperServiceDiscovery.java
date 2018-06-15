@@ -5,6 +5,7 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
@@ -93,7 +94,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     private Set<String> discoveryService(String appId, String serviceName) {
         String path = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
         // 发现地址列表
-        Set<String> addressSet = new HashSet<>();
+        Set<String> addressSet = Sets.newConcurrentHashSet();
         if (zkClient.exists(path)) {
             addressSet.addAll(zkClient.getChildren(path));
         }
@@ -120,7 +121,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         } else {
 
             Set<String>              deadServices = LocalServiceNodeTable.getDeadServices();
-            Map<String, Set<String>> serviceMap   = new HashMap<>();
+            Map<String, Set<String>> serviceMap   = Maps.newConcurrentMap();
 
             if (CollectionUtils.isNotEmpty(deadServices)) {
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
