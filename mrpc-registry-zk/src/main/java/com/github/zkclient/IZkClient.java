@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -141,7 +141,7 @@ public interface IZkClient extends Closeable {
     /**
      * Create a persistent node with empty data (null)
      * <p>
-     * If the createParents is true, neither {@link ZkNodeExistsException} nor {@link ZkNoNodeException} were throwed.
+     * If the createParents is true, neither {@link ZkNodeExistsException} nor {@link com.github.zkclient.exception.ZkNoNodeException} were throwed.
      * </p>
      *
      * @param path          the path for the node
@@ -237,7 +237,7 @@ public interface IZkClient extends Closeable {
      *
      * @param path the path for the node
      * @return the data for the node
-     * @throws ZkNoNodeException if the node not exists
+     * @throws com.github.zkclient.exception.ZkNoNodeException if the node not exists
      * @see #readData(String, boolean)
      */
     byte[] readData(String path);
@@ -246,7 +246,7 @@ public interface IZkClient extends Closeable {
      * read the data for the node
      *
      * @param path                      the path for the node
-     * @param returnNullIfPathNotExists if true no {@link ZkNoNodeException} thrown
+     * @param returnNullIfPathNotExists if true no {@link com.github.zkclient.exception.ZkNoNodeException} thrown
      * @return the data for the node
      */
     byte[] readData(String path, boolean returnNullIfPathNotExists);
@@ -347,7 +347,7 @@ public interface IZkClient extends Closeable {
      *
      * @return true if the client connects the server
      * @throws ZkInterruptedException the thread was interrupted
-     * @see #waitForKeeperState(KeeperState, long, TimeUnit)
+     * @see #waitForKeeperState(org.apache.zookeeper.Watcher.Event.KeeperState, long, java.util.concurrent.TimeUnit)
      */
     boolean waitUntilConnected() throws ZkInterruptedException;
 
@@ -386,7 +386,7 @@ public interface IZkClient extends Closeable {
      * @param data            the data for the node
      * @param expectedVersion the version for the node
      * @return the stat for the node
-     * @see #cas(String, DataUpdater)
+     * @see #cas(String, com.github.zkclient.IZkClient.DataUpdater)
      */
     Stat writeData(String path, byte[] data, int expectedVersion);
 
@@ -395,7 +395,7 @@ public interface IZkClient extends Closeable {
      *
      * @param ops operations
      * @return op result
-     * @see ZooKeeper#multi(Iterable)
+     * @see org.apache.zookeeper.ZooKeeper#multi(Iterable)
      * @see org.apache.zookeeper.Op
      * @see org.apache.zookeeper.OpResult
      */

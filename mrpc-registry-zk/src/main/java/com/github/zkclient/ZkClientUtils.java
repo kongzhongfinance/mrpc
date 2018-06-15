@@ -1,12 +1,12 @@
 /**
  * Copyright 2010 the original author or authors.
- * <p>
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * <p>
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,8 +22,7 @@ import com.github.zkclient.exception.ZkInterruptedException;
 
 public class ZkClientUtils {
 
-    private ZkClientUtils() {
-    }
+    private ZkClientUtils() {}
 
     public static enum ZkVersion {
         V33, V34
@@ -36,9 +35,11 @@ public class ZkClientUtils {
         try {
             Class.forName("org.apache.zookeeper.OpResult");
             version = ZkVersion.V34;
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             version = ZkVersion.V33;
-        } finally {
+        }
+        finally {
             zkVersion = version;
         }
 
@@ -56,7 +57,7 @@ public class ZkClientUtils {
      * This sets the interrupt flag if the catched exception was an
      * {@link InterruptedException}. Catching such an exception always clears
      * the interrupt flag.
-     *
+     * 
      * @param catchedException
      *            The catched exception.
      */
@@ -87,18 +88,23 @@ public class ZkClientUtils {
             socket.connect(new InetSocketAddress("localhost", port), 200);
             socket.close();
             return false;
-        } catch (SocketTimeoutException e) {
+        }
+        catch (SocketTimeoutException e) {
             return true;
-        } catch (ConnectException e) {
+        }
+        catch (ConnectException e) {
             return true;
-        } catch (SocketException e) {
+        }
+        catch (SocketException e) {
             if (e.getMessage().equals("Connection reset by peer")) {
                 return true;
             }
             throw new RuntimeException(e);
-        } catch (UnknownHostException e) {
+        }
+        catch (UnknownHostException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -110,7 +116,8 @@ public class ZkClientUtils {
         }
         try {
             return InetAddress.getLocalHost().getHostName();
-        } catch (final UnknownHostException e) {
+        }
+        catch (final UnknownHostException e) {
             throw new RuntimeException("unable to retrieve localhost name");
         }
     }
