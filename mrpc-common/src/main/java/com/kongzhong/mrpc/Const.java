@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
  */
 public interface Const {
 
-    String VERSION = "0.1.5-SNAPSHOT";
+    String VERSION = "0.2.0-SNAPSHOT";
 
     String BANNER = "\n" +
             "\t\t    __  _______  ____  ______\n" +
