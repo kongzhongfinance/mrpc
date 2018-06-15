@@ -155,18 +155,16 @@ public class Connections {
     public void recoverConnect(Map<String, Set<String>> serviceMap) {
 
         // 把services绑定的服务修改为addresses
-        serviceMap.forEach((serviceName, addresses) -> addresses.forEach(address -> {
-            String  host = address.split(":")[0];
-            Integer port = Integer.valueOf(address.split(":")[1]);
-            // ping 服务端
-            if (NetUtils.pingHost(host, port, 2000)) {
+        Set<Map.Entry<String, Set<String>>> entries = serviceMap.entrySet();
+        for (Map.Entry<String, Set<String>> entry : entries) {
+            String      serviceName = entry.getKey();
+            Set<String> addresses   = entry.getValue();
+            for (String address : addresses) {
                 LocalServiceNodeTable.addIfNotPresent(address);
                 LocalServiceNodeTable.reConnecting(address);
                 LocalServiceNodeTable.updateServiceNode(serviceName, address);
-            } else {
-                addresses.remove(address);
             }
-        }));
+        }
 
         // 连接
         serviceMap.values().stream()

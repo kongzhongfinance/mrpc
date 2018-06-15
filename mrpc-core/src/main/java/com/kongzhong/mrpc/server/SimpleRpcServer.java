@@ -483,16 +483,18 @@ public abstract class SimpleRpcServer {
             public void onSuccess(FullHttpResponse response) {
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用
                 String requestId = response.headers().get(HEADER_REQUEST_ID);
-                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
-                    if (channelFuture.isSuccess()) {
-                        log.debug("Server send to {} success, requestId [{}]", ctx.channel(), requestId);
-                    } else {
-                        log.debug("Server send to {} fail, requestId [{}]", ctx.channel(), requestId);
-                    }
-                    listenableFutures.remove(listenableFuture);
-                });
-            }
 
+                if (ctx.channel().isActive() && ctx.channel().isOpen() && ctx.channel().isWritable()) {
+                    ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
+                        if (channelFuture.isSuccess()) {
+                            log.debug("Server send to {} success, requestId [{}]", ctx.channel(), requestId);
+                        } else {
+                            log.debug("Server send to {} fail, requestId [{}]", ctx.channel(), requestId);
+                        }
+                        listenableFutures.remove(listenableFuture);
+                    });
+                }
+            }
             @Override
             public void onFailure(Throwable t) {
                 log.error("", t);

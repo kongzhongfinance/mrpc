@@ -237,7 +237,7 @@ public class LocalServiceNodeTable {
      * @param serverAddress 服务地址
      */
     static void updateServiceNode(String serviceName, String serverAddress) {
-        Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, new HashSet<>());
+        Set<String> serviceNodes = SERVICE_MAPPINGS.getOrDefault(serviceName, Sets.newConcurrentHashSet());
         serviceNodes.add(serverAddress);
         SERVICE_MAPPINGS.put(serviceName, serviceNodes);
 

@@ -1,12 +1,12 @@
 /**
  * Copyright 2010 the original author or authors.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -174,7 +174,7 @@ public class ZkClient implements Watcher, IZkClient {
             listeners.add(listener);
         }
         watchForData(path);
-        LOG.debug("Subscribed rows changes for " + path);
+        LOG.debug("Subscribed data changes for " + path);
     }
 
     public void unsubscribeDataChanges(String path, IZkDataListener dataListener) {
@@ -378,7 +378,7 @@ public class ZkClient implements Watcher, IZkClient {
     }
 
     private void processStateChanged(WatchedEvent event) {
-        LOG.info("Zookeeper state changed (" + event.getState() + ")");
+        LOG.info("zookeeper state changed (" + event.getState() + ")");
         setCurrentState(event.getState());
         if (getShutdownTrigger()) {
             return;
@@ -438,10 +438,11 @@ public class ZkClient implements Watcher, IZkClient {
         } catch (ZkNoNodeException e) {
             return true;
         }
-
-        for (String subPath : children) {
-            if (!deleteRecursive(path + "/" + subPath)) {
-                return false;
+        if (children != null){
+            for (String subPath : children) {
+                if (!deleteRecursive(path + "/" + subPath)) {
+                    return false;
+                }
             }
         }
 
