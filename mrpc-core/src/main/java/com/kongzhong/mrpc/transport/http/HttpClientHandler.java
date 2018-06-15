@@ -90,6 +90,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                         log.debug("Client requestId [{}] send success.", rpcRequest.getRequestId());
                     } else {
                         log.debug("Client requestId [{}] send fail.", rpcRequest.getRequestId());
+                        throw new SystemException("Client requestId [" + rpcRequest.getRequestId() + "] send fail.");
                     }
                 }
             });
