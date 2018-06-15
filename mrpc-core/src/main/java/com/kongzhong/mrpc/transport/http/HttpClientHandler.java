@@ -87,10 +87,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (future.isSuccess()) {
-                        log.debug("Client requestId [{}] send success.", rpcRequest.getRequestId());
+                        log.debug("Client send [{}] success.", rpcRequest.getRequestId());
                     } else {
-                        log.debug("Client requestId [{}] send fail.", rpcRequest.getRequestId());
-                        throw new SystemException("Client requestId [" + rpcRequest.getRequestId() + "] send fail.");
+                        log.debug("Client send [{}] fail.", rpcRequest.getRequestId());
+                        throw new SystemException("Client send [" + rpcRequest.getRequestId() + "] fail.");
                     }
                 }
             });

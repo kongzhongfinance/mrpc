@@ -36,7 +36,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private boolean isInit;
 
-    private IZkChildListener zkChildListener = new ZkChildListener();
+    private IZkChildListener zkChildListener = new ZkChildListener(this);
 
     private Map<String, IZkChildListener> subRelate = Maps.newConcurrentMap();
 
@@ -57,12 +57,12 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
             public void handleStateChanged(Watcher.Event.KeeperState keeperState) throws Exception {
-                watchNode(zkClient);
+                watchNode();
             }
 
             @Override
             public void handleNewSession() throws Exception {
-                watchNode(zkClient);
+                watchNode();
             }
         });
     }
@@ -109,7 +109,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
      *
      * @param zkClient Zk客户端
      */
-    private synchronized void watchNode(@NonNull final IZkClient zkClient) {
+    public synchronized void watchNode() {
         String appId = ClientConfig.me().getAppId();
         String path  = Constant.ZK_ROOT + "/" + appId;
 
@@ -151,14 +151,6 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
-    class ZkChildListener implements IZkChildListener {
-        @Override
-        public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception {
-            if (null != currentChildren && !currentChildren.isEmpty()) {
-                watchNode(zkClient);
-            }
-        }
-    }
 
     @Override
     public void stop() {
