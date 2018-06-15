@@ -83,17 +83,20 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             this.setChannelRequestId(rpcRequest.getRequestId());
 
-            channel.writeAndFlush(req).addListener(new GenericFutureListener<Future<? super Void>>() {
-                @Override
-                public void operationComplete(Future<? super Void> future) throws Exception {
-                    if (future.isSuccess()) {
-                        log.debug("Client send [{}] success.", rpcRequest.getRequestId());
-                    } else {
-                        log.debug("Client send [{}] fail.", rpcRequest.getRequestId());
-                        throw new SystemException("Client send [" + rpcRequest.getRequestId() + "] fail.");
+            if (channel.isActive() && channel.isOpen() && channel.isWritable()) {
+                channel.writeAndFlush(req).addListener(new GenericFutureListener<Future<? super Void>>() {
+                    @Override
+                    public void operationComplete(Future<? super Void> future) throws Exception {
+                        if (future.isSuccess()) {
+                            log.debug("Client send [{}] success.", rpcRequest.getRequestId());
+                        } else {
+                            log.debug("Client send [{}] fail.", rpcRequest.getRequestId());
+                            throw new SystemException("Client send [" + rpcRequest.getRequestId() + "] fail.");
+                        }
                     }
-                }
-            });
+                });
+            }
+
 
         } catch (Exception e) {
             log.error("Client send request error", e);
