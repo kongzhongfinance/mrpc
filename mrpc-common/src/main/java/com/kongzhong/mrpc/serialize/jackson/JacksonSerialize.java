@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.zapodot.jackson.java8.JavaOptionalModule;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -35,13 +34,13 @@ public class JacksonSerialize {
         MAPPER.registerModule(initModule());
         MAPPER.registerModule(new JavaOptionalModule());
         MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         MAPPER.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
         MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     private static SimpleModule initModule() {
         return new SimpleModule().
+                addSerializer(Date.class, new DateSerializer()).
                 addDeserializer(Date.class, new DateDeserialize()).
                 addSerializer(LocalTime.class, new LocalTimeSerializer()).
                 addDeserializer(LocalTime.class, new LocalTimeDeserializer()).

@@ -11,18 +11,30 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
+ * String -> Date
+ *
  * @author biezhi
  * @date 2017/9/13
  */
 @Slf4j
 public class DateDeserialize extends JsonDeserializer<Date> {
 
+    private static final DateTimeFormatter DTF     = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter NEW_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
     @Override
     public Date deserialize(JsonParser jsonparser, DeserializationContext ctxt) throws IOException {
-        String        dateStr   = jsonparser.getText();
-        LocalDateTime formatted = LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        Instant       instant   = formatted.atZone(ZoneId.systemDefault()).toInstant();
-        Date          date      = Date.from(instant);
+        String dateStr = jsonparser.getText();
+
+        LocalDateTime formatted = null;
+        if (dateStr.contains(".")) {
+            formatted = LocalDateTime.parse(dateStr, NEW_DTF);
+        } else {
+            formatted = LocalDateTime.parse(dateStr, DTF);
+        }
+
+        Instant instant = formatted.atZone(ZoneId.systemDefault()).toInstant();
+        Date    date    = Date.from(instant);
         return date;
     }
 }

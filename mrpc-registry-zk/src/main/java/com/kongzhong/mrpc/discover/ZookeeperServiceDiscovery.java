@@ -120,9 +120,8 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             log.warn("Can not find any address node on path: {}. please check your zookeeper services :)\n", path);
         } else {
 
-            Set<String> deadServices = LocalServiceNodeTable.getDeadServices();
-
-            Map<String, Set<String>> serviceMap = Maps.newConcurrentMap();
+            Set<String>              deadServices = LocalServiceNodeTable.getDeadServices();
+            Map<String, Set<String>> serviceMap   = Maps.newConcurrentMap();
 
             if (CollectionUtils.isNotEmpty(deadServices)) {
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
