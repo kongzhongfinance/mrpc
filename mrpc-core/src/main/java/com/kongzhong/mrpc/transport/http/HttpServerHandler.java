@@ -230,7 +230,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Server io error: {}", ctx.channel(), cause);
+        if(!cause.getMessage().contains("Connection reset by peer")){
+            log.error("Server io error: {}", ctx.channel(), cause);
+        }
     }
 
 }

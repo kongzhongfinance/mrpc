@@ -148,9 +148,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Client receive body error", cause);
-        super.sendError(ctx, cause);
-//        ctx.close();
+        if(!cause.getMessage().contains("Connection reset by peer")){
+            log.error("Client receive body error", cause);
+            super.sendError(ctx, cause);
+        }
     }
 
 }
