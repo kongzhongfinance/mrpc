@@ -26,12 +26,19 @@ public class DateSerializer extends JsonSerializer<Date> {
 
     @Override
     public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-        String time = date.getTime() + "";
-        if (time.endsWith("000")) {
-            jsonGenerator.writeString(SDF.format(date) + ".000");
-        } else {
-            jsonGenerator.writeString(NEW_SDF.format(date));
+//        jsonGenerator.writeString(SDF.format(date));
+
+        if (null == date) {
+            jsonGenerator.writeString("");
+            return;
         }
+        jsonGenerator.writeString(SDF.format(date));
+//        String time = date.getTime() + "";
+//        if (time.endsWith("000")) {
+//            jsonGenerator.writeString(SDF.format(date));
+//        } else {
+//            jsonGenerator.writeString(NEW_SDF.format(date));
+//        }
     }
 
 }

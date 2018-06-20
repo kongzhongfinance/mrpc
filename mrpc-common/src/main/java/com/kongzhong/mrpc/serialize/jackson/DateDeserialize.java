@@ -3,10 +3,13 @@ package com.kongzhong.mrpc.serialize.jackson;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -26,6 +29,12 @@ public class DateDeserialize extends JsonDeserializer<Date> {
     public Date deserialize(JsonParser jsonparser, DeserializationContext ctxt) throws IOException {
         String dateStr = jsonparser.getText();
 
+//        LocalDateTime formatted = LocalDateTime.parse(dateStr, DTF);
+
+        if (StringUtils.isEmpty(dateStr)) {
+            return null;
+        }
+
         LocalDateTime formatted = null;
         if (dateStr.contains(".")) {
             formatted = LocalDateTime.parse(dateStr, NEW_DTF);
@@ -36,5 +45,7 @@ public class DateDeserialize extends JsonDeserializer<Date> {
         Instant instant = formatted.atZone(ZoneId.systemDefault()).toInstant();
         Date    date    = Date.from(instant);
         return date;
+
     }
+
 }
