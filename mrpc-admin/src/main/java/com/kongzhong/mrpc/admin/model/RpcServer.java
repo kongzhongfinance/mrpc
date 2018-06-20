@@ -14,7 +14,6 @@ import java.util.Set;
  * @date 2018/6/7
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class RpcServer extends Model {
 
     private Long          id;

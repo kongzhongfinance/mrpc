@@ -5,6 +5,7 @@ import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.http.Session;
 import com.kongzhong.mrpc.admin.model.SysUser;
 
 import static com.kongzhong.mrpc.admin.controller.AuthController.COOKIE_KEY;
@@ -24,7 +25,8 @@ public class BaseHook implements WebHook {
 
         String uri = request.uri();
         if (uri.startsWith("/admin/")) {
-            SysUser sysUser = request.session().attribute(SESSION_KEY);
+            Session session = request.session();
+            SysUser sysUser = session.attribute(SESSION_KEY);
             if (null == sysUser) {
                 String cookie = request.cookie(COOKIE_KEY);
                 response.redirect("/login");

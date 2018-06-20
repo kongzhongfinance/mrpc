@@ -193,7 +193,7 @@ public class HttpClientHandler extends SimpleChannelInboundHandler<FullHttpRespo
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Channel inActive: {}", ctx.channel());
+        log.debug("Channel InActive: {}", ctx.channel());
         this.nettyClient.cancelSchedule(ctx.channel());
 
         // 移除客户端Channel
