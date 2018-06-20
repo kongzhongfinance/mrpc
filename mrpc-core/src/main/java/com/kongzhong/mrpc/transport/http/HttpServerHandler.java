@@ -225,7 +225,9 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         httpResponse.headers().set(CACHE_CONTROL, "no-cache");
         httpResponse.headers().set(PRAGMA, "no-cache");
         httpResponse.headers().set(EXPIRES, "-1");
-        ctx.writeAndFlush(httpResponse);
+        if(ctx.channel().isActive()){
+            ctx.writeAndFlush(httpResponse);
+        }
     }
 
     @Override

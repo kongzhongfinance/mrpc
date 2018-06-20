@@ -491,7 +491,7 @@ public abstract class SimpleRpcServer {
                 String requestId = response.headers().get(HEADER_REQUEST_ID);
 
                 // 判断客户端是否存活，如果不存活则不发送
-                if (ctx.channel().isActive() && ctx.channel().isOpen() && ctx.channel().isWritable()) {
+                if (ctx.channel().isActive()) {
                     ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
                         if (channelFuture.isSuccess()) {
                             log.debug("Server send to {} success, requestId [{}]", ctx.channel(), requestId);
@@ -500,6 +500,8 @@ public abstract class SimpleRpcServer {
                         }
                         listenableFutures.remove(listenableFuture);
                     });
+                } else {
+                    log.warn("Channel Inactived: {}", ctx.channel());
                 }
             }
 
