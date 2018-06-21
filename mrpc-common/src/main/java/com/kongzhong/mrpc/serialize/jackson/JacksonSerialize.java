@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kongzhong.mrpc.exception.SerializeException;
+import com.kongzhong.mrpc.exception.SystemException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,24 +61,22 @@ public class JacksonSerialize {
      * @param object
      * @return
      */
-    public static String toJSONString(Object object) {
+    public static String toJSONString(Object object) throws SerializeException {
         try {
             return MAPPER.writeValueAsString(object);
         } catch (Exception e) {
-            log.error("Object to json stirng error", e);
-            return null;
+            throw new SerializeException(e);
         }
     }
 
-    public static String toJSONString(Object object, boolean pretty) {
+    public static String toJSONString(Object object, boolean pretty) throws SerializeException {
         if (!pretty) {
             return toJSONString(object);
         }
         try {
             return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(object);
         } catch (Exception e) {
-            log.error("Object to json stirng error", e);
-            return null;
+            throw new SerializeException(e);
         }
     }
 

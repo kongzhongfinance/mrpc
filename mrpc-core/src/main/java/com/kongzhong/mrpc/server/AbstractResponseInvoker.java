@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
@@ -108,15 +109,24 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
      */
     protected Throwable buildErrorResponse(Throwable t, RpcResponse response) {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
-        String exception;
-        String className;
+        String exception = "";
+        String className = "";
         try {
             t.getClass().getConstructor();
             exception = JacksonSerialize.toJSONString(t);
             className = t.getClass().getName();
         } catch (Exception e) {
-            exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), e));
-            className = SystemException.class.getName();
+            try {
+                exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), e));
+                className = SystemException.class.getName();
+            } catch (SerializeException e1) {
+                try {
+                    exception = JacksonSerialize.toJSONString(e1);
+                    className = SerializeException.class.getName();
+                } catch (SerializeException e2) {
+                    log.error("", e2);
+                }
+            }
         }
         response.getContext().put(Const.SERVER_EXCEPTION, exception);
         response.setReturnType(className);
