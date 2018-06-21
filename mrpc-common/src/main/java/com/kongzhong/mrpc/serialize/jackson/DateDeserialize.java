@@ -13,6 +13,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import static com.kongzhong.mrpc.utils.StringUtils.isLong;
+
 /**
  * String -> Date
  *
@@ -28,11 +30,11 @@ public class DateDeserialize extends JsonDeserializer<Date> {
     @Override
     public Date deserialize(JsonParser jsonparser, DeserializationContext ctxt) throws IOException {
         String dateStr = jsonparser.getText();
-
-//        LocalDateTime formatted = LocalDateTime.parse(dateStr, DTF);
-
         if (StringUtils.isEmpty(dateStr)) {
             return null;
+        }
+        if (isLong(dateStr)) {
+            return new Date(Long.valueOf(dateStr));
         }
 
         LocalDateTime formatted = null;
@@ -45,7 +47,6 @@ public class DateDeserialize extends JsonDeserializer<Date> {
         Instant instant = formatted.atZone(ZoneId.systemDefault()).toInstant();
         Date    date    = Date.from(instant);
         return date;
-
     }
 
 }
