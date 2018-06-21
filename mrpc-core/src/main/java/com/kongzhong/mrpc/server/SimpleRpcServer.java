@@ -365,11 +365,11 @@ public abstract class SimpleRpcServer {
                 .services(ServiceStatusTable.me().getServiceStatus())
                 .build();
 
-        String body = JacksonSerialize.toJSONString(serviceNodePayload);
-        log.debug("Request URL\t: {}", url);
-        log.debug("Send body\t\t: {}", body);
-
         try {
+            String body = JacksonSerialize.toJSONString(serviceNodePayload);
+            log.debug("Request URL\t: {}", url);
+            log.debug("Send body\t\t: {}", body);
+
             int code = HttpRequest.post(url)
                     .contentType("application/json;charset=utf-8")
                     .connectTimeout(10_000)
