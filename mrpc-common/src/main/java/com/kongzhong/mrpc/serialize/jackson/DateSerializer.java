@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -21,24 +20,13 @@ import java.util.Date;
 @NoArgsConstructor
 public class DateSerializer extends JsonSerializer<Date> {
 
-    private static final SimpleDateFormat SDF     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final SimpleDateFormat NEW_SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
     @Override
     public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-//        jsonGenerator.writeString(SDF.format(date));
-
         if (null == date) {
             jsonGenerator.writeString("");
             return;
         }
-        jsonGenerator.writeString(SDF.format(date));
-//        String time = date.getTime() + "";
-//        if (time.endsWith("000")) {
-//            jsonGenerator.writeString(SDF.format(date));
-//        } else {
-//            jsonGenerator.writeString(NEW_SDF.format(date));
-//        }
+        jsonGenerator.writeString(date.getTime() + "");
     }
 
 }
