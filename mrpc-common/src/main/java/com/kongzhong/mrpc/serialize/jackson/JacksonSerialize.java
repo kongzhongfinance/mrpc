@@ -41,7 +41,6 @@ public class JacksonSerialize {
 
     private static SimpleModule initModule() {
         return new SimpleModule().
-                addSerializer(Date.class, new DateSerializer()).
                 addDeserializer(Date.class, new DateDeserialize()).
                 addSerializer(LocalTime.class, new LocalTimeSerializer()).
                 addDeserializer(LocalTime.class, new LocalTimeDeserializer()).
