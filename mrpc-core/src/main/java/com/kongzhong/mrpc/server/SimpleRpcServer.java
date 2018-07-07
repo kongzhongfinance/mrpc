@@ -172,6 +172,9 @@ public abstract class SimpleRpcServer {
     private volatile boolean isClosed = false;
     private          Lock    lock     = new ReentrantLock();
 
+    private EventLoopGroup boss   = new NioEventLoopGroup(1);
+    private EventLoopGroup worker = new NioEventLoopGroup();
+
     /**
      * 启动RPC服务端
      */
@@ -220,9 +223,6 @@ public abstract class SimpleRpcServer {
 
 //        ThreadFactory threadRpcFactory = new NamedThreadFactory(poolName);
 //        int parallel = Runtime.getRuntime().availableProcessors() * 2;
-
-        EventLoopGroup boss   = new NioEventLoopGroup(1);
-        EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -570,6 +570,11 @@ public abstract class SimpleRpcServer {
             // 拒绝连接
             SimpleServerHandler.shutdown();
             EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
+
+            worker.shutdownGracefully();
+            log.info("worker EventLoopGroup shutdown");
+            boss.shutdownGracefully();
+            log.info("boss EventLoopGroup shutdown");
 
             for (ListenableFuture listenableFuture : listenableFutures) {
                 while (!listenableFuture.isDone()) {
