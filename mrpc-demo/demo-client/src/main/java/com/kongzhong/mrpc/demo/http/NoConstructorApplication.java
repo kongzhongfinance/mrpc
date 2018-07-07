@@ -18,7 +18,6 @@ public class NoConstructorApplication {
 
     public static void main(String[] args) throws Exception {
         RpcSpringClient rpcClient = new RpcSpringClient();
-        rpcClient.setTransport("http");
         final PayService payService = rpcClient.getProxyReferer(PayService.class);
         NoConstructor noConstructor = payService.noConstructor(new NoConstructor("王大锤"));
         System.out.println(noConstructor);

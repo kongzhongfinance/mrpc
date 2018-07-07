@@ -129,11 +129,13 @@ public class NetUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(protocol).append("://");
         sb.append(host);
-        if (context.charAt(0) != '/')
+        if (context.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(context);
-        if (path.charAt(0) != '/')
+        if (path.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(path);
         return sb.toString();
     }
@@ -149,8 +151,9 @@ public class NetUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(protocol).append("://");
         sb.append(host).append(':').append(port);
-        if (path.charAt(0) != '/')
+        if (path.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(path);
         return sb.toString();
     }
@@ -166,11 +169,13 @@ public class NetUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(protocol).append("://");
         sb.append(host).append(':').append(port);
-        if (context.charAt(0) != '/')
+        if (context.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(context);
-        if (path.charAt(0) != '/')
+        if (path.charAt(0) != '/') {
             sb.append('/');
+        }
         sb.append(path);
         return sb.toString();
     }
@@ -180,8 +185,9 @@ public class NetUtils {
     }
 
     private static boolean isValidAddress(InetAddress address) {
-        if (address == null || address.isLoopbackAddress())
+        if (address == null || address.isLoopbackAddress()) {
             return false;
+        }
         String name = address.getHostAddress();
         return (name != null
                 && !ANYHOST.equals(name)
@@ -207,8 +213,9 @@ public class NetUtils {
      * @return 本地网卡IP
      */
     public static InetAddress getLocalAddress() {
-        if (LOCAL_ADDRESS != null)
+        if (LOCAL_ADDRESS != null) {
             return LOCAL_ADDRESS;
+        }
         InetAddress localAddress = getLocalAddress0();
         LOCAL_ADDRESS = localAddress;
         return localAddress;
@@ -254,34 +261,6 @@ public class NetUtils {
         }
 //        logger.error("Could not get local host ip address, will use 127.0.0.1 instead.");
         return localAddress;
-    }
-
-    public static String findAddressFromUrl(String url) {
-        String address = "";
-        Pattern ADDRESS_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}\\:\\d{1,5}");
-        Matcher matcher = ADDRESS_PATTERN.matcher(url);
-        if (matcher.find()) {
-            matcher.reset();
-            while (matcher.find()) {// 找到匹配的字符串
-                address = matcher.group(0);
-                break;
-            }
-        }
-        return address;
-    }
-
-    public static String findIpFromUrl(String url) {
-        String address = "";
-        Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}");
-        Matcher matcher = IP_PATTERN.matcher(url);
-        if (matcher.find()) {
-            matcher.reset();
-            while (matcher.find()) {// 找到匹配的字符串
-                address = matcher.group(0);
-                break;
-            }
-        }
-        return address;
     }
 
     /**

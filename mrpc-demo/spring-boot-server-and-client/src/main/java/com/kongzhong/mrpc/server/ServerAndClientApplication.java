@@ -13,10 +13,10 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class ServerAndClientApplication {
 
-    @Bean
-    public Referers referers() {
-        return new Referers().add(UserService.class);
-    }
+//    @Bean
+//    public Referers referers() {
+//        return new Referers().add(UserService.class);
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(ServerAndClientApplication.class, args);

@@ -6,7 +6,6 @@ import com.kongzhong.mrpc.model.RequestBody;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.trace.TraceConstants;
 import com.kongzhong.mrpc.transport.netty.NettyClient;
 import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
@@ -19,21 +18,17 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import static com.kongzhong.mrpc.Const.HEADER_METHOD_NAME;
-import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
-import static com.kongzhong.mrpc.Const.HEADER_SERVICE_CLASS;
+import static com.kongzhong.mrpc.Const.*;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderValues.TEXT_PLAIN;
-import static io.netty.handler.codec.http.HttpHeaders.Names.ACCEPT_ENCODING;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpHeaders.Values.GZIP;
 
 /**
@@ -55,12 +50,11 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
      */
     @Override
     public RpcCallbackFuture asyncSendRequest(RpcRequest rpcRequest) {
-        if(isShutdown){
+        if (isShutdown) {
             throw new SystemException("Rpc client has been shutdown.");
         }
         RpcCallbackFuture rpcCallbackFuture = new RpcCallbackFuture(rpcRequest);
-        callbackFutureMap.put(rpcRequest.getRequestId(), rpcCallbackFuture);
-        MDC.put(TraceConstants.TRACE_ID, rpcRequest.getContext().get(TraceConstants.TRACE_ID));
+        CALLBACK_FUTURE_MAP.put(rpcRequest.getRequestId(), rpcCallbackFuture);
 
         RequestBody requestBody = RequestBody.builder()
                 .requestId(rpcRequest.getRequestId())
@@ -75,7 +69,7 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             log.debug("Client send body: {}", JacksonSerialize.toJSONString(requestBody));
 
-            DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc");
+            DefaultFullHttpRequest req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/rpc", false);
             req.headers().set(CONNECTION, KEEP_ALIVE);
             req.headers().set(ACCEPT_ENCODING, GZIP);
             req.headers().set(CONTENT_TYPE, TEXT_PLAIN);
@@ -89,7 +83,18 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             this.setChannelRequestId(rpcRequest.getRequestId());
 
-            channel.writeAndFlush(req);
+            channel.writeAndFlush(req).addListener(new GenericFutureListener<Future<? super Void>>() {
+                @Override
+                public void operationComplete(Future<? super Void> future) throws Exception {
+                    if (future.isSuccess()) {
+                        log.debug("Client requestId [{}] send success.", rpcRequest.getRequestId());
+                    } else {
+                        log.debug("Client requestId [{}] send fail.", rpcRequest.getRequestId());
+                        throw new SystemException("Client requestId [" + rpcRequest.getRequestId() + "] send fail.");
+                    }
+                }
+            });
+
         } catch (Exception e) {
             log.error("Client send request error", e);
         }
@@ -114,10 +119,6 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
         }
 
         RpcResponse rpcResponse = JacksonSerialize.parseObject(body, RpcResponse.class);
-        // TODO: 兼容期，过后删除
-        if(null != rpcResponse.getContext()){
-            MDC.put(TraceConstants.TRACE_ID, rpcResponse.getContext().get(TraceConstants.TRACE_ID));
-        }
 
         if (rpcResponse.getSuccess()) {
             log.debug("Client receive body: {}", JacksonSerialize.toJSONString(rpcResponse));
@@ -133,14 +134,13 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
             }
         }
 
-        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
+        RpcCallbackFuture rpcCallbackFuture = CALLBACK_FUTURE_MAP.get(requestId);
         if (rpcCallbackFuture != null) {
-            callbackFutureMap.remove(requestId);
+            CALLBACK_FUTURE_MAP.remove(requestId);
             rpcCallbackFuture.done(rpcResponse);
         } else {
             log.error("Not found request id [{}]", requestId);
         }
-        MDC.remove(TraceConstants.TRACE_ID);
     }
 
     @Override

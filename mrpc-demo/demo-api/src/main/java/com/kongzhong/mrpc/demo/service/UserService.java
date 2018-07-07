@@ -119,4 +119,25 @@ public interface UserService {
         return time;
     }
 
+    default void testError() {
+        System.out.println("test-------");
+        throw new ExceptionInInitializerError("omg.");
+    }
+
+    String testServerCustomException();
+
+    default String testRestart() {
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "Hello";
+    }
+
+    default Optional<XXDto> testOptional() {
+        XXDto xxDto = new XXDto();
+        xxDto.setAge(22);
+        return Optional.ofNullable(xxDto);
+    }
 }

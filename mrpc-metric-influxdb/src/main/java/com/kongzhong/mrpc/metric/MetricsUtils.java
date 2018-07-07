@@ -15,16 +15,33 @@ public class MetricsUtils {
         this.metricsClient = metricsClient;
     }
 
-    public void general(Class clazz, String method, String name, String type, long count, long time, Map.Entry<String, String>... tags) {
+    public void generalServers(String type, long count, long time, Map.Entry<String, String>... tags) {
         Map<String, String> tagMap = new HashMap<>();
 
-        String metrics = "[" + appId + "]";
+        String metrics = "[RPC_SERVERS]";
+
+        tagMap.put("appId", appId);
+        if (StringUtils.isNotEmpty(type)) {
+            tagMap.put("type", type);
+            metrics += "_" + type;
+        }
+        for (Map.Entry<String, String> tag : tags) {
+            tagMap.put(tag.getKey(), tag.getValue());
+        }
+
+        metricsClient.write(metrics, count, time, tagMap);
+    }
+
+    public void general(String clazz, String method, String name, String type, long count, long time, Map.Entry<String, String>... tags) {
+        Map<String, String> tagMap = new HashMap<>();
+
+        String metrics = "[RPC_SERVER_" + appId + "]";
 
         tagMap.put("appId", appId);
 
-        if (clazz != null) {
-            tagMap.put("class", clazz.getName());
-            metrics += "_" + "{" + clazz.getName().replaceAll("\\.", "_") + "}";
+        if (StringUtils.isNotEmpty(clazz)) {
+            tagMap.put("class", clazz);
+            metrics += "_" + clazz.replaceAll("\\.", "_");
         }
         if (StringUtils.isNotEmpty(method)) {
             tagMap.put("method", method);
@@ -54,7 +71,7 @@ public class MetricsUtils {
      * @param begin  方法执行开始时间
      * @param tags   额外的标签，比如用户ID
      */
-    public void success(Class clazz, String method, String name, long begin, Map.Entry<String, String>... tags) {
+    public void success(String clazz, String method, String name, long begin, Map.Entry<String, String>... tags) {
         general(clazz, method, name, "success", 1, System.currentTimeMillis() - begin, tags);
     }
 
@@ -67,7 +84,7 @@ public class MetricsUtils {
      * @param begin  方法执行开始时间
      * @param tags   额外的标签，比如用户ID
      */
-    public void systemFail(Class clazz, String method, String name, long begin, Map.Entry<String, String>... tags) {
+    public void systemFail(String clazz, String method, String name, long begin, Map.Entry<String, String>... tags) {
         general(clazz, method, name, "systemFail", 1, System.currentTimeMillis() - begin, tags);
     }
 
@@ -80,19 +97,19 @@ public class MetricsUtils {
      * @param begin  方法执行开始时间
      * @param tags   额外的标签，比如用户ID
      */
-    public void serviceFail(Class clazz, String method, String name, long begin, Map.Entry<String, String>... tags) {
+    public void serviceFail(String clazz, String method, String name, long begin, Map.Entry<String, String>... tags) {
         general(clazz, method, name, "serviceFail", 1, System.currentTimeMillis() - begin, tags);
     }
 
-    public void successMultipleTimes(Class clazz, String method, String name, long count, long begin, Map.Entry<String, String>... tags) {
+    public void successMultipleTimes(String clazz, String method, String name, long count, long begin, Map.Entry<String, String>... tags) {
         general(clazz, method, name, "success", count, System.currentTimeMillis() - begin, tags);
     }
 
-    public void systemFailMultipleTimes(Class clazz, String method, String name, long count, long begin, Map.Entry<String, String>... tags) {
+    public void systemFailMultipleTimes(String clazz, String method, String name, long count, long begin, Map.Entry<String, String>... tags) {
         general(clazz, method, name, "systemFail", count, System.currentTimeMillis() - begin, tags);
     }
 
-    public void serviceFailMultipleTimes(Class clazz, String method, String name, long count, long begin, Map.Entry<String, String>... tags) {
+    public void serviceFailMultipleTimes(String clazz, String method, String name, long count, long begin, Map.Entry<String, String>... tags) {
         general(clazz, method, name, "serviceFail", count, System.currentTimeMillis() - begin, tags);
     }
 }

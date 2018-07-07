@@ -14,8 +14,8 @@ import java.util.List;
 public class CallLeastStrategy implements LoadBalance {
 
     @Override
-    public SimpleClientHandler next(String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = handlers(serviceName);
+    public SimpleClientHandler next(String appId, String serviceName) throws Exception {
+        List<SimpleClientHandler> handlers = handlers(appId, serviceName);
         return handlers.stream()
                 .sorted(Comparator.comparingLong(SimpleClientHandler::getHits))
                 .findFirst().get();

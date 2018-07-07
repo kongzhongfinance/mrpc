@@ -40,7 +40,7 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
 
     protected LongAdder hits = new LongAdder();
 
-    public static final Map<String, RpcCallbackFuture> callbackFutureMap = Maps.newConcurrentMap();
+    public static final Map<String, RpcCallbackFuture> CALLBACK_FUTURE_MAP = Maps.newConcurrentMap();
 
     public SimpleClientHandler(NettyClient nettyClient) {
         this.nettyClient = nettyClient;
@@ -124,9 +124,9 @@ public abstract class SimpleClientHandler<T> extends SimpleChannelInboundHandler
     protected void sendError(ChannelHandlerContext ctx, Throwable cause) throws SerializeException {
         Channel           channel           = ctx.channel();
         String            requestId         = channel.attr(AttributeKey.valueOf(Const.HEADER_REQUEST_ID)).get().toString();
-        RpcCallbackFuture rpcCallbackFuture = callbackFutureMap.get(requestId);
+        RpcCallbackFuture rpcCallbackFuture = CALLBACK_FUTURE_MAP.get(requestId);
         if (rpcCallbackFuture != null) {
-            callbackFutureMap.remove(requestId);
+            CALLBACK_FUTURE_MAP.remove(requestId);
             rpcCallbackFuture.done(null);
         }
     }

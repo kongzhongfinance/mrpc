@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 public class FailOverHaStrategy implements HaStrategy {
 
     @Override
-    public Object call(RpcRequest request, LoadBalance loadBalance) throws Exception {
+    public Object call(RpcRequest request, LoadBalance loadBalance) throws Throwable {
         int rc    = ClientConfig.me().getFailOverRetry();
-        int nodes = loadBalance.handlers(request.getClassName()).size();
+        int nodes = loadBalance.handlers(request.getAppId(), request.getClassName()).size();
         if (nodes == 1 || rc < 0) {
             rc = 0;
         }

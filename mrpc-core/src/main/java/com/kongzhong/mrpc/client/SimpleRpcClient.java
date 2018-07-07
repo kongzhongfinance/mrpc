@@ -54,12 +54,6 @@ public abstract class SimpleRpcClient {
     protected String serialize;
 
     /**
-     * 传输协议，默认tcp协议
-     */
-    @Setter
-    protected String transport;
-
-    /**
      * 客户端是否已经初始化
      */
     boolean isInit;
@@ -122,6 +116,8 @@ public abstract class SimpleRpcClient {
      */
     private Map<String, List<ClientBean>> directAddressList = Maps.newHashMap();
 
+    private static final Integer DEFAULT_CLIENT_TIMEOUT = 10000;
+
     /**
      * appId
      */
@@ -163,6 +159,10 @@ public abstract class SimpleRpcClient {
         return Reflection.newProxy(rpcInterface, new SimpleClientProxy(rpcClientInterceptors));
     }
 
+    <T> T getProxyBean(Integer waitTimeout, Class<T> rpcInterface) {
+        return Reflection.newProxy(rpcInterface, new SimpleClientProxy(waitTimeout, rpcClientInterceptors));
+    }
+
     /**
      * 获取服务使用的注册中心
      *
@@ -177,21 +177,25 @@ public abstract class SimpleRpcClient {
 
     protected void init() throws RpcException {
 
-        if (null == serialize) serialize = "kyro";
-        if (null == transport) transport = "tcp";
-        if (null == lbStrategy) lbStrategy = LbStrategyEnum.ROUND.name();
-        if (null == haStrategy) haStrategy = HaStrategyEnum.FAILOVER.name();
+        if (null == serialize) {
+            serialize = "kyro";
+        }
+        if (null == lbStrategy) {
+            lbStrategy = LbStrategyEnum.ROUND.name();
+        }
+        if (null == haStrategy) {
+            haStrategy = HaStrategyEnum.FAILOVER.name();
+        }
 
         RpcSerialize rpcSerialize = null;
-        if (serialize.equalsIgnoreCase("kyro")) {
+        if ("kyro".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
         }
-        if (serialize.equalsIgnoreCase("protostuff")) {
+        if ("protostuff".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
         }
 
         LbStrategyEnum lbStrategyEnum = LbStrategyEnum.valueOf(this.lbStrategy.toUpperCase());
-        TransportEnum  transportEnum  = TransportEnum.valueOf(this.transport.toUpperCase());
         HaStrategyEnum haStrategyEnum = HaStrategyEnum.valueOf(this.haStrategy.toUpperCase());
 
         ClientConfig.me().setAppId(appId);
@@ -203,7 +207,6 @@ public abstract class SimpleRpcClient {
         ClientConfig.me().setRetryCount(retryCount);
         ClientConfig.me().setWaitTimeout(waitTimeout);
         ClientConfig.me().setPingInterval(pingInterval);
-        ClientConfig.me().setTransport(transportEnum);
 
         log.info("{}", ClientConfig.me());
 
@@ -240,11 +243,10 @@ public abstract class SimpleRpcClient {
      * @param inteceptor 客户端拦截器
      */
     public void addInterceptor(RpcClientInterceptor inteceptor) {
-        if (null == inteceptor) {
-            throw new IllegalArgumentException("RpcClientInterceptor not is null");
+        if (null != inteceptor) {
+            log.info("Add interceptor [{}]", inteceptor.toString());
+            this.rpcClientInterceptors.add(inteceptor);
         }
-        log.info("Add interceptor [{}]", inteceptor.toString());
-        this.rpcClientInterceptors.add(inteceptor);
     }
 
     /**
@@ -257,7 +259,10 @@ public abstract class SimpleRpcClient {
         String   serviceName  = clientBean.getServiceName();
         Class<?> serviceClass = clientBean.getServiceClass();
         try {
-            Object object = this.getProxyBean(serviceClass);
+            if (DEFAULT_CLIENT_TIMEOUT.equals(clientBean.getWaitTimeout())) {
+                clientBean.setWaitTimeout(ClientConfig.me().getWaitTimeout());
+            }
+            Object object = this.getProxyBean(clientBean.getWaitTimeout(), serviceClass);
             if (null != beanFactory) {
                 beanFactory.registerSingleton(serviceName, object);
             }
@@ -268,6 +273,9 @@ public abstract class SimpleRpcClient {
                 ServiceDiscovery serviceDiscovery = this.getDiscovery(clientBean);
                 if (null == serviceDiscovery) {
                     throw new SystemException(String.format("Client referer [%s] not found registry [%s]", serviceName, clientBean.getRegistry()));
+                }
+                if (StringUtils.isEmpty(clientBean.getAppId())) {
+                    clientBean.setAppId(ClientConfig.me().getAppId());
                 }
                 ClientConfig.me().getServiceDiscoveryMap().put(serviceName, serviceDiscovery);
                 serviceDiscovery.discover(clientBean);

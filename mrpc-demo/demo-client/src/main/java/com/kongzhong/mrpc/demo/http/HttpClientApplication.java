@@ -19,7 +19,6 @@ public class HttpClientApplication {
     public static void main(String[] args) throws InterruptedException {
         RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setDirectAddress("127.0.0.1:5066");
-        rpcClient.setTransport("http");
 
         UserService userService = rpcClient.getProxyReferer(UserService.class);
 

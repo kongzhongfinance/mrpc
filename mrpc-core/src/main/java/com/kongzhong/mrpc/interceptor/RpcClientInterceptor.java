@@ -10,10 +10,10 @@ import com.kongzhong.mrpc.client.invoke.ClientInvocation;
  */
 public interface RpcClientInterceptor extends RpcInterceptor {
 
-    Object execute(ClientInvocation invocation) throws Exception;
+    Object execute(ClientInvocation invocation) throws Throwable;
 
     @Override
-    default Object execute(Invocation invocation) throws Exception {
+    default Object execute(Invocation invocation) throws Throwable {
         return execute((ClientInvocation) invocation);
     }
 

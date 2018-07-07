@@ -61,6 +61,13 @@ public class LocalServiceNodeTable {
                 .collect(Collectors.toSet());
     }
 
+    public static Set<String> getAliveAddress() {
+        return SERVICE_NODES.stream()
+                .filter(node -> node.getAliveState() == NodeAliveStateEnum.ALIVE)
+                .map(ServiceNode::getServerAddress)
+                .collect(Collectors.toSet());
+    }
+
     /**
      * 获取所有挂掉的服务
      *

@@ -43,7 +43,6 @@ public class ConfigApiController {
         if (null != nodeEntity) {
             rpcSpringClient.setAppId(nodeEntity.getAppId());
             rpcSpringClient.setDirectAddress(nodeEntity.getAddress());
-            rpcSpringClient.setTransport(nodeEntity.getTransport());
             ConfigService configService = rpcSpringClient.getProxyReferer(ConfigService.class);
             serverConfig.setBusinessThreadPoolSize(configService.getBusinessThreadPoolSize());
         }
@@ -62,7 +61,6 @@ public class ConfigApiController {
     public ResponseEntity<String> setServerConfig(String method, String value, NodeEntity nodeEntity) {
         rpcSpringClient.setAppId(nodeEntity.getAppId());
         rpcSpringClient.setDirectAddress(nodeEntity.getAddress());
-        rpcSpringClient.setTransport(nodeEntity.getTransport());
         try {
             ConfigService configService = rpcSpringClient.getProxyReferer(ConfigService.class);
             if ("setBusinessThreadPoolSize".equalsIgnoreCase(method)) {

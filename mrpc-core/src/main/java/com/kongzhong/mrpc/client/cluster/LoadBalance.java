@@ -19,22 +19,35 @@ import java.util.concurrent.TimeUnit;
 public interface LoadBalance {
 
     /**
-     * 根据服务查询连接通道
+     * 根据服务查询连接
      *
+     * @param appId       appId
+     * @param serviceName 服务全名称
+     * @return
+     * @throws Exception
+     */
+    SimpleClientHandler next(String appId, String serviceName) throws Exception;
+
+    /**
+     * 遍历服务连接列表
+     *
+     * @param appId
      * @param serviceName
      * @return
+     * @throws Exception
      */
-    SimpleClientHandler next(String serviceName) throws Exception;
-
-    default List<SimpleClientHandler> handlers(String serviceName) throws Exception {
+    default List<SimpleClientHandler> handlers(String appId, String serviceName) throws Exception {
         List<SimpleClientHandler> handlers = Connections.me().getHandlers(serviceName);
         if (handlers.size() == 0) {
             ServiceDiscovery serviceDiscovery = ClientConfig.me().getServiceDiscovery(serviceName);
             if (null != serviceDiscovery) {
                 while (true) {
                     TimeUnit.SECONDS.sleep(1);
+
                     ClientBean clientBean = new ClientBean();
+                    clientBean.setAppId(appId);
                     clientBean.setServiceName(serviceName);
+
                     serviceDiscovery.discover(clientBean);
                     handlers = Connections.me().getHandlers(serviceName);
                     if (handlers.size() > 0) {

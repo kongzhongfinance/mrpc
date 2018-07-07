@@ -2,9 +2,7 @@ package com.kongzhong.mrpc.transport.netty;
 
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
 import com.kongzhong.mrpc.config.ClientConfig;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.transport.http.HttpClientHandler;
-import com.kongzhong.mrpc.transport.tcp.TcpClientHandler;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoop;
@@ -51,16 +49,14 @@ public class ConnectionListener implements ChannelFutureListener {
 
             nettyClient.resetRetryCount();
 
-            boolean isHttp = ClientConfig.me().getTransport().equals(TransportEnum.HTTP);
-
             //和服务器连接成功后, 获取MessageSendHandler对象
-            Class<? extends SimpleClientHandler> clientHandler = isHttp ? HttpClientHandler.class : TcpClientHandler.class;
-            SimpleClientHandler handler = future.channel().pipeline().get(clientHandler);
+            Class<? extends SimpleClientHandler> clientHandler = HttpClientHandler.class;
+            SimpleClientHandler                  handler       = future.channel().pipeline().get(clientHandler);
 
             // 设置节点状态为存活状态
             LocalServiceNodeTable.setNodeAlive(handler);
 
-            if (isHttp && ClientConfig.me().getPingInterval() > 0) {
+            if (ClientConfig.me().getPingInterval() > 0) {
                 nettyClient.enabledPing(future.channel());
             }
         }

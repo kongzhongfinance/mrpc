@@ -1,13 +1,14 @@
 package com.kongzhong.mrpc.client;
 
 import com.kongzhong.mrpc.Const;
+import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.exception.TimeoutException;
 import com.kongzhong.mrpc.model.RpcContext;
 import com.kongzhong.mrpc.model.RpcRequest;
 import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
-import com.kongzhong.mrpc.transport.netty.SimpleClientHandler;
 import com.kongzhong.mrpc.utils.ReflectUtils;
+import com.kongzhong.mrpc.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -34,12 +35,12 @@ public class RpcCallbackFuture {
         this.beginTime = System.currentTimeMillis();
     }
 
-    public Object get(int milliseconds) throws Exception {
+    public Object get(int milliseconds) throws Throwable {
         if (latch.await(milliseconds, TimeUnit.MILLISECONDS)) {
             if (null != response) {
                 Map<String, String> context = response.getContext();
                 // TODO: 兼容期，过后删除
-                if(null != context){
+                if (null != context) {
                     context.put(Const.SERVER_HOST, this.request.getContext().get(Const.SERVER_HOST));
                     context.put(Const.SERVER_PORT, this.request.getContext().get(Const.SERVER_PORT));
                     RpcContext.setAttachments(context);
@@ -47,20 +48,32 @@ public class RpcCallbackFuture {
                 if (response.getSuccess()) {
                     return response.getResult();
                 } else {
-                    Class<?>  expType   = ReflectUtils.from(response.getReturnType());
-                    Exception exception = (Exception) JacksonSerialize.parseObject(response.getException(), expType);
-                    throw exception;
+                    Object object = null;
+                    try {
+                        Class<?> expType = ReflectUtils.from(response.getReturnType());
+                        object = JacksonSerialize.parseObject(response.getException(), expType);
+                    } catch (ClassNotFoundException e) {
+                        if (StringUtils.isNotEmpty(context.get(Const.SERVER_EXCEPTION))) {
+                            object = JacksonSerialize.parseObject(response.getException(), SystemException.class);
+                        } else {
+                            object = e;
+                        }
+                    }
+                    if (object instanceof Exception) {
+                        throw (Exception) object;
+                    }
+                    if (object instanceof Throwable) {
+                        throw (Throwable) object;
+                    }
                 }
             }
         } else {
             long waitTime = System.currentTimeMillis() - beginTime;
-            if (waitTime > milliseconds && SimpleClientHandler.callbackFutureMap.containsKey(request.getRequestId())) {
-                String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
-                log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
-                log.warn("RequestId: {}", request.getRequestId());
-                log.warn("Invoke time: {}ms", waitTime);
-                throw new TimeoutException(msg);
-            }
+            log.warn("{}.{}() timeout", request.getClassName(), request.getMethodName());
+            log.warn("RequestId: {}", request.getRequestId());
+            log.warn("Invoke time: {}ms", waitTime);
+            String msg = String.format("[Request %s.%s()] timeout", request.getClassName(), request.getMethodName());
+            throw new TimeoutException(msg);
         }
         return null;
     }

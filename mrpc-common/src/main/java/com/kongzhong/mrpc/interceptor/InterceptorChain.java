@@ -49,8 +49,9 @@ public class InterceptorChain {
         try {
             checkDuplicateName(name);
             int index = getInterceptorIndex(baseName);
-            if (index == -1)
+            if (index == -1) {
                 throw new NoSuchElementException(baseName);
+            }
             Entry entry = new Entry(name, interceptor);
             register(index, entry);
             return this;
@@ -64,8 +65,9 @@ public class InterceptorChain {
         try {
             checkDuplicateName(name);
             int index = getInterceptorIndex(baseName);
-            if (index == -1)
+            if (index == -1) {
                 throw new NoSuchElementException(baseName);
+            }
             Entry entry = new Entry(name, interceptor);
             register(index + 1, entry);
             return this;

@@ -14,12 +14,13 @@ import lombok.ToString;
 public class ClientBean {
 
     private String id;
+    private String appId;
     private String serviceName;
     private Class<?> serviceClass;
     private String registry;
     private String version;
     private String directAddress;
-    private int waitTimeout = 10_000;
+    private Integer waitTimeout;
 
     public ClientBean(Class<?> serviceClass) {
         this(StringUtils.getSimpleClassName(serviceClass), serviceClass);

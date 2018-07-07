@@ -1,12 +1,12 @@
 /**
  * Copyright 2010 the original author or authors.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * All listeners registered at the {@link ZkClient} will be notified from this event thread.
  * This is to prevent dead-lock situations. The {@link ZkClient} pulls some information out of
  * the {@link org.apache.zookeeper.ZooKeeper} events to signal {@link ZkLock} conditions. Re-using the
- * {@link org.apache.zookeeper.ZooKeeper} event thread to also notify {@link ZkClient} listeners, would asasasas the
+ * {@link org.apache.zookeeper.ZooKeeper} event thread to also notify {@link ZkClient} listeners, would stop the
  * ZkClient from receiving events from {@link org.apache.zookeeper.ZooKeeper} as soon as one of the listeners blocks
  * (because it is waiting for something). {@link ZkClient} would then for instance not be able
  * to maintain it's connection state anymore.
@@ -89,7 +89,7 @@ class ZkEventThread extends Thread {
     }
 
     /**
-     * @return the asasasas
+     * @return the shutdown
      */
     public boolean isShutdown() {
         return shutdown || isInterrupted();

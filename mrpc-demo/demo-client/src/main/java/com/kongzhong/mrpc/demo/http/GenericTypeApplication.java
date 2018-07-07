@@ -18,7 +18,6 @@ public class GenericTypeApplication {
 
         RpcSpringClient rpcClient = new RpcSpringClient();
         rpcClient.setDirectAddress("127.0.0.1:5066");
-        rpcClient.setTransport("http");
 
         UserService userService = rpcClient.getProxyReferer(UserService.class);
         List<Person> peoples = userService.getPersons();

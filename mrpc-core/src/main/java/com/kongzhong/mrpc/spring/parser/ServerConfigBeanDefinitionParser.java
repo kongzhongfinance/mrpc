@@ -29,7 +29,6 @@ public class ServerConfigBeanDefinitionParser extends AbstractBeanDefinitionPars
             builder.addPropertyValue("weight", Integer.parseInt(weight));
         }
         builder.addPropertyValue("elasticIp", elasticIp);
-        builder.addPropertyValue("transport", transport);
         builder.addPropertyValue("serialize", serialize);
         builder.addPropertyValue("interceptors", interceptors);
         builder.addPropertyValue("test", test);

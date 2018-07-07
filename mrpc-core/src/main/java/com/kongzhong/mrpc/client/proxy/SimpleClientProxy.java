@@ -39,16 +39,54 @@ import static com.kongzhong.mrpc.Const.CLIENT_INTERCEPTOR_PREFIX;
 @Slf4j
 public class SimpleClientProxy extends AbstractInvocationHandler {
 
-    // 负载均衡器
+    /**
+     * 负载均衡器
+     */
     private LoadBalance loadBalance;
 
-    // 是否有客户端拦截器
+    /**
+     * 是否有客户端拦截器
+     */
     private boolean hasInterceptors;
 
-    // 客户端拦截器列表
+    /**
+     * 客户端拦截器列表
+     */
     private List<RpcClientInterceptor> interceptors;
 
+    /**
+     * 代理接口超时时长
+     */
+    private Integer waitTimeout;
+
+    /**
+     * 配置文件全局APPID，标识一个应用
+     */
     private String appId;
+
+    public SimpleClientProxy(Integer waitTimeout, List<RpcClientInterceptor> interceptors) {
+        this.waitTimeout = waitTimeout;
+        this.appId = ClientConfig.me().getAppId();
+
+        LbStrategyEnum lbStrategy = ClientConfig.me().getLbStrategy();
+        if (null == lbStrategy) {
+            throw new SystemException("LoadBalance strategy not is null.");
+        }
+
+        this.interceptors = interceptors;
+        this.loadBalance = LoadBalanceFactory.getLoadBalance(lbStrategy);
+
+        if (null != interceptors && !interceptors.isEmpty()) {
+            hasInterceptors = true;
+            int pos = interceptors.size();
+            log.info("Add interceptor {}", interceptors.toString());
+            for (RpcClientInterceptor rpcClientInterceptor : interceptors) {
+                InterceptorChain interceptorChain = new InterceptorChain();
+                interceptorChain.addLast(CLIENT_INTERCEPTOR_PREFIX + (pos--), rpcClientInterceptor);
+            }
+        }
+    }
+
 
     public SimpleClientProxy(List<RpcClientInterceptor> interceptors) {
         this.appId = ClientConfig.me().getAppId();
@@ -73,7 +111,9 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     }
 
     @Override
-    protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
+    protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
+
+        String appId = this.getAppId(method.getDeclaringClass());
 
         RpcRequest request = RpcRequest.builder()
                 .appId(appId)
@@ -96,7 +136,7 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
             return haStrategy.call(request, loadBalance);
         }
 
-        SimpleClientHandler clientHandler = loadBalance.next(request.getClassName());
+        SimpleClientHandler clientHandler = loadBalance.next(appId, request.getClassName());
         if (null == clientHandler) {
             log.warn("Local service mappings: {}", LocalServiceNodeTable.SERVICE_MAPPINGS);
             throw new RpcException("Service [" + request.getClassName() + "] not found.");
@@ -125,16 +165,30 @@ public class SimpleClientProxy extends AbstractInvocationHandler {
     /**
      * 获取该方法的调用超时
      *
+     * @param serviceType 调用的方法
+     * @return 返回该方法的超时时长
+     */
+    private String getAppId(Class<?> serviceType) {
+        Command command = serviceType.getAnnotation(Command.class);
+        if (null != command && StringUtils.isNotEmpty(command.appId())) {
+            return command.appId();
+        }
+        return this.appId;
+    }
+
+    /**
+     * 获取该方法的调用超时
+     *
      * @param method 调用的方法
      * @return 返回该方法的超时时长
      */
-    private int getWaitTimeout(Method method) {
+    private Integer getWaitTimeout(Method method) {
         Integer timeout = ConfigServiceImpl.me().getMethodWaitTimeout(method.getName());
         if (null != timeout) {
             return timeout;
         }
         Command command = method.getAnnotation(Command.class);
-        timeout = ClientConfig.me().getWaitTimeout();
+        timeout = this.waitTimeout != null ? this.waitTimeout : ClientConfig.me().getWaitTimeout();
         if (null != command) {
             return command.waitTimeout();
         }

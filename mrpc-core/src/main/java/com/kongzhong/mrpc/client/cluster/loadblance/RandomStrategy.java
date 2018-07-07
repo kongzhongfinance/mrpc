@@ -18,8 +18,8 @@ public class RandomStrategy implements LoadBalance {
     private Random random = new Random();
 
     @Override
-    public SimpleClientHandler next(String serviceName) throws Exception {
-        List<SimpleClientHandler> handlers = handlers(serviceName);
+    public SimpleClientHandler next(String appId, String serviceName) throws Exception {
+        List<SimpleClientHandler> handlers = handlers(appId, serviceName);
         return handlers.get(random.nextInt(handlers.size()));
     }
 

@@ -8,10 +8,10 @@ package com.kongzhong.mrpc.interceptor;
  */
 public interface RpcServerInterceptor extends RpcInterceptor {
 
-    Object execute(ServerInvocation invocation) throws Exception;
+    Object execute(ServerInvocation invocation) throws Throwable;
 
     @Override
-    default Object execute(Invocation invocation) throws Exception {
+    default Object execute(Invocation invocation) throws Throwable {
         return execute((ServerInvocation) invocation);
     }
 

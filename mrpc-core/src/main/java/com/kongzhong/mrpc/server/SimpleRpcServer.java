@@ -13,7 +13,6 @@ import com.kongzhong.mrpc.embedded.ConfigServiceImpl;
 import com.kongzhong.mrpc.enums.EventType;
 import com.kongzhong.mrpc.enums.NodeAliveStateEnum;
 import com.kongzhong.mrpc.enums.RegistryEnum;
-import com.kongzhong.mrpc.enums.TransportEnum;
 import com.kongzhong.mrpc.event.Event;
 import com.kongzhong.mrpc.event.EventManager;
 import com.kongzhong.mrpc.exception.InitializeException;
@@ -59,6 +58,8 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 @NoArgsConstructor
 @ToString(exclude = {"rpcMapping", "transferSelector"})
 public abstract class SimpleRpcServer {
+
+    public static Boolean PRINT_ERROR_LOG = false;
 
     /**
      * RPC服务映射
@@ -115,13 +116,6 @@ public abstract class SimpleRpcServer {
     @Getter
     @Setter
     protected String serialize;
-
-    /**
-     * 传输协议，默认tcp协议
-     */
-    @Getter
-    @Setter
-    protected String transport;
 
     /**
      * appId
@@ -190,19 +184,19 @@ public abstract class SimpleRpcServer {
         if (null == nettyConfig) {
             nettyConfig = new NettyConfig(128, true);
         }
-
-        if (null == transport) transport = "tcp";
-        if (null == serialize) serialize = "kyro";
+        if (null == serialize) {
+            serialize = "kyro";
+        }
 
         if (CollectionUtils.isNotEmpty(serviceRegistryMap)) {
             usedRegistry = true;
         }
 
         RpcSerialize rpcSerialize = null;
-        if (serialize.equalsIgnoreCase("kyro")) {
+        if ("kyro".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.KyroSerialize", RpcSerialize.class);
         }
-        if (serialize.equalsIgnoreCase("protostuff")) {
+        if ("protostuff".equalsIgnoreCase(serialize)) {
             rpcSerialize = ReflectUtils.newInstance("com.kongzhong.mrpc.serialize.ProtostuffSerialize", RpcSerialize.class);
         }
 
@@ -211,8 +205,7 @@ public abstract class SimpleRpcServer {
         }
 
         transferSelector = new TransferSelector(rpcSerialize);
-        ServerConfig serverConfig           = ServerConfig.me();
-        int          businessThreadPoolSize = serverConfig.getBusinessThreadPoolSize();
+        int businessThreadPoolSize = nettyConfig.getBusinessThreadPoolSize();
         setListeningExecutorService(businessThreadPoolSize);
     }
 
@@ -234,7 +227,7 @@ public abstract class SimpleRpcServer {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-                    .childHandler(transferSelector.getServerChannelHandler(transport))
+                    .childHandler(transferSelector.getServerChannelHandler())
                     .option(ChannelOption.SO_BACKLOG, nettyConfig.getBacklog())
                     .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig.isKeepalive())
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(nettyConfig.getLowWaterMark(), nettyConfig.getHighWaterMark()));
@@ -298,7 +291,7 @@ public abstract class SimpleRpcServer {
             // 服务启动后
             EventManager.me().fireEvent(EventType.SERVER_STARTED, Event.builder().rpcContext(RpcContext.get()).build());
 
-            Runtime.getRuntime().addShutdownHook(new Thread( () -> this.close()));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::close));
 
             this.channelSync(future);
 
@@ -369,7 +362,6 @@ public abstract class SimpleRpcServer {
                 .address(this.address)
                 .appId(this.appId)
                 .aliveState(aliveState)
-                .transport(TransportEnum.valueOf(this.transport.toUpperCase()))
                 .services(ServiceStatusTable.me().getServiceStatus())
                 .build();
 
@@ -471,7 +463,11 @@ public abstract class SimpleRpcServer {
             public void onSuccess(Boolean result) {
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 // 服务端回显 request已经处理完毕
-                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.debug("Server execute [{}] success.", request.getRequestId()));
+                String requestId = request.getRequestId();
+                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
+                    log.debug("Server execute [{}] success.", requestId);
+                    listenableFutures.remove(listenableFuture);
+                });
             }
 
             @Override
@@ -492,8 +488,15 @@ public abstract class SimpleRpcServer {
                 // 服务端响应前
                 EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, Event.builder().rpcContext(RpcContext.get()).build());
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
-                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture ->
-                        log.debug("Server send to {} success, requestId [{}]", ctx.channel(), response.headers().get(HEADER_REQUEST_ID)));
+                String requestId = response.headers().get(HEADER_REQUEST_ID);
+                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
+                    if (channelFuture.isSuccess()) {
+                        log.debug("Server send to {} success, requestId [{}]", ctx.channel(), requestId);
+                    } else {
+                        log.debug("Server send to {} fail, requestId [{}]", ctx.channel(), requestId);
+                    }
+                    listenableFutures.remove(listenableFuture);
+                });
             }
 
             @Override
@@ -510,6 +513,7 @@ public abstract class SimpleRpcServer {
      * @param map 将Map中的注册中心筛选出来
      * @return 返回筛选出来的注册中心
      */
+
     protected ServiceRegistry mapToRegistry(Map<String, String> map) {
         String type = map.get("type");
         if (RegistryEnum.DEFAULT.getName().equals(type)) {
@@ -555,13 +559,13 @@ public abstract class SimpleRpcServer {
                 return;
             }
             log.info("UnRegistering mrpc server on shutdown");
+            isClosed = true;
 
             // 拒绝连接
             SimpleServerHandler.shutdown();
-
             EventManager.me().fireEvent(EventType.SHUTDOWN_SERVER, Event.builder().rpcContext(RpcContext.get()).build());
 
-            for (ListenableFuture<FullHttpResponse> listenableFuture : listenableFutures) {
+            for (ListenableFuture listenableFuture : listenableFutures) {
                 while (!listenableFuture.isDone()) {
                     TimeUtils.sleep(100);
                 }
@@ -581,7 +585,6 @@ public abstract class SimpleRpcServer {
                 }
             });
         } finally {
-            isClosed = true;
             lock.unlock();
         }
     }

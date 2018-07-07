@@ -8,7 +8,9 @@ package com.kongzhong.mrpc.enums;
  */
 public enum HaStrategyEnum {
 
+    // 快速失败
     FAILFAST("快速失败"),
+    // 失效切换
     FAILOVER("失效切换");
 
     private final String desc;

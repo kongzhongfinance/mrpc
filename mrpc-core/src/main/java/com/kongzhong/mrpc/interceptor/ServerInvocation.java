@@ -35,12 +35,14 @@ public class ServerInvocation implements Invocation {
     }
 
     @Override
-    public Object next() throws Exception {
+    public Object next() throws Throwable {
         if (this.currentIndex == this.interceptors.size() - 1) {
             try {
                 return fastMethod.invoke(this.target, this.parameters);
             } catch (Exception e) {
-                if (e instanceof InvocationTargetException) throw (Exception) e.getCause();
+                if (e instanceof InvocationTargetException) {
+                    throw e.getCause();
+                }
                 throw e;
             }
         } else {

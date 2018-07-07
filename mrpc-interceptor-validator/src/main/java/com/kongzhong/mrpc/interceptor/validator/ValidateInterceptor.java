@@ -23,7 +23,7 @@ public class ValidateInterceptor implements RpcServerInterceptor {
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Override
-    public Object execute(ServerInvocation invocation) throws Exception {
+    public Object execute(ServerInvocation invocation) throws Throwable {
         Object[] parameters = invocation.getParameters();
         for (Object arg : parameters) {
             //参数为空不校验
@@ -57,8 +57,15 @@ public class ValidateInterceptor implements RpcServerInterceptor {
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object, groups);
         if (!constraintViolations.isEmpty()) {
             Optional<ConstraintViolation<Object>> constraintViolation = constraintViolations.stream().findFirst();
+            //存在
             if (constraintViolation.isPresent()) {
-                throw new ValidateException(constraintViolation.get().getMessage());
+                ConstraintViolation<Object> objectConstraintViolation = constraintViolation.get();
+                //默认信息则拼接字段名称+默认信息
+                if (objectConstraintViolation.getMessageTemplate().startsWith("{")) {
+                    throw new ValidateException(objectConstraintViolation.getPropertyPath().toString() + objectConstraintViolation.getMessage());
+                }
+                //否则使用指定信息
+                throw new ValidateException(objectConstraintViolation.getMessage());
             } else {
                 throw new ValidateException("缺少参数");
             }
