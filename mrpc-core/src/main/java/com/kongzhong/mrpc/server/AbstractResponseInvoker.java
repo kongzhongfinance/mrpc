@@ -14,6 +14,7 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
@@ -36,6 +37,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
     private   Map<String, ServiceBean>   serviceBeanMap  = null;
     private   List<RpcServerInterceptor> interceptors    = null;
     private   boolean                    hasInterceptors = false;
+    @Getter
     protected RpcRequest                 request         = null;
     protected RpcResponse                response        = null;
 

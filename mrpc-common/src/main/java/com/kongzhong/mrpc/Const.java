@@ -8,7 +8,7 @@ package com.kongzhong.mrpc;
  */
 public interface Const {
 
-    String VERSION = "0.1.6.RELEASE";
+    String VERSION = "0.1.7-SNAPSHOT";
 
     String BANNER = "\n" +
             "\t\t    __  _______  ____  ______\n" +
