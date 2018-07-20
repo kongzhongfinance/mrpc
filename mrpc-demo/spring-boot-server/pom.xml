@@ -43,18 +43,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-metric-influxdb</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-trace</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>

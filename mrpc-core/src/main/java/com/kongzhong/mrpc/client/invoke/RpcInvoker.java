@@ -26,6 +26,8 @@ public class RpcInvoker {
         String address = clientHandler.getNettyClient().getAddress();
         this.request.getContext().put(Const.SERVER_HOST, address.split(":")[0]);
         this.request.getContext().put(Const.SERVER_PORT, address.split(":")[1]);
+
+        this.request.getContext().put("remote_address", address);
     }
 
     public Object invoke() throws Throwable {

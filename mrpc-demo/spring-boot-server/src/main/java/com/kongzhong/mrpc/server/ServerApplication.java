@@ -2,7 +2,6 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.client.Referers;
 import com.kongzhong.mrpc.demo.service.OtherService;
-import com.kongzhong.mrpc.trace.interceptor.TraceServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
