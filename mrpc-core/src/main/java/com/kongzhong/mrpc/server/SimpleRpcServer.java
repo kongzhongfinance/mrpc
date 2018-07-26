@@ -59,6 +59,8 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 @ToString(exclude = {"rpcMapping", "transferSelector"})
 public abstract class SimpleRpcServer {
 
+    public static String LOCAL_ADDRESS = "";
+
     public static Boolean PRINT_ERROR_LOG = false;
 
     /**
@@ -170,7 +172,8 @@ public abstract class SimpleRpcServer {
     private ScheduledFuture adminSchedule;
 
     private volatile boolean isClosed = false;
-    private          Lock    lock     = new ReentrantLock();
+
+    private Lock lock = new ReentrantLock();
 
     /**
      * 启动RPC服务端
@@ -287,6 +290,8 @@ public abstract class SimpleRpcServer {
             });
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
+
+            LOCAL_ADDRESS = this.address;
 
             // 服务启动后
             EventManager.me().fireEvent(EventType.SERVER_STARTED, Event.builder().rpcContext(RpcContext.get()).build());
