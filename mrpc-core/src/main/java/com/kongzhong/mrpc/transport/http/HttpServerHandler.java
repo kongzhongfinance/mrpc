@@ -145,7 +145,7 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
                 httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
             }
 
-            rpcRequest.getContext().put("caller_address", ctx.channel().remoteAddress().toString());
+            rpcRequest.getContext().put("caller_address", ctx.channel().remoteAddress().toString().substring(1));
 
             HttpResponseInvoker responseCallback = new HttpResponseInvoker(rpcRequest, httpResponse, serviceBeanMap);
             SimpleRpcServer.submit(responseCallback, ctx);
