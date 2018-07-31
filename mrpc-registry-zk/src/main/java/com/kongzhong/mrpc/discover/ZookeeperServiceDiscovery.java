@@ -154,7 +154,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private Set<String> filterAddress(Set<String> addressSet){
         return addressSet.stream().filter(address -> {
-            return null != address && !address.isEmpty() && address.endsWith(":0");
+            return null != address && !address.isEmpty() && !address.endsWith(":0");
         }).collect(Collectors.toSet());
     }
 
