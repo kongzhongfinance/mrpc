@@ -130,7 +130,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 for (String service : serviceList) {
                     Set<String> address = this.discoveryService(appId, service);
                     if (null != address && !address.isEmpty()) {
-                        serviceMap.put(service, address);
+                        serviceMap.put(service, filterAddress(address));
                     }
                 }
             } else {
@@ -138,7 +138,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                     Set<String> address = this.discoveryService(appId, service);
                     if (null != address && !address.isEmpty()) {
                         address.removeAll(LocalServiceNodeTable.getAliveAddress());
-                        serviceMap.put(service, address);
+                        serviceMap.put(service, filterAddress(address));
                     }
                 }
             }
@@ -150,6 +150,12 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
                 Connections.me().recoverConnect(serviceMap);
             }
         }
+    }
+
+    private Set<String> filterAddress(Set<String> addressSet){
+        return addressSet.stream().filter(address -> {
+            return null != address && !address.isEmpty() && address.endsWith(":0");
+        }).collect(Collectors.toSet());
     }
 
 
