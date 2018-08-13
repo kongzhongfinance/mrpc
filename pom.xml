@@ -20,7 +20,6 @@
         <module>mrpc-admin</module>
         <module>mrpc-interceptor-validator</module>
         <module>mrpc-hystrix</module>
-        <module>mrpc-trace</module>
     </modules>
 
     <properties>
@@ -40,8 +39,6 @@
         <zookeeper.version>3.4.8</zookeeper.version>
         <jackson.version>2.7.0</jackson.version>
         <consul-api.version>1.2.3</consul-api.version>
-        <zipkin.trace.version>0.0.3-SNAPSHOT</zipkin.trace.version>
-        <!--<klog.version>0.2.6-SNAPSHOT</klog.version>-->
     </properties>
 
     <dependencies>
@@ -119,12 +116,6 @@
                 <groupId>com.kongzhong.mrpc</groupId>
                 <artifactId>mrpc-registry-zk</artifactId>
                 <version>${parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.kongzhong.basic</groupId>
-                <artifactId>zipkin-trace-core</artifactId>
-                <version>${zipkin.trace.version}</version>
             </dependency>
 
             <dependency>
