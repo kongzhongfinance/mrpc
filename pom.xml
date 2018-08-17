@@ -7,7 +7,7 @@
     <groupId>com.kongzhong.mrpc</groupId>
     <artifactId>mrpc</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.7.RELEASE</version>
+    <version>0.1.8-SNAPSHOT</version>
 
     <modules>
         <module>mrpc-common</module>

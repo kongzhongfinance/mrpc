@@ -123,23 +123,26 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             Set<String>              deadServices = LocalServiceNodeTable.getDeadServices();
             Map<String, Set<String>> serviceMap   = Maps.newConcurrentMap();
 
+            Set<String> updateServices = new HashSet<>();
+
             if (CollectionUtils.isNotEmpty(deadServices)) {
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
-                log.debug("Dead service changed: {}", serviceList);
+                updateServices.addAll(serviceList);
 
-                for (String service : serviceList) {
-                    Set<String> address = this.discoveryService(appId, service);
-                    if (null != address && !address.isEmpty()) {
-                        serviceMap.put(service, filterAddress(address));
-                    }
-                }
+                log.debug("Dead service changed: {}", updateServices);
             } else {
-                for (String service : serviceList) {
-                    Set<String> address = this.discoveryService(appId, service);
-                    if (null != address && !address.isEmpty()) {
-                        address.removeAll(LocalServiceNodeTable.getAliveAddress());
-                        serviceMap.put(service, filterAddress(address));
-                    }
+                updateServices.addAll(LocalServiceNodeTable.getAliveServices());
+            }
+
+            for (String service : updateServices) {
+                Set<String> address = this.discoveryService(appId, service);
+                if (null == address || address.isEmpty()) {
+                    continue;
+                }
+
+                Set<String> newAddresses = filterAddress(address);
+                if (!newAddresses.isEmpty()) {
+                    serviceMap.put(service, newAddresses);
                 }
             }
 
@@ -152,7 +155,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
-    private Set<String> filterAddress(Set<String> addressSet){
+    private Set<String> filterAddress(Set<String> addressSet) {
         return addressSet.stream().filter(address -> {
             return null != address && !address.isEmpty() && !address.endsWith(":0");
         }).collect(Collectors.toSet());
