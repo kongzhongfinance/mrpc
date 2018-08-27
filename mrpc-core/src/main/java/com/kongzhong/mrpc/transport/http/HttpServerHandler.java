@@ -126,8 +126,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         }
 
         // 解析请求
-        Class<?> targetClass = AopUtils.getTargetClass(bean);
-        RpcRequest rpcRequest = this.parseParams(ctx, httpRequest, requestBody, targetClass);
+        Class<?>   targetClass = AopUtils.getTargetClass(bean);
+        RpcRequest rpcRequest  = this.parseParams(ctx, httpRequest, requestBody, targetClass);
         if (null != rpcRequest) {
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK,
                     Unpooled.copiedBuffer("", CharsetUtil.UTF_8), false);
@@ -144,6 +144,8 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
             if (HttpUtil.isKeepAlive(httpRequest)) {
                 httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
             }
+
+            rpcRequest.getContext().put("caller_address", ctx.channel().remoteAddress().toString().substring(1));
 
             HttpResponseInvoker responseCallback = new HttpResponseInvoker(rpcRequest, httpResponse, serviceBeanMap);
             SimpleRpcServer.submit(responseCallback, ctx);
@@ -225,12 +227,16 @@ public class HttpServerHandler extends SimpleServerHandler<FullHttpRequest> {
         httpResponse.headers().set(CACHE_CONTROL, "no-cache");
         httpResponse.headers().set(PRAGMA, "no-cache");
         httpResponse.headers().set(EXPIRES, "-1");
-        ctx.writeAndFlush(httpResponse);
+        if (ctx.channel().isActive()) {
+            ctx.writeAndFlush(httpResponse);
+        }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Server io error: {}", ctx.channel(), cause);
+        if (!cause.getMessage().contains("Connection reset by peer")) {
+            log.error("Server io error: {}", ctx.channel(), cause);
+        }
     }
 
 }

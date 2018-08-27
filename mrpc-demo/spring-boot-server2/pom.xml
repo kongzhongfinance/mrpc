@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mrpc-demo</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.1.41-SNAPSHOT</version>
+        <version>0.1.8.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,11 +39,6 @@
             <!--<version>0.2.0-SNAPSHOT</version>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.kongzhong.mrpc</groupId>
-            <artifactId>mrpc-trace</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

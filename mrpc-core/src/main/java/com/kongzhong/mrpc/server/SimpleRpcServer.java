@@ -59,6 +59,8 @@ import static com.kongzhong.mrpc.Const.HEADER_REQUEST_ID;
 @ToString(exclude = {"rpcMapping", "transferSelector"})
 public abstract class SimpleRpcServer {
 
+    public static String LOCAL_ADDRESS = "";
+
     public static Boolean PRINT_ERROR_LOG = false;
 
     /**
@@ -170,7 +172,8 @@ public abstract class SimpleRpcServer {
     private ScheduledFuture adminSchedule;
 
     private volatile boolean isClosed = false;
-    private          Lock    lock     = new ReentrantLock();
+
+    private Lock lock = new ReentrantLock();
 
     /**
      * 启动RPC服务端
@@ -288,6 +291,8 @@ public abstract class SimpleRpcServer {
 
             log.info("Publish services finished, mrpc version [{}]", Const.VERSION);
 
+            LOCAL_ADDRESS = this.address;
+
             // 服务启动后
             EventManager.me().fireEvent(EventType.SERVER_STARTED, Event.builder().rpcContext(RpcContext.get()).build());
 
@@ -365,11 +370,11 @@ public abstract class SimpleRpcServer {
                 .services(ServiceStatusTable.me().getServiceStatus())
                 .build();
 
-        String body = JacksonSerialize.toJSONString(serviceNodePayload);
-        log.debug("Request URL\t: {}", url);
-        log.debug("Send body\t\t: {}", body);
-
         try {
+            String body = JacksonSerialize.toJSONString(serviceNodePayload);
+            log.debug("Request URL\t: {}", url);
+            log.debug("Send body\t\t: {}", body);
+
             int code = HttpRequest.post(url)
                     .contentType("application/json;charset=utf-8")
                     .connectTimeout(10_000)
@@ -489,14 +494,20 @@ public abstract class SimpleRpcServer {
                 EventManager.me().fireEvent(EventType.SERVER_PRE_RESPONSE, Event.builder().rpcContext(RpcContext.get()).build());
                 //为返回msg回客户端添加一个监听器,当消息成功发送回客户端时被异步调用.
                 String requestId = response.headers().get(HEADER_REQUEST_ID);
-                ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
-                    if (channelFuture.isSuccess()) {
-                        log.debug("Server send to {} success, requestId [{}]", ctx.channel(), requestId);
-                    } else {
-                        log.debug("Server send to {} fail, requestId [{}]", ctx.channel(), requestId);
-                    }
-                    listenableFutures.remove(listenableFuture);
-                });
+
+                // 判断客户端是否存活，如果不存活则不发送
+                if (ctx.channel().isActive()) {
+                    ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
+                        if (channelFuture.isSuccess()) {
+                            log.debug("Server send to {} success, requestId [{}]", ctx.channel(), requestId);
+                        } else {
+                            log.debug("Server send to {} fail, requestId [{}]", ctx.channel(), requestId);
+                        }
+                        listenableFutures.remove(listenableFuture);
+                    });
+                } else {
+                    log.warn("Channel Inactived: {}", ctx.channel());
+                }
             }
 
             @Override

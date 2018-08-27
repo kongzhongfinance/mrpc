@@ -83,17 +83,20 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
             this.setChannelRequestId(rpcRequest.getRequestId());
 
-            channel.writeAndFlush(req).addListener(new GenericFutureListener<Future<? super Void>>() {
-                @Override
-                public void operationComplete(Future<? super Void> future) throws Exception {
-                    if (future.isSuccess()) {
-                        log.debug("Client requestId [{}] send success.", rpcRequest.getRequestId());
-                    } else {
-                        log.debug("Client requestId [{}] send fail.", rpcRequest.getRequestId());
-                        throw new SystemException("Client requestId [" + rpcRequest.getRequestId() + "] send fail.");
+            if (channel.isActive() && channel.isOpen() && channel.isWritable()) {
+                channel.writeAndFlush(req).addListener(new GenericFutureListener<Future<? super Void>>() {
+                    @Override
+                    public void operationComplete(Future<? super Void> future) throws Exception {
+                        if (future.isSuccess()) {
+                            log.debug("Client send [{}] success.", rpcRequest.getRequestId());
+                        } else {
+                            log.debug("Client send [{}] fail.", rpcRequest.getRequestId());
+                            throw new SystemException("Client send [" + rpcRequest.getRequestId() + "] fail.");
+                        }
                     }
-                }
-            });
+                });
+            }
+
 
         } catch (Exception e) {
             log.error("Client send request error", e);
@@ -145,9 +148,10 @@ public class HttpClientHandler extends SimpleClientHandler<FullHttpResponse> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Client receive body error", cause);
-        super.sendError(ctx, cause);
-//        ctx.close();
+        if(!cause.getMessage().contains("Connection reset by peer")){
+            log.error("Client receive body error", cause);
+            super.sendError(ctx, cause);
+        }
     }
 
 }

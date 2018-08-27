@@ -5,6 +5,7 @@ import com.github.zkclient.IZkClient;
 import com.github.zkclient.IZkStateListener;
 import com.github.zkclient.ZkClient;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.client.Connections;
 import com.kongzhong.mrpc.client.LocalServiceNodeTable;
@@ -36,7 +37,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     private boolean isInit;
 
-    private IZkChildListener zkChildListener = new ZkChildListener();
+    private IZkChildListener zkChildListener = new ZkChildListener(this);
 
     private Map<String, IZkChildListener> subRelate = Maps.newConcurrentMap();
 
@@ -57,12 +58,12 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         zkClient.subscribeStateChanges(new IZkStateListener() {
             @Override
             public void handleStateChanged(Watcher.Event.KeeperState keeperState) throws Exception {
-                watchNode(zkClient);
+                watchNode();
             }
 
             @Override
             public void handleNewSession() throws Exception {
-                watchNode(zkClient);
+                watchNode();
             }
         });
     }
@@ -93,7 +94,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
     private Set<String> discoveryService(String appId, String serviceName) {
         String path = Constant.ZK_ROOT + "/" + appId + "/" + serviceName;
         // 发现地址列表
-        Set<String> addressSet = new HashSet<>();
+        Set<String> addressSet = Sets.newConcurrentHashSet();
         if (zkClient.exists(path)) {
             addressSet.addAll(zkClient.getChildren(path));
         }
@@ -109,7 +110,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
      *
      * @param zkClient Zk客户端
      */
-    private synchronized void watchNode(@NonNull final IZkClient zkClient) {
+    public synchronized void watchNode() {
         String appId = ClientConfig.me().getAppId();
         String path  = Constant.ZK_ROOT + "/" + appId;
 
@@ -120,25 +121,28 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         } else {
 
             Set<String>              deadServices = LocalServiceNodeTable.getDeadServices();
-            Map<String, Set<String>> serviceMap   = new HashMap<>();
+            Map<String, Set<String>> serviceMap   = Maps.newConcurrentMap();
+
+            Set<String> updateServices = new HashSet<>();
 
             if (CollectionUtils.isNotEmpty(deadServices)) {
                 serviceList.retainAll(LocalServiceNodeTable.getDeadServices());
-                log.debug("Dead service changed: {}", serviceList);
+                updateServices.addAll(serviceList);
 
-                for (String service : serviceList) {
-                    Set<String> address = this.discoveryService(appId, service);
-                    if (null != address && !address.isEmpty()) {
-                        serviceMap.put(service, address);
-                    }
-                }
+                log.debug("Dead service changed: {}", updateServices);
             } else {
-                for (String service : serviceList) {
-                    Set<String> address = this.discoveryService(appId, service);
-                    if (null != address && !address.isEmpty()) {
-                        address.removeAll(LocalServiceNodeTable.getAliveAddress());
-                        serviceMap.put(service, address);
-                    }
+                updateServices.addAll(LocalServiceNodeTable.getAliveServices());
+            }
+
+            for (String service : updateServices) {
+                Set<String> address = this.discoveryService(appId, service);
+                if (null == address || address.isEmpty()) {
+                    continue;
+                }
+
+                Set<String> newAddresses = filterAddress(address);
+                if (!newAddresses.isEmpty()) {
+                    serviceMap.put(service, newAddresses);
                 }
             }
 
@@ -151,14 +155,12 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
         }
     }
 
-    class ZkChildListener implements IZkChildListener {
-        @Override
-        public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception {
-            if (null != currentChildren && !currentChildren.isEmpty()) {
-                watchNode(zkClient);
-            }
-        }
+    private Set<String> filterAddress(Set<String> addressSet) {
+        return addressSet.stream().filter(address -> {
+            return null != address && !address.isEmpty() && !address.endsWith(":0");
+        }).collect(Collectors.toSet());
     }
+
 
     @Override
     public void stop() {

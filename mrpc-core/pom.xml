@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mrpc</artifactId>
         <groupId>com.kongzhong.mrpc</groupId>
-        <version>0.1.41-SNAPSHOT</version>
+        <version>0.1.8.RELEASE</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -40,11 +40,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.kongzhong.basic</groupId>
-            <artifactId>zipkin-trace-core</artifactId>
         </dependency>
 
     </dependencies>

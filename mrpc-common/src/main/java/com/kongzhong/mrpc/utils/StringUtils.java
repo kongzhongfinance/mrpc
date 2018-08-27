@@ -47,4 +47,13 @@ public class StringUtils {
         return name.substring(0, 1).toLowerCase() + name.substring(1);
     }
 
+    public static boolean isLong(String value) {
+        try {
+            Long.parseLong(value);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

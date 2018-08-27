@@ -45,7 +45,7 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
                 rpcResponse.getContext().putIfAbsent(Const.APP_NAME, SimpleRpcServer.getContext(Const.APP_NAME));
                 rpcResponse.getContext().putIfAbsent(Const.SERVER_OWNER, SimpleRpcServer.getContext(Const.SERVER_OWNER));
             }
-            Object result = super.invokeMethod(request);
+            Object result = this.invokeMethod(request);
             rpcResponse.setResult(result);
             if (null != request.getReturnType()) {
                 rpcResponse.setReturnType(request.getReturnType().getName());
@@ -66,6 +66,11 @@ public class HttpResponseInvoker extends AbstractResponseInvoker<FullHttpRespons
         httpResponse.content().clear().writeBytes(byteBuf);
         httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
         return httpResponse;
+    }
+
+    @Override
+    protected Object invokeMethod(RpcRequest request) throws Throwable {
+        return super.invokeMethod(request);
     }
 
 }

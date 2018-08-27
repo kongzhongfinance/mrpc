@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 客户端连接管理
  *
  * @author biezhi
- *         2017/4/22
+ * 2017/4/22
  */
 @Slf4j
 @Data
@@ -154,11 +154,16 @@ public class Connections {
     public void recoverConnect(Map<String, Set<String>> serviceMap) {
 
         // 把services绑定的服务修改为addresses
-        serviceMap.forEach((serviceName, addresses) -> addresses.forEach(address -> {
-            LocalServiceNodeTable.addIfNotPresent(address);
-            LocalServiceNodeTable.reConnecting(address);
-            LocalServiceNodeTable.updateServiceNode(serviceName, address);
-        }));
+        Set<Map.Entry<String, Set<String>>> entries = serviceMap.entrySet();
+        for (Map.Entry<String, Set<String>> entry : entries) {
+            String      serviceName = entry.getKey();
+            Set<String> addresses   = entry.getValue();
+            for (String address : addresses) {
+                LocalServiceNodeTable.addIfNotPresent(address);
+                LocalServiceNodeTable.reConnecting(address);
+                LocalServiceNodeTable.updateServiceNode(serviceName, address);
+            }
+        }
 
         // 连接
         serviceMap.values().stream()
@@ -192,7 +197,6 @@ public class Connections {
 
     /**
      * 休眠
-     *
      */
     private void sleep() {
         try {

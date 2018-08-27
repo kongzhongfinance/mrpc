@@ -2,6 +2,7 @@ package com.kongzhong.mrpc.server;
 
 import com.kongzhong.mrpc.Const;
 import com.kongzhong.mrpc.exception.RpcException;
+import com.kongzhong.mrpc.exception.SerializeException;
 import com.kongzhong.mrpc.exception.SystemException;
 import com.kongzhong.mrpc.interceptor.InterceptorChain;
 import com.kongzhong.mrpc.interceptor.Invocation;
@@ -13,6 +14,7 @@ import com.kongzhong.mrpc.model.RpcResponse;
 import com.kongzhong.mrpc.model.ServiceBean;
 import com.kongzhong.mrpc.serialize.jackson.JacksonSerialize;
 import com.kongzhong.mrpc.utils.CollectionUtils;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
@@ -35,6 +37,7 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
     private   Map<String, ServiceBean>   serviceBeanMap  = null;
     private   List<RpcServerInterceptor> interceptors    = null;
     private   boolean                    hasInterceptors = false;
+    @Getter
     protected RpcRequest                 request         = null;
     protected RpcResponse                response        = null;
 
@@ -108,15 +111,24 @@ public abstract class AbstractResponseInvoker<T> implements Callable<T> {
      */
     protected Throwable buildErrorResponse(Throwable t, RpcResponse response) {
         t = t instanceof InvocationTargetException ? ((InvocationTargetException) t).getTargetException() : t;
-        String exception;
-        String className;
+        String exception = "";
+        String className = "";
         try {
             t.getClass().getConstructor();
             exception = JacksonSerialize.toJSONString(t);
             className = t.getClass().getName();
         } catch (Exception e) {
-            exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), e));
-            className = SystemException.class.getName();
+            try {
+                exception = JacksonSerialize.toJSONString(new SystemException(t.getMessage(), e));
+                className = SystemException.class.getName();
+            } catch (SerializeException e1) {
+                try {
+                    exception = JacksonSerialize.toJSONString(e1);
+                    className = SerializeException.class.getName();
+                } catch (SerializeException e2) {
+                    log.error("", e2);
+                }
+            }
         }
         response.getContext().put(Const.SERVER_EXCEPTION, exception);
         response.setReturnType(className);

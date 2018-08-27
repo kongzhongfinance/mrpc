@@ -9,8 +9,12 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 public class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
+
+    private static final DateTimeFormatter NEW_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
     @Override
     public void serialize(LocalDateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeString(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value));
+        jgen.writeString(NEW_DTF.format(value));
     }
+
 }
